@@ -12,10 +12,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import com.posthog.PostHog
+import com.posthog.PostHogConfig
+import com.posthog.android.PostHogAndroid
+import com.posthog.android.PostHogAndroidConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // PostHog product analytics setup
+        val posthogConfig = PostHogAndroidConfig(
+            apiKey = POSTHOG_API_KEY,
+            host = POSTHOG_HOST,
+        )
+        PostHogAndroid.setup(this, posthogConfig)
+
         enableEdgeToEdge()
         setContent {
             GiggyTheme {
@@ -27,6 +38,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val POSTHOG_API_KEY="phc_9g69UUfLTtDX1SexmpwRaxP5BW3dIqbucQRrlM67qed"
+        const val POSTHOG_HOST="https://us.i.posthog.com"
     }
 }
 
