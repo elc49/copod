@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -18,6 +21,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val keystoreFile = project.rootProject.file("apiKey.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val posthogApiKey = properties.getProperty("POSTHOG_PROJECT_API_KEY")
+        val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
+
+        buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value = posthogApiKey)
+        buildConfigField(type="String", name="POSTHOG_API_HOST", value = posthogApiHost)
     }
 
     buildTypes {
@@ -38,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

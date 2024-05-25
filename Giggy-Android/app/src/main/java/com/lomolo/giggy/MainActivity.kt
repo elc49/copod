@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        const val POSTHOG_API_KEY="phc_9g69UUfLTtDX1SexmpwRaxP5BW3dIqbucQRrlM67qed"
-        const val POSTHOG_HOST="https://us.i.posthog.com"
+        const val POSTHOG_API_KEY=BuildConfig.POSTHOG_PROJECT_API_KEY
+        const val POSTHOG_HOST=BuildConfig.POSTHOG_API_HOST
     }
 }
