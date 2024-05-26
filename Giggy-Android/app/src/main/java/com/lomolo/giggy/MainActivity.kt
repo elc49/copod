@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.posthog.android.PostHogAndroid
 import com.posthog.android.PostHogAndroidConfig
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        GiggyApplication()
+                        GiggyApplication(rememberNavController())
                     }
                 }
             }
