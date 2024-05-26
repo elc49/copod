@@ -1,7 +1,6 @@
 package com.lomolo.giggy.compose.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,20 +18,16 @@ interface Navigation {
 }
 
 @Composable
-fun GiggyNavigationHost(
-    navController: NavHostController
-) {
+fun GiggyNavigationHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = HomeScreenDestination.route
     ) {
         composable(route = HomeScreenDestination.route) {
-            Scaffold {innerPadding ->
-                Surface(
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    HomeScreen()
-                }
+            Surface(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                HomeScreen()
             }
         }
     }
