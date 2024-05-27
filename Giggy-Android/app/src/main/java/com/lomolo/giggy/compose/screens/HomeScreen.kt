@@ -2,8 +2,10 @@ package com.lomolo.giggy.compose.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -40,9 +42,9 @@ fun HomeScreen(
             modifier = Modifier.weight(2f)
         ) {
             Text(
-                text = "We farm",
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold
+                text = stringResource(R.string.we_farm),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displayLarge,
             )
         }
         Row(
@@ -64,6 +66,8 @@ fun HomeScreen(
             modifier = Modifier.weight(.5f, false)
         ) {
             Button(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(12.dp),
                 onClick = { /*TODO*/ },
                 shape = MaterialTheme.shapes.extraSmall
             ) {

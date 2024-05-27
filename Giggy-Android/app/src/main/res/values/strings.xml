@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Giggy</string>
     <string name="lear_connect_share">Learn, Connect, and Share with what works in your farm.</string>
+    <string name="we_farm">We farm</string>
+    <string name="get_started">Just a phone number to get started</string>
 </resources>
