@@ -1,6 +1,7 @@
 package com.lomolo.giggy.compose.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,20 +37,17 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.weight(2f)
-        ) {
+        Row {
             Text(
                 text = stringResource(R.string.we_farm),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displayLarge,
             )
         }
-        Row(
-            modifier = Modifier.weight(2f)
-        ) {
+        Row {
             Column {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
@@ -62,9 +60,7 @@ fun HomeScreen(
                 )
             }
         }
-        Row(
-            modifier = Modifier.weight(.5f, false)
-        ) {
+        Row {
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(12.dp),
