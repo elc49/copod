@@ -40,7 +40,17 @@ import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
-import com.lomolo.giggy.ui.theme.surfaceDimLight
+
+data class Post(
+    val img: String,
+    val post: String,
+    val tags: List<String> = listOf(),
+)
+val testPost = Post(
+    "https://storage.googleapis.com/giggy-cloud-storage/download.jpeg",
+    "Got this beast from a local automaker. Such an awesome guy at the customer desk. Head in and ask for John Doe.",
+    listOf("Farming tools", "Farming equipment"),
+)
 
 @Composable
 fun DashboardScreen(
@@ -76,54 +86,34 @@ fun ContentCard(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
-                        .data("https://storage.googleapis.com/giggy-cloud-storage/download.jpeg")
+                        .data(testPost.img)
                         .crossfade(true)
                         .build(),
                     contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.loading_img),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape),
                     contentDescription = null
                 )
                 Text(
-                    text = "029ulskhfl"
+                    text = "029ulskhfl",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
             Text(
                 text = "1h ago",
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
             )
         }
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium
         )
-        Box {
-            // TODO trim extra lengthy tags
-            FlowRow {
-                repeat(4) {
-                    ElevatedSuggestionChip(
-                        shape = MaterialTheme.shapes.extraSmall,
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 4.dp, end = 4.dp)
-                            .height(20.dp),
-                        colors = SuggestionChipDefaults.elevatedSuggestionChipColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        ),
-                        label = {
-                            // TODO trim extra lengthy wording
-                            Text(
-                                "Equipment",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
-                            )
-                        }
-                    )
-                }
-            }
-        }
         if (images.isNotEmpty()) {
             Card(
                 modifier = Modifier
@@ -156,20 +146,46 @@ fun ContentCard(
                 }
             }
         }
+        Box {
+            // TODO trim extra lengthy tags
+            FlowRow {
+                testPost.tags.map {
+                    ElevatedSuggestionChip(
+                        shape = MaterialTheme.shapes.extraSmall,
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier
+                            .padding(top = 4.dp, bottom = 4.dp, end = 4.dp)
+                            .height(20.dp),
+                        colors = SuggestionChipDefaults.elevatedSuggestionChipColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        ),
+                        label = {
+                            // TODO trim extra lengthy wording
+                            Text(
+                                it,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
+                    )
+                }
+            }
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 Icons.TwoTone.LocationOn,
-                modifier = Modifier.size(12.dp),
-                tint = surfaceDimLight,
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.inversePrimary,
                 contentDescription = null
             )
             Text(
                 text = "Ololua road, Ololua Ward, Kajiado - North",
-                style = MaterialTheme.typography.labelMedium,
-                color = surfaceDimLight
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.inversePrimary
             )
         }
     }
@@ -180,9 +196,9 @@ internal fun Content(
     modifier: Modifier = Modifier
 ) {
     ContentCard(
-        text = "Got this beast from a local automaker. Such an awesome guy at the customer desk. Head in and ask for John Doe.",
+        text = testPost.post,
         images = listOf(
-            "https://storage.googleapis.com/giggy-cloud-storage/download.jpeg"
+            testPost.img
         )
     )
 }
