@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import com.lomolo.giggy.ui.theme.surfaceDimLight
 
 data class Product(
     val name: String,
@@ -36,7 +39,7 @@ data class Product(
 
 val testMarketData = Product(
     "Guava",
-    5,
+    124,
     "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
     "kg",
     "Lurambi Agro-dealers and millers",
@@ -106,12 +109,26 @@ internal fun MarketCard(
                         )
                     }
                 }
-                Box(Modifier.align(Alignment.BottomCenter).padding(8.dp)) {
-                    Text(
-                        data.farm,
-                        style = MaterialTheme.typography.labelMedium,
-                        textAlign = TextAlign.Center
-                    )
+                Box(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(8.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.farmer),
+                            modifier = Modifier
+                                .size(20.dp),
+                            contentDescription = null
+                        )
+                        Text(
+                            data.farm,
+                            style = MaterialTheme.typography.labelSmall,
+                            textAlign = TextAlign.Center,
+                            color = surfaceDimLight
+                        )
+                    }
                 }
             }
         }
