@@ -5,62 +5,38 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.lomolo.giggy.R
-import com.lomolo.giggy.compose.PostCard
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
 
-data class Post(
-    val img: String,
-    val post: String,
-    val tags: List<String> = listOf(),
-)
-val testPost = Post(
-    "https://storage.googleapis.com/giggy-cloud-storage/download.jpeg",
-    "Got this beast from a local automaker. Such an awesome guy at the customer desk. Head in and ask for John Doe.",
-    listOf("Farming tools", "Farming equipment"),
-)
-
 @Composable
-fun DashboardScreen(
+fun FarmStoreScreen(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Content()
-    }
+    Farms()
 }
 
 @Composable
-internal fun Content(
-    modifier: Modifier = Modifier
-) {
-    PostCard(
-        text = testPost.post,
-        images = listOf(
-            testPost.img
-        )
-    )
-}
-
-@Composable
-internal fun NoContent(
-    modifier: Modifier = Modifier
+internal fun NoFarm(
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -70,24 +46,52 @@ internal fun NoContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(R.drawable.empty_inbox),
+            painter = painterResource(R.drawable.farm_store),
             contentDescription = null,
             modifier = Modifier
-                .size(24.dp)
+                .size(40.dp)
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.no_posts_we_are_still_early),
+            text = stringResource(R.string.no_farm_stores),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelMedium
+            style = MaterialTheme.typography.labelMedium,
         )
     }
 }
 
+@Composable
+internal fun Farms(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize().padding(8.dp)
+    ) {
+        OutlinedCard(
+            modifier = Modifier
+                .height(180.dp)
+        ) {
+            Column {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://storage.googleapis.com/giggy-cloud-storage/download.jpeg")
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(id = R.drawable.loading_img),
+                    modifier = Modifier.weight(1f),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+}
+
+
 @Preview
 @Composable
-fun DashboardScreenPreview() {
+fun FarmStoreScreenPreview() {
     GiggyTheme {
-        DashboardScreen()
+        FarmStoreScreen()
     }
 }
