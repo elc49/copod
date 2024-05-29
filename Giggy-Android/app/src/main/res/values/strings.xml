@@ -10,4 +10,8 @@
     <string name="one_time_purchase">One time purchase</string>
     <string name="no_hidden_fees">No hidden fees in your sales</string>
     <string name="track_products">Track farm harvests, orders, payments</string>
+    <string name="share_voice">Interact with other authentic voices</string>
+    <string name="announce_events">Announce events/trade shows</string>
+    <string name="buy_posting_rights">Buy posting rights</string>
+    <string name="advertise">Advertise your farm store produce</string>
 </resources>
