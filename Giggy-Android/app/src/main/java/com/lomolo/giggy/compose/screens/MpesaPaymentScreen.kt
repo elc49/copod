@@ -29,31 +29,35 @@ fun MpesaPaymentScreen(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-       OutlinedTextField(
-           value = "",
-           onValueChange = {},
-           leadingIcon = {
-               Text("KE")
-           },
-           modifier = Modifier.fillMaxWidth(),
-           placeholder = {
-               Text(
-                   text = stringResource(R.string.phone_number),
-                   style = MaterialTheme.typography.labelSmall,
-               )
-           }
-       )
-        Button(
-            onClick = { /*TODO*/ },
-            shape = MaterialTheme.shapes.extraSmall,
+        Text(
+            "M-pesa",
+            style = MaterialTheme.typography.displayLarge,
+        )
+        OutlinedTextField(
+            value = "",
+            onValueChange = {},
+            leadingIcon = {
+                Text("KE")
+            },
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
-        ) {
-           Text(
-               stringResource(R.string.pay),
-               fontWeight = FontWeight.Bold,
-           )
-        }
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.phone_number),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        )
+         Button(
+             onClick = { /*TODO*/ },
+             shape = MaterialTheme.shapes.extraSmall,
+             modifier = Modifier.fillMaxWidth(),
+             contentPadding = PaddingValues(16.dp),
+         ) {
+            Text(
+                stringResource(R.string.pay),
+                fontWeight = FontWeight.Bold,
+            )
+         }
     }
 }
 

@@ -17,7 +17,7 @@
       <SelectionState runConfigName="FarmStoreScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="FarmStoreProductScreenPreview">
+      <SelectionState runConfigName="CardPaymentScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
