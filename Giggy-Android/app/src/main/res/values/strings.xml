@@ -6,4 +6,8 @@
     <string name="no_posts_we_are_still_early">No posts. We are still early</string>
     <string name="start_writing">Start writing</string>
     <string name="no_farm_stores">No farm stores</string>
+    <string name="sell_directly_to_your_clients">Sell directly to your clients</string>
+    <string name="one_time_purchase">One time purchase</string>
+    <string name="no_hidden_fees">No hidden fees in your sales</string>
+    <string name="track_products">Track farm harvests, orders, payments</string>
 </resources>
