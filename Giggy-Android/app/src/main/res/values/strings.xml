@@ -14,4 +14,6 @@
     <string name="announce_events">Announce events/trade shows</string>
     <string name="buy_posting_rights">Buy posting rights</string>
     <string name="advertise">Advertise your farm store produce</string>
+    <string name="phone_number">Phone number</string>
+    <string name="pay">Pay</string>
 </resources>
