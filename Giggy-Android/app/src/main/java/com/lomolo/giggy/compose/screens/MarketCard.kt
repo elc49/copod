@@ -95,7 +95,6 @@ internal fun MarketCard(
                             data.farm,
                             style = MaterialTheme.typography.labelSmall,
                             textAlign = TextAlign.Center,
-                            color = surfaceDimLight
                         )
                     }
                 }

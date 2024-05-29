@@ -1,9 +1,13 @@
 package com.lomolo.giggy.compose.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,10 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -27,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +74,30 @@ data class PaymentData(
 )
 
 val testProductsData = listOf(
+    ProductData(
+        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
+        "kg",
+        124,
+        50,
+    ),
+    ProductData(
+        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
+        "kg",
+        124,
+        50,
+    ),
+    ProductData(
+        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
+        "kg",
+        124,
+        50,
+    ),
+    ProductData(
+        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
+        "kg",
+        124,
+        50,
+    ),
     ProductData(
         "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
         "kg",
@@ -128,8 +164,8 @@ fun FarmStoreProductScreen(
                 contentDescription = null
             )
             Text(
-                text = "Farm name",
-                textAlign = TextAlign.Center,
+                text = "Lurambi Agro-dealers and millers",
+                textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold
             )
@@ -161,6 +197,72 @@ fun FarmStoreProductScreen(
            }
         }
         when(state) {
+            0 -> LazyVerticalGrid(
+                modifier = Modifier.padding(8.dp),
+                columns = GridCells.Adaptive(minSize = 128.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+               items(testProductsData) {
+                   Box(Modifier.background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.extraSmall)) {
+                       AsyncImage(
+                           model = ImageRequest.Builder(LocalContext.current)
+                               .data(it.img)
+                               .crossfade(true)
+                               .build(),
+                           contentScale = ContentScale.Crop,
+                           modifier = Modifier
+                               .fillMaxSize()
+                               .clip(MaterialTheme.shapes.extraSmall),
+                           contentDescription = null
+                       )
+                       Box(Modifier.align(Alignment.Center)) {
+                           Column(
+                               modifier = Modifier
+                                   .background(
+                                       MaterialTheme.colorScheme.secondaryContainer,
+                                       MaterialTheme.shapes.extraSmall,
+                                   )
+                                   .padding(8.dp),
+                               horizontalAlignment = Alignment.CenterHorizontally,
+                           ) {
+                               Text(
+                                   "Volume",
+                                   style = MaterialTheme.typography.titleMedium,
+                                   color = MaterialTheme.colorScheme.onBackground,
+                                   fontWeight = FontWeight.ExtraBold,
+                               )
+                               Text(
+                                   "${it.volume}",
+                                   color = MaterialTheme.colorScheme.onBackground,
+                                   textAlign = TextAlign.Center,
+                               )
+                           }
+                       }
+                   }
+               }
+                item {
+                    Box(
+                        Modifier
+                            .size(128.dp)
+                            .background(
+                                MaterialTheme.colorScheme.secondaryContainer,
+                                MaterialTheme.shapes.extraSmall
+                            )
+                            .clickable { },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        OutlinedIconButton(
+                            onClick = { /*TODO*/ },
+                        ) {
+                           Icon(
+                               Icons.TwoTone.Add,
+                               contentDescription = null
+                           )
+                        }
+                    }
+                }
+            }
             1 -> LazyColumn {
                 item {
                     Row(
