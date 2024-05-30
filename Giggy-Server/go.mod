@@ -5,6 +5,8 @@ go 1.22.0
 require (
 	github.com/99designs/gqlgen v0.17.47
 	github.com/go-chi/chi/v5 v5.0.12
+	github.com/ipinfo/go/v2 v2.10.0
+	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/vektah/gqlparser/v2 v2.5.12
 )
@@ -15,8 +17,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
-	github.com/ipinfo/go/v2 v2.10.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
