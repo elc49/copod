@@ -14,10 +14,10 @@
       <SelectionState runConfigName="MarketScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="FarmStoreScreenPreview">
+      <SelectionState runConfigName="CardPaymentScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="CardPaymentScreenPreview">
+      <SelectionState runConfigName="MpesaPaymentScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
