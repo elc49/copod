@@ -63,7 +63,7 @@ fun HomeScreen(
         Row {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(12.dp),
+                contentPadding = PaddingValues(16.dp),
                 onClick = { /*TODO*/ },
                 shape = MaterialTheme.shapes.extraSmall
             ) {
