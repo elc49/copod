@@ -23,15 +23,17 @@ android {
             useSupportLibrary = true
         }
 
-        val keystoreFile = project.rootProject.file("apiKey.properties")
+        val keystoreFile = project.rootProject.file("api.properties")
         val properties = Properties()
         properties.load(keystoreFile.inputStream())
 
         val posthogApiKey = properties.getProperty("POSTHOG_PROJECT_API_KEY")
         val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
+        val baseApiHost = properties.getProperty("BASE_API_HOST")
 
         buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value = posthogApiKey)
         buildConfigField(type="String", name="POSTHOG_API_HOST", value = posthogApiHost)
+        buildConfigField(type= "String", name="BASE_API_HOST", value = baseApiHost)
     }
 
     buildTypes {

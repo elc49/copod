@@ -1,6 +1,7 @@
 package com.lomolo.giggy.container
 
 import android.content.Context
+import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -16,10 +17,6 @@ interface IApplicationContainer{
 class ApplicationContainer(
     private val context: Context
 ): IApplicationContainer {
-    companion object {
-        const val baseApi = "https://boss-freely-koi.ngrok-free.app"
-    }
-
     private val okhttpClient = OkHttpClient.Builder()
         .connectTimeout(2, TimeUnit.MINUTES)
         .callTimeout(60, TimeUnit.SECONDS)
@@ -32,7 +29,7 @@ class ApplicationContainer(
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(baseApi)
+        .baseUrl(BuildConfig.BASE_API_HOST)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okhttpClient)
         .build()
