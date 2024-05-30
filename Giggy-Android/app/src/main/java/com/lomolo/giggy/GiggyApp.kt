@@ -9,13 +9,13 @@ import com.lomolo.giggy.ui.theme.GiggyTheme
 
 @Composable
 fun GiggyApplication(navHostController: NavHostController) {
-    GiggyNavigationHost(navHostController)
+    GiggyNavigationHost(navHostController = navHostController)
 }
 
 @Preview
 @Composable
 fun GiggyApplicationPreview() {
     GiggyTheme {
-        GiggyApplication(rememberNavController())
+        GiggyApplication(navHostController = rememberNavController())
     }
 }

@@ -31,7 +31,8 @@ object HomeScreenDestination: Navigation {
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -64,7 +65,7 @@ fun HomeScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp),
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateTo(SignInScreenDestination.route) },
                 shape = MaterialTheme.shapes.extraSmall
             ) {
                 Text(
@@ -81,6 +82,8 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     GiggyTheme {
-        HomeScreen()
+        HomeScreen(
+            onNavigateTo = {}
+        )
     }
 }
