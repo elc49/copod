@@ -2,6 +2,7 @@ package com.lomolo.giggy.compose.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,9 +36,13 @@ object StoreScreenDestination: Navigation {
 
 @Composable
 fun FarmStoreScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit = {},
 ) {
-    Farms()
+    Farms(
+        modifier = modifier,
+        onNavigateTo = onNavigateTo
+    )
 }
 
 @Composable
@@ -68,7 +73,8 @@ internal fun NoFarm(
 
 @Composable
 internal fun Farms(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize().padding(8.dp)
@@ -76,6 +82,9 @@ internal fun Farms(
         OutlinedCard(
             modifier = Modifier
                 .height(180.dp)
+                .clickable {
+                    onNavigateTo(FarmStoreProductScreenDestination.route)
+                }
         ) {
             Column {
                 AsyncImage(

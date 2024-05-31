@@ -3,6 +3,7 @@ package com.lomolo.giggy.compose.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,6 +26,8 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
+import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
+import com.lomolo.giggy.compose.screens.FarmStoreProductScreenDestination
 import com.lomolo.giggy.compose.screens.FarmStoreScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
@@ -35,6 +38,7 @@ object DashboardDestination: Navigation {
     override val route = "dashboard"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.dashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
@@ -56,7 +60,16 @@ fun NavGraphBuilder.dashboardGraph(
         }
         composable(route = StoreScreenDestination.route) {
             DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                FarmStoreScreen()
+                FarmStoreScreen(
+                    onNavigateTo = {
+                        navHostController.navigate(it)
+                    }
+                )
+            }
+        }
+        composable(route = FarmStoreProductScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                FarmStoreProductScreen()
             }
         }
     }
