@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -52,61 +53,57 @@ fun GiggyNavigationHost(
         startDestination = HomeScreenDestination.route
     ) {
         composable(route = HomeScreenDestination.route) {
-            Scaffold {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    HomeScreen(
-                        onNavigateTo = { route ->
-                            navHostController.navigate(route)
-                        }
-                    )
-                }
+            Surface(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                HomeScreen(
+                    onNavigateTo = { route ->
+                        navHostController.navigate(route)
+                    }
+                )
             }
         }
         composable(route = SignInScreenDestination.route) {
-            Scaffold {
-                Surface (
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    when(initializing) {
-                        is SettingDeviceDetails.Success -> SignInScreen(
-                            deviceCallingCode = deviceDetails.callingCode,
-                            deviceFlag = deviceDetails.countryFlag,
-                            onNavigateTo = { route ->
-                                navHostController.navigate(route) {
-                                    popUpTo(navHostController.graph.findStartDestination().id) {
-                                        inclusive = true
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
+            Surface (
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                when(initializing) {
+                    is SettingDeviceDetails.Success -> SignInScreen(
+                        deviceCallingCode = deviceDetails.callingCode,
+                        deviceFlag = deviceDetails.countryFlag,
+                        onNavigateTo = { route ->
+                            navHostController.navigate(route) {
+                                popUpTo(navHostController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                    saveState = true
                                 }
-                            }
-                        )
-                        is SettingDeviceDetails.Loading -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                LinearProgressIndicator()
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
-                        is SettingDeviceDetails.Error -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = initializing.msg!!,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
+                    )
+                    is SettingDeviceDetails.Loading -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            LinearProgressIndicator()
+                        }
+                    }
+                    is SettingDeviceDetails.Error -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = initializing.msg!!,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center,
+                            )
                         }
                     }
                 }

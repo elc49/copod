@@ -47,7 +47,6 @@ fun SignInScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(8.dp)
     ) {
         Row {
             Text(
