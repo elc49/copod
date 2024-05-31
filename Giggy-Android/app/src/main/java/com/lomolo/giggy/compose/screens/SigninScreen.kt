@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
+import com.lomolo.giggy.compose.navigation.DashboardDestination
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
@@ -98,7 +99,7 @@ fun SignInScreen(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(14.dp),
                 shape = MaterialTheme.shapes.extraSmall,
-                onClick = { onNavigateTo(DashboardScreenDestination.route) }
+                onClick = { onNavigateTo(DashboardDestination.route) }
             ) {
                Text(
                    text = stringResource(R.string.sign_in),

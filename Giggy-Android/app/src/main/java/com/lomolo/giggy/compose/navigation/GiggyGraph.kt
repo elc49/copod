@@ -4,24 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,9 +21,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
-import com.lomolo.giggy.R
-import com.lomolo.giggy.compose.screens.DashboardScreen
-import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.HomeScreen
 import com.lomolo.giggy.compose.screens.HomeScreenDestination
 import com.lomolo.giggy.compose.screens.SignInScreen
@@ -118,47 +106,9 @@ fun GiggyNavigationHost(
                 }
             }
         }
-        composable(route = DashboardScreenDestination.route) {
-            var selectedItem by remember { mutableIntStateOf(0) }
-            val navs = listOf("Explore", "Soko", "Store")
-            val navIconOutlined = mapOf(
-                "Explore" to R.drawable.explore_outlined,
-                "Soko" to R.drawable.cart_outlined,
-                "Store" to R.drawable.store_outlined,
-            )
-            val navIconFilled = mapOf(
-                "Explore" to R.drawable.explore_filled,
-                "Soko" to R.drawable.cart_filled,
-                "Store" to R.drawable.store_filled,
-            )
-
-            Scaffold(
-                bottomBar = {
-                    NavigationBar {
-                        navs.forEachIndexed { index, item ->
-                            NavigationBarItem(
-                                selected = selectedItem == index,
-                                onClick = { selectedItem = index },
-                                icon = {
-                                    Icon(
-                                        painterResource(if (selectedItem == index) navIconFilled[item]!! else navIconOutlined[item]!!),
-                                        modifier = Modifier
-                                            .size(32.dp),
-                                        contentDescription = item
-                                    )
-                                })
-                        }
-                    }
-                }
-            ) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    DashboardScreen()
-                }
-            }
-        }
+        dashboardGraph(
+            modifier = modifier,
+            navHostController = navHostController,
+        )
     }
 }
