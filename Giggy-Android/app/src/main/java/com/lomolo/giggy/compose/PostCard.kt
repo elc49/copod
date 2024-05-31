@@ -83,7 +83,7 @@ fun PostCard(
         }
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyLarge,
         )
         if (images.isNotEmpty()) {
             Card(

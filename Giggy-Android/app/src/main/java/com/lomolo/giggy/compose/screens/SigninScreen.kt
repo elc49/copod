@@ -42,6 +42,7 @@ fun SignInScreen(
     modifier: Modifier = Modifier,
     deviceFlag: String = "",
     deviceCallingCode: String = "",
+    onNavigateTo: (String) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -98,7 +99,7 @@ fun SignInScreen(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(14.dp),
                 shape = MaterialTheme.shapes.extraSmall,
-                onClick = { /*TODO*/ }
+                onClick = { onNavigateTo(DashboardScreenDestination.route) }
             ) {
                Text(
                    text = stringResource(R.string.sign_in),

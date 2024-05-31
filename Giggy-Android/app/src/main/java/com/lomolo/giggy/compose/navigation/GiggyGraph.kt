@@ -16,10 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
+import com.lomolo.giggy.compose.screens.DashboardScreen
+import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.HomeScreen
 import com.lomolo.giggy.compose.screens.HomeScreenDestination
 import com.lomolo.giggy.compose.screens.SignInScreen
@@ -74,6 +77,16 @@ fun GiggyNavigationHost(
                         is SettingDeviceDetails.Success -> SignInScreen(
                             deviceCallingCode = deviceDetails.callingCode,
                             deviceFlag = deviceDetails.countryFlag,
+                            onNavigateTo = { route ->
+                                navHostController.navigate(route) {
+                                    popUpTo(navHostController.graph.findStartDestination().id) {
+                                        inclusive = true
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
                         )
                         is SettingDeviceDetails.Loading -> {
                             Column(
@@ -96,6 +109,17 @@ fun GiggyNavigationHost(
                             }
                         }
                     }
+                }
+            }
+        }
+        composable(route = DashboardScreenDestination.route) {
+            Scaffold {
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    DashboardScreen()
                 }
             }
         }

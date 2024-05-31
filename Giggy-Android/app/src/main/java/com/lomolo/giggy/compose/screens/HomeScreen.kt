@@ -32,7 +32,7 @@ object HomeScreenDestination: Navigation {
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onNavigateTo: (String) -> Unit,
+    onNavigateTo: (String) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -82,8 +82,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     GiggyTheme {
-        HomeScreen(
-            onNavigateTo = {}
-        )
+        HomeScreen()
     }
 }

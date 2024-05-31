@@ -19,8 +19,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.PostCard
+import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
+
+object DashboardScreenDestination: Navigation {
+    override val title = null
+    override val route = "dashboard"
+}
 
 data class Post(
     val img: String,
