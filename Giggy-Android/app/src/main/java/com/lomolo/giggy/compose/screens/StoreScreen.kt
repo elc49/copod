@@ -24,8 +24,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
+import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
+
+object StoreScreenDestination: Navigation {
+    override val title = null
+    override val route = "dashboard/store"
+}
 
 @Composable
 fun FarmStoreScreen(

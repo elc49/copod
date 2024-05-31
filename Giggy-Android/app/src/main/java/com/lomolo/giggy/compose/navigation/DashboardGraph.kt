@@ -14,8 +14,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -23,6 +26,10 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
+import com.lomolo.giggy.compose.screens.FarmStoreScreen
+import com.lomolo.giggy.compose.screens.MarketScreen
+import com.lomolo.giggy.compose.screens.MarketScreenDestination
+import com.lomolo.giggy.compose.screens.StoreScreenDestination
 
 object DashboardDestination: Navigation {
     override val title = null
@@ -40,7 +47,18 @@ fun NavGraphBuilder.dashboardGraph(
         composable(route = DashboardScreenDestination.route) {
             Scaffold(
                 bottomBar = {
-                    BottomNavBar()
+                    BottomNavBar(
+                        onNavigateTo = {
+                            navHostController.navigate(it) {
+                                popUpTo(navHostController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
             ) {
                 Surface(
@@ -52,39 +70,111 @@ fun NavGraphBuilder.dashboardGraph(
                 }
             }
         }
+        composable(route = MarketScreenDestination.route) {
+            Scaffold(
+                bottomBar = {
+                    BottomNavBar(
+                        onNavigateTo = {
+                            navHostController.navigate(it) {
+                                popUpTo(navHostController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            ) {
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    MarketScreen()
+                }
+            }
+        }
+        composable(route = StoreScreenDestination.route) {
+            Scaffold(
+                bottomBar = {
+                    BottomNavBar(
+                        onNavigateTo = {
+                            navHostController.navigate(it) {
+                                popUpTo(navHostController.graph.findStartDestination().id) {
+                                    inclusive = true
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
+                }
+            ) {
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    FarmStoreScreen()
+                }
+            }
+        }
     }
+}
+
+sealed class Screen(
+    val name: String,
+    val defaultIcon: Int,
+    val activeIcon: Int,
+    val route: String,
+) {
+    data object Explore: Screen(
+        "Explore",
+       R.drawable.explore_outlined,
+        R.drawable.explore_filled,
+        "dashboard/home",
+    )
+    data object Soko: Screen(
+        "Soko",
+        R.drawable.cart_outlined,
+        R.drawable.cart_filled,
+        "dashboard/market",
+    )
+    data object Store: Screen(
+        "Store",
+        R.drawable.store_outlined,
+        R.drawable.store_filled,
+        "dashboard/store",
+    )
 }
 
 @Composable
 internal fun BottomNavBar(
     modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit = {},
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
-    val navs = listOf("Explore", "Soko", "Store")
-    val navIconOutlined = mapOf(
-        "Explore" to R.drawable.explore_outlined,
-        "Soko" to R.drawable.cart_outlined,
-        "Store" to R.drawable.store_outlined,
-    )
-    val navIconFilled = mapOf(
-        "Explore" to R.drawable.explore_filled,
-        "Soko" to R.drawable.cart_filled,
-        "Store" to R.drawable.store_filled,
-    )
+    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store)
 
     NavigationBar(
         modifier = modifier,
     ) {
-        navs.forEachIndexed { index, item ->
+        navItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index,
-                onClick = { selectedItem = index },
+                onClick = {
+                    selectedItem = index
+                    onNavigateTo(item.route)
+                },
                 icon = {
                     Icon(
-                        painterResource(if (selectedItem == index) navIconFilled[item]!! else navIconOutlined[item]!!),
+                        painterResource(if (selectedItem == index) item.activeIcon else item.defaultIcon),
                         modifier = Modifier
                             .size(32.dp),
-                        contentDescription = item
+                        contentDescription = item.name
                     )
                 }
             )

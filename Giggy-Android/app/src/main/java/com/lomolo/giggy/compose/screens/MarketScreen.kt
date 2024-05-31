@@ -7,7 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
+
+object MarketScreenDestination: Navigation {
+    override val title = null
+    override val route = "dashboard/market"
+}
 
 data class Product(
     val name: String,
