@@ -14,11 +14,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -40,86 +37,32 @@ fun NavGraphBuilder.dashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
 ) {
+    val onNavigateTo = { route: String ->
+        navHostController.navigate(route) {
+            popUpTo(DashboardDestination.route) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
     navigation(
         startDestination = DashboardScreenDestination.route,
         route = DashboardDestination.route,
     ) {
         composable(route = DashboardScreenDestination.route) {
-            Scaffold(
-                bottomBar = {
-                    BottomNavBar(
-                        onNavigateTo = {
-                            navHostController.navigate(it) {
-                                popUpTo(navHostController.graph.findStartDestination().id) {
-                                    inclusive = true
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            ) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    DashboardScreen()
-                }
+            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
+                DashboardScreen()
             }
         }
         composable(route = MarketScreenDestination.route) {
-            Scaffold(
-                bottomBar = {
-                    BottomNavBar(
-                        onNavigateTo = {
-                            navHostController.navigate(it) {
-                                popUpTo(navHostController.graph.findStartDestination().id) {
-                                    inclusive = true
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            ) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    MarketScreen()
-                }
+            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
+                MarketScreen()
             }
         }
         composable(route = StoreScreenDestination.route) {
-            Scaffold(
-                bottomBar = {
-                    BottomNavBar(
-                        onNavigateTo = {
-                            navHostController.navigate(it) {
-                                popUpTo(navHostController.graph.findStartDestination().id) {
-                                    inclusive = true
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-            ) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    FarmStoreScreen()
-                }
+            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
+                FarmStoreScreen()
             }
         }
     }
@@ -178,6 +121,29 @@ internal fun BottomNavBar(
                     )
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun DashboardLayout(
+    modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit,
+    content: @Composable () -> Unit = {},
+) {
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(
+                onNavigateTo = onNavigateTo
+            )
+        }
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            content()
         }
     }
 }
