@@ -8,17 +8,19 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.DashboardScreen
@@ -37,6 +39,37 @@ fun NavGraphBuilder.dashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
 ) {
+
+    navigation(
+        startDestination = DashboardScreenDestination.route,
+        route = DashboardDestination.route,
+    ) {
+        composable(route = DashboardScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                DashboardScreen()
+            }
+        }
+        composable(route = MarketScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                MarketScreen()
+            }
+        }
+        composable(route = StoreScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                FarmStoreScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun DashboardLayout(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    content: @Composable () -> Unit = {},
+) {
+    val navHostBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentDestination = navHostBackStackEntry?.destination
     val onNavigateTo = { route: String ->
         navHostController.navigate(route) {
             popUpTo(DashboardDestination.route) {
@@ -46,24 +79,21 @@ fun NavGraphBuilder.dashboardGraph(
             restoreState = true
         }
     }
-    navigation(
-        startDestination = DashboardScreenDestination.route,
-        route = DashboardDestination.route,
+
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(
+                onNavigateTo = onNavigateTo,
+                currentDestination = currentDestination,
+            )
+        }
     ) {
-        composable(route = DashboardScreenDestination.route) {
-            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
-                DashboardScreen()
-            }
-        }
-        composable(route = MarketScreenDestination.route) {
-            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
-                MarketScreen()
-            }
-        }
-        composable(route = StoreScreenDestination.route) {
-            DashboardLayout(modifier = modifier, onNavigateTo = onNavigateTo) {
-                FarmStoreScreen()
-            }
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            content()
         }
     }
 }
@@ -98,52 +128,36 @@ sealed class Screen(
 internal fun BottomNavBar(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit = {},
+    currentDestination: NavDestination?,
 ) {
-    var selectedItem by remember { mutableIntStateOf(0) }
     val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store)
 
     NavigationBar(
         modifier = modifier,
     ) {
-        navItems.forEachIndexed { index, item ->
+        navItems.forEachIndexed { _, item ->
+            val isNavItemActive = currentDestination?.hierarchy?.any { it.route == item.route } == true
+
             NavigationBarItem(
-                selected = selectedItem == index,
+                selected = isNavItemActive,
                 onClick = {
-                    selectedItem = index
                     onNavigateTo(item.route)
                 },
                 icon = {
                     Icon(
-                        painterResource(if (selectedItem == index) item.activeIcon else item.defaultIcon),
+                        painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
                         modifier = Modifier
                             .size(32.dp),
                         contentDescription = item.name
                     )
+                },
+                label = {
+                    Text(
+                        item.name,
+                        fontWeight = if (isNavItemActive) FontWeight.ExtraBold else FontWeight.Normal,
+                    )
                 }
             )
-        }
-    }
-}
-
-@Composable
-fun DashboardLayout(
-    modifier: Modifier = Modifier,
-    onNavigateTo: (String) -> Unit,
-    content: @Composable () -> Unit = {},
-) {
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(
-                onNavigateTo = onNavigateTo
-            )
-        }
-    ) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            content()
         }
     }
 }
