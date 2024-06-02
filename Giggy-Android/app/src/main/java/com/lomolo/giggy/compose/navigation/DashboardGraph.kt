@@ -3,13 +3,17 @@ package com.lomolo.giggy.compose.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -92,8 +96,20 @@ fun DashboardLayout(
             restoreState = true
         }
     }
+    println(currentDestination?.route)
 
     Scaffold(
+        topBar = {
+                 if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
+                     TopBar(
+                         title = "Farm store",
+                         canNavigateBack = true,
+                         onNavigateUp = {
+                             navHostController.popBackStack()
+                         }
+                     )
+                 }
+        },
         bottomBar = {
             BottomNavBar(
                 onNavigateTo = onNavigateTo,
@@ -167,10 +183,43 @@ internal fun BottomNavBar(
                 label = {
                     Text(
                         item.name,
-                        fontWeight = if (isNavItemActive) FontWeight.ExtraBold else FontWeight.Normal,
+                        fontWeight = if (isNavItemActive)
+                            FontWeight.ExtraBold
+                        else
+                            FontWeight.Normal,
                     )
                 }
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun TopBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    canNavigateBack: Boolean = false,
+    onNavigateUp: () -> Unit,
+) {
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(
+                title
+            )
+        },
+        navigationIcon = {
+            if (canNavigateBack) {
+                OutlinedIconButton(
+                    onClick = { onNavigateUp() }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+    )
 }

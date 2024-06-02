@@ -30,6 +30,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -136,7 +137,7 @@ fun FarmStoreProductScreen(
     )
     val titles = listOf("Product", "Orders", "Payments")
     var state by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     val brush = Brush.linearGradient(listOf(
         MaterialTheme.colorScheme.primary,
