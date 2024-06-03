@@ -36,7 +36,7 @@ class MainViewModel(
                 }
                 settingDeviceDetailsState = SettingDeviceDetails.Success
             } catch(e: IOException) {
-                settingDeviceDetailsState = SettingDeviceDetails.Error(e.message)
+                settingDeviceDetailsState = SettingDeviceDetails.Error(e.localizedMessage)
                 e.printStackTrace()
             }
         }
