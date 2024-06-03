@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -12,6 +13,7 @@ var Configuration *configs
 type configs struct {
 	Server Server
 	Ipinfo Ipinfo
+	Rdbms  Rdbms
 }
 
 func env() { godotenv.Load() }
@@ -22,6 +24,7 @@ func New() {
 	c := configs{}
 	c.Server = serverConfig()
 	c.Ipinfo = ipinfoConfig()
+	c.Rdbms = rdbmsConfig()
 
 	Configuration = &c
 }
@@ -39,6 +42,22 @@ func ipinfoConfig() Ipinfo {
 	var config Ipinfo
 
 	config.ApiKey = strings.TrimSpace(os.Getenv("IPINFO_SERVICE_API_KEY"))
+
+	return config
+}
+
+func rdbmsConfig() Rdbms {
+	var config Rdbms
+
+	config.Driver = strings.TrimSpace(os.Getenv("POSTGRES_DATABASE_DRIVER"))
+	config.Uri = strings.TrimSpace(os.Getenv("POSTGRES_DATABASE_URI"))
+	config.MigrationFile = strings.TrimSpace(os.Getenv("POSTGRES_MIGRATION_FILE"))
+
+	forceMigrate, err := strconv.ParseBool(strings.TrimSpace(os.Getenv("MIGRATE_POSTGRES_DATABASE")))
+	if err != nil {
+		panic(err)
+	}
+	config.Migrate = forceMigrate
 
 	return config
 }

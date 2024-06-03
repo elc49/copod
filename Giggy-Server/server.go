@@ -13,6 +13,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/handlers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -21,6 +22,12 @@ func main() {
 	config.New()
 	logger.New()
 	ip.NewIpinfoClient()
+	postgres.Init(postgres.ConnectOption{
+		Driver:        config.Configuration.Rdbms.Driver,
+		Uri:           config.Configuration.Rdbms.Uri,
+		Migrate:       config.Configuration.Rdbms.Migrate,
+		MigrationFile: config.Configuration.Rdbms.MigrationFile,
+	})
 
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
