@@ -53,7 +53,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object FarmStoreProductScreenDestination: Navigation {
-    override val title = null
+    override val title = R.string.farm_store
     override val route = "dashboard/farm_product"
 }
 

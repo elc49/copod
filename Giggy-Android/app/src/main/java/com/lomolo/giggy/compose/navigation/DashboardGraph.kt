@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
@@ -72,8 +73,36 @@ fun NavGraphBuilder.dashboardGraph(
             }
         }
         composable(route = FarmStoreProductScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                FarmStoreProductScreen()
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = R.string.farm_store)
+                            )
+                        },
+                        navigationIcon = {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    )
+                }
+            ) {
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    FarmStoreProductScreen()
+                }
             }
         }
     }
