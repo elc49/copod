@@ -27,7 +27,7 @@ ENV JWTSECRET=$JWTSECRET
 
 RUN mkdir -p go/src/app
 WORKDIR go/src/app
-COPY . .
+COPY ./Giggy-Server/ .
 RUN go mod download && go mod verify
 RUN CGO_ENABLED=0 GOOS=linux go build -o giggy
 
