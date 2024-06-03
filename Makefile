@@ -5,7 +5,7 @@ tidy:
 graphql:
 	cd Giggy-Server && go run github.com/99designs/gqlgen generate --verbose
 # Sqlc
-sqlc:
+postgres:
 	cd Giggy-Server && sqlc generate
 # Test
 tests:
