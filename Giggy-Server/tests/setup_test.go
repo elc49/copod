@@ -22,8 +22,8 @@ func init() {
 	})
 }
 
-func mobileSigninController() controllers.MobileSigninController {
-	c := controllers.MobileSigninController{}
+func userController() controllers.UserController {
+	c := controllers.UserController{}
 	c.Init(queries)
 	return c
 }

@@ -16,15 +16,6 @@ func (mbs *MobileSigninRepository) Init(queries *db.Queries) {
 	mbs.db = queries
 }
 
-func (mbs *MobileSigninRepository) CountUsers(ctx context.Context) (int, error) {
-	count, err := mbs.db.CountUsers(ctx)
-	if err != nil {
-		return 0, err
-	}
-
-	return int(count), nil
-}
-
 func (mbs *MobileSigninRepository) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
 	newUser, err := mbs.db.CreateUserByPhone(ctx, phone)
 	if err != nil {

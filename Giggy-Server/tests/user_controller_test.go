@@ -6,7 +6,7 @@ import (
 )
 
 func TestUserController(t *testing.T) {
-	userController := mobileSigninController()
+	userController := userController()
 	ctx := context.Background()
 
 	t.Run("count_users", func(t *testing.T) {
