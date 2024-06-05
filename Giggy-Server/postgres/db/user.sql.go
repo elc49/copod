@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const countUsers = `-- name: CountUsers :one
@@ -18,4 +20,59 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const createUserByPhone = `-- name: CreateUserByPhone :one
+INSERT INTO users (
+  phone
+) VALUES (
+  $1
+) RETURNING id, phone, created_at, updated_at, deleted_at
+`
+
+func (q *Queries) CreateUserByPhone(ctx context.Context, phone string) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUserByPhone, phone)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, phone FROM users
+WHERE id = $1 AND deleted_at IS NULL
+`
+
+type GetUserByIDRow struct {
+	ID    uuid.UUID `json:"id"`
+	Phone string    `json:"phone"`
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
+	err := row.Scan(&i.ID, &i.Phone)
+	return i, err
+}
+
+const getUserByPhone = `-- name: GetUserByPhone :one
+SELECT id, phone FROM users
+WHERE phone = $1 AND deleted_at IS NULL
+`
+
+type GetUserByPhoneRow struct {
+	ID    uuid.UUID `json:"id"`
+	Phone string    `json:"phone"`
+}
+
+func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByPhone, phone)
+	var i GetUserByPhoneRow
+	err := row.Scan(&i.ID, &i.Phone)
+	return i, err
 }
