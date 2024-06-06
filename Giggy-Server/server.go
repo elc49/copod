@@ -22,7 +22,7 @@ func main() {
 	config.New()
 	logger.New()
 	ip.NewIpinfoClient()
-	postgres.Init(postgres.ConnectOption{
+	postgres.Init(config.Rdbms{
 		Driver:        config.Configuration.Rdbms.Driver,
 		Uri:           config.Configuration.Rdbms.Uri,
 		Migrate:       config.Configuration.Rdbms.Migrate,

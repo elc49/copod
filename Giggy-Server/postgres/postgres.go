@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -12,14 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ConnectOption struct {
-	Driver        string
-	Uri           string
-	MigrationFile string
-	Migrate       bool
-}
-
-func Init(option ConnectOption) *db.Queries {
+func Init(option config.Rdbms) *db.Queries {
 	dbConn, err := sql.Open(option.Driver, option.Uri)
 	if err != nil {
 		log.WithError(err).Fatalln("postgres: Init()")
