@@ -48,3 +48,28 @@ func (q *Queries) CreateSessionByPhone(ctx context.Context, arg CreateSessionByP
 	)
 	return i, err
 }
+
+const getSessionByUserID = `-- name: GetSessionByUserID :one
+SELECT id, ip, user_id, expires FROM sessions
+WHERE NOW() < expires AND user_id = $1
+LIMIT 1
+`
+
+type GetSessionByUserIDRow struct {
+	ID      uuid.UUID `json:"id"`
+	Ip      string    `json:"ip"`
+	UserID  uuid.UUID `json:"user_id"`
+	Expires time.Time `json:"expires"`
+}
+
+func (q *Queries) GetSessionByUserID(ctx context.Context, userID uuid.UUID) (GetSessionByUserIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getSessionByUserID, userID)
+	var i GetSessionByUserIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Ip,
+		&i.UserID,
+		&i.Expires,
+	)
+	return i, err
+}
