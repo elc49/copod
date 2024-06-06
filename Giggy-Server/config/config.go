@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -14,6 +15,7 @@ type configs struct {
 	Server Server
 	Ipinfo Ipinfo
 	Rdbms  Rdbms
+	Jwt    Jwt
 }
 
 func env() { godotenv.Load() }
@@ -25,6 +27,7 @@ func New() {
 	c.Server = serverConfig()
 	c.Ipinfo = ipinfoConfig()
 	c.Rdbms = rdbmsConfig()
+	c.Jwt = jwtConfig()
 
 	Configuration = &c
 }
@@ -58,6 +61,19 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 	config.Migrate = forceMigrate
+
+	return config
+}
+
+func jwtConfig() Jwt {
+	var config Jwt
+
+	expire, err := time.ParseDuration(strings.TrimSpace(os.Getenv("JWT_EXPIRES")))
+	if err != nil {
+		panic(err)
+	}
+	config.Expires = expire
+	config.Secret = strings.TrimSpace(os.Getenv("JWT_SECRET"))
 
 	return config
 }
