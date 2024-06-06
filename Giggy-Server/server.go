@@ -12,6 +12,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/handlers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/go-chi/chi/v5"
@@ -21,6 +22,10 @@ import (
 func main() {
 	config.New()
 	logger.New()
+	jwt.New(config.Jwt{
+		Secret:  config.Configuration.Jwt.Secret,
+		Expires: config.Configuration.Jwt.Expires,
+	})
 	ip.NewIpinfoClient()
 	postgres.Init(config.Rdbms{
 		Driver:        config.Configuration.Rdbms.Driver,

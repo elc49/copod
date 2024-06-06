@@ -39,7 +39,7 @@ func NewPayload(id string, duration time.Duration) *Payload {
 	}
 }
 
-func NewJwtService(opt config.Jwt) {
+func New(opt config.Jwt) {
 	jwt = jwtService{opt.Secret, opt.Expires}
 }
 
