@@ -31,7 +31,7 @@ type jwtService struct {
 func NewPayload(id string, duration time.Duration) *Payload {
 	return &Payload{
 		jsonwebtoken.RegisteredClaims{
-			Issuer:    "drago-api",
+			Issuer:    "giggy",
 			ExpiresAt: jsonwebtoken.NewNumericDate(time.Now().Add(duration)),
 			IssuedAt:  jsonwebtoken.NewNumericDate(time.Now()),
 			ID:        id,
