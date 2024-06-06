@@ -9,10 +9,14 @@ import (
 )
 
 func TestSigninController(t *testing.T) {
+	ctx := context.Background()
 	var u *model.User
 	signinC := signinController()
-	ctx := context.Background()
 	phone := "254791215745"
+
+	defer func() {
+		queries.ClearTestUsers(ctx)
+	}()
 
 	t.Run("create_user_by_phone", func(t *testing.T) {
 		var err error
