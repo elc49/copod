@@ -7,9 +7,19 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+const clearTestSessions = `-- name: ClearTestSessions :exec
+DELETE FROM sessions
+`
+
+func (q *Queries) ClearTestSessions(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestSessions)
+	return err
+}
 
 const createSessionByPhone = `-- name: CreateSessionByPhone :one
 INSERT INTO sessions (
@@ -20,9 +30,9 @@ INSERT INTO sessions (
 `
 
 type CreateSessionByPhoneParams struct {
-	Ip      string      `json:"ip"`
-	UserID  uuid.UUID   `json:"user_id"`
-	Expires interface{} `json:"expires"`
+	Ip      string    `json:"ip"`
+	UserID  uuid.UUID `json:"user_id"`
+	Expires time.Time `json:"expires"`
 }
 
 func (q *Queries) CreateSessionByPhone(ctx context.Context, arg CreateSessionByPhoneParams) (Session, error) {

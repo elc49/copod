@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearTestUsers = `-- name: ClearTestUsers :exec
+DELETE FROM users
+`
+
+func (q *Queries) ClearTestUsers(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestUsers)
+	return err
+}
+
 const countUsers = `-- name: CountUsers :one
 SELECT COUNT(*) FROM users
 `

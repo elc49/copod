@@ -4,3 +4,6 @@ INSERT INTO sessions (
 ) VALUES (
   $1, $2, $3
 ) RETURNING *;
+
+-- name: ClearTestSessions :exec
+DELETE FROM sessions;
