@@ -8,26 +8,27 @@ import (
 	"github.com/google/uuid"
 )
 
-type MobileSigninRepository struct {
+type SigninRepository struct {
 	db *db.Queries
 }
 
-func (mbs *MobileSigninRepository) Init(queries *db.Queries) {
+func (mbs *SigninRepository) Init(queries *db.Queries) {
 	mbs.db = queries
 }
 
-func (mbs *MobileSigninRepository) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
+func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
 	newUser, err := mbs.db.CreateUserByPhone(ctx, phone)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.User{
-		ID: newUser.ID,
+		ID:    newUser.ID,
+		Phone: newUser.Phone,
 	}, nil
 }
 
-func (mbs *MobileSigninRepository) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
+func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
 	user, err := mbs.db.GetUserByPhone(ctx, phone)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (mbs *MobileSigninRepository) GetUserByPhone(ctx context.Context, phone str
 	}, nil
 }
 
-func (mbs *MobileSigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*model.User, error) {
+func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*model.User, error) {
 	user, err := mbs.db.GetUserByID(ctx, ID)
 	if err != nil {
 		return nil, err

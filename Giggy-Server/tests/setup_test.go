@@ -22,6 +22,12 @@ func init() {
 	})
 }
 
+func signinController() controllers.SigninController {
+	c := controllers.SigninController{}
+	c.Init(queries)
+	return c
+}
+
 func userController() controllers.UserController {
 	c := controllers.UserController{}
 	c.Init(queries)

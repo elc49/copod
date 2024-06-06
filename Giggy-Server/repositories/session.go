@@ -7,15 +7,15 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 )
 
-type MobileSessionRepository struct {
+type SessionRepository struct {
 	db *db.Queries
 }
 
-func (mbs *MobileSessionRepository) Init(queries *db.Queries) {
+func (mbs *SessionRepository) Init(queries *db.Queries) {
 	mbs.db = queries
 }
 
-func (mbs *MobileSessionRepository) CreateSessionByPhone(ctx context.Context, args db.CreateSessionByPhoneParams) (*model.Session, error) {
+func (mbs *SessionRepository) CreateSessionByPhone(ctx context.Context, args db.CreateSessionByPhoneParams) (*model.Session, error) {
 	newSession, err := mbs.db.CreateSessionByPhone(ctx, args)
 	if err != nil {
 		return nil, err

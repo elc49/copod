@@ -9,11 +9,11 @@ import (
 )
 
 type SessionController struct {
-	r *repositories.MobileSessionRepository
+	r *repositories.SessionRepository
 }
 
 func (sc *SessionController) Init(queries *db.Queries) {
-	sc.r = &repositories.MobileSessionRepository{}
+	sc.r = &repositories.SessionRepository{}
 	sc.r.Init(queries)
 }
 
