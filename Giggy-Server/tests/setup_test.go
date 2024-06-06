@@ -1,8 +1,11 @@
 package tests
 
 import (
+	"time"
+
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 )
@@ -19,6 +22,12 @@ func init() {
 		Migrate:       true,
 		MigrationFile: "file://../postgres/migrations",
 	})
+	jwt.New(
+		config.Jwt{
+			Secret:  "raaF5qddWsCz3h1WruzgUtz1MmjgSCQI",
+			Expires: time.Duration(time.Minute),
+		},
+	)
 }
 
 func signinController() controllers.SigninController {
@@ -29,12 +38,6 @@ func signinController() controllers.SigninController {
 
 func userController() controllers.UserController {
 	c := controllers.UserController{}
-	c.Init(queries)
-	return c
-}
-
-func sessionController() controllers.SessionController {
-	c := controllers.SessionController{}
 	c.Init(queries)
 	return c
 }
