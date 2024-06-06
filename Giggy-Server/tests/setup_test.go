@@ -8,6 +8,7 @@ import (
 
 var (
 	queries *db.Queries
+	phone   = "254791215745"
 )
 
 func init() {

@@ -12,7 +12,6 @@ func TestSigninController(t *testing.T) {
 	ctx := context.Background()
 	var u *model.User
 	signinC := signinController()
-	phone := "254791215745"
 
 	defer func() {
 		queries.ClearTestUsers(ctx)
