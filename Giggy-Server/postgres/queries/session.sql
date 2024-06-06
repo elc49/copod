@@ -1,14 +1,9 @@
 -- name: CreateSessionByPhone :one
 INSERT INTO sessions (
-  ip, user_id, expires
+  ip, user_id
 ) VALUES (
-  $1, $2, $3
+  $1, $2
 ) RETURNING *;
-
--- name: GetSessionByUserID :one
-SELECT id, ip, user_id, expires FROM sessions
-WHERE NOW() < expires AND user_id = $1
-LIMIT 1;
 
 -- name: ClearTestSessions :exec
 DELETE FROM sessions;

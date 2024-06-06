@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -30,7 +31,9 @@ func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone string
 
 func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
 	user, err := mbs.db.GetUserByPhone(ctx, phone)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
 
@@ -42,7 +45,9 @@ func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (
 
 func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*model.User, error) {
 	user, err := mbs.db.GetUserByID(ctx, ID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
 
