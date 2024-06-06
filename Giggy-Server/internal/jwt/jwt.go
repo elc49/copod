@@ -13,10 +13,6 @@ var (
 	jwt                  Jwt
 )
 
-type Payload struct {
-	jsonwebtoken.RegisteredClaims
-}
-
 type Jwt interface {
 	Sign(claims jsonwebtoken.Claims) (string, error)
 	Verify(token string) (*jsonwebtoken.Token, error)
@@ -26,17 +22,6 @@ type Jwt interface {
 type jwtService struct {
 	secret  string
 	expires time.Duration
-}
-
-func NewPayload(id string, duration time.Duration) *Payload {
-	return &Payload{
-		jsonwebtoken.RegisteredClaims{
-			Issuer:    "giggy",
-			ExpiresAt: jsonwebtoken.NewNumericDate(time.Now().Add(duration)),
-			IssuedAt:  jsonwebtoken.NewNumericDate(time.Now()),
-			ID:        id,
-		},
-	}
 }
 
 func New(opt config.Jwt) {
