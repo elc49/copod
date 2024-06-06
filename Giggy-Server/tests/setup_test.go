@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -12,7 +13,7 @@ var (
 )
 
 func init() {
-	queries = postgres.Init(postgres.ConnectOption{
+	queries = postgres.Init(config.Rdbms{
 		Uri:           "postgres://postgres:demo1234@localhost:5432/test?sslmode=disable",
 		Driver:        "postgres",
 		Migrate:       true,
