@@ -37,7 +37,9 @@ import com.lomolo.giggy.compose.screens.SignInScreen
 import com.lomolo.giggy.compose.screens.SignInScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.viewmodels.MainViewModel
+import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.SettingDeviceDetails
+import com.lomolo.giggy.viewmodels.Signin
 
 interface Navigation {
     // Title - can be use in top bar
@@ -51,9 +53,12 @@ fun GiggyNavigationHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val initializing = mainViewModel.settingDeviceDetailsState
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
+    val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
+    val signinPhoneValid = sessionViewModel.isPhoneValid(signInDetails)
 
     NavHost(
         navController = navHostController,
@@ -81,7 +86,12 @@ fun GiggyNavigationHost(
                 when(initializing) {
                     is SettingDeviceDetails.Success -> SignInScreen(
                         deviceCallingCode = deviceDetails.callingCode,
+                        onPhoneChange = { sessionViewModel.setPhone(it) },
+                        signinPhoneValid = signinPhoneValid,
+                        signIn = { sessionViewModel.signIn(it) },
+                        phone = signInDetails.phone,
                         deviceFlag = deviceDetails.countryFlag,
+                        signingIn = sessionViewModel.signInUiState,
                         onNavigateTo = { route ->
                             navHostController.navigate(route) {
                                 popUpTo(navHostController.graph.findStartDestination().id) {
