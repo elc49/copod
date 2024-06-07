@@ -9,7 +9,7 @@ postgres:
 	cd Giggy-Server && sqlc generate
 # Test
 tests:
-	cd Giggy-Server && go test -v ./test
+	cd Giggy-Server && go test ./tests
 # Run server
 server:
 	cd Giggy-Server && go run .
