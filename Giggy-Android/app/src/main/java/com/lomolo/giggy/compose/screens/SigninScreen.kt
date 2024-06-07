@@ -32,7 +32,6 @@ import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.DashboardDestination
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.SigninState
 
 object SignInScreenDestination: Navigation {

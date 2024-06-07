@@ -59,10 +59,11 @@ fun GiggyNavigationHost(
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
     val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
     val signinPhoneValid = sessionViewModel.isPhoneValid(signInDetails)
+    val session by sessionViewModel.sessionUiState.collectAsState()
 
     NavHost(
         navController = navHostController,
-        startDestination = HomeScreenDestination.route
+        startDestination = if (session.token.isBlank()) HomeScreenDestination.route else DashboardDestination.route,
     ) {
         composable(route = HomeScreenDestination.route) {
             Surface(
