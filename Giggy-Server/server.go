@@ -47,7 +47,7 @@ func main() {
 	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	r.Handle("/query", srv)
 	r.Handle("/ip", handlers.Ip())
-	r.Handle("/signin/mobile", handlers.MobileSignin(signinController))
+	r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 
 	s := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%s", config.Configuration.Server.Port),
