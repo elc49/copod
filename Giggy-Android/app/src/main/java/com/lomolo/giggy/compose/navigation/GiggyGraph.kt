@@ -13,6 +13,11 @@ import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.Signin
 
+object RootNavigation: Navigation {
+    override val title = null
+    override val route = "root"
+}
+
 interface Navigation {
     // Title - can be use in top bar
     val title: Int?
@@ -36,7 +41,7 @@ fun GiggyNavigationHost(
     NavHost(
         navController = navHostController,
         startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
-        route = "Root",
+        route = RootNavigation.route,
     ) {
         addHomeGraph(
             deviceDetails = deviceDetails,
