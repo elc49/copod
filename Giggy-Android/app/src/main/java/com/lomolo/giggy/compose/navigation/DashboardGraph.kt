@@ -29,6 +29,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
+import com.lomolo.giggy.compose.screens.AccountScreen
+import com.lomolo.giggy.compose.screens.AccountScreenDestination
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
@@ -37,6 +39,7 @@ import com.lomolo.giggy.compose.screens.FarmStoreScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.StoreScreenDestination
+import com.lomolo.giggy.viewmodels.SessionViewModel
 
 object DashboardDestination: Navigation {
     override val title = null
@@ -44,11 +47,11 @@ object DashboardDestination: Navigation {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.dashboardGraph(
+fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    sessionViewModel: SessionViewModel,
 ) {
-
     navigation(
         startDestination = DashboardScreenDestination.route,
         route = DashboardDestination.route,
@@ -105,6 +108,21 @@ fun NavGraphBuilder.dashboardGraph(
                 }
             }
         }
+        composable(route = AccountScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                AccountScreen(
+                    onSignOut = {
+                        sessionViewModel.signOut {
+                            navHostController.navigate("Root") {
+                                popUpTo("Root") {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -125,7 +143,6 @@ fun DashboardLayout(
             restoreState = true
         }
     }
-    println(currentDestination?.route)
 
     Scaffold(
         topBar = {
@@ -180,6 +197,12 @@ sealed class Screen(
         R.drawable.store_filled,
         "dashboard/store",
     )
+    data object Account: Screen(
+        "You",
+        R.drawable.account_outlined,
+        R.drawable.account_filled,
+        "dashboard/account",
+    )
 }
 
 @Composable
@@ -188,7 +211,7 @@ internal fun BottomNavBar(
     onNavigateTo: (String) -> Unit = {},
     currentDestination: NavDestination?,
 ) {
-    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store)
+    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store, Screen.Account)
 
     NavigationBar(
         modifier = modifier,

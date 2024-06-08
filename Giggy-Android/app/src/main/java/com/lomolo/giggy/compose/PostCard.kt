@@ -84,6 +84,7 @@ fun PostCard(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold,
         )
         if (images.isNotEmpty()) {
             Card(
