@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,7 +37,7 @@ import com.lomolo.giggy.viewmodels.SigninState
 
 object SignInScreenDestination: Navigation {
     override val title = null
-    override val route = "signin"
+    override val route = "landing/signin"
 }
 
 @Composable
@@ -71,6 +72,16 @@ fun SignInScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (signingIn !is SigninState.Loading && phone.isNotBlank()) {
+                            signIn {
+                                onNavigateTo(DashboardDestination.route)
+                            }
+                        }
+                    }
+                ),
+                singleLine = true,
                 leadingIcon = {
                     Row(
                         modifier = Modifier.padding(start = 8.dp),

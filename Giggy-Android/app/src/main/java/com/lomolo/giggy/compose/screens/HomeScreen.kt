@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,7 +24,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object HomeScreenDestination: Navigation {
-    override val route = "home"
+    override val route = "landing/home"
     override val title = null
 }
 
@@ -45,6 +44,7 @@ fun HomeScreen(
                 text = stringResource(R.string.we_farm),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.SemiBold,
             )
         }
         Row {
@@ -56,7 +56,9 @@ fun HomeScreen(
                 )
                 Text(
                     text = stringResource(R.string.lear_connect_share),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }

@@ -106,6 +106,13 @@ class SessionViewModel(
         }
     }
 
+
+    fun signOut(cb: () -> Unit = {}) {
+        viewModelScope.launch {
+            sessionRepository.signOut().also { cb() }
+        }
+    }
+
     private fun resetSigninInput() {
         _signinInput.value = Signin()
     }

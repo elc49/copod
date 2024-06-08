@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface ISession {
     fun get(): Flow<List<Session>>
     suspend fun signIn(phone: String)
+    suspend fun signOut()
 }
 
 class SessionRepository(
@@ -21,5 +22,9 @@ class SessionRepository(
             token = res.token,
         )
         sessionDao.create(newS)
+    }
+
+    override suspend fun signOut() {
+        sessionDao.delete()
     }
 }
