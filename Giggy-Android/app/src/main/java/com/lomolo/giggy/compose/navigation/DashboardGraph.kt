@@ -1,12 +1,16 @@
 package com.lomolo.giggy.compose.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedIconButton
@@ -57,8 +61,48 @@ fun NavGraphBuilder.addDashboardGraph(
         route = DashboardDestination.route,
     ) {
         composable(route = DashboardScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                DashboardScreen()
+            val currentDestination = it.destination
+
+            Scaffold(
+                floatingActionButton = {
+                    IconButton(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                CircleShape,
+                            )
+                            .padding(12.dp),
+                        onClick = { /*TODO*/ })
+                    {
+                       Icon(
+                           painterResource(id = R.drawable.tractor),
+                           tint = MaterialTheme.colorScheme.background,
+                           contentDescription = stringResource(R.string.create_post),
+                       )
+                    }
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        onNavigateTo = { route ->
+                            navHostController.navigate(route) {
+                                popUpTo(DashboardDestination.route) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        currentDestination = currentDestination,
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    DashboardScreen()
+                }
             }
         }
         composable(route = MarketScreenDestination.route) {
@@ -113,7 +157,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 AccountScreen(
                     onSignOut = {
                         sessionViewModel.signOut {
-                            navHostController.navigate("Root") {
+                            navHostController.navigate(RootNavigation.route) {
                                 popUpTo(RootNavigation.route) {
                                     inclusive = true
                                 }
@@ -146,15 +190,15 @@ fun DashboardLayout(
 
     Scaffold(
         topBar = {
-                 if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
-                     TopBar(
-                         title = "Farm store",
-                         canNavigateBack = true,
-                         onNavigateUp = {
-                             navHostController.popBackStack()
-                         }
-                     )
-                 }
+            if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
+                TopBar(
+                    title = "Farm store",
+                    canNavigateBack = true,
+                    onNavigateUp = {
+                        navHostController.popBackStack()
+                    }
+                )
+            }
         },
         bottomBar = {
             BottomNavBar(

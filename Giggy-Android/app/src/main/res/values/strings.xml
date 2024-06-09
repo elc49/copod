@@ -19,4 +19,5 @@
     <string name="sign_in">Sign In</string>
     <string name="farm_store">Farm store</string>
     <string name="account">Account</string>
+    <string name="create_post">create post</string>
 </resources>
