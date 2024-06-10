@@ -17,6 +17,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,7 +51,10 @@ import com.lomolo.giggy.compose.screens.FarmStoreScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.StoreScreenDestination
+import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 object DashboardDestination: Navigation {
     override val title = null
@@ -61,6 +66,9 @@ fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
+    postingViewModel: PostingViewModel,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
 ) {
     navigation(
         startDestination = DashboardScreenDestination.route,
@@ -70,6 +78,7 @@ fun NavGraphBuilder.addDashboardGraph(
             val currentDestination = it.destination
 
             Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
                     IconButton(
                         modifier = Modifier
@@ -185,6 +194,7 @@ fun NavGraphBuilder.addDashboardGraph(
                             Text(
                                 stringResource(id = CreatePostScreenDestination.title),
                                 style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         },
                         navigationIcon = {
@@ -206,7 +216,17 @@ fun NavGraphBuilder.addDashboardGraph(
                     modifier = modifier
                         .padding(innerPadding),
                 ) {
-                    CreatePostScreen()
+                    CreatePostScreen(
+                        postingViewModel = postingViewModel,
+                        onCloseDialog = {
+                            navHostController.popBackStack()
+                        },
+                        showToast = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Post created", withDismissAction = true)
+                            }
+                        },
+                    )
                 }
             }
         }

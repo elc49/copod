@@ -5,12 +5,14 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lomolo.giggy.viewmodels.MainViewModel
+import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 
 object GiggyViewModelProvider {
     val Factory = viewModelFactory {
         lateinit var mainViewModel: MainViewModel
         lateinit var sessionViewModel: SessionViewModel
+        lateinit var postingViewModel: PostingViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -20,6 +22,11 @@ object GiggyViewModelProvider {
         initializer {
             sessionViewModel = SessionViewModel(giggyApplication().container.sessionRepository, mainViewModel)
             sessionViewModel
+        }
+
+        initializer {
+            postingViewModel = PostingViewModel()
+            postingViewModel
         }
     }
 }

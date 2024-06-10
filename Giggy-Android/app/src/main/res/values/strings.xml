@@ -21,4 +21,5 @@
     <string name="account">Account</string>
     <string name="create_post">create post</string>
     <string name="what_s_happening_in_your_farm">What\'s happening in your farm</string>
+    <string name="post">Post</string>
 </resources>

@@ -14,6 +14,8 @@ import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,11 +26,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import com.lomolo.giggy.viewmodels.PostingViewModel
 
 object CreatePostScreenDestination: Navigation {
     override val title = R.string.what_s_happening_in_your_farm
@@ -37,20 +41,25 @@ object CreatePostScreenDestination: Navigation {
 
 @Composable
 fun CreatePostScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    postingViewModel: PostingViewModel = viewModel(),
+    onCloseDialog: () -> Unit = {},
+    showToast: () -> Unit = {},
 ) {
+    val post by postingViewModel.postingUiState.collectAsState()
+
     Column(
         modifier = modifier
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = post.text,
+            onValueChange = { postingViewModel.setPostText(it) },
             placeholder = {
                 Text(
                     text = stringResource(R.string.start_writing),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal
                 )
             },
@@ -91,11 +100,17 @@ fun CreatePostScreen(
                 }
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    postingViewModel.savePost {
+                        postingViewModel.discardPosting()
+                        onCloseDialog()
+                        showToast()
+                    }
+                },
                 shape = MaterialTheme.shapes.extraSmall
             ) {
                 Text(
-                    text = "Post",
+                    text = stringResource(R.string.post),
                     fontWeight = FontWeight.ExtraBold
                 )
             }
