@@ -44,8 +44,8 @@ func main() {
 	r.Use(middleware.Timeout(60 * time.Second))
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New()))
 
-	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	r.Handle("/query", srv)
+	r.Handle("/", playground.Handler("GraphQL playground", "/api"))
+	r.Handle("/api", srv)
 	r.Handle("/ip", handlers.Ip())
 	r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 
