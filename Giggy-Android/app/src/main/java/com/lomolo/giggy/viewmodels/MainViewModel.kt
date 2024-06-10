@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.network.IGiggyRestApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,12 +33,21 @@ class MainViewModel(
                         countryFlag = res.countryFlag,
                         currency = res.currency,
                         callingCode = res.callingCode,
+                        ipGps = res.ipGps,
                     )
                 }
                 settingDeviceDetailsState = SettingDeviceDetails.Success
             } catch(e: IOException) {
                 settingDeviceDetailsState = SettingDeviceDetails.Error(e.localizedMessage)
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun setDeviceGps(gps: LatLng) {
+        if (gps.longitude != 0.0 && gps.latitude != 0.0) {
+            _deviceDetails.update {
+                it.copy(deviceGps = gps)
             }
         }
     }
