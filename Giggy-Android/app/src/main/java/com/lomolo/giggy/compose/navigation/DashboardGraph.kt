@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,16 +27,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
+import com.lomolo.giggy.compose.screens.CreatePostScreen
+import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
@@ -72,7 +77,11 @@ fun NavGraphBuilder.addDashboardGraph(
                                 MaterialTheme.colorScheme.primary,
                                 CircleShape,
                             ),
-                        onClick = { /*TODO*/ })
+                        onClick = {
+                            navHostController.navigate(CreatePostScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        })
                     {
                        Icon(
                            Icons.TwoTone.Add,
@@ -88,8 +97,6 @@ fun NavGraphBuilder.addDashboardGraph(
                                 popUpTo(DashboardDestination.route) {
                                     saveState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         currentDestination = currentDestination,
@@ -165,6 +172,42 @@ fun NavGraphBuilder.addDashboardGraph(
                         }
                     }
                 )
+            }
+        }
+        dialog(
+            route = CreatePostScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = CreatePostScreenDestination.title),
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        },
+                        navigationIcon = {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                },
+                            ) {
+                               Icon(
+                                   Icons.TwoTone.Close,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .padding(innerPadding),
+                ) {
+                    CreatePostScreen()
+                }
             }
         }
     }
