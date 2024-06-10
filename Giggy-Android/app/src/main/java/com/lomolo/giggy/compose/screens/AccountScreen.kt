@@ -74,11 +74,12 @@ fun AccountScreen(
                 ) {
                     Text(
                         "Phone number",
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
                     )
                     Text(
                         "+2547929215689",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
             }
@@ -93,9 +94,9 @@ fun AccountScreen(
             ) {
                Text(
                    text = "Sign out",
-                   style = MaterialTheme.typography.titleLarge,
+                   style = MaterialTheme.typography.titleMedium,
                    color = MaterialTheme.colorScheme.error,
-                   fontWeight = FontWeight.Bold,
+                   fontWeight = FontWeight.ExtraBold,
                )
             }
         }

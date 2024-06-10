@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +53,8 @@ fun SignInScreen(
     phone: String = "",
     signingIn: SigninState = SigninState.Success,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -74,6 +77,7 @@ fun SignInScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
+                        keyboardController?.hide()
                         if (signingIn !is SigninState.Loading && phone.isNotBlank()) {
                             signIn {
                                 onNavigateTo(DashboardDestination.route)

@@ -1,16 +1,24 @@
 package com.lomolo.giggy.compose.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,16 +29,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
+import com.lomolo.giggy.compose.screens.CreatePostScreen
+import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
@@ -39,7 +51,10 @@ import com.lomolo.giggy.compose.screens.FarmStoreScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.StoreScreenDestination
+import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 object DashboardDestination: Navigation {
     override val title = null
@@ -51,14 +66,59 @@ fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
+    postingViewModel: PostingViewModel,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
 ) {
     navigation(
         startDestination = DashboardScreenDestination.route,
         route = DashboardDestination.route,
     ) {
         composable(route = DashboardScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                DashboardScreen()
+            val currentDestination = it.destination
+
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = {
+                    IconButton(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                CircleShape,
+                            ),
+                        onClick = {
+                            navHostController.navigate(CreatePostScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        })
+                    {
+                       Icon(
+                           Icons.TwoTone.Add,
+                           tint = MaterialTheme.colorScheme.background,
+                           contentDescription = stringResource(R.string.create_post),
+                       )
+                    }
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        onNavigateTo = { route ->
+                            navHostController.navigate(route) {
+                                popUpTo(DashboardDestination.route) {
+                                    saveState = true
+                                }
+                            }
+                        },
+                        currentDestination = currentDestination,
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    DashboardScreen()
+                }
             }
         }
         composable(route = MarketScreenDestination.route) {
@@ -113,7 +173,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 AccountScreen(
                     onSignOut = {
                         sessionViewModel.signOut {
-                            navHostController.navigate("Root") {
+                            navHostController.navigate(RootNavigation.route) {
                                 popUpTo(RootNavigation.route) {
                                     inclusive = true
                                 }
@@ -121,6 +181,53 @@ fun NavGraphBuilder.addDashboardGraph(
                         }
                     }
                 )
+            }
+        }
+        dialog(
+            route = CreatePostScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = CreatePostScreenDestination.title),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        },
+                        navigationIcon = {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                },
+                            ) {
+                               Icon(
+                                   Icons.TwoTone.Close,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .padding(innerPadding),
+                ) {
+                    CreatePostScreen(
+                        postingViewModel = postingViewModel,
+                        onCloseDialog = {
+                            navHostController.popBackStack()
+                        },
+                        showToast = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Post created", withDismissAction = true)
+                            }
+                        },
+                    )
+                }
             }
         }
     }
@@ -146,15 +253,15 @@ fun DashboardLayout(
 
     Scaffold(
         topBar = {
-                 if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
-                     TopBar(
-                         title = "Farm store",
-                         canNavigateBack = true,
-                         onNavigateUp = {
-                             navHostController.popBackStack()
-                         }
-                     )
-                 }
+            if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
+                TopBar(
+                    title = "Farm store",
+                    canNavigateBack = true,
+                    onNavigateUp = {
+                        navHostController.popBackStack()
+                    }
+                )
+            }
         },
         bottomBar = {
             BottomNavBar(

@@ -45,7 +45,7 @@ fun PostCard(
 ) {
     val context = LocalContext.current
 
-    Column {
+    Column(modifier = modifier) {
         Row (
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -69,22 +69,22 @@ fun PostCard(
                 )
                 Text(
                     text = "029ulskhfl",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.ExtraBold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
             Text(
                 text = "1h ago",
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.ExtraBold,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
             )
         }
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
         )
         if (images.isNotEmpty()) {
             Card(
@@ -137,7 +137,7 @@ fun PostCard(
                                 it,
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.ExtraBold
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                     )

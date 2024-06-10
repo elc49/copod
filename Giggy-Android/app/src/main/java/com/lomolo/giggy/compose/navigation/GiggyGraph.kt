@@ -1,8 +1,11 @@
 package com.lomolo.giggy.compose.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -10,6 +13,7 @@ import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.viewmodels.MainViewModel
+import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.Signin
 
@@ -31,12 +35,15 @@ fun GiggyNavigationHost(
     navHostController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    postingViewModel: PostingViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
     val initializing = mainViewModel.settingDeviceDetailsState
     val signinPhoneValid = sessionViewModel.isPhoneValid(signInDetails)
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
     val session by sessionViewModel.sessionUiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     NavHost(
         navController = navHostController,
@@ -56,6 +63,9 @@ fun GiggyNavigationHost(
             modifier = modifier,
             navHostController = navHostController,
             sessionViewModel = sessionViewModel,
+            postingViewModel = postingViewModel,
+            scope = scope,
+            snackbarHostState = snackbarHostState,
         )
     }
 }
