@@ -43,7 +43,7 @@ func PostUploader() http.Handler {
 			ImageUri string `json:"image_uri"`
 		}{ImageUri: url})
 		if err != nil {
-			log.WithError(err).Error("handlers: json.Marshal response")
+			log.WithError(err).Error("handlers: json.Marshal() response")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
