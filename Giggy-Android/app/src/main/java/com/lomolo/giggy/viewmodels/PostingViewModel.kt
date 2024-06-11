@@ -31,10 +31,11 @@ class PostingViewModel(
     }
 
     fun savePost(cb: () -> Unit = {}) {
-        _postInput.update {
-            it.copy(location = postGps(mainViewModel.deviceDetailsState.value))
-        }
         if (_postInput.value.text.isNotBlank()) {
+            // TODO save
+            _postInput.update {
+                it.copy(location = postGps(mainViewModel.deviceDetailsState.value))
+            }
             cb()
         }
     }
@@ -100,4 +101,5 @@ data class Posting(
     val text: String = "",
     val location: LatLng = LatLng(0.0, 0.0),
     val tags: List<String> = listOf(),
+    val images: List<String> = listOf(),
 )
