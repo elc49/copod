@@ -43,34 +43,61 @@ class PostingViewModel(
         _postInput.value = Posting()
     }
 
-    companion object {
-         val tags = listOf(
-             "livestock",
-             "animal feeds",
-             "poultry",
-             "farm inputs",
-             "disease",
-             "outbreak",
-             "vaccine",
-             "fruits",
-             "trees",
-             "seeds",
-             "grain",
-             "rabbit",
-             "vegetables",
-             "birds",
-             "mushrooms",
-             "nuts",
-             "spices",
-             "herbs",
-             "coconut oil",
-             "butter",
-             "avocado oil",
-        )
+    val tags = listOf(
+        "livestock",
+        "animal feeds",
+        "poultry",
+        "farm inputs",
+        "disease",
+        "outbreak",
+        "vaccine",
+        "fruits",
+        "trees",
+        "seeds",
+        "grain",
+        "rabbit",
+        "vegetables",
+        "birds",
+        "mushrooms",
+        "nuts",
+        "spices",
+        "herbs",
+        "coconut oil",
+        "butter",
+        "avocado oil",
+    )
+
+    private fun addTag(tag: String) {
+        _postInput.update {
+            val existingTags = it.tags.toMutableList()
+            existingTags.add(tag)
+            it.copy(tags = existingTags.toList())
+        }
+    }
+
+    fun addPostTag(tag: String) {
+        if (!tagAlreadySelected(tag)) {
+            addTag(tag)
+        } else if (tagAlreadySelected(tag)) {
+            removePostTag(tag)
+        }
+    }
+
+    fun tagAlreadySelected(tag: String): Boolean {
+        return _postInput.value.tags.contains(tag)
+    }
+
+    private fun removePostTag(tag: String) {
+        _postInput.update {
+            val existTags = it.tags.toMutableList()
+            existTags.remove(tag)
+            it.copy(tags = existTags.toList())
+        }
     }
 }
 
 data class Posting(
     val text: String = "",
     val location: LatLng = LatLng(0.0, 0.0),
+    val tags: List<String> = listOf(),
 )

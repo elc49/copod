@@ -201,6 +201,7 @@ fun NavGraphBuilder.addDashboardGraph(
                             OutlinedIconButton(
                                 onClick = {
                                     navHostController.popBackStack()
+                                    postingViewModel.discardPosting()
                                 },
                             ) {
                                Icon(
