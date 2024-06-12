@@ -16,6 +16,7 @@ type configs struct {
 	Ipinfo Ipinfo
 	Rdbms  Rdbms
 	Jwt    Jwt
+	Gcloud Gcloud
 }
 
 func env() { godotenv.Load() }
@@ -28,6 +29,7 @@ func New() {
 	c.Ipinfo = ipinfoConfig()
 	c.Rdbms = rdbmsConfig()
 	c.Jwt = jwtConfig()
+	c.Gcloud = gcloudConfig()
 
 	Configuration = &c
 }
@@ -74,6 +76,16 @@ func jwtConfig() Jwt {
 	}
 	config.Expires = expire
 	config.Secret = strings.TrimSpace(os.Getenv("JWT_SECRET"))
+
+	return config
+}
+
+func gcloudConfig() Gcloud {
+	var config Gcloud
+
+	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_ADC"))
+	config.BucketObjectBaseUri = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_BASE_OBJECT_URI"))
+	config.StorageBucketName = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
 
 	return config
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/handlers"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/gcloud"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
@@ -28,6 +29,7 @@ func main() {
 		Expires: config.Configuration.Jwt.Expires,
 	})
 	ip.NewIpinfoClient()
+	gcloud.New()
 	queries := postgres.Init(config.Rdbms{
 		Driver:        config.Configuration.Rdbms.Driver,
 		Uri:           config.Configuration.Rdbms.Uri,
@@ -48,6 +50,7 @@ func main() {
 	r.Handle("/api", srv)
 	r.Handle("/ip", handlers.Ip())
 	r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+	r.Handle("/post/uploads", handlers.PostUploader())
 
 	s := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%s", config.Configuration.Server.Port),
