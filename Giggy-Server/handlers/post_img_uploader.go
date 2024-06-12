@@ -35,6 +35,7 @@ func PostUploader() http.Handler {
 
 		url, err := uploader.UploadPostImage(r.Context(), file, fileHeader)
 		if err != nil {
+			log.WithError(err).Error("handlers: uploader.UploadPostImage()")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

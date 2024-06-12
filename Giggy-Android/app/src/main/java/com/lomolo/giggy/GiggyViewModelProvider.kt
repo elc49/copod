@@ -25,7 +25,10 @@ object GiggyViewModelProvider {
         }
 
         initializer {
-            postingViewModel = PostingViewModel(mainViewModel)
+            postingViewModel = PostingViewModel(
+                mainViewModel,
+                giggyApplication().container.giggyRestApiService,
+            )
             postingViewModel
         }
     }
