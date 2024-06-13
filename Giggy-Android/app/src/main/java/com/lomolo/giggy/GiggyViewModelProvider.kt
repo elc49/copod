@@ -28,6 +28,7 @@ object GiggyViewModelProvider {
             postingViewModel = PostingViewModel(
                 mainViewModel,
                 giggyApplication().container.giggyRestApiService,
+                giggyApplication().container.giggyGraphqlApiService,
             )
             postingViewModel
         }

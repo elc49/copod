@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.model.DeviceDetails
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import java.io.InputStream
 class PostingViewModel(
     private val mainViewModel: MainViewModel,
     private val restApi: IGiggyRestApi,
+    private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
     private val _postInput = MutableStateFlow(Posting())
     val postingUiState: StateFlow<Posting> = _postInput.asStateFlow()

@@ -5,6 +5,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.network.okHttpClient
 import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.apollo.interceptors.AuthInterceptor
+import com.lomolo.giggy.network.GiggyGraphqlApi
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.repository.ISession
 import com.lomolo.giggy.repository.SessionRepository
@@ -20,6 +22,7 @@ interface IApplicationContainer{
     val giggyRestApiService: IGiggyRestApi
     val sessionRepository: ISession
     val apolloClient: ApolloClient
+    val giggyGraphqlApiService: IGiggyGraphqlApi
 }
 
 class ApplicationContainer(
@@ -63,4 +66,8 @@ class ApplicationContainer(
             )
         )
         .build()
+
+    override val giggyGraphqlApiService: IGiggyGraphqlApi by lazy {
+        GiggyGraphqlApi(apolloClient)
+    }
 }
