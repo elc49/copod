@@ -9,22 +9,20 @@ import (
 	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 )
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
-	/*
-		args := db.CreatePostParams{
-			Text:  input.Text,
-			Image: input.Image,
-			Tags:  input.Tags,
-			// TODO user_id from auth ctx
-			Location: input.Location,
-		}
-	*/
-	fmt.Println(input)
-	return nil, nil
-	//return r.postController.CreatePost(ctx, args)
+	userId := stringToUUID(ctx.Value("userId").(string))
+	args := db.CreatePostParams{
+		Text:     input.Text,
+		Image:    input.Image,
+		Tags:     input.Tags,
+		UserID:   userId,
+		Location: fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
+	}
+	return r.postController.CreatePost(ctx, args)
 }
 
 // User is the resolver for the user field.

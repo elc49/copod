@@ -16,6 +16,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	giggyMiddleware "github.com/elc49/giggy-monorepo/Giggy-Server/middleware"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -50,7 +51,7 @@ func main() {
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	r.Route("/api", func(r chi.Router) {
-		r.With().Handle("/graphql", srv)
+		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
 		r.Handle("/ip", handlers.Ip())
 		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 		r.Handle("/post/uploads", handlers.PostUploader())

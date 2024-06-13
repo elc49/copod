@@ -43,7 +43,8 @@ class PostingViewModel(
     }
 
     // use ip gps if we don't have device gps permissions
-    private fun postGps(deviceDetails: DeviceDetails): LatLng {
+    private fun postGps(): LatLng {
+        val deviceDetails = mainViewModel.deviceDetailsState.value
         if (deviceDetails.deviceGps.latitude == 0.0 && deviceDetails.deviceGps.longitude == 0.0) {
             // use ip gps
             val gps = deviceDetails.ipGps.split(",")
@@ -57,7 +58,7 @@ class PostingViewModel(
             submittingPostState = SubmittingPost.Loading
             // TODO save
             _postInput.update {
-                it.copy(location = postGps(mainViewModel.deviceDetailsState.value))
+                it.copy(location = postGps())
             }
             viewModelScope.launch {
                 try {

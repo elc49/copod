@@ -15,6 +15,13 @@ func (r PostRepository) Init(queries *db.Queries) {
 	r.queries = queries
 }
 
-func (r PostRepository) CreatePost(ctx context.Context, ars db.CreatePostParams) (*model.Post, error) {
-	return nil, nil
+func (r PostRepository) CreatePost(ctx context.Context, args db.CreatePostParams) (*model.Post, error) {
+	newPost, err := r.queries.CreatePost(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Post{
+		ID: newPost.ID,
+	}, nil
 }
