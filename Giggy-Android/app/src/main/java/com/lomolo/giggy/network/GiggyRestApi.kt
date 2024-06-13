@@ -13,12 +13,12 @@ import retrofit2.http.Part
 
 interface IGiggyRestApi {
     @Headers("Content-Type: application/json")
-    @GET("/ip")
+    @GET("/api/ip")
     suspend fun ip(): DeviceDetails
     @Headers("Content-Type: application/json")
-    @POST("/mobile/signin")
+    @POST("/api/mobile/signin")
     suspend fun signIn(@Body phone: String): SigninResponse
     @Multipart
-    @POST("/post/uploads")
+    @POST("/api/post/uploads")
     suspend fun postUploader(@Part body: MultipartBody.Part): PostUpload
 }

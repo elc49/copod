@@ -50,10 +50,12 @@ func main() {
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(postController)))
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
-	r.With(giggyMiddleware.Auth).Handle("/api/graphql", srv)
-	r.Handle("/ip", handlers.Ip())
-	r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
-	r.Handle("/post/uploads", handlers.PostUploader())
+	r.Route("/api", func(r chi.Router) {
+		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
+		r.Handle("/ip", handlers.Ip())
+		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+		r.Handle("/post/uploads", handlers.PostUploader())
+	})
 
 	s := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%s", config.Configuration.Server.Port),
