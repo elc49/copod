@@ -56,26 +56,6 @@ class ApplicationContainer(
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
         .httpServerUrl("${BuildConfig.BASE_API_HOST}/api/graphql")
-        /*
-        .webSocketServerUrl("${wss}/subscription")
-        .wsProtocol(
-            SubscriptionWsProtocol.Factory(
-                connectionPayload = {
-                    mapOf(
-                        "type" to "connection_init",
-                        "payload" to mapOf(
-                            "headers" to mapOf(
-                                "Authorization" to "Bearer ")
-                            )
-                        )
-                }
-            )
-        )
-        .webSocketReopenWhen { _, attempt ->
-            delay(attempt * 1000)
-            true
-        }
-         */
         .addHttpInterceptor(
             AuthInterceptor(
                 Store.getStore(context).sessionDao(),
