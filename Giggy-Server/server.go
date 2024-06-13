@@ -38,13 +38,15 @@ func main() {
 	})
 	signinController := controllers.SigninController{}
 	signinController.Init(queries)
+	postController := controllers.PostController{}
+	postController.Init(queries)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New()))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(postController)))
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/api"))
 	r.Handle("/api", srv)

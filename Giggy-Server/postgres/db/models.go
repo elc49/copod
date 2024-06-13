@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type Post struct {
+	ID        uuid.UUID   `json:"id"`
+	Text      string      `json:"text"`
+	Image     string      `json:"image"`
+	Tags      []string    `json:"tags"`
+	Location  interface{} `json:"location"`
+	UserID    uuid.UUID   `json:"user_id"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
+}
+
 type User struct {
 	ID        uuid.UUID    `json:"id"`
 	Phone     string       `json:"phone"`

@@ -8,12 +8,14 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
+	"github.com/google/uuid"
 )
 
 func MobileSignin(signinController controllers.SigninController) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var res struct {
-			Token string `json:"token"`
+			UserID uuid.UUID `json:"userId"`
+			Token  string    `json:"token"`
 		}
 		jwtService := jwt.GetJwtService()
 		var phone string
@@ -45,6 +47,7 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 			return
 		}
 		res.Token = jwt
+		res.UserID = user.ID
 
 		result, err := json.Marshal(res)
 		if err != nil {

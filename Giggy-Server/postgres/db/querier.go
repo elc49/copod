@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	ClearTestUsers(ctx context.Context) error
 	CountUsers(ctx context.Context) (int64, error)
+	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUserByPhone(ctx context.Context, phone string) (User, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)

@@ -46,7 +46,7 @@ class PostingViewModel(
     }
 
     fun savePost(cb: () -> Unit = {}) {
-        if (_postInput.value.text.isNotBlank()) {
+        if (_postInput.value.text.isNotBlank() && postImageUploadState is PostImageUploadState.Success) {
             // TODO save
             _postInput.update {
                 it.copy(location = postGps(mainViewModel.deviceDetailsState.value))
