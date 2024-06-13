@@ -51,6 +51,7 @@ import com.lomolo.giggy.compose.screens.FarmStoreScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.StoreScreenDestination
+import com.lomolo.giggy.model.Session
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -69,6 +70,7 @@ fun NavGraphBuilder.addDashboardGraph(
     postingViewModel: PostingViewModel,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
+    session: Session,
 ) {
     navigation(
         startDestination = DashboardScreenDestination.route,
@@ -227,6 +229,7 @@ fun NavGraphBuilder.addDashboardGraph(
                                 snackbarHostState.showSnackbar("Post created", withDismissAction = true)
                             }
                         },
+                        session = session,
                     )
                 }
             }

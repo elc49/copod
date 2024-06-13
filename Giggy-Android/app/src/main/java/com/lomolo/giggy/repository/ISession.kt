@@ -19,6 +19,7 @@ class SessionRepository(
     override suspend fun signIn(phone: String) {
         val res = giggyRestApi.signIn(phone)
         val newS = Session(
+            id = res.userId,
             token = res.token,
         )
         sessionDao.create(newS)

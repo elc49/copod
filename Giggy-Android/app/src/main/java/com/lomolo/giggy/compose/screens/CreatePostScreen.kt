@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,9 +42,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
+import com.lomolo.giggy.model.Session
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.viewmodels.PostImageUploadState
 import com.lomolo.giggy.viewmodels.PostingViewModel
+import com.lomolo.giggy.viewmodels.SubmittingPost
 import kotlinx.coroutines.launch
 
 object CreatePostScreenDestination: Navigation {
@@ -57,6 +60,7 @@ fun CreatePostScreen(
     postingViewModel: PostingViewModel = viewModel(),
     onCloseDialog: () -> Unit = {},
     showToast: () -> Unit = {},
+    session: Session = Session(),
 ) {
     val context = LocalContext.current
     val post by postingViewModel.postingUiState.collectAsState()
@@ -186,7 +190,7 @@ fun CreatePostScreen(
             }
             Button(
                 onClick = {
-                    postingViewModel.savePost {
+                    postingViewModel.savePost(session.id) {
                         postingViewModel.discardPosting()
                         onCloseDialog()
                         showToast()
@@ -194,10 +198,18 @@ fun CreatePostScreen(
                 },
                 shape = MaterialTheme.shapes.extraSmall
             ) {
-                Text(
-                    text = stringResource(R.string.post),
-                    fontWeight = FontWeight.ExtraBold
-                )
+                when(postingViewModel.submittingPostState) {
+                    SubmittingPost.Success -> Text(
+                        text = stringResource(R.string.post),
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    SubmittingPost.Loading -> {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
             }
         }
     }

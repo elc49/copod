@@ -66,6 +66,7 @@ fun GiggyNavigationHost(
             postingViewModel = postingViewModel,
             scope = scope,
             snackbarHostState = snackbarHostState,
+            session = session,
         )
     }
 }

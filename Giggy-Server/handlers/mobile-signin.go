@@ -14,7 +14,7 @@ import (
 func MobileSignin(signinController controllers.SigninController) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var res struct {
-			UserID uuid.UUID `json:"userId"`
+			UserID uuid.UUID `json:"user_id"`
 			Token  string    `json:"token"`
 		}
 		jwtService := jwt.GetJwtService()
