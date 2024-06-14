@@ -3,18 +3,17 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 )
 
 func MobileSignin(signinController controllers.SigninController) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var res struct {
-			Token string `json:"token"`
-		}
+		var res model.Signin
+		log := logger.GetLogger()
 		jwtService := jwt.GetJwtService()
 		var phone string
 		var user *model.User
@@ -39,15 +38,17 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 			return
 		}
 
-		jwt, err := jwtService.Sign(jwt.NewPayload(user.ID.String(), time.Hour))
+		jwt, err := jwtService.Sign(jwt.NewPayload(user.ID.String(), jwtService.GetExpiry()))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		res.Token = jwt
+		res.UserID = user.ID
 
 		result, err := json.Marshal(res)
 		if err != nil {
+			log.WithError(err).Error("handlers: json.Marshal() signin response")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

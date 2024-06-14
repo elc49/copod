@@ -5,9 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.model.DeviceDetails
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
+import com.lomolo.giggy.type.GpsInput
+import com.lomolo.giggy.type.NewPostInput
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +26,14 @@ import java.io.InputStream
 class PostingViewModel(
     private val mainViewModel: MainViewModel,
     private val restApi: IGiggyRestApi,
+    private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
     private val _postInput = MutableStateFlow(Posting())
     val postingUiState: StateFlow<Posting> = _postInput.asStateFlow()
 
     var postImageUploadState: PostImageUploadState by mutableStateOf(PostImageUploadState.Success)
+        private set
+    var submittingPostState: SubmittingPost by mutableStateOf(SubmittingPost.Success)
         private set
 
     fun setPostText(text: String) {
@@ -36,7 +43,8 @@ class PostingViewModel(
     }
 
     // use ip gps if we don't have device gps permissions
-    private fun postGps(deviceDetails: DeviceDetails): LatLng {
+    private fun postGps(): LatLng {
+        val deviceDetails = mainViewModel.deviceDetailsState.value
         if (deviceDetails.deviceGps.latitude == 0.0 && deviceDetails.deviceGps.longitude == 0.0) {
             // use ip gps
             val gps = deviceDetails.ipGps.split(",")
@@ -45,13 +53,32 @@ class PostingViewModel(
         return deviceDetails.deviceGps
     }
 
-    fun savePost(cb: () -> Unit = {}) {
-        if (_postInput.value.text.isNotBlank()) {
+    fun savePost(userId: String, cb: () -> Unit = {}) {
+        if (_postInput.value.text.isNotBlank() && postImageUploadState is PostImageUploadState.Success) {
+            submittingPostState = SubmittingPost.Loading
             // TODO save
             _postInput.update {
-                it.copy(location = postGps(mainViewModel.deviceDetailsState.value))
+                it.copy(location = postGps())
             }
-            cb()
+            viewModelScope.launch {
+                try {
+                    giggyGraphqlApi.createPost(
+                        NewPostInput(
+                            _postInput.value.text,
+                            _postInput.value.image,
+                            _postInput.value.tags,
+                            userId,
+                            GpsInput(_postInput.value.location.latitude, _postInput.value.location.longitude),
+                        )
+                    ).dataOrThrow()
+                    submittingPostState = SubmittingPost.Success.also {
+                        cb()
+                    }
+                } catch(e: ApolloException) {
+                    e.printStackTrace()
+                    submittingPostState = SubmittingPost.Error(e.localizedMessage)
+                }
+            }
         }
     }
 
@@ -145,4 +172,10 @@ interface PostImageUploadState {
     data object Loading: PostImageUploadState
     data class Error(val msg: String?): PostImageUploadState
     data object Success: PostImageUploadState
+}
+
+interface SubmittingPost {
+    data object Loading: SubmittingPost
+    data class Error(val msg: String?): SubmittingPost
+    data object Success: SubmittingPost
 }

@@ -135,7 +135,8 @@ fun SignInScreen(
                        fontWeight = FontWeight.Bold
                    )
                    SigninState.Loading -> CircularProgressIndicator(
-                       color = MaterialTheme.colorScheme.onPrimary
+                       color = MaterialTheme.colorScheme.onPrimary,
+                       modifier = Modifier.size(20.dp),
                    )
                }
             }

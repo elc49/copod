@@ -7,14 +7,52 @@ package graph
 import (
 	"context"
 	"fmt"
+
+	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 )
 
-// Hello is the resolver for the hello field.
-func (r *queryResolver) Hello(ctx context.Context) (string, error) {
-	panic(fmt.Errorf("not implemented: Hello - hello"))
+// CreatePost is the resolver for the createPost field.
+func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
+	userId := StringToUUID(ctx.Value("userId").(string))
+	args := db.CreatePostParams{
+		Text:     input.Text,
+		Image:    input.Image,
+		Tags:     input.Tags,
+		UserID:   userId,
+		Location: fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
+	}
+	return r.postController.CreatePost(ctx, args)
 }
+
+// User is the resolver for the user field.
+func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
+	return nil, nil
+}
+
+// Timeline is the resolver for the timeline field.
+func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
+	return make([]*model.Post, 0), nil
+}
+
+// Posts is the resolver for the posts field.
+func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
+	return make([]*model.Post, 0), nil
+}
+
+// Mutation returns MutationResolver implementation.
+func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
+// Post returns PostResolver implementation.
+func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// User returns UserResolver implementation.
+func (r *Resolver) User() UserResolver { return &userResolver{r} }
+
+type mutationResolver struct{ *Resolver }
+type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }

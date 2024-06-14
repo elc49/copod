@@ -2,6 +2,48 @@
 #
 # https://gqlgen.com/getting-started/
 
+scalar Time
+scalar UUID
+
+# Post
+type Post {
+  id: UUID!
+  text: String!
+  image: String!
+  tags: [String!]!
+  userId: UUID!
+  user: User!
+  created_at: Time!
+  updated_at: Time!
+}
+
+# User
+type User {
+  id: UUID!
+  phone: String!
+  posts: [Post!]!
+  created_at: Time!
+  updated_at: Time!
+  deleted_at: Time
+}
+
 type Query {
-  hello: String!
+  timeline: [Post!]!
+}
+
+input GpsInput {
+  lat: Float!
+  lng: Float!
+}
+
+input NewPostInput {
+  text: String!
+  image: String!
+  tags: [String!]!
+  userId: UUID!
+  location: GpsInput!
+}
+
+type Mutation {
+  createPost(input: NewPostInput!): Post!
 }

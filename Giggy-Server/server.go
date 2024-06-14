@@ -16,6 +16,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	giggyMiddleware "github.com/elc49/giggy-monorepo/Giggy-Server/middleware"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -38,19 +39,26 @@ func main() {
 	})
 	signinController := controllers.SigninController{}
 	signinController.Init(queries)
+	postController := controllers.PostController{}
+	postController.Init(queries)
+	userController := controllers.UserController{}
+	userController.Init(queries)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New()))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(postController)))
 
-	r.Handle("/", playground.Handler("GraphQL playground", "/api"))
-	r.Handle("/api", srv)
-	r.Handle("/ip", handlers.Ip())
-	r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
-	r.Handle("/post/uploads", handlers.PostUploader())
+	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
+	r.Route("/api", func(r chi.Router) {
+		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
+		r.Handle("/ip", handlers.Ip())
+		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+		r.Handle("/post/uploads", handlers.PostUploader())
+		r.Handle("/refresh/token", handlers.RefreshToken(userController))
+	})
 
 	s := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%s", config.Configuration.Server.Port),

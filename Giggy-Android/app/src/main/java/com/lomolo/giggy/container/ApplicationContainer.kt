@@ -1,7 +1,12 @@
 package com.lomolo.giggy.container
 
 import android.content.Context
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.network.okHttpClient
 import com.lomolo.giggy.BuildConfig
+import com.lomolo.giggy.apollo.interceptors.AuthInterceptor
+import com.lomolo.giggy.network.GiggyGraphqlApi
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.repository.ISession
 import com.lomolo.giggy.repository.SessionRepository
@@ -16,6 +21,8 @@ import java.util.concurrent.TimeUnit
 interface IApplicationContainer{
     val giggyRestApiService: IGiggyRestApi
     val sessionRepository: ISession
+    val apolloClient: ApolloClient
+    val giggyGraphqlApiService: IGiggyGraphqlApi
 }
 
 class ApplicationContainer(
@@ -47,5 +54,20 @@ class ApplicationContainer(
             Store.getStore(context).sessionDao(),
             giggyRestApiService,
         )
+    }
+
+    override val apolloClient = ApolloClient.Builder()
+        .okHttpClient(okhttpClient)
+        .httpServerUrl("${BuildConfig.BASE_API_HOST}/api/graphql")
+        .addHttpInterceptor(
+            AuthInterceptor(
+                Store.getStore(context).sessionDao(),
+                sessionRepository
+            )
+        )
+        .build()
+
+    override val giggyGraphqlApiService: IGiggyGraphqlApi by lazy {
+        GiggyGraphqlApi(apolloClient)
     }
 }
