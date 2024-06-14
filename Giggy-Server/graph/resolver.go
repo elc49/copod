@@ -26,7 +26,7 @@ func New(postController controllers.PostController) Config {
 	return c
 }
 
-func stringToUUID(id string) uuid.UUID {
+func StringToUUID(id string) uuid.UUID {
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		log.WithError(err).Error("resolver: stringToUUID()")

@@ -41,6 +41,8 @@ func main() {
 	signinController.Init(queries)
 	postController := controllers.PostController{}
 	postController.Init(queries)
+	userController := controllers.UserController{}
+	userController.Init(queries)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
@@ -55,6 +57,7 @@ func main() {
 		r.Handle("/ip", handlers.Ip())
 		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 		r.Handle("/post/uploads", handlers.PostUploader())
+		r.Handle("/refresh/token", handlers.RefreshToken(userController))
 	})
 
 	s := &http.Server{

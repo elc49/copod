@@ -20,7 +20,7 @@ class AuthInterceptor(
         request: HttpRequest,
         chain: HttpInterceptorChain
     ): HttpResponse {
-        val session = mutex.withLock {
+        var session = mutex.withLock {
             sessionDao
                 .get()
                 .firstOrNull()
@@ -30,12 +30,11 @@ class AuthInterceptor(
             request.newBuilder().addHeader("Authorization", "Bearer ${session!!.first().token}").build()
         )
 
-        /*
         return if (response.statusCode == 401) {
             session = mutex.withLock {
                 sessionRepository.refreshSession(session!!.first())
                 sessionDao
-                    .getSession()
+                    .get()
                     .firstOrNull()
             }
 
@@ -45,7 +44,5 @@ class AuthInterceptor(
         } else {
             return response
         }
-         */
-        return response
     }
 }

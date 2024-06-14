@@ -6,6 +6,7 @@ import com.lomolo.giggy.model.SigninResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -21,4 +22,6 @@ interface IGiggyRestApi {
     @Multipart
     @POST("/api/post/uploads")
     suspend fun postUploader(@Part body: MultipartBody.Part): PostUpload
+    @POST("/api/refresh/token")
+    suspend fun refreshSession(@HeaderMap headers: Map<String, String>): SigninResponse
 }

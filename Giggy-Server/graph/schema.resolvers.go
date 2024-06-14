@@ -14,7 +14,7 @@ import (
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
-	userId := stringToUUID(ctx.Value("userId").(string))
+	userId := StringToUUID(ctx.Value("userId").(string))
 	args := db.CreatePostParams{
 		Text:     input.Text,
 		Image:    input.Image,
