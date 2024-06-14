@@ -23,9 +23,12 @@ type Post struct {
 }
 
 type User struct {
-	ID        uuid.UUID    `json:"id"`
-	Phone     string       `json:"phone"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID               uuid.UUID      `json:"id"`
+	Phone            string         `json:"phone"`
+	Username         sql.NullString `json:"username"`
+	HasPostingRights bool           `json:"has_posting_rights"`
+	HasStoreRights   bool           `json:"has_store_rights"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+	DeletedAt        sql.NullTime   `json:"deleted_at"`
 }
