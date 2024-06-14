@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/google/uuid"
 )
@@ -18,7 +19,11 @@ func (mbs *SigninRepository) Init(queries *db.Queries) {
 }
 
 func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
-	newUser, err := mbs.db.CreateUserByPhone(ctx, phone)
+	args := db.CreateUserByPhoneParams{
+		Phone:    phone,
+		Username: sql.NullString{String: util.RandomStringByLength(5), Valid: true},
+	}
+	newUser, err := mbs.db.CreateUserByPhone(ctx, args)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -33,18 +34,26 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 
 const createUserByPhone = `-- name: CreateUserByPhone :one
 INSERT INTO users (
-  phone
+  phone, username
 ) VALUES (
-  $1
-) RETURNING id, phone, created_at, updated_at, deleted_at
+  $1, $2
+) RETURNING id, phone, username, has_posting_rights, has_store_rights, created_at, updated_at, deleted_at
 `
 
-func (q *Queries) CreateUserByPhone(ctx context.Context, phone string) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUserByPhone, phone)
+type CreateUserByPhoneParams struct {
+	Phone    string         `json:"phone"`
+	Username sql.NullString `json:"username"`
+}
+
+func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUserByPhone, arg.Phone, arg.Username)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
+		&i.Username,
+		&i.HasPostingRights,
+		&i.HasStoreRights,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
