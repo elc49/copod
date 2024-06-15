@@ -24,4 +24,7 @@ interface IGiggyRestApi {
     suspend fun postUploader(@Part body: MultipartBody.Part): PostUpload
     @POST("/api/refresh/token")
     suspend fun refreshSession(@HeaderMap headers: Map<String, String>): SigninResponse
+    @Multipart
+    @POST("/api/store/uploads")
+    suspend fun storeImageUploader(@Part body: MultipartBody.Part): PostUpload
 }

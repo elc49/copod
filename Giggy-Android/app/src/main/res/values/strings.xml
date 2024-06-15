@@ -26,4 +26,8 @@
     <string name="location_required">Location required</string>
     <string name="approve">Approve</string>
     <string name="content_info">content info</string>
+    <string name="create">Create</string>
+    <string name="store_headline">Sell you farm harvests, update inventory and products, and fulfill orders.</string>
+    <string name="create_farm_store">Create farm store</string>
+    <string name="name">Name</string>
 </resources>

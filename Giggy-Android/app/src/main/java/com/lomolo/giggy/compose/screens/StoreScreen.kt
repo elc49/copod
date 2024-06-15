@@ -103,7 +103,7 @@ internal fun Farms(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FarmStoreScreenPreview() {
     GiggyTheme {
