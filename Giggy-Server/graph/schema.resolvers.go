@@ -35,6 +35,11 @@ func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
 	return make([]*model.Post, 0), nil
 }
 
+// GetStoresBelongingToUser is the resolver for the getStoresBelongingToUser field.
+func (r *queryResolver) GetStoresBelongingToUser(ctx context.Context) ([]*model.Store, error) {
+	return make([]*model.Store, 0), nil
+}
+
 // Posts is the resolver for the posts field.
 func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
 	return make([]*model.Post, 0), nil

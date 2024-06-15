@@ -27,8 +27,20 @@ type User {
   deleted_at: Time
 }
 
+# Store
+type Store {
+  id: UUID!
+  name: String!
+  thumbnail: String!
+  userId: UUID!
+  created_at: Time!
+  updated_at: Time!
+  deleted_at: Time
+}
+
 type Query {
   timeline: [Post!]!
+  getStoresBelongingToUser: [Store!]!
 }
 
 input GpsInput {
