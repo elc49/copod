@@ -39,8 +39,6 @@ func main() {
 	})
 	signinController := controllers.SigninController{}
 	signinController.Init(queries)
-	postController := controllers.PostController{}
-	postController.Init(queries)
 	userController := controllers.UserController{}
 	userController.Init(queries)
 
@@ -49,7 +47,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(postController)))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(queries)))
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	r.Route("/api", func(r chi.Router) {

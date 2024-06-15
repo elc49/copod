@@ -24,6 +24,11 @@ type NewPostInput struct {
 	Location *GpsInput `json:"location"`
 }
 
+type NewStoreInput struct {
+	Name      string `json:"name"`
+	Thumbnail string `json:"thumbnail"`
+}
+
 type Post struct {
 	ID        uuid.UUID `json:"id"`
 	Text      string    `json:"text"`

@@ -40,19 +40,36 @@ func (q *Queries) CreateStore(ctx context.Context, arg CreateStoreParams) (Store
 	return i, err
 }
 
-const getStoresBelongingToUser = `-- name: GetStoresBelongingToUser :one
-SELECT name, thumbnail FROM stores
+const getStoresBelongingToUser = `-- name: GetStoresBelongingToUser :many
+SELECT id, name, thumbnail FROM stores
 WHERE user_id = $1 AND deleted_at IS NULL
 `
 
 type GetStoresBelongingToUserRow struct {
-	Name      string `json:"name"`
-	Thumbnail string `json:"thumbnail"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Thumbnail string    `json:"thumbnail"`
 }
 
-func (q *Queries) GetStoresBelongingToUser(ctx context.Context, userID uuid.UUID) (GetStoresBelongingToUserRow, error) {
-	row := q.db.QueryRowContext(ctx, getStoresBelongingToUser, userID)
-	var i GetStoresBelongingToUserRow
-	err := row.Scan(&i.Name, &i.Thumbnail)
-	return i, err
+func (q *Queries) GetStoresBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetStoresBelongingToUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStoresBelongingToUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetStoresBelongingToUserRow{}
+	for rows.Next() {
+		var i GetStoresBelongingToUserRow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Thumbnail); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
