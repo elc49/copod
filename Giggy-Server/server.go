@@ -56,9 +56,9 @@ func main() {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
 		r.Handle("/ip", handlers.Ip())
 		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
-		r.Handle("/post/uploads", handlers.PostUploader())
+		r.Handle("/post/uploads", handlers.ImageUploader())
 		r.Handle("/refresh/token", handlers.RefreshToken(userController))
-		r.Handle("/store/uploads", handlers.PostUploader())
+		r.Handle("/store/uploads", handlers.ImageUploader())
 	})
 
 	s := &http.Server{
