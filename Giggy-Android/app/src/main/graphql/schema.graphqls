@@ -6,6 +6,8 @@ input GpsInput {
 
 type Mutation {
   createPost(input: NewPostInput!): Post!
+
+  createStore(input: NewStoreInput!): Store!
 }
 
 input NewPostInput {
@@ -18,6 +20,12 @@ input NewPostInput {
   userId: UUID!
 
   location: GpsInput!
+}
+
+input NewStoreInput {
+  name: String!
+
+  thumbnail: String!
 }
 
 type Post {
@@ -40,6 +48,24 @@ type Post {
 
 type Query {
   timeline: [Post!]!
+
+  getStoresBelongingToUser: [Store!]!
+}
+
+type Store {
+  id: UUID!
+
+  name: String!
+
+  thumbnail: String!
+
+  userId: UUID!
+
+  created_at: Time!
+
+  updated_at: Time!
+
+  deleted_at: Time
 }
 
 scalar Time
@@ -50,8 +76,6 @@ type User {
   id: UUID!
 
   phone: String!
-
-  posts: [Post!]!
 
   created_at: Time!
 
