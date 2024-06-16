@@ -38,7 +38,7 @@ object GiggyViewModelProvider {
         initializer {
             storeViewModel = StoreViewModel(
                 giggyApplication().container.giggyRestApiService,
-                giggyApplication().container.giggyGraphqlApiService,
+                giggyApplication().container.storeRepository,
             )
             storeViewModel
         }

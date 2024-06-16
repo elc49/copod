@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lomolo.giggy.network.IGiggyGraphqlApi
+import com.lomolo.giggy.GetStoresBelongingToUserQuery
 import com.lomolo.giggy.network.IGiggyRestApi
+import com.lomolo.giggy.repository.IStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +21,15 @@ import java.io.InputStream
 
 class StoreViewModel(
     private val giggyRestApi: IGiggyRestApi,
-    private val giggyGraphqlApi: IGiggyGraphqlApi,
+    private val storeRepository: IStore,
 ): ViewModel() {
     private val _storeInput = MutableStateFlow(Store())
     val storeUiState: StateFlow<Store> = _storeInput.asStateFlow()
 
     var storeImageUploadState: StoreImageUploadState by mutableStateOf(StoreImageUploadState.Success)
+        private set
+
+    var getStoresBelongingToUserState: GetStoresBelongingToUserState by mutableStateOf(GetStoresBelongingToUserState.Success(null))
         private set
 
     fun setName(name: String) {
@@ -64,6 +68,17 @@ class StoreViewModel(
             cb()
         }
     }
+
+    fun getStoresBelongingToUser() = viewModelScope.launch {
+        getStoresBelongingToUserState = GetStoresBelongingToUserState.Loading
+        getStoresBelongingToUserState = try {
+            val res = storeRepository.getStoresBelongingToUser().dataOrThrow()
+            GetStoresBelongingToUserState.Success(res.getStoresBelongingToUser)
+        } catch(e: IOException) {
+            e.printStackTrace()
+            GetStoresBelongingToUserState.Error(e.localizedMessage)
+        }
+    }
 }
 
 data class Store(
@@ -75,4 +90,10 @@ interface StoreImageUploadState {
     data object Loading: StoreImageUploadState
     data object Success: StoreImageUploadState
     data class Error(val msg: String?): StoreImageUploadState
+}
+
+interface GetStoresBelongingToUserState {
+    data object Loading: GetStoresBelongingToUserState
+    data class Error(val msg: String?): GetStoresBelongingToUserState
+    data class Success(val success: List<GetStoresBelongingToUserQuery.GetStoresBelongingToUser>?): GetStoresBelongingToUserState
 }
