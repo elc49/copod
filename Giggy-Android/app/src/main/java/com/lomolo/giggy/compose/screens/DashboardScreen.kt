@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,25 +43,26 @@ val testPost = Post(
 fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Content()
-    }
+    Content(
+        modifier = modifier,
+    )
 }
 
 @Composable
 internal fun Content(
     modifier: Modifier = Modifier
 ) {
-    PostCard(
-        text = testPost.post,
-        images = listOf(
-            testPost.img
-        )
-    )
+    LazyColumn {
+        item {
+            PostCard(
+                modifier = modifier,
+                text = testPost.post,
+                images = listOf(
+                    testPost.img
+                )
+            )
+        }
+    }
 }
 
 @Composable

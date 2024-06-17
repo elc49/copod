@@ -47,7 +47,7 @@ fun PostCard(
 
     Column(modifier = modifier) {
         Row (
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){
@@ -81,11 +81,16 @@ fun PostCard(
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Normal,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Normal,
+            )
+        }
         if (images.isNotEmpty()) {
             Card(
                 modifier = Modifier
@@ -94,7 +99,8 @@ fun PostCard(
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                )
+                ),
+                shape = MaterialTheme.shapes.extraSmall,
             ) {
                 Box(
                     Modifier
@@ -109,8 +115,7 @@ fun PostCard(
                             placeholder = painterResource(id = R.drawable.loading_img),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .fillMaxSize()
-                                .clip(MaterialTheme.shapes.extraSmall),
+                                .fillMaxSize(),
                             contentDescription = null
                         )
                     }
@@ -118,7 +123,10 @@ fun PostCard(
                 }
             }
         }
-        Box {
+        Box(
+            modifier = Modifier
+                .padding(start=8.dp, end=8.dp)
+        ) {
             // TODO trim extra lengthy tags
             FlowRow {
                 testPost.tags.map {
@@ -145,6 +153,8 @@ fun PostCard(
             }
         }
         Row(
+            modifier = Modifier
+                .padding(start=8.dp, end=8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

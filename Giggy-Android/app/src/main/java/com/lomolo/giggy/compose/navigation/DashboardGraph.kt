@@ -54,6 +54,7 @@ import com.lomolo.giggy.compose.screens.StoreScreenDestination
 import com.lomolo.giggy.model.Session
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
+import com.lomolo.giggy.viewmodels.StoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -68,10 +69,21 @@ fun NavGraphBuilder.addDashboardGraph(
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
     postingViewModel: PostingViewModel,
+    storeViewModel: StoreViewModel,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
 ) {
+    val onNavigateTo = { route: String ->
+        navHostController.navigate(route) {
+            popUpTo(DashboardDestination.route) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     navigation(
         startDestination = DashboardScreenDestination.route,
         route = DashboardDestination.route,
@@ -129,12 +141,50 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = StoreScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                FarmStoreScreen(
-                    onNavigateTo = {
-                        navHostController.navigate(it)
-                    }
-                )
+           val currentDestination = it.destination
+
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(R.string.your_stores),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        actions = {
+                            OutlinedIconButton(onClick = { /*TODO*/ }) {
+                               Icon(
+                                   Icons.TwoTone.Add,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        currentDestination = currentDestination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    FarmStoreScreen(
+                        onNavigateTo = {
+                            navHostController.navigate(it)
+                        },
+                        getStores = {
+                            storeViewModel.getStoresBelongingToUser()
+                        },
+                        getStoresState = storeViewModel.getStoresBelongingToUserState,
+                    )
+                }
             }
         }
         composable(route = FarmStoreProductScreenDestination.route) {
