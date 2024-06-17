@@ -22,7 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
+import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
+
+object CreateFarmStoreScreenDestination: Navigation {
+    override val title = R.string.create_farm
+    override val route = "dashboard/create_store"
+}
 
 @Composable
 fun CreateFarmStoreScreen(

@@ -41,6 +41,8 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
+import com.lomolo.giggy.compose.screens.CreateFarmStoreScreen
+import com.lomolo.giggy.compose.screens.CreateFarmStoreScreenDestination
 import com.lomolo.giggy.compose.screens.CreatePostScreen
 import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
 import com.lomolo.giggy.compose.screens.DashboardScreen
@@ -61,6 +63,156 @@ import kotlinx.coroutines.launch
 object DashboardDestination: Navigation {
     override val title = null
     override val route = "dashboard"
+}
+
+@Composable
+fun DashboardLayout(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    content: @Composable () -> Unit = {},
+) {
+    val navHostBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentDestination = navHostBackStackEntry?.destination
+    val onNavigateTo = { route: String ->
+        navHostController.navigate(route) {
+            popUpTo(DashboardDestination.route) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
+                TopBar(
+                    title = "Farm store",
+                    canNavigateBack = true,
+                    onNavigateUp = {
+                        navHostController.popBackStack()
+                    }
+                )
+            }
+        },
+        bottomBar = {
+            BottomNavBar(
+                onNavigateTo = onNavigateTo,
+                currentDestination = currentDestination,
+            )
+        }
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            content()
+        }
+    }
+}
+
+sealed class Screen(
+    val name: String,
+    val defaultIcon: Int,
+    val activeIcon: Int,
+    val route: String,
+) {
+    data object Explore: Screen(
+        "Explore",
+        R.drawable.explore_outlined,
+        R.drawable.explore_filled,
+        "dashboard/home",
+    )
+    data object Soko: Screen(
+        "Soko",
+        R.drawable.cart_outlined,
+        R.drawable.cart_filled,
+        "dashboard/market",
+    )
+    data object Store: Screen(
+        "Store",
+        R.drawable.store_outlined,
+        R.drawable.store_filled,
+        "dashboard/store",
+    )
+    data object Account: Screen(
+        "You",
+        R.drawable.account_outlined,
+        R.drawable.account_filled,
+        "dashboard/account",
+    )
+}
+
+@Composable
+internal fun BottomNavBar(
+    modifier: Modifier = Modifier,
+    onNavigateTo: (String) -> Unit = {},
+    currentDestination: NavDestination?,
+) {
+    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store, Screen.Account)
+
+    NavigationBar(
+        modifier = modifier,
+    ) {
+        navItems.forEachIndexed { _, item ->
+            val isNavItemActive = currentDestination?.hierarchy?.any { it.route == item.route } == true
+
+            NavigationBarItem(
+                selected = isNavItemActive,
+                onClick = {
+                    onNavigateTo(item.route)
+                },
+                icon = {
+                    Icon(
+                        painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
+                        modifier = Modifier
+                            .size(32.dp),
+                        contentDescription = item.name
+                    )
+                },
+                label = {
+                    Text(
+                        item.name,
+                        fontWeight = if (isNavItemActive)
+                            FontWeight.ExtraBold
+                        else
+                            FontWeight.Normal,
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun TopBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    canNavigateBack: Boolean = false,
+    onNavigateUp: () -> Unit,
+) {
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(
+                title
+            )
+        },
+        navigationIcon = {
+            if (canNavigateBack) {
+                OutlinedIconButton(
+                    onClick = { onNavigateUp() }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,7 +306,9 @@ fun NavGraphBuilder.addDashboardGraph(
                             )
                         },
                         actions = {
-                            OutlinedIconButton(onClick = { /*TODO*/ }) {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
                                Icon(
                                    Icons.TwoTone.Add,
                                    contentDescription = null
@@ -284,155 +438,20 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun DashboardLayout(
-    modifier: Modifier = Modifier,
-    navHostController: NavHostController,
-    content: @Composable () -> Unit = {},
-) {
-    val navHostBackStackEntry by navHostController.currentBackStackEntryAsState()
-    val currentDestination = navHostBackStackEntry?.destination
-    val onNavigateTo = { route: String ->
-        navHostController.navigate(route) {
-            popUpTo(DashboardDestination.route) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
-                TopBar(
-                    title = "Farm store",
-                    canNavigateBack = true,
-                    onNavigateUp = {
-                        navHostController.popBackStack()
-                    }
-                )
-            }
-        },
-        bottomBar = {
-            BottomNavBar(
-                onNavigateTo = onNavigateTo,
-                currentDestination = currentDestination,
-            )
-        }
-    ) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it)
+        dialog(
+            route = CreateFarmStoreScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            content()
-        }
-    }
-}
-
-sealed class Screen(
-    val name: String,
-    val defaultIcon: Int,
-    val activeIcon: Int,
-    val route: String,
-) {
-    data object Explore: Screen(
-        "Explore",
-       R.drawable.explore_outlined,
-        R.drawable.explore_filled,
-        "dashboard/home",
-    )
-    data object Soko: Screen(
-        "Soko",
-        R.drawable.cart_outlined,
-        R.drawable.cart_filled,
-        "dashboard/market",
-    )
-    data object Store: Screen(
-        "Store",
-        R.drawable.store_outlined,
-        R.drawable.store_filled,
-        "dashboard/store",
-    )
-    data object Account: Screen(
-        "You",
-        R.drawable.account_outlined,
-        R.drawable.account_filled,
-        "dashboard/account",
-    )
-}
-
-@Composable
-internal fun BottomNavBar(
-    modifier: Modifier = Modifier,
-    onNavigateTo: (String) -> Unit = {},
-    currentDestination: NavDestination?,
-) {
-    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store, Screen.Account)
-
-    NavigationBar(
-        modifier = modifier,
-    ) {
-        navItems.forEachIndexed { _, item ->
-            val isNavItemActive = currentDestination?.hierarchy?.any { it.route == item.route } == true
-
-            NavigationBarItem(
-                selected = isNavItemActive,
-                onClick = {
-                    onNavigateTo(item.route)
-                },
-                icon = {
-                    Icon(
-                        painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
-                        modifier = Modifier
-                            .size(32.dp),
-                        contentDescription = item.name
-                    )
-                },
-                label = {
-                    Text(
-                        item.name,
-                        fontWeight = if (isNavItemActive)
-                            FontWeight.ExtraBold
-                        else
-                            FontWeight.Normal,
-                    )
-                }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun TopBar(
-    modifier: Modifier = Modifier,
-    title: String,
-    canNavigateBack: Boolean = false,
-    onNavigateUp: () -> Unit,
-) {
-    TopAppBar(
-        modifier = modifier,
-        title = {
-            Text(
-                title
-            )
-        },
-        navigationIcon = {
-            if (canNavigateBack) {
-                OutlinedIconButton(
-                    onClick = { onNavigateUp() }
+            Scaffold {innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = null
-                    )
+                    CreateFarmStoreScreen()
                 }
             }
         }
-    )
+    }
 }
+

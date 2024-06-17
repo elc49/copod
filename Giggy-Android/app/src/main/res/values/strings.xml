@@ -31,4 +31,5 @@
     <string name="create_farm_store">Create farm store</string>
     <string name="name">Name</string>
     <string name="your_stores">Your stores</string>
+    <string name="create_farm">Create farm</string>
 </resources>
