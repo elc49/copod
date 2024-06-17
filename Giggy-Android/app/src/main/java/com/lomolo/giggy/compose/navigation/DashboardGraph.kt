@@ -330,8 +330,8 @@ fun NavGraphBuilder.addDashboardGraph(
                         .padding(innerPadding)
                 ) {
                     FarmStoreScreen(
-                        onNavigateTo = {
-                            navHostController.navigate(it)
+                        onNavigateTo = {route ->
+                            navHostController.navigate(route)
                         },
                         getStores = {
                             storeViewModel.getStoresBelongingToUser()
