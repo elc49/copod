@@ -9,6 +9,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/option"
 )
@@ -19,6 +20,7 @@ var (
 
 type Gcloud interface {
 	UploadPostImage(ctx context.Context, file multipart.File, fileHeader *multipart.FileHeader) (string, error)
+	ReadFromRemote(ctx context.Context, body io.Reader) (string, error)
 }
 
 type gcloudClient struct {
@@ -61,4 +63,19 @@ func (gC gcloudClient) UploadPostImage(ctx context.Context, file multipart.File,
 	}
 
 	return fmt.Sprintf("%s/%s/%s", gC.baseBucketObjectUri, gC.storageBucket, fileHeader.Filename), nil
+}
+
+func (gC gcloudClient) ReadFromRemote(ctx context.Context, body io.Reader) (string, error) {
+	fileName := fmt.Sprintf("avatar_%s.svg", util.RandomStringByLength(5))
+	storageW := gC.storage.Bucket(gC.storageBucket).Object(fileName).NewWriter(ctx)
+
+	if _, err := io.Copy(storageW, body); err != nil {
+		return "", err
+	}
+
+	if err := storageW.Close(); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s/%s/%s", gC.baseBucketObjectUri, gC.storageBucket, fileName), nil
 }

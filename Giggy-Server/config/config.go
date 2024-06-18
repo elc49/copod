@@ -12,11 +12,12 @@ import (
 var Configuration *configs
 
 type configs struct {
-	Server Server
-	Ipinfo Ipinfo
-	Rdbms  Rdbms
-	Jwt    Jwt
-	Gcloud Gcloud
+	Server       Server
+	Ipinfo       Ipinfo
+	Rdbms        Rdbms
+	Jwt          Jwt
+	Gcloud       Gcloud
+	RemoteAvatar string
 }
 
 func env() { godotenv.Load() }
@@ -30,6 +31,7 @@ func New() {
 	c.Rdbms = rdbmsConfig()
 	c.Jwt = jwtConfig()
 	c.Gcloud = gcloudConfig()
+	c.RemoteAvatar = remoteAvatarConfig()
 
 	Configuration = &c
 }
@@ -88,4 +90,12 @@ func gcloudConfig() Gcloud {
 	config.StorageBucketName = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
 
 	return config
+}
+
+func remoteAvatarConfig() string {
+	var url string
+
+	url = strings.TrimSpace(os.Getenv("BASE_REMOTE_AVATAR_URL"))
+
+	return url
 }

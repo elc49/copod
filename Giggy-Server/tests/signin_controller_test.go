@@ -12,6 +12,7 @@ func TestSigninController(t *testing.T) {
 	ctx := context.Background()
 	var u *model.User
 	signinC := signinController()
+	avatar := "https://avatar.jpg"
 
 	defer func() {
 		queries.ClearTestUsers(ctx)
@@ -19,7 +20,7 @@ func TestSigninController(t *testing.T) {
 
 	t.Run("create_user_by_phone", func(t *testing.T) {
 		var err error
-		u, err = signinC.CreateUserByPhone(ctx, phone)
+		u, err = signinC.CreateUserByPhone(ctx, phone, avatar)
 
 		assert.Nil(t, err)
 		assert.Equal(t, u.Phone, phone, "phones should be equal")
