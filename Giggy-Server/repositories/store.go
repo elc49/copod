@@ -36,7 +36,9 @@ func (r *StoreRepository) GetStoresBelongingToUser(ctx context.Context, id uuid.
 
 	for _, item := range s {
 		store := &model.Store{
-			ID: item.ID,
+			ID:        item.ID,
+			Name:      item.Name,
+			Thumbnail: item.Thumbnail,
 		}
 		stores = append(stores, store)
 	}
