@@ -66,7 +66,7 @@ func (s *Server) MountHandlers() {
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Timeout(60 * time.Minute))
 
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db)))
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)

@@ -22,7 +22,11 @@ object GiggyViewModelProvider {
         }
 
         initializer {
-            sessionViewModel = SessionViewModel(giggyApplication().container.sessionRepository, mainViewModel)
+            sessionViewModel = SessionViewModel(
+                giggyApplication().container.sessionRepository,
+                mainViewModel,
+                giggyApplication().container.giggyGraphqlApiService,
+            )
             sessionViewModel
         }
 

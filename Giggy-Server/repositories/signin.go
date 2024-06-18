@@ -58,6 +58,8 @@ func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*mo
 	}
 
 	return &model.User{
-		ID: user.ID,
+		ID:     user.ID,
+		Phone:  user.Phone,
+		Avatar: user.Avatar,
 	}, nil
 }

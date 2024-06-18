@@ -64,19 +64,20 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, phone FROM users
+SELECT id, phone, avatar FROM users
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	ID    uuid.UUID `json:"id"`
-	Phone string    `json:"phone"`
+	ID     uuid.UUID `json:"id"`
+	Phone  string    `json:"phone"`
+	Avatar string    `json:"avatar"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i GetUserByIDRow
-	err := row.Scan(&i.ID, &i.Phone)
+	err := row.Scan(&i.ID, &i.Phone, &i.Avatar)
 	return i, err
 }
 

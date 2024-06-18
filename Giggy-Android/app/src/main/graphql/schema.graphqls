@@ -50,6 +50,8 @@ type Query {
   timeline: [Post!]!
 
   getStoresBelongingToUser: [Store!]!
+
+  getUser: User!
 }
 
 type Store {
@@ -76,6 +78,10 @@ type User {
   id: UUID!
 
   phone: String!
+
+  avatar: String!
+
+  username: String!
 
   created_at: Time!
 
