@@ -1,7 +1,7 @@
 package com.lomolo.giggy.network
 
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.model.PostUpload
+import com.lomolo.giggy.model.ImgUpload
 import com.lomolo.giggy.model.SigninResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -20,11 +20,8 @@ interface IGiggyRestApi {
     @POST("/api/mobile/signin")
     suspend fun signIn(@Body phone: String): SigninResponse
     @Multipart
-    @POST("/api/post/uploads")
-    suspend fun postImageUploader(@Part body: MultipartBody.Part): PostUpload
+    @POST("/api/img/upload")
+    suspend fun imageUpload(@Part body: MultipartBody.Part): ImgUpload
     @POST("/api/refresh/token")
     suspend fun refreshSession(@HeaderMap headers: Map<String, String>): SigninResponse
-    @Multipart
-    @POST("/api/store/uploads")
-    suspend fun storeImageUploader(@Part body: MultipartBody.Part): PostUpload
 }

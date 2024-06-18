@@ -147,7 +147,7 @@ class PostingViewModel(
         )
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val res = restApi.postImageUploader(filePart)
+                val res = restApi.imageUpload(filePart)
                 _postInput.update {
                     it.copy(image = res.imageUri)
                 }

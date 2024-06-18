@@ -61,8 +61,7 @@ func main() {
 			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 			r.Handle("/refresh/token", handlers.RefreshToken(userController))
 		})
-		r.Handle("/post/uploads", handlers.ImageUploader())
-		r.Handle("/store/uploads", handlers.ImageUploader())
+		r.Handle("/img/upload", handlers.ImageUploader())
 	})
 
 	s := &http.Server{

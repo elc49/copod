@@ -296,6 +296,7 @@ fun NavGraphBuilder.addDashboardGraph(
            val currentDestination = it.destination
 
             Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState)},
                 topBar = {
                     TopAppBar(
                         title = {
@@ -404,7 +405,7 @@ fun NavGraphBuilder.addDashboardGraph(
                             )
                         },
                         navigationIcon = {
-                            OutlinedIconButton(
+                            IconButton(
                                 onClick = {
                                     navHostController.popBackStack()
                                     postingViewModel.discardPosting()
@@ -448,7 +449,8 @@ fun NavGraphBuilder.addDashboardGraph(
                         title = {
                             Text(
                                 stringResource(id = CreateFarmStoreScreenDestination.title),
-                                style = MaterialTheme.typography.displaySmall,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         },
                         navigationIcon = {
@@ -471,7 +473,18 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    CreateFarmStoreScreen()
+                    CreateFarmStoreScreen(
+                        onCreateStore = {
+                            storeViewModel.saveStore {
+                                navHostController.popBackStack()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Store created.", withDismissAction = true)
+                                }
+                                storeViewModel.discardStoreInput()
+                            }
+                        },
+                        storeViewModel = storeViewModel,
+                    )
                 }
             }
         }

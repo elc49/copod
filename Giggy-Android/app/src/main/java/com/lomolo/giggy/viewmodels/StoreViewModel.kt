@@ -32,19 +32,18 @@ class StoreViewModel(
     var getStoresBelongingToUserState: GetStoresBelongingToUserState by mutableStateOf(GetStoresBelongingToUserState.Success(null))
         private set
 
+    var createStoreState: CreateStoreState by mutableStateOf(CreateStoreState.Success)
+        private set
+
     fun setName(name: String) {
         _storeInput.update {
             it.copy(name = name)
         }
     }
 
-    fun setImage(image: String) {
-        _storeInput.update {
-            it.copy(image = image)
-        }
-    }
-
     fun uploadImage(stream: InputStream) {
+        _storeInput.update { it.copy(image = "") }
+        storeImageUploadState = StoreImageUploadState.Loading
         val request = stream.readBytes().toRequestBody()
         val file = MultipartBody.Part.createFormData(
             "file",
@@ -52,20 +51,33 @@ class StoreViewModel(
             request,
         )
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val res = giggyRestApi.storeImageUploader(file)
+            storeImageUploadState = try {
+                val res = giggyRestApi.imageUpload(file)
                 _storeInput.update {
                     it.copy(image = res.imageUri)
                 }
+                StoreImageUploadState.Success
             } catch(e: IOException) {
                 e.printStackTrace()
+                StoreImageUploadState.Error(e.localizedMessage)
             }
         }
     }
 
     fun saveStore(cb: () -> Unit = {}) {
         if (_storeInput.value.name.isNotBlank() && _storeInput.value.image.isNotBlank()) {
-            cb()
+            createStoreState = CreateStoreState.Loading
+            viewModelScope.launch {
+                createStoreState = try {
+                    storeRepository.createStore(_storeInput.value)
+                    CreateStoreState.Success.also {
+                        cb()
+                    }
+                } catch(e: IOException) {
+                    e.printStackTrace()
+                    CreateStoreState.Error(e.localizedMessage)
+                }
+            }
         }
     }
 
@@ -78,6 +90,10 @@ class StoreViewModel(
             e.printStackTrace()
             GetStoresBelongingToUserState.Error(e.localizedMessage)
         }
+    }
+
+    fun discardStoreInput() {
+        _storeInput.value = Store()
     }
 }
 
@@ -96,4 +112,10 @@ interface GetStoresBelongingToUserState {
     data object Loading: GetStoresBelongingToUserState
     data class Error(val msg: String?): GetStoresBelongingToUserState
     data class Success(val success: List<GetStoresBelongingToUserQuery.GetStoresBelongingToUser>?): GetStoresBelongingToUserState
+}
+
+interface CreateStoreState {
+    data object Loading: CreateStoreState
+    data object Success: CreateStoreState
+    data class Error(val msg: String?): CreateStoreState
 }

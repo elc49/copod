@@ -29,6 +29,7 @@
     <string name="create">Create</string>
     <string name="store_headline">Sell you farm harvests, update inventory and products, and fulfill orders.</string>
     <string name="create_farm_store">Create farm store</string>
-    <string name="name">Name</string>
+    <string name="store_name">Store name</string>
     <string name="your_stores">Your stores</string>
+    <string name="add_store_image">Add store image</string>
 </resources>
