@@ -54,6 +54,7 @@ import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.StoreScreenDestination
 import com.lomolo.giggy.model.Session
+import com.lomolo.giggy.viewmodels.GetStoresBelongingToUserState
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.StoreViewModel
@@ -293,7 +294,8 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = StoreScreenDestination.route) {
-           val currentDestination = it.destination
+            val currentDestination = it.destination
+            val stores = storeViewModel.getStoresBelongingToUserState
 
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState)},
@@ -307,13 +309,15 @@ fun NavGraphBuilder.addDashboardGraph(
                             )
                         },
                         actions = {
-                            OutlinedIconButton(
-                                onClick = {
-                                    navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
-                               Icon(
-                                   Icons.TwoTone.Add,
-                                   contentDescription = null
-                               )
+                            if (stores is GetStoresBelongingToUserState.Success && stores.success != null && stores.success.isEmpty()) {
+                                OutlinedIconButton(
+                                    onClick = {
+                                        navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
+                                    Icon(
+                                        Icons.TwoTone.Add,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
                     )
