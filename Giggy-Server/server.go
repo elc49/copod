@@ -45,7 +45,6 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(middleware.CleanPath)
-	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
@@ -55,10 +54,14 @@ func main() {
 	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	r.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
-		r.Handle("/ip", handlers.Ip())
-		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.AllowContentType("application/json"))
+
+			r.Handle("/ip", handlers.Ip())
+			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+			r.Handle("/refresh/token", handlers.RefreshToken(userController))
+		})
 		r.Handle("/post/uploads", handlers.ImageUploader())
-		r.Handle("/refresh/token", handlers.RefreshToken(userController))
 		r.Handle("/store/uploads", handlers.ImageUploader())
 	})
 
