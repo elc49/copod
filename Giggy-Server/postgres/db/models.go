@@ -22,6 +22,16 @@ type Post struct {
 	UpdatedAt time.Time   `json:"updated_at"`
 }
 
+type Store struct {
+	ID        uuid.UUID    `json:"id"`
+	Name      string       `json:"name"`
+	Thumbnail string       `json:"thumbnail"`
+	UserID    uuid.UUID    `json:"user_id"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+
 type User struct {
 	ID               uuid.UUID      `json:"id"`
 	Phone            string         `json:"phone"`

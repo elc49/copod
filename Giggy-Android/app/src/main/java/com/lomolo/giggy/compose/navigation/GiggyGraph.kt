@@ -16,6 +16,7 @@ import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.Signin
+import com.lomolo.giggy.viewmodels.StoreViewModel
 
 object RootNavigation: Navigation {
     override val title = null
@@ -36,6 +37,7 @@ fun GiggyNavigationHost(
     mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     postingViewModel: PostingViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    storeViewModel: StoreViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
     val initializing = mainViewModel.settingDeviceDetailsState
@@ -64,6 +66,7 @@ fun GiggyNavigationHost(
             navHostController = navHostController,
             sessionViewModel = sessionViewModel,
             postingViewModel = postingViewModel,
+            storeViewModel = storeViewModel,
             scope = scope,
             snackbarHostState = snackbarHostState,
             session = session,

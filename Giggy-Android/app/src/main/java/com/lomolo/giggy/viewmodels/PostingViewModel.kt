@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
-import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.type.GpsInput
@@ -148,7 +147,7 @@ class PostingViewModel(
         )
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val res = restApi.postUploader(filePart)
+                val res = restApi.imageUpload(filePart)
                 _postInput.update {
                     it.copy(image = res.imageUri)
                 }

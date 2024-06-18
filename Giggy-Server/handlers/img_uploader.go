@@ -15,7 +15,7 @@ var (
 	maxSize          = int64(6000000)
 )
 
-func PostUploader() http.Handler {
+func ImageUploader() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uploader := gcloud.GetGcloudService()
 		log := logger.GetLogger()
@@ -35,7 +35,7 @@ func PostUploader() http.Handler {
 
 		url, err := uploader.UploadPostImage(r.Context(), file, fileHeader)
 		if err != nil {
-			log.WithError(err).Error("handlers: uploader.UploadPostImage()")
+			log.WithError(err).Error("handlers: uploader.ImageUploader()")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

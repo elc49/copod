@@ -39,25 +39,29 @@ func main() {
 	})
 	signinController := controllers.SigninController{}
 	signinController.Init(queries)
-	postController := controllers.PostController{}
-	postController.Init(queries)
 	userController := controllers.UserController{}
 	userController.Init(queries)
 
 	r := chi.NewRouter()
+	r.Use(middleware.Heartbeat("/ping"))
+	r.Use(middleware.CleanPath)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(postController)))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(queries)))
 
 	r.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	r.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", srv)
-		r.Handle("/ip", handlers.Ip())
-		r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
-		r.Handle("/post/uploads", handlers.PostUploader())
-		r.Handle("/refresh/token", handlers.RefreshToken(userController))
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.AllowContentType("application/json"))
+
+			r.Handle("/ip", handlers.Ip())
+			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
+			r.Handle("/refresh/token", handlers.RefreshToken(userController))
+		})
+		r.Handle("/img/upload", handlers.ImageUploader())
 	})
 
 	s := &http.Server{

@@ -41,6 +41,8 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
+import com.lomolo.giggy.compose.screens.CreateFarmStoreScreen
+import com.lomolo.giggy.compose.screens.CreateFarmStoreScreenDestination
 import com.lomolo.giggy.compose.screens.CreatePostScreen
 import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
 import com.lomolo.giggy.compose.screens.DashboardScreen
@@ -54,187 +56,13 @@ import com.lomolo.giggy.compose.screens.StoreScreenDestination
 import com.lomolo.giggy.model.Session
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
+import com.lomolo.giggy.viewmodels.StoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 object DashboardDestination: Navigation {
     override val title = null
     override val route = "dashboard"
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.addDashboardGraph(
-    modifier: Modifier = Modifier,
-    navHostController: NavHostController,
-    sessionViewModel: SessionViewModel,
-    postingViewModel: PostingViewModel,
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
-    session: Session,
-) {
-    navigation(
-        startDestination = DashboardScreenDestination.route,
-        route = DashboardDestination.route,
-    ) {
-        composable(route = DashboardScreenDestination.route) {
-            val currentDestination = it.destination
-
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = {
-                    IconButton(
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                CircleShape,
-                            ),
-                        onClick = {
-                            navHostController.navigate(CreatePostScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        })
-                    {
-                       Icon(
-                           Icons.TwoTone.Add,
-                           tint = MaterialTheme.colorScheme.background,
-                           contentDescription = stringResource(R.string.create_post),
-                       )
-                    }
-                },
-                bottomBar = {
-                    BottomNavBar(
-                        onNavigateTo = { route ->
-                            navHostController.navigate(route) {
-                                popUpTo(DashboardDestination.route) {
-                                    saveState = true
-                                }
-                            }
-                        },
-                        currentDestination = currentDestination,
-                    )
-                }
-            ) {innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    DashboardScreen()
-                }
-            }
-        }
-        composable(route = MarketScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                MarketScreen()
-            }
-        }
-        composable(route = StoreScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                FarmStoreScreen(
-                    onNavigateTo = {
-                        navHostController.navigate(it)
-                    }
-                )
-            }
-        }
-        composable(route = FarmStoreProductScreenDestination.route) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(id = R.string.farm_store)
-                            )
-                        },
-                        navigationIcon = {
-                            OutlinedIconButton(
-                                onClick = {
-                                    navHostController.popBackStack()
-                                }
-                            ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    )
-                }
-            ) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    FarmStoreProductScreen()
-                }
-            }
-        }
-        composable(route = AccountScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                AccountScreen(
-                    onSignOut = {
-                        sessionViewModel.signOut {
-                            navHostController.navigate(RootNavigation.route) {
-                                popUpTo(RootNavigation.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-        }
-        dialog(
-            route = CreatePostScreenDestination.route,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(id = CreatePostScreenDestination.title),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                        },
-                        navigationIcon = {
-                            OutlinedIconButton(
-                                onClick = {
-                                    navHostController.popBackStack()
-                                    postingViewModel.discardPosting()
-                                },
-                            ) {
-                               Icon(
-                                   Icons.TwoTone.Close,
-                                   contentDescription = null
-                               )
-                            }
-                        }
-                    )
-                }
-            ) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .padding(innerPadding),
-                ) {
-                    CreatePostScreen(
-                        postingViewModel = postingViewModel,
-                        onCloseDialog = {
-                            navHostController.popBackStack()
-                        },
-                        showToast = {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Post created", withDismissAction = true)
-                            }
-                        },
-                        session = session,
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -292,7 +120,7 @@ sealed class Screen(
 ) {
     data object Explore: Screen(
         "Explore",
-       R.drawable.explore_outlined,
+        R.drawable.explore_outlined,
         R.drawable.explore_filled,
         "dashboard/home",
     )
@@ -386,3 +214,280 @@ internal fun TopBar(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.addDashboardGraph(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+    sessionViewModel: SessionViewModel,
+    postingViewModel: PostingViewModel,
+    storeViewModel: StoreViewModel,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    session: Session,
+) {
+    val onNavigateTo = { route: String ->
+        navHostController.navigate(route) {
+            popUpTo(DashboardDestination.route) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
+    navigation(
+        startDestination = DashboardScreenDestination.route,
+        route = DashboardDestination.route,
+    ) {
+        composable(route = DashboardScreenDestination.route) {
+            val currentDestination = it.destination
+
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                floatingActionButton = {
+                    IconButton(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                CircleShape,
+                            ),
+                        onClick = {
+                            navHostController.navigate(CreatePostScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        })
+                    {
+                       Icon(
+                           Icons.TwoTone.Add,
+                           tint = MaterialTheme.colorScheme.background,
+                           contentDescription = stringResource(R.string.create_post),
+                       )
+                    }
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        onNavigateTo = { route ->
+                            navHostController.navigate(route) {
+                                popUpTo(DashboardDestination.route) {
+                                    saveState = true
+                                }
+                            }
+                        },
+                        currentDestination = currentDestination,
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    DashboardScreen()
+                }
+            }
+        }
+        composable(route = MarketScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                MarketScreen()
+            }
+        }
+        composable(route = StoreScreenDestination.route) {
+           val currentDestination = it.destination
+
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState)},
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(R.string.your_stores),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        actions = {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
+                               Icon(
+                                   Icons.TwoTone.Add,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        currentDestination = currentDestination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    FarmStoreScreen(
+                        onNavigateTo = {route ->
+                            navHostController.navigate(route)
+                        },
+                        getStores = {
+                            storeViewModel.getStoresBelongingToUser()
+                        },
+                        getStoresState = storeViewModel.getStoresBelongingToUserState,
+                    )
+                }
+            }
+        }
+        composable(route = FarmStoreProductScreenDestination.route) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = R.string.farm_store)
+                            )
+                        },
+                        navigationIcon = {
+                            OutlinedIconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    )
+                }
+            ) {
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    FarmStoreProductScreen()
+                }
+            }
+        }
+        composable(route = AccountScreenDestination.route) {
+            DashboardLayout(modifier = modifier, navHostController = navHostController) {
+                AccountScreen(
+                    onSignOut = {
+                        sessionViewModel.signOut {
+                            navHostController.navigate(RootNavigation.route) {
+                                popUpTo(RootNavigation.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+        dialog(
+            route = CreatePostScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = CreatePostScreenDestination.title),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                    postingViewModel.discardPosting()
+                                },
+                            ) {
+                               Icon(
+                                   Icons.TwoTone.Close,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .padding(innerPadding),
+                ) {
+                    CreatePostScreen(
+                        postingViewModel = postingViewModel,
+                        onCloseDialog = {
+                            navHostController.popBackStack()
+                        },
+                        showToast = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Post created", withDismissAction = true)
+                            }
+                        },
+                        session = session,
+                    )
+                }
+            }
+        }
+        dialog(
+            route = CreateFarmStoreScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = CreateFarmStoreScreenDestination.title),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                }
+                            ) {
+                               Icon(
+                                   Icons.TwoTone.Close,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                }
+            ) {innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    CreateFarmStoreScreen(
+                        onCreateStore = {
+                            storeViewModel.saveStore {
+                                navHostController.popBackStack()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Store created.", withDismissAction = true)
+                                }
+                                storeViewModel.discardStoreInput()
+                            }
+                        },
+                        storeViewModel = storeViewModel,
+                    )
+                }
+            }
+        }
+    }
+}
+

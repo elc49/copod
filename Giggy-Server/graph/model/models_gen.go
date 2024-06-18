@@ -24,6 +24,11 @@ type NewPostInput struct {
 	Location *GpsInput `json:"location"`
 }
 
+type NewStoreInput struct {
+	Name      string `json:"name"`
+	Thumbnail string `json:"thumbnail"`
+}
+
 type Post struct {
 	ID        uuid.UUID `json:"id"`
 	Text      string    `json:"text"`
@@ -36,4 +41,14 @@ type Post struct {
 }
 
 type Query struct {
+}
+
+type Store struct {
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	Thumbnail string     `json:"thumbnail"`
+	UserID    uuid.UUID  `json:"userId"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }

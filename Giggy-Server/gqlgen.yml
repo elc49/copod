@@ -88,10 +88,6 @@ models:
   UUID:
     model:
       - github.com/99designs/gqlgen/graphql.UUID
-  User:
-    fields:
-      posts:
-        resolver: true
   Post:
     fields:
       user:

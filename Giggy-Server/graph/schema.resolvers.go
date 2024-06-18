@@ -25,6 +25,18 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostIn
 	return r.postController.CreatePost(ctx, args)
 }
 
+// CreateStore is the resolver for the createStore field.
+func (r *mutationResolver) CreateStore(ctx context.Context, input model.NewStoreInput) (*model.Store, error) {
+	userId := StringToUUID(ctx.Value("userId").(string))
+	args := db.CreateStoreParams{
+		Name:      input.Name,
+		Thumbnail: input.Thumbnail,
+		UserID:    userId,
+	}
+
+	return r.storeController.CreateStore(ctx, args)
+}
+
 // User is the resolver for the user field.
 func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
 	return nil, nil
@@ -35,9 +47,10 @@ func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
 	return make([]*model.Post, 0), nil
 }
 
-// Posts is the resolver for the posts field.
-func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
-	return make([]*model.Post, 0), nil
+// GetStoresBelongingToUser is the resolver for the getStoresBelongingToUser field.
+func (r *queryResolver) GetStoresBelongingToUser(ctx context.Context) ([]*model.Store, error) {
+	userId := StringToUUID(ctx.Value("userId").(string))
+	return r.storeController.GetStoresBelongingToUser(ctx, userId)
 }
 
 // Mutation returns MutationResolver implementation.
@@ -49,10 +62,6 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// User returns UserResolver implementation.
-func (r *Resolver) User() UserResolver { return &userResolver{r} }
-
 type mutationResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-type userResolver struct{ *Resolver }

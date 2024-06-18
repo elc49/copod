@@ -3,6 +3,7 @@ package graph
 import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/google/uuid"
 )
 
@@ -13,12 +14,19 @@ import (
 var log = logger.GetLogger()
 
 type Resolver struct {
-	postController controllers.PostController
+	postController  controllers.PostController
+	storeController controllers.StoreController
 }
 
-func New(postController controllers.PostController) Config {
+func New(db *db.Queries) Config {
+	postController := controllers.PostController{}
+	postController.Init(db)
+	storeController := controllers.StoreController{}
+	storeController.Init(db)
+
 	resolver := &Resolver{
 		postController,
+		storeController,
 	}
 
 	c := Config{Resolvers: resolver}
@@ -29,7 +37,7 @@ func New(postController controllers.PostController) Config {
 func StringToUUID(id string) uuid.UUID {
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		log.WithError(err).Error("resolver: stringToUUID()")
+		log.WithError(err).Error("resolver: StringToUUID()")
 	}
 
 	return uid

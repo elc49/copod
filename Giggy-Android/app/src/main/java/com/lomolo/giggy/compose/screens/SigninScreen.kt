@@ -69,6 +69,12 @@ fun SignInScreen(
             modifier = Modifier.padding(top = 8.dp)
         ) {
             OutlinedTextField(
+                label = {
+                    Text(
+                        "Phone number",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
                 isError = !signinPhoneValid && phone.isNotBlank(),
                 value = phone,
                 onValueChange = { onPhoneChange(it) },
