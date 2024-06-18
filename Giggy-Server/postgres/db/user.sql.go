@@ -34,24 +34,26 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 
 const createUserByPhone = `-- name: CreateUserByPhone :one
 INSERT INTO users (
-  phone, username
+  phone, username, avatar
 ) VALUES (
-  $1, $2
-) RETURNING id, phone, username, has_posting_rights, has_store_rights, created_at, updated_at, deleted_at
+  $1, $2, $3
+) RETURNING id, phone, username, avatar, has_posting_rights, has_store_rights, created_at, updated_at, deleted_at
 `
 
 type CreateUserByPhoneParams struct {
 	Phone    string         `json:"phone"`
 	Username sql.NullString `json:"username"`
+	Avatar   string         `json:"avatar"`
 }
 
 func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUserByPhone, arg.Phone, arg.Username)
+	row := q.db.QueryRowContext(ctx, createUserByPhone, arg.Phone, arg.Username, arg.Avatar)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
 		&i.Username,
+		&i.Avatar,
 		&i.HasPostingRights,
 		&i.HasStoreRights,
 		&i.CreatedAt,

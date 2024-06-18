@@ -3,9 +3,9 @@ SELECT COUNT(*) FROM users;
 
 -- name: CreateUserByPhone :one
 INSERT INTO users (
-  phone, username
+  phone, username, avatar
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING *;
 
 -- name: GetUserByPhone :one

@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/gcloud"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 )
@@ -15,10 +18,12 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		var res model.Signin
 		log := logger.GetLogger()
 		jwtService := jwt.GetJwtService()
+		gcs := gcloud.GetGcloudService()
 		var phone string
 		var user *model.User
 		var err error
 		ctx := r.Context()
+		avatarUrl := ""
 
 		err = json.NewDecoder(r.Body).Decode(&phone)
 		if err != nil {
@@ -26,9 +31,30 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 			return
 		}
 
+		if config.Configuration != nil {
+			avatarRes, err := http.Get(fmt.Sprintf("%savatar_%s", config.Configuration.RemoteAvatar, phone))
+			if err != nil {
+				log.WithError(err).Error("handlers: http.Get avatarRes")
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			defer avatarRes.Body.Close()
+
+			if avatarRes.StatusCode != http.StatusOK {
+				log.WithError(err).Error("handlers: avatarRes not http.StatusOK")
+			}
+
+			avatarUrl, err = gcs.ReadFromRemote(r.Context(), avatarRes.Body)
+			if err != nil {
+				log.WithError(err).Error("handler: ReadFromRemote()")
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+
 		user, err = signinController.GetUserByPhone(ctx, phone)
 		if user == nil && err == nil {
-			user, err = signinController.CreateUserByPhone(ctx, phone)
+			user, err = signinController.CreateUserByPhone(ctx, phone, avatarUrl)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return

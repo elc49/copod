@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
@@ -32,7 +33,7 @@ object AccountScreenDestination: Navigation {
     override val route = "dashboard/account"
 }
 
-private const val avatar = "https://storage.googleapis.com/giggy-cloud-storage/download.jpeg"
+private const val avatar = "https://storage.googleapis.com/giggy-cloud-storage/avatar_60d6d0.svg"
 
 @Composable
 fun AccountScreen(
@@ -58,9 +59,11 @@ fun AccountScreen(
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(avatar)
+                        .decoderFactory(SvgDecoder.Factory())
                         .crossfade(true)
                         .build(),
                     contentScale = ContentScale.Crop,
+                    error = painterResource(id = R.drawable.ic_broken_image),
                     placeholder = painterResource(id = R.drawable.loading_img),
                     modifier = Modifier
                         .size(200.dp)

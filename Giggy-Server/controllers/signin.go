@@ -18,8 +18,8 @@ func (mbsc *SigninController) Init(queries *db.Queries) {
 	mbsc.r.Init(queries)
 }
 
-func (mbsc *SigninController) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
-	return mbsc.r.CreateUserByPhone(ctx, phone)
+func (mbsc *SigninController) CreateUserByPhone(ctx context.Context, phone, avatar string) (*model.User, error) {
+	return mbsc.r.CreateUserByPhone(ctx, phone, avatar)
 }
 
 func (mbsc *SigninController) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {

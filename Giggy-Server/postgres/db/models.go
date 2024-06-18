@@ -36,6 +36,7 @@ type User struct {
 	ID               uuid.UUID      `json:"id"`
 	Phone            string         `json:"phone"`
 	Username         sql.NullString `json:"username"`
+	Avatar           string         `json:"avatar"`
 	HasPostingRights bool           `json:"has_posting_rights"`
 	HasStoreRights   bool           `json:"has_store_rights"`
 	CreatedAt        time.Time      `json:"created_at"`

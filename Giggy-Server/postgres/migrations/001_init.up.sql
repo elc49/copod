@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS users(
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   phone TEXT NOT NULL UNIQUE,
   username VARCHAR(6) UNIQUE,
+  avatar TEXT NOT NULL,
   has_posting_rights BOOLEAN NOT NULL DEFAULT false,
   has_store_rights BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

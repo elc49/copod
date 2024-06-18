@@ -18,10 +18,11 @@ func (mbs *SigninRepository) Init(queries *db.Queries) {
 	mbs.db = queries
 }
 
-func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone string) (*model.User, error) {
+func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone, avatar string) (*model.User, error) {
 	args := db.CreateUserByPhoneParams{
 		Phone:    phone,
 		Username: sql.NullString{String: util.RandomStringByLength(5), Valid: true},
+		Avatar:   avatar,
 	}
 	newUser, err := mbs.db.CreateUserByPhone(ctx, args)
 	if err != nil {
