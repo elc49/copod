@@ -43,9 +43,12 @@ func main() {
 	userController.Init(queries)
 
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/ping"))
+	r.Use(middleware.CleanPath)
+	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(queries)))
 
