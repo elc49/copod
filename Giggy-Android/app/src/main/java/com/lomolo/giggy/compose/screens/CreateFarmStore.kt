@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +27,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object CreateFarmStoreScreenDestination: Navigation {
-    override val title = R.string.create_farm
+    override val title = R.string.create_farm_store
     override val route = "dashboard/create_store"
 }
 
@@ -36,21 +37,14 @@ fun CreateFarmStoreScreen(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-       Row(
-           verticalAlignment = Alignment.CenterVertically,
-       ) {
-           Text(
-               stringResource(R.string.create_farm_store),
-               style = MaterialTheme.typography.displayMedium,
-           )
-       }
         Row {
             Text(
                 stringResource(R.string.store_headline),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
         OutlinedTextField(

@@ -442,7 +442,30 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreateFarmStoreScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Scaffold {innerPadding ->
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                stringResource(id = CreateFarmStoreScreenDestination.title),
+                                style = MaterialTheme.typography.displaySmall,
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    navHostController.popBackStack()
+                                }
+                            ) {
+                               Icon(
+                                   Icons.TwoTone.Close,
+                                   contentDescription = null
+                               )
+                            }
+                        }
+                    )
+                }
+            ) {innerPadding ->
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
