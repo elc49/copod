@@ -198,7 +198,9 @@ internal fun TopBar(
         modifier = modifier,
         title = {
             Text(
-                title
+                title,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
             )
         },
         navigationIcon = {
@@ -208,7 +210,8 @@ internal fun TopBar(
                 ) {
                     Icon(
                         Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
                     )
                 }
             }
@@ -352,7 +355,9 @@ fun NavGraphBuilder.addDashboardGraph(
                     TopAppBar(
                         title = {
                             Text(
-                                stringResource(id = R.string.farm_store)
+                                stringResource(id = R.string.farm_store),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold,
                             )
                         },
                         navigationIcon = {
@@ -363,7 +368,8 @@ fun NavGraphBuilder.addDashboardGraph(
                             ) {
                                 Icon(
                                     Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
                                 )
                             }
                         }
