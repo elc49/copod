@@ -198,7 +198,9 @@ internal fun TopBar(
         modifier = modifier,
         title = {
             Text(
-                title
+                title,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
             )
         },
         navigationIcon = {
@@ -208,7 +210,8 @@ internal fun TopBar(
                 ) {
                     Icon(
                         Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
                     )
                 }
             }
@@ -310,7 +313,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         },
                         actions = {
                             if (stores is GetStoresBelongingToUserState.Success && stores.success != null && stores.success.isEmpty()) {
-                                OutlinedIconButton(
+                                IconButton(
                                     onClick = {
                                         navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
                                     Icon(
@@ -352,18 +355,21 @@ fun NavGraphBuilder.addDashboardGraph(
                     TopAppBar(
                         title = {
                             Text(
-                                stringResource(id = R.string.farm_store)
+                                stringResource(id = R.string.farm_store),
+                                style = MaterialTheme.typography.displaySmall,
+                                fontWeight = FontWeight.Bold,
                             )
                         },
                         navigationIcon = {
-                            OutlinedIconButton(
+                            IconButton(
                                 onClick = {
                                     navHostController.popBackStack()
                                 }
                             ) {
                                 Icon(
                                     Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
                                 )
                             }
                         }

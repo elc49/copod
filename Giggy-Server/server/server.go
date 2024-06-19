@@ -77,6 +77,6 @@ func (s *Server) MountHandlers() {
 			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 			r.Handle("/refresh/token", handlers.RefreshToken(userController))
 		})
-		s.Router.Handle("/img/upload", handlers.ImageUploader())
+		r.Handle("/img/upload", handlers.ImageUploader())
 	})
 }

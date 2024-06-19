@@ -11,6 +11,27 @@ import (
 	"github.com/google/uuid"
 )
 
+type Order struct {
+	ID         uuid.UUID `json:"id"`
+	Volume     int32     `json:"volume"`
+	ToBePaid   int32     `json:"to_be_paid"`
+	CustomerID uuid.UUID `json:"customer_id"`
+	ProductID  uuid.UUID `json:"product_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+type Payment struct {
+	ID        uuid.UUID `json:"id"`
+	Customer  string    `json:"customer"`
+	Amount    int32     `json:"amount"`
+	Reason    string    `json:"reason"`
+	Status    string    `json:"status"`
+	OrderID   uuid.UUID `json:"order_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type Post struct {
 	ID        uuid.UUID   `json:"id"`
 	Text      string      `json:"text"`
@@ -20,6 +41,17 @@ type Post struct {
 	UserID    uuid.UUID   `json:"user_id"`
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type Product struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Volume       int32     `json:"volume"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int32     `json:"price_per_unit"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type Store struct {
