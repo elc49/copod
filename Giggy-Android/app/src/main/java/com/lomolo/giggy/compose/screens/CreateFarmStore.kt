@@ -112,12 +112,14 @@ fun CreateFarmStoreScreen(
                 modifier = Modifier
                     .size(120.dp)
                     .clickable {
-                        scope.launch {
-                            pickMedia.launch(
-                                PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                        if (storeViewModel.storeImageUploadState !is StoreImageUploadState.Loading) {
+                            scope.launch {
+                                pickMedia.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
                                 )
-                            )
+                            }
                         }
                     },
                 contentDescription = null,
