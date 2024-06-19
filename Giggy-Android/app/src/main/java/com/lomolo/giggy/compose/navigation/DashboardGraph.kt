@@ -34,9 +34,11 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
@@ -338,8 +340,8 @@ fun NavGraphBuilder.addDashboardGraph(
                         .padding(innerPadding)
                 ) {
                     FarmStoreScreen(
-                        onNavigateTo = {route ->
-                            navHostController.navigate(route)
+                        onNavigateTo = {storeId ->
+                            navHostController.navigate("${FarmStoreProductScreenDestination.route}/${storeId}")
                         },
                         getStores = {
                             storeViewModel.getStoresBelongingToUser()
@@ -349,7 +351,12 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }
         }
-        composable(route = FarmStoreProductScreenDestination.route) {
+        composable(
+            route = FarmStoreProductScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmStoreProductScreenDestination.storeIdArg) {
+                type = NavType.StringType
+            })
+        ) {
             Scaffold(
                 topBar = {
                     TopAppBar(

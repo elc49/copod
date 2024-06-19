@@ -125,7 +125,7 @@ internal fun Farms(
                             modifier = Modifier
                                 .height(180.dp)
                                 .clickable {
-                                    onNavigateTo(FarmStoreProductScreenDestination.route)
+                                    onNavigateTo(it.id.toString())
                                 }
                         ) {
                             Column {

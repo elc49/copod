@@ -3,9 +3,11 @@ package com.lomolo.giggy.viewmodels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomolo.giggy.GetStoresBelongingToUserQuery
+import com.lomolo.giggy.compose.screens.FarmStoreProductScreenDestination
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.repository.IStore
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ import java.io.InputStream
 class StoreViewModel(
     private val giggyRestApi: IGiggyRestApi,
     private val storeRepository: IStore,
+    savedStateHandle: SavedStateHandle,
 ): ViewModel() {
     private val _storeInput = MutableStateFlow(Store())
     val storeUiState: StateFlow<Store> = _storeInput.asStateFlow()
@@ -34,6 +37,8 @@ class StoreViewModel(
 
     var createStoreState: CreateStoreState by mutableStateOf(CreateStoreState.Success)
         private set
+
+    private val storeId: String? = savedStateHandle[FarmStoreProductScreenDestination.storeIdArg]
 
     fun setName(name: String) {
         _storeInput.update {

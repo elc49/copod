@@ -54,6 +54,8 @@ import com.lomolo.giggy.ui.theme.GiggyTheme
 object FarmStoreProductScreenDestination: Navigation {
     override val title = R.string.farm_store
     override val route = "dashboard/farm_product"
+    const val storeIdArg = "storeId"
+    val routeWithArgs = "$route/{$storeIdArg}"
 }
 
 data class ProductData(

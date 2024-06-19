@@ -1,6 +1,7 @@
 package com.lomolo.giggy
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -43,6 +44,7 @@ object GiggyViewModelProvider {
             storeViewModel = StoreViewModel(
                 giggyApplication().container.giggyRestApiService,
                 giggyApplication().container.storeRepository,
+                this.createSavedStateHandle(),
             )
             storeViewModel
         }
