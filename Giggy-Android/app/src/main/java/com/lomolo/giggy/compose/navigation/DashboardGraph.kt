@@ -390,7 +390,9 @@ fun NavGraphBuilder.addDashboardGraph(
                                 }
                             }
                         }
-                    }
+                    },
+                    getUser = { sessionViewModel.getUser() },
+                    gettingUser = sessionViewModel.gettingUserState,
                 )
             }
         }
