@@ -303,7 +303,7 @@ fun NavGraphBuilder.addDashboardGraph(
             val stores = storeViewModel.getStoresBelongingToUserState
 
             Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState)},
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     TopAppBar(
                         title = {

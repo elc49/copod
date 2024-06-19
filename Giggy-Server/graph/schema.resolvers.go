@@ -60,9 +60,9 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
-// GetStore is the resolver for the getStore field.
-func (r *queryResolver) GetStore(ctx context.Context, id uuid.UUID) (*model.Store, error) {
-	panic(fmt.Errorf("not implemented: GetStore - getStore"))
+// GetStoreByID is the resolver for the getStoreById field.
+func (r *queryResolver) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.Store, error) {
+	return r.storeController.GetStoreByID(ctx, id)
 }
 
 // Mutation returns MutationResolver implementation.

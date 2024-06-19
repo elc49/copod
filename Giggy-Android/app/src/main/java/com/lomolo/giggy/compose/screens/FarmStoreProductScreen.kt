@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,11 +46,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.giggy.GetStoreByIdQuery
+import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
+import com.lomolo.giggy.viewmodels.GetStoreState
 
 object FarmStoreProductScreenDestination: Navigation {
     override val title = R.string.farm_store
@@ -126,10 +132,45 @@ val testPaymentsData = listOf(
     )
 )
 
+@Composable
+internal fun FarmStoreHeader(
+    store: GetStoreByIdQuery.GetStoreById?,
+) {
+    Row(
+        Modifier
+            .height(280.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(store?.thumbnail)
+                .crossfade(true)
+                .build(),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(180.dp)
+                .padding(8.dp)
+                .clip(MaterialTheme.shapes.extraSmall),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentDescription = null
+        )
+        store?.name?.let {
+            Text(
+                text = it,
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+    }
+}
+
 @ExperimentalMaterial3Api
 @Composable
 fun FarmStoreProductScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: FarmStoreProductViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val tabIcon = mapOf(
         0 to R.drawable.product_box,
@@ -140,41 +181,29 @@ fun FarmStoreProductScreen(
     var state by remember {
         mutableIntStateOf(0)
     }
-    val brush = Brush.linearGradient(listOf(
-        MaterialTheme.colorScheme.primary,
-        MaterialTheme.colorScheme.secondaryContainer
-    ))
+    val store = viewModel.gettingStoreState
+
+    LaunchedEffect(Unit) {
+       viewModel.getStore()
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Row(
-            Modifier
-                .background(brush)
-                .height(280.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("https://storage.googleapis.com/giggy-cloud-storage/download.jpeg")
-                    .crossfade(true)
-                    .build(),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(180.dp)
-                    .padding(8.dp)
-                    .clip(MaterialTheme.shapes.extraSmall),
-                placeholder = painterResource(id = R.drawable.loading_img),
-                contentDescription = null
+        when(store) {
+            is GetStoreState.Success -> FarmStoreHeader(
+                store = store.success
             )
-            Text(
-                text = "Lurambi Agro-dealers and millers",
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
+            GetStoreState.Loading -> Row(
+                Modifier
+                    .height(280.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator()
+            }
         }
         PrimaryTabRow(
             modifier = Modifier.fillMaxWidth(),

@@ -25,3 +25,7 @@ func (r *StoreController) CreateStore(ctx context.Context, args db.CreateStorePa
 func (r *StoreController) GetStoresBelongingToUser(ctx context.Context, id uuid.UUID) ([]*model.Store, error) {
 	return r.r.GetStoresBelongingToUser(ctx, id)
 }
+
+func (r *StoreController) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.Store, error) {
+	return r.r.GetStoreByID(ctx, id)
+}

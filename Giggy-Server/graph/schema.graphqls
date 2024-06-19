@@ -61,7 +61,7 @@ type Query {
   timeline: [Post!]!
   getStoresBelongingToUser: [Store!]!
   getUser: User!
-  getStore(id: UUID!): Store!
+  getStoreById(id: UUID!): Store!
 }
 
 type Mutation {

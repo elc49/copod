@@ -8,3 +8,7 @@ INSERT INTO stores (
 -- name: GetStoresBelongingToUser :many
 SELECT id, name, thumbnail FROM stores
 WHERE user_id = $1 AND deleted_at IS NULL;
+
+-- name: GetStoreByID :one
+SELECT id, name, thumbnail FROM stores
+WHERE id = $1 AND deleted_at IS NULL;

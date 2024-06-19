@@ -40,6 +40,24 @@ func (q *Queries) CreateStore(ctx context.Context, arg CreateStoreParams) (Store
 	return i, err
 }
 
+const getStoreByID = `-- name: GetStoreByID :one
+SELECT id, name, thumbnail FROM stores
+WHERE id = $1 AND deleted_at IS NULL
+`
+
+type GetStoreByIDRow struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Thumbnail string    `json:"thumbnail"`
+}
+
+func (q *Queries) GetStoreByID(ctx context.Context, id uuid.UUID) (GetStoreByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getStoreByID, id)
+	var i GetStoreByIDRow
+	err := row.Scan(&i.ID, &i.Name, &i.Thumbnail)
+	return i, err
+}
+
 const getStoresBelongingToUser = `-- name: GetStoresBelongingToUser :many
 SELECT id, name, thumbnail FROM stores
 WHERE user_id = $1 AND deleted_at IS NULL
