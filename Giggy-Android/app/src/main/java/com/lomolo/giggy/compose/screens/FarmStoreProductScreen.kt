@@ -286,7 +286,7 @@ fun FarmStoreProductScreen(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            "Paid",
+                            "Amount",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -330,7 +330,7 @@ fun FarmStoreProductScreen(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            "Amount",
+                            "Paid",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )

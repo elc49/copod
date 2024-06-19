@@ -310,7 +310,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         },
                         actions = {
                             if (stores is GetStoresBelongingToUserState.Success && stores.success != null && stores.success.isEmpty()) {
-                                OutlinedIconButton(
+                                IconButton(
                                     onClick = {
                                         navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
                                     Icon(
@@ -356,7 +356,7 @@ fun NavGraphBuilder.addDashboardGraph(
                             )
                         },
                         navigationIcon = {
-                            OutlinedIconButton(
+                            IconButton(
                                 onClick = {
                                     navHostController.popBackStack()
                                 }
