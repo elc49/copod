@@ -10,6 +10,7 @@ import (
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
+	"github.com/google/uuid"
 )
 
 // CreatePost is the resolver for the createPost field.
@@ -57,6 +58,11 @@ func (r *queryResolver) GetStoresBelongingToUser(ctx context.Context) ([]*model.
 func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	userId := StringToUUID(ctx.Value("userId").(string))
 	return r.signinController.GetUserByID(ctx, userId)
+}
+
+// GetStore is the resolver for the getStore field.
+func (r *queryResolver) GetStore(ctx context.Context, id uuid.UUID) (*model.Store, error) {
+	panic(fmt.Errorf("not implemented: GetStore - getStore"))
 }
 
 // Mutation returns MutationResolver implementation.
