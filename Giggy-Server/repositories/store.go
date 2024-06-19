@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -44,4 +45,19 @@ func (r *StoreRepository) GetStoresBelongingToUser(ctx context.Context, id uuid.
 	}
 
 	return stores, nil
+}
+
+func (r *StoreRepository) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.Store, error) {
+	store, err := r.queries.GetStoreByID(ctx, id)
+	if err != nil && err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &model.Store{
+		ID:        store.ID,
+		Name:      store.Name,
+		Thumbnail: store.Thumbnail,
+	}, nil
 }
