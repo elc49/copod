@@ -162,7 +162,8 @@ fun FarmStoreProductScreen(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(180.dp)
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .clip(MaterialTheme.shapes.extraSmall),
                 placeholder = painterResource(id = R.drawable.loading_img),
                 contentDescription = null
             )
@@ -186,13 +187,15 @@ fun FarmStoreProductScreen(
                        Text(
                            title,
                            maxLines = 2,
-                           overflow = TextOverflow.Ellipsis
+                           overflow = TextOverflow.Ellipsis,
+                           style = MaterialTheme.typography.titleMedium,
+                           fontWeight = FontWeight.Bold,
                        )
                    },
                    icon = {
                        Icon(
                            painterResource(tabIcon[index]!!),
-                           modifier = Modifier.size(20.dp),
+                           modifier = Modifier.size(24.dp),
                            contentDescription = null
                        )
                    }
