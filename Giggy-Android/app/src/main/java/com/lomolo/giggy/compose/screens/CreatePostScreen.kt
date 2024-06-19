@@ -153,12 +153,14 @@ fun CreatePostScreen(
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .clickable {
-                                    scope.launch {
-                                        pickMedia.launch(
-                                            PickVisualMediaRequest(
-                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    if (postingViewModel.postImageUploadState !is PostImageUploadState.Loading) {
+                                        scope.launch {
+                                            pickMedia.launch(
+                                                PickVisualMediaRequest(
+                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 },
                             contentDescription = null
@@ -175,12 +177,14 @@ fun CreatePostScreen(
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .clickable {
-                                    scope.launch {
-                                        pickMedia.launch(
-                                            PickVisualMediaRequest(
-                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    if (postingViewModel.postImageUploadState !is PostImageUploadState.Loading) {
+                                        scope.launch {
+                                            pickMedia.launch(
+                                                PickVisualMediaRequest(
+                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 },
                             contentDescription = null

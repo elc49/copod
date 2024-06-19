@@ -65,7 +65,10 @@ class StoreViewModel(
     }
 
     fun saveStore(cb: () -> Unit = {}) {
-        if (_storeInput.value.name.isNotBlank() && _storeInput.value.image.isNotBlank()) {
+        if (_storeInput.value.name.isNotBlank() &&
+            _storeInput.value.image.isNotBlank() &&
+            createStoreState !is CreateStoreState.Loading &&
+            storeImageUploadState !is StoreImageUploadState.Loading) {
             createStoreState = CreateStoreState.Loading
             viewModelScope.launch {
                 createStoreState = try {

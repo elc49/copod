@@ -96,18 +96,20 @@ class SessionViewModel(
     }
 
     fun signIn(cb: () -> Unit = {}) {
-        signInUiState = SigninState.Loading
-        viewModelScope.launch {
-            signInUiState = try {
-                val phone = parsePhoneNumber(_signinInput.value.phone)
-                sessionRepository.signIn(phone.countryCode.toString()+phone.nationalNumber.toString())
-                SigninState.Success.also {
-                    cb()
-                    resetSigninInput()
+        if (signInUiState !is SigninState.Loading) {
+            signInUiState = SigninState.Loading
+            viewModelScope.launch {
+                signInUiState = try {
+                    val phone = parsePhoneNumber(_signinInput.value.phone)
+                    sessionRepository.signIn(phone.countryCode.toString() + phone.nationalNumber.toString())
+                    SigninState.Success.also {
+                        cb()
+                        resetSigninInput()
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    SigninState.Error(e.localizedMessage)
                 }
-            } catch(e: IOException) {
-                e.printStackTrace()
-                SigninState.Error(e.localizedMessage)
             }
         }
     }

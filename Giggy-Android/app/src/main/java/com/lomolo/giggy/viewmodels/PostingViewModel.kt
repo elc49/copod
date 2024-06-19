@@ -53,7 +53,9 @@ class PostingViewModel(
     }
 
     fun savePost(userId: String, cb: () -> Unit = {}) {
-        if (_postInput.value.text.isNotBlank() && postImageUploadState is PostImageUploadState.Success) {
+        if (_postInput.value.text.isNotBlank() &&
+            postImageUploadState is PostImageUploadState.Success &&
+            submittingPostState !is SubmittingPost.Loading) {
             submittingPostState = SubmittingPost.Loading
             // TODO save
             _postInput.update {
