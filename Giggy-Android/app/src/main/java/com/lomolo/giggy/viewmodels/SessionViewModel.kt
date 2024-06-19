@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
+import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.model.Session
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.repository.ISession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +25,7 @@ import okio.IOException
 class SessionViewModel(
     private val sessionRepository: ISession,
     private val mainViewModel: MainViewModel,
+    private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
     val sessionUiState: StateFlow<Session> = sessionRepository
         .get()
@@ -48,6 +51,9 @@ class SessionViewModel(
 
     private val _signinInput = MutableStateFlow(Signin())
     val signinInput: StateFlow<Signin> = _signinInput.asStateFlow()
+
+    var gettingUserState: GetUserState by mutableStateOf(GetUserState.Success(null))
+        private set
 
     private val phoneUtil = PhoneNumberUtil.getInstance()
 
@@ -116,6 +122,19 @@ class SessionViewModel(
     private fun resetSigninInput() {
         _signinInput.value = Signin()
     }
+
+    fun getUser() {
+        gettingUserState = GetUserState.Loading
+        viewModelScope.launch {
+            gettingUserState = try {
+                val res = giggyGraphqlApi.getUser().dataOrThrow()
+                GetUserState.Success(res.getUser)
+            } catch(e: IOException) {
+                e.printStackTrace()
+                GetUserState.Error(e.localizedMessage)
+            }
+        }
+    }
 }
 
 data class Signin(
@@ -126,4 +145,10 @@ interface SigninState {
     data object Loading: SigninState
     data class Error(val msg: String?): SigninState
     data object Success: SigninState
+}
+
+interface GetUserState {
+    data object Loading: GetUserState
+    data class Success(val success: GetUserQuery.GetUser?): GetUserState
+    data class Error(val msg: String?): GetUserState
 }

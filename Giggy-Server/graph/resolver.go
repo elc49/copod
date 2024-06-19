@@ -14,11 +14,12 @@ import (
 var log = logger.GetLogger()
 
 type Resolver struct {
-	postController  controllers.PostController
-	storeController controllers.StoreController
+	postController   controllers.PostController
+	storeController  controllers.StoreController
+	signinController controllers.SigninController
 }
 
-func New(db *db.Queries) Config {
+func New(db *db.Queries, signinController controllers.SigninController) Config {
 	postController := controllers.PostController{}
 	postController.Init(db)
 	storeController := controllers.StoreController{}
@@ -27,6 +28,7 @@ func New(db *db.Queries) Config {
 	resolver := &Resolver{
 		postController,
 		storeController,
+		signinController,
 	}
 
 	c := Config{Resolvers: resolver}

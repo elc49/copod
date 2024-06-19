@@ -21,6 +21,8 @@ type Post {
 type User {
   id: UUID!
   phone: String!
+  avatar: String!
+  username: String!
   created_at: Time!
   updated_at: Time!
   deleted_at: Time
@@ -58,6 +60,7 @@ input NewStoreInput {
 type Query {
   timeline: [Post!]!
   getStoresBelongingToUser: [Store!]!
+  getUser: User!
 }
 
 type Mutation {

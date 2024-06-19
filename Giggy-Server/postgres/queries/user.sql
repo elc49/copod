@@ -13,7 +13,7 @@ SELECT id, phone FROM users
 WHERE phone = $1 AND deleted_at IS NULL;
 
 -- name: GetUserByID :one
-SELECT id, phone FROM users
+SELECT id, phone, avatar FROM users
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: ClearTestUsers :exec

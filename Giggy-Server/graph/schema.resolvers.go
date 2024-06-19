@@ -53,6 +53,12 @@ func (r *queryResolver) GetStoresBelongingToUser(ctx context.Context) ([]*model.
 	return r.storeController.GetStoresBelongingToUser(ctx, userId)
 }
 
+// GetUser is the resolver for the getUser field.
+func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
+	userId := StringToUUID(ctx.Value("userId").(string))
+	return r.signinController.GetUserByID(ctx, userId)
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 

@@ -5,6 +5,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateStoreMutation
 import com.lomolo.giggy.GetStoresBelongingToUserQuery
+import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewStoreInput
 import com.lomolo.giggy.viewmodels.Store
@@ -13,6 +14,7 @@ interface IGiggyGraphqlApi {
     suspend fun createPost(input: NewPostInput): ApolloResponse<CreatePostMutation.Data>
     suspend fun getStoresBelongingToUser(): ApolloResponse<GetStoresBelongingToUserQuery.Data>
     suspend fun createStore(input: Store): ApolloResponse<CreateStoreMutation.Data>
+    suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
 }
 
 class GiggyGraphqlApi(
@@ -33,5 +35,9 @@ class GiggyGraphqlApi(
                 thumbnail = input.image,
             )
         ))
+        .execute()
+
+    override suspend fun getUser() = apolloClient
+        .query(GetUserQuery())
         .execute()
 }
