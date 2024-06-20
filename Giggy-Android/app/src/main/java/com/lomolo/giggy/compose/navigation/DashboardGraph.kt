@@ -47,6 +47,8 @@ import com.lomolo.giggy.compose.screens.CreateFarmStoreScreen
 import com.lomolo.giggy.compose.screens.CreateFarmStoreScreenDestination
 import com.lomolo.giggy.compose.screens.CreatePostScreen
 import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
+import com.lomolo.giggy.compose.screens.CreateStoreProductDestination
+import com.lomolo.giggy.compose.screens.CreateStoreProductScreen
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
@@ -388,7 +390,11 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmStoreProductScreen()
+                    FarmStoreProductScreen(
+                        onCreateStoreProduct = {
+                            navHostController.navigate(CreateStoreProductDestination.route)
+                        }
+                    )
                 }
             }
         }
@@ -506,6 +512,16 @@ fun NavGraphBuilder.addDashboardGraph(
                     )
                 }
             }
+        }
+        dialog(
+            route = CreateStoreProductDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            CreateStoreProductScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                }
+            )
         }
     }
 }
