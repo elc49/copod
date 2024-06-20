@@ -2,6 +2,8 @@ package com.lomolo.giggy.container
 
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.normalizedCache
+import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.apollographql.apollo3.network.okHttpClient
 import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.apollo.interceptors.AuthInterceptor
@@ -59,6 +61,7 @@ class ApplicationContainer(
         )
     }
 
+    private val sqlNormalizedCacheFactory = SqlNormalizedCacheFactory("apollo.db")
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
         .httpServerUrl("${BuildConfig.BASE_API_HOST}/api/graphql")
@@ -68,6 +71,7 @@ class ApplicationContainer(
                 sessionRepository
             )
         )
+        .normalizedCache(sqlNormalizedCacheFactory)
         .build()
 
     override val giggyGraphqlApiService: IGiggyGraphqlApi by lazy {

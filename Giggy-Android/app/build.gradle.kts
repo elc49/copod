@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.posthog.android)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.apollo.normalized.cache.sqlite)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
