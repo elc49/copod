@@ -8,6 +8,8 @@ type Mutation {
   createPost(input: NewPostInput!): Post!
 
   createStore(input: NewStoreInput!): Store!
+
+  createStoreProduct(input: NewStoreProductInput!): Product!
 }
 
 input NewPostInput {
@@ -26,6 +28,20 @@ input NewStoreInput {
   name: String!
 
   thumbnail: String!
+}
+
+input NewStoreProductInput {
+  storeId: UUID!
+
+  name: String!
+
+  image: String!
+
+  volume: Int!
+
+  unit: String!
+
+  pricePerUnit: Int!
 }
 
 type Order {
