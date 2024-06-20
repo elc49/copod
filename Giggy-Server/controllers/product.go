@@ -25,3 +25,7 @@ func (c *ProductController) GetProductsBelongingToStore(ctx context.Context, id 
 func (c *ProductController) GetProductByID(ctx context.Context, id uuid.UUID) (*model.Product, error) {
 	return c.r.GetProductByID(ctx, id)
 }
+
+func (c *ProductController) CreateStoreProduct(ctx context.Context, args db.CreateStoreProductParams) (*model.Product, error) {
+	return c.r.CreateStoreProduct(ctx, args)
+}

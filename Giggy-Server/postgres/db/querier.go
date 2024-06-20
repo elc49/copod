@@ -15,6 +15,7 @@ type Querier interface {
 	CountUsers(ctx context.Context) (int64, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateStore(ctx context.Context, arg CreateStoreParams) (Store, error)
+	CreateStoreProduct(ctx context.Context, arg CreateStoreProductParams) (Product, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	GetOrderById(ctx context.Context, id uuid.UUID) (GetOrderByIdRow, error)
 	GetOrdersBelongingToStore(ctx context.Context, storeID uuid.UUID) ([]GetOrdersBelongingToStoreRow, error)

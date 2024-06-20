@@ -38,6 +38,20 @@ func (r *mutationResolver) CreateStore(ctx context.Context, input model.NewStore
 	return r.storeController.CreateStore(ctx, args)
 }
 
+// CreateStoreProduct is the resolver for the createStoreProduct field.
+func (r *mutationResolver) CreateStoreProduct(ctx context.Context, input model.NewStoreProductInput) (*model.Product, error) {
+	args := db.CreateStoreProductParams{
+		Name:         input.Name,
+		Image:        input.Image,
+		Volume:       int32(input.Volume),
+		StoreID:      input.StoreID,
+		Unit:         input.Unit,
+		PricePerUnit: int32(input.PricePerUnit),
+	}
+
+	return r.productController.CreateStoreProduct(ctx, args)
+}
+
 // Product is the resolver for the product field.
 func (r *orderResolver) Product(ctx context.Context, obj *model.Order) (*model.Product, error) {
 	return r.productController.GetProductByID(ctx, obj.ProductID)

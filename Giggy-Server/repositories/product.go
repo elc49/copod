@@ -59,3 +59,20 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id uuid.UUID) (*
 		UpdatedAt:    p.UpdatedAt,
 	}, nil
 }
+
+func (r *ProductRepository) CreateStoreProduct(ctx context.Context, args db.CreateStoreProductParams) (*model.Product, error) {
+	product, err := r.queries.CreateStoreProduct(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Product{
+		ID:           product.ID,
+		Name:         product.Name,
+		Image:        product.Image,
+		Volume:       int(product.Volume),
+		PricePerUnit: int(product.PricePerUnit),
+		CreatedAt:    product.CreatedAt,
+		UpdatedAt:    product.UpdatedAt,
+	}, nil
+}
