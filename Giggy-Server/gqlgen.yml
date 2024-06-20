@@ -92,3 +92,9 @@ models:
     fields:
       user:
         resolver: true
+  Order:
+    fields:
+      product:
+        resolver: true
+      customer:
+        resolver: true

@@ -1,0 +1,11 @@
+query GetStoreOrders($id: UUID!) {
+    getStoreOrders(id: $id) {
+        id
+        volume
+        toBePaid
+        customer {
+            id
+            phone
+        }
+    }
+}

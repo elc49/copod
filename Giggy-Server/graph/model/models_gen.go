@@ -3,6 +3,9 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,6 +32,29 @@ type NewStoreInput struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
+type Order struct {
+	ID         uuid.UUID `json:"id"`
+	Volume     int       `json:"volume"`
+	ToBePaid   int       `json:"toBePaid"`
+	CustomerID uuid.UUID `json:"customerId"`
+	ProductID  uuid.UUID `json:"productId"`
+	Product    *Product  `json:"product"`
+	Customer   *User     `json:"customer"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+type Payment struct {
+	ID        uuid.UUID     `json:"id"`
+	Customer  string        `json:"customer"`
+	Amount    int           `json:"amount"`
+	Reason    string        `json:"reason"`
+	Status    PaymentStatus `json:"status"`
+	OrderID   uuid.UUID     `json:"orderId"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
 type Post struct {
 	ID        uuid.UUID `json:"id"`
 	Text      string    `json:"text"`
@@ -38,6 +64,17 @@ type Post struct {
 	User      *User     `json:"user"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Product struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Volume       int       `json:"volume"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int       `json:"pricePerUnit"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type Query struct {
@@ -51,4 +88,47 @@ type Store struct {
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+}
+
+type PaymentStatus string
+
+const (
+	PaymentStatusPaid    PaymentStatus = "PAID"
+	PaymentStatusPending PaymentStatus = "PENDING"
+	PaymentStatusFailed  PaymentStatus = "FAILED"
+)
+
+var AllPaymentStatus = []PaymentStatus{
+	PaymentStatusPaid,
+	PaymentStatusPending,
+	PaymentStatusFailed,
+}
+
+func (e PaymentStatus) IsValid() bool {
+	switch e {
+	case PaymentStatusPaid, PaymentStatusPending, PaymentStatusFailed:
+		return true
+	}
+	return false
+}
+
+func (e PaymentStatus) String() string {
+	return string(e)
+}
+
+func (e *PaymentStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PaymentStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PaymentStatus", str)
+	}
+	return nil
+}
+
+func (e PaymentStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

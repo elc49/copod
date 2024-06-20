@@ -9,11 +9,11 @@ INSERT INTO users (
 ) RETURNING *;
 
 -- name: GetUserByPhone :one
-SELECT id, phone FROM users
+SELECT id, phone, created_at, updated_at FROM users
 WHERE phone = $1 AND deleted_at IS NULL;
 
 -- name: GetUserByID :one
-SELECT id, phone, avatar FROM users
+SELECT id, phone, avatar, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: ClearTestUsers :exec

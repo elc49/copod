@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -41,7 +42,7 @@ func (q *Queries) CreateStore(ctx context.Context, arg CreateStoreParams) (Store
 }
 
 const getStoreByID = `-- name: GetStoreByID :one
-SELECT id, name, thumbnail FROM stores
+SELECT id, name, thumbnail, created_at, updated_at FROM stores
 WHERE id = $1 AND deleted_at IS NULL
 `
 
@@ -49,17 +50,25 @@ type GetStoreByIDRow struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Thumbnail string    `json:"thumbnail"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetStoreByID(ctx context.Context, id uuid.UUID) (GetStoreByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getStoreByID, id)
 	var i GetStoreByIDRow
-	err := row.Scan(&i.ID, &i.Name, &i.Thumbnail)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Thumbnail,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }
 
 const getStoresBelongingToUser = `-- name: GetStoresBelongingToUser :many
-SELECT id, name, thumbnail FROM stores
+SELECT id, name, thumbnail, created_at, updated_at FROM stores
 WHERE user_id = $1 AND deleted_at IS NULL
 `
 
@@ -67,6 +76,8 @@ type GetStoresBelongingToUserRow struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Thumbnail string    `json:"thumbnail"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetStoresBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetStoresBelongingToUserRow, error) {
@@ -78,7 +89,13 @@ func (q *Queries) GetStoresBelongingToUser(ctx context.Context, userID uuid.UUID
 	items := []GetStoresBelongingToUserRow{}
 	for rows.Next() {
 		var i GetStoresBelongingToUserRow
-		if err := rows.Scan(&i.ID, &i.Name, &i.Thumbnail); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Thumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

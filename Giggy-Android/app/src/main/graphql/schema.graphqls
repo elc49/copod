@@ -28,6 +28,52 @@ input NewStoreInput {
   thumbnail: String!
 }
 
+type Order {
+  id: UUID!
+
+  volume: Int!
+
+  toBePaid: Int!
+
+  customerId: UUID!
+
+  productId: UUID!
+
+  product: Product!
+
+  customer: User!
+
+  created_at: Time!
+
+  updated_at: Time!
+}
+
+type Payment {
+  id: UUID!
+
+  customer: String!
+
+  amount: Int!
+
+  reason: String!
+
+  status: PaymentStatus!
+
+  orderId: UUID!
+
+  created_at: Time!
+
+  updated_at: Time!
+}
+
+enum PaymentStatus {
+  PAID
+
+  PENDING
+
+  FAILED
+}
+
 type Post {
   id: UUID!
 
@@ -46,6 +92,24 @@ type Post {
   updated_at: Time!
 }
 
+type Product {
+  id: UUID!
+
+  name: String!
+
+  image: String!
+
+  volume: Int!
+
+  unit: String!
+
+  pricePerUnit: Int!
+
+  created_at: Time!
+
+  updated_at: Time!
+}
+
 type Query {
   timeline: [Post!]!
 
@@ -54,6 +118,12 @@ type Query {
   getUser: User!
 
   getStoreById(id: UUID!): Store!
+
+  getStoreProducts(id: UUID!): [Product!]!
+
+  getStoreOrders(id: UUID!): [Order!]!
+
+  getStorePayments(id: UUID!): [Payment!]!
 }
 
 type Store {
