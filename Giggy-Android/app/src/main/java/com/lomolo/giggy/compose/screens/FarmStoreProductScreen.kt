@@ -21,7 +21,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.PrimaryTabRow
@@ -55,6 +57,9 @@ import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
+import com.lomolo.giggy.viewmodels.GetStoreOrdersState
+import com.lomolo.giggy.viewmodels.GetStorePaymentsState
+import com.lomolo.giggy.viewmodels.GetStoreProductsState
 import com.lomolo.giggy.viewmodels.GetStoreState
 
 object FarmStoreProductScreenDestination: Navigation {
@@ -63,74 +68,6 @@ object FarmStoreProductScreenDestination: Navigation {
     const val storeIdArg = "storeId"
     val routeWithArgs = "$route/{$storeIdArg}"
 }
-
-data class ProductData(
-    val img: String,
-    val unit: String,
-    val price: Int,
-    val volume: Int,
-)
-
-data class OrderData(
-    val name: String,
-    val volume: Int,
-    val product_id: String = "",
-    val amount: Int,
-)
-
-data class PaymentData(
-    val phone: String,
-    val amount: Int,
-    val status: String,
-)
-
-val testProductsData = listOf(
-    ProductData(
-        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
-        "kg",
-        124,
-        50,
-    ),
-    ProductData(
-        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
-        "kg",
-        124,
-        50,
-    ),
-    ProductData(
-        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
-        "kg",
-        124,
-        50,
-    ),
-    ProductData(
-        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
-        "kg",
-        124,
-        50,
-    ),
-    ProductData(
-        "https://storage.googleapis.com/giggy-cloud-storage/guava.jpeg",
-        "kg",
-        124,
-        50,
-    )
-)
-val testOrdersData = listOf(
-    OrderData(
-        "Guava",
-        5,
-        "product_id",
-        620,
-    )
-)
-val testPaymentsData = listOf(
-    PaymentData(
-        "+254739218799",
-        620,
-        "paid",
-    )
-)
 
 @Composable
 internal fun FarmStoreHeader(
@@ -182,9 +119,15 @@ fun FarmStoreProductScreen(
         mutableIntStateOf(0)
     }
     val store = viewModel.gettingStoreState
+    val products = viewModel.gettingStoreProductsState
+    val orders = viewModel.gettingStoreOrdersState
+    val payments = viewModel.gettingStorePaymentsState
 
     LaunchedEffect(Unit) {
-       viewModel.getStore()
+        viewModel.getStore()
+        viewModel.getStoreProducts()
+        viewModel.getStoreOrders()
+        viewModel.getStorePayments()
     }
 
     Column(
@@ -207,7 +150,16 @@ fun FarmStoreProductScreen(
         }
         PrimaryTabRow(
             modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = state
+            selectedTabIndex = state,
+            divider = {
+                if (products is GetStoreProductsState.Loading ||
+                    orders is GetStoreOrdersState.Loading ||
+                    payments is GetStorePaymentsState.Loading) {
+                    LinearProgressIndicator()
+                } else {
+                    HorizontalDivider()
+                }
+            }
         ) {
            titles.forEachIndexed {index, title ->
                Tab(
@@ -240,170 +192,267 @@ fun FarmStoreProductScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-               items(testProductsData) {
-                   Box(Modifier.background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.extraSmall)) {
-                       AsyncImage(
-                           model = ImageRequest.Builder(LocalContext.current)
-                               .data(it.img)
-                               .crossfade(true)
-                               .build(),
-                           contentScale = ContentScale.Crop,
-                           modifier = Modifier
-                               .fillMaxSize()
-                               .clip(MaterialTheme.shapes.extraSmall),
-                           contentDescription = null
-                       )
-                       Box(Modifier.align(Alignment.Center)) {
-                           Column(
-                               modifier = Modifier
-                                   .background(
-                                       MaterialTheme.colorScheme.secondaryContainer,
-                                       MaterialTheme.shapes.extraSmall,
-                                   )
-                                   .padding(8.dp),
-                               horizontalAlignment = Alignment.CenterHorizontally,
-                           ) {
-                               Text(
-                                   "Volume",
-                                   style = MaterialTheme.typography.titleMedium,
-                                   color = MaterialTheme.colorScheme.onBackground,
-                                   fontWeight = FontWeight.ExtraBold,
-                               )
-                               Text(
-                                   "${it.volume}",
-                                   color = MaterialTheme.colorScheme.onBackground,
-                                   textAlign = TextAlign.Center,
-                               )
-                           }
-                       }
-                   }
-               }
-                item {
-                    Box(
-                        Modifier
-                            .size(128.dp)
-                            .background(
-                                MaterialTheme.colorScheme.secondaryContainer,
-                                MaterialTheme.shapes.extraSmall
-                            )
-                            .clickable { },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        OutlinedIconButton(
-                            onClick = { /*TODO*/ },
-                        ) {
-                           Icon(
-                               Icons.TwoTone.Add,
-                               contentDescription = null
-                           )
+                when(products) {
+                    is GetStoreProductsState.Success -> {
+                        if (products.success != null) {
+                            items(products.success) {
+                                Box(
+                                    Modifier
+                                        .background(
+                                            MaterialTheme.colorScheme.background,
+                                            MaterialTheme.shapes.extraSmall
+                                        )
+                                ) {
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(it.image)
+                                            .crossfade(true)
+                                            .build(),
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(MaterialTheme.shapes.extraSmall),
+                                        contentDescription = null
+                                    )
+                                    Box(Modifier.align(Alignment.Center)) {
+                                        Column(
+                                            modifier = Modifier
+                                                .background(
+                                                    MaterialTheme.colorScheme.secondaryContainer,
+                                                    MaterialTheme.shapes.extraSmall,
+                                                )
+                                                .padding(8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                        ) {
+                                            Text(
+                                                "Volume",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                fontWeight = FontWeight.ExtraBold,
+                                            )
+                                            Text(
+                                                "${it.volume}",
+                                                color = MaterialTheme.colorScheme.onBackground,
+                                                textAlign = TextAlign.Center,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            item {
+                                Box(
+                                    Modifier
+                                        .size(128.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.shapes.extraSmall
+                                        )
+                                        .clickable { },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    OutlinedIconButton(
+                                        onClick = { /*TODO*/ },
+                                    ) {
+                                        Icon(
+                                            Icons.TwoTone.Add,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is GetStoreProductsState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    "Something went wrong",
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }                }
+            }
+            1 -> LazyColumn {
+                when(orders) {
+                    is GetStoreOrdersState.Success -> {
+                        if (orders.success != null) {
+                            item {
+                                if (orders.success.isNotEmpty()) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                    ) {
+                                        Text(
+                                            "Product",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            "Volume",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            "Amount",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                } else {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Text(
+                                            "No orders",
+                                            style = MaterialTheme.typography.labelLarge,
+                                        )
+                                    }
+                                }
+                            }
+                            items(orders.success) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    // TODO show product
+                                    Text(
+                                        it.customer.phone,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        "${it.volume}",
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        "${it.toBePaid}",
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    is GetStoreOrdersState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    "Something went wrong",
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
                         }
                     }
                 }
             }
-            1 -> LazyColumn {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        Text(
-                            "Product",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Volume",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Amount",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                items(testOrdersData) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            it.name,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            "${it.volume}",
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            "${it.amount}",
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
             2 -> LazyColumn {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        Text(
-                            "Customer",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Paid",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Status",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                when (payments) {
+                    is GetStorePaymentsState.Success -> {
+                        if (payments.success != null) {
+                            item {
+                                if (payments.success.isNotEmpty()) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                    ) {
+                                        Text(
+                                            "Customer",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            "Paid",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            "Status",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                } else {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Text(
+                                            "No payments",
+                                            style = MaterialTheme.typography.labelLarge,
+                                        )
+                                    }
+                                }
+                            }
+                            items(payments.success) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Text(
+                                        it.customer,
+                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 1,
+                                        modifier = Modifier.width(100.dp),
+                                    )
+                                    Text(
+                                        "${it.amount}",
+                                        textAlign = TextAlign.Center,
+                                    )
+                                    SuggestionChip(
+                                        onClick = { /*TODO*/ },
+                                        colors = SuggestionChipDefaults.suggestionChipColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            labelColor = MaterialTheme.colorScheme.background,
+                                        ),
+                                        label = {
+                                            Text(it.status.toString(), fontWeight = FontWeight.ExtraBold)
+                                        },
+                                    )
+                                }
+                            }
+                        }
                     }
-                }
-                items(testPaymentsData) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            it.phone,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            modifier = Modifier.width(100.dp),
-                        )
-                        Text(
-                            "${it.amount}",
-                            textAlign = TextAlign.Center,
-                        )
-                        SuggestionChip(
-                            onClick = { /*TODO*/ },
-                            colors = SuggestionChipDefaults.suggestionChipColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                labelColor = MaterialTheme.colorScheme.background,
-                            ),
-                            label = {
-                                Text(it.status, fontWeight = FontWeight.ExtraBold)
-                            },
-                        )
+                    is GetStorePaymentsState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    "Something went wrong",
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
                     }
+
                 }
             }
         }
