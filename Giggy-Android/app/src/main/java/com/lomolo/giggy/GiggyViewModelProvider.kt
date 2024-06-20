@@ -5,6 +5,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
 import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
@@ -28,6 +29,7 @@ object GiggyViewModelProvider {
                 giggyApplication().container.sessionRepository,
                 mainViewModel,
                 giggyApplication().container.giggyGraphqlApiService,
+                giggyApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel
         }

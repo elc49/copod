@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import com.lomolo.giggy.GetUserQuery
@@ -26,6 +27,7 @@ class SessionViewModel(
     private val sessionRepository: ISession,
     private val mainViewModel: MainViewModel,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
+    private val apolloStore: ApolloStore,
 ): ViewModel() {
     val sessionUiState: StateFlow<Session> = sessionRepository
         .get()
@@ -117,7 +119,10 @@ class SessionViewModel(
 
     fun signOut(cb: () -> Unit = {}) {
         viewModelScope.launch {
-            sessionRepository.signOut().also { cb() }
+            sessionRepository.signOut().also {
+                cb()
+                apolloStore.clearAll()
+            }
         }
     }
 
