@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -64,36 +65,51 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, phone, avatar FROM users
+SELECT id, phone, avatar, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	ID     uuid.UUID `json:"id"`
-	Phone  string    `json:"phone"`
-	Avatar string    `json:"avatar"`
+	ID        uuid.UUID `json:"id"`
+	Phone     string    `json:"phone"`
+	Avatar    string    `json:"avatar"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i GetUserByIDRow
-	err := row.Scan(&i.ID, &i.Phone, &i.Avatar)
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Avatar,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }
 
 const getUserByPhone = `-- name: GetUserByPhone :one
-SELECT id, phone FROM users
+SELECT id, phone, created_at, updated_at FROM users
 WHERE phone = $1 AND deleted_at IS NULL
 `
 
 type GetUserByPhoneRow struct {
-	ID    uuid.UUID `json:"id"`
-	Phone string    `json:"phone"`
+	ID        uuid.UUID `json:"id"`
+	Phone     string    `json:"phone"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserByPhone, phone)
 	var i GetUserByPhoneRow
-	err := row.Scan(&i.ID, &i.Phone)
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
 	return i, err
 }

@@ -6,9 +6,9 @@ INSERT INTO stores (
 ) RETURNING *;
 
 -- name: GetStoresBelongingToUser :many
-SELECT id, name, thumbnail FROM stores
+SELECT id, name, thumbnail, created_at, updated_at FROM stores
 WHERE user_id = $1 AND deleted_at IS NULL;
 
 -- name: GetStoreByID :one
-SELECT id, name, thumbnail FROM stores
+SELECT id, name, thumbnail, created_at, updated_at FROM stores
 WHERE id = $1 AND deleted_at IS NULL;

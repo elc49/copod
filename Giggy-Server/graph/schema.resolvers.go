@@ -38,6 +38,16 @@ func (r *mutationResolver) CreateStore(ctx context.Context, input model.NewStore
 	return r.storeController.CreateStore(ctx, args)
 }
 
+// Product is the resolver for the product field.
+func (r *orderResolver) Product(ctx context.Context, obj *model.Order) (*model.Product, error) {
+	return r.productController.GetProductByID(ctx, obj.ProductID)
+}
+
+// Customer is the resolver for the customer field.
+func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
+	return r.signinController.GetUserByID(ctx, obj.CustomerID)
+}
+
 // User is the resolver for the user field.
 func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
 	return nil, nil
@@ -65,8 +75,26 @@ func (r *queryResolver) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.
 	return r.storeController.GetStoreByID(ctx, id)
 }
 
+// GetStoreProducts is the resolver for the getStoreProducts field.
+func (r *queryResolver) GetStoreProducts(ctx context.Context, id uuid.UUID) ([]*model.Product, error) {
+	return r.productController.GetProductsBelongingToStore(ctx, id)
+}
+
+// GetStoreOrders is the resolver for the getStoreOrders field.
+func (r *queryResolver) GetStoreOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
+	return r.orderController.GetOrdersBelongingToStore(ctx, id)
+}
+
+// GetStorePayments is the resolver for the getStorePayments field.
+func (r *queryResolver) GetStorePayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
+	return r.paymentController.GetPaymentsBelongingToStore(ctx, id)
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
+// Order returns OrderResolver implementation.
+func (r *Resolver) Order() OrderResolver { return &orderResolver{r} }
 
 // Post returns PostResolver implementation.
 func (r *Resolver) Post() PostResolver { return &postResolver{r} }
@@ -75,5 +103,6 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

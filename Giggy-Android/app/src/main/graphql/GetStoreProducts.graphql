@@ -1,0 +1,9 @@
+query GetStoreProducts($id: UUID!) {
+    getStoreProducts(id: $id) {
+        id
+        name
+        image
+        volume
+        pricePerUnit
+    }
+}

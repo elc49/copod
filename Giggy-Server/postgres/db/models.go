@@ -17,6 +17,7 @@ type Order struct {
 	ToBePaid   int32     `json:"to_be_paid"`
 	CustomerID uuid.UUID `json:"customer_id"`
 	ProductID  uuid.UUID `json:"product_id"`
+	StoreID    uuid.UUID `json:"store_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -28,6 +29,8 @@ type Payment struct {
 	Reason    string    `json:"reason"`
 	Status    string    `json:"status"`
 	OrderID   uuid.UUID `json:"order_id"`
+	ProductID uuid.UUID `json:"product_id"`
+	StoreID   uuid.UUID `json:"store_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -50,6 +53,7 @@ type Product struct {
 	Volume       int32     `json:"volume"`
 	Unit         string    `json:"unit"`
 	PricePerUnit int32     `json:"price_per_unit"`
+	StoreID      uuid.UUID `json:"store_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
