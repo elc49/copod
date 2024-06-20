@@ -32,6 +32,15 @@ type NewStoreInput struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
+type NewStoreProductInput struct {
+	StoreID      uuid.UUID `json:"storeId"`
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Volume       int       `json:"volume"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int       `json:"pricePerUnit"`
+}
+
 type Order struct {
 	ID         uuid.UUID `json:"id"`
 	Volume     int       `json:"volume"`

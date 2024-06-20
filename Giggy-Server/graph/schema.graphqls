@@ -101,6 +101,15 @@ input NewStoreInput {
   thumbnail: String!
 }
 
+input NewStoreProductInput {
+  storeId: UUID!
+  name: String!
+  image: String!
+  volume: Int!
+  unit: String!
+  pricePerUnit: Int!
+}
+
 type Query {
   timeline: [Post!]!
   getStoresBelongingToUser: [Store!]!
@@ -114,4 +123,5 @@ type Query {
 type Mutation {
   createPost(input: NewPostInput!): Post!
   createStore(input: NewStoreInput!): Store!
+  createStoreProduct(input: NewStoreProductInput!): Product!
 }

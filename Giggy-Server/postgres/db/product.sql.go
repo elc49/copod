@@ -12,6 +12,48 @@ import (
 	"github.com/google/uuid"
 )
 
+const createStoreProduct = `-- name: CreateStoreProduct :one
+INSERT INTO products (
+  name, image, volume, unit, price_per_unit, store_id
+) VALUES (
+  $1, $2, $3, $4, $5, $6
+)
+RETURNING id, name, image, volume, unit, price_per_unit, store_id, created_at, updated_at
+`
+
+type CreateStoreProductParams struct {
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Volume       int32     `json:"volume"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int32     `json:"price_per_unit"`
+	StoreID      uuid.UUID `json:"store_id"`
+}
+
+func (q *Queries) CreateStoreProduct(ctx context.Context, arg CreateStoreProductParams) (Product, error) {
+	row := q.db.QueryRowContext(ctx, createStoreProduct,
+		arg.Name,
+		arg.Image,
+		arg.Volume,
+		arg.Unit,
+		arg.PricePerUnit,
+		arg.StoreID,
+	)
+	var i Product
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Image,
+		&i.Volume,
+		&i.Unit,
+		&i.PricePerUnit,
+		&i.StoreID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getProductByID = `-- name: GetProductByID :one
 SELECT id, name, image, volume, unit, price_per_unit, created_at, updated_at FROM products
 WHERE id = $1
