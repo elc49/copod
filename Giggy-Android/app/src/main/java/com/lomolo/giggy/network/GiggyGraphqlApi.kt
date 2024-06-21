@@ -4,6 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateStoreMutation
+import com.lomolo.giggy.CreateStoreProductMutation
 import com.lomolo.giggy.GetStoreByIdQuery
 import com.lomolo.giggy.GetStoreOrdersQuery
 import com.lomolo.giggy.GetStorePaymentsQuery
@@ -12,6 +13,8 @@ import com.lomolo.giggy.GetStoresBelongingToUserQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewStoreInput
+import com.lomolo.giggy.type.NewStoreProductInput
+import com.lomolo.giggy.viewmodels.Product
 import com.lomolo.giggy.viewmodels.Store
 
 interface IGiggyGraphqlApi {
@@ -23,6 +26,7 @@ interface IGiggyGraphqlApi {
     suspend fun getStoreProducts(id: String): ApolloResponse<GetStoreProductsQuery.Data>
     suspend fun getStoreOrders(id: String): ApolloResponse<GetStoreOrdersQuery.Data>
     suspend fun getStorePayments(id: String): ApolloResponse<GetStorePaymentsQuery.Data>
+    suspend fun createStoreProduct(input: Product): ApolloResponse<CreateStoreProductMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -63,5 +67,18 @@ class GiggyGraphqlApi(
 
     override suspend fun getStorePayments(id: String) = apolloClient
         .query(GetStorePaymentsQuery(id))
+        .execute()
+
+    override suspend fun createStoreProduct(input: Product) = apolloClient
+        .mutation(CreateStoreProductMutation(
+            NewStoreProductInput(
+                storeId = input.storeId,
+                name = input.name,
+                image = input.image,
+                unit = input.unit,
+                pricePerUnit = input.pricePerUnit.toInt(),
+                volume = input.volume.toInt(),
+            )
+        ))
         .execute()
 }

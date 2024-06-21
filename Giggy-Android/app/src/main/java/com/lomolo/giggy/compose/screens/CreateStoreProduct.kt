@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,8 +50,8 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import com.lomolo.giggy.viewmodels.AddFarmProductState
 import com.lomolo.giggy.viewmodels.AddFarmProductViewModel
-import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
 import com.lomolo.giggy.viewmodels.UploadProductImageState
 import kotlinx.coroutines.launch
 
@@ -65,6 +66,7 @@ fun CreateStoreProductScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit = {},
     viewModel: AddFarmProductViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    showToast: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val pickMedia = rememberLauncherForActivityResult(
@@ -131,8 +133,8 @@ fun CreateStoreProductScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = product.name,
+                        onValueChange = { viewModel.setProductName(it) },
                         label = {
                             Text(
                                 stringResource(R.string.product_name),
@@ -204,8 +206,8 @@ fun CreateStoreProductScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = product.unit,
+                        onValueChange = { viewModel.setProductUnit(it) },
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 4.dp),
@@ -219,11 +221,12 @@ fun CreateStoreProductScreen(
                             Text(
                                 stringResource(R.string.unit_support_text)
                             )
-                        }
+                        },
+                        singleLine = true,
                     )
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = product.pricePerUnit,
+                        onValueChange = { viewModel.setProductPricePerUnit(it) },
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 4.dp),
@@ -237,7 +240,8 @@ fun CreateStoreProductScreen(
                             Text(
                                 stringResource(R.string.price_support_text)
                             )
-                        }
+                        },
+                        singleLine = true,
                     )
                 }
                 Row (
@@ -246,8 +250,8 @@ fun CreateStoreProductScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = product.volume,
+                        onValueChange = { viewModel.setProductVolume(it) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         label = {
@@ -260,23 +264,38 @@ fun CreateStoreProductScreen(
                             Text(
                                 stringResource(R.string.volume_support_text),
                             )
-                        }
+                        },
+                        singleLine = true,
                     )
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Button(
-                        onClick = { viewModel.addProduct() },
+                        onClick = {
+                            viewModel.addProduct {
+                                onGoBack()
+                                viewModel.resetProductState()
+                                showToast()
+                            }
+                        },
                         shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(14.dp),
                     ) {
-                       Text(
-                           "Add",
-                           style = MaterialTheme.typography.titleMedium,
-                           fontWeight = FontWeight.Bold,
-                       )
+                       when(viewModel.addingFarmProductState) {
+                           AddFarmProductState.Success -> Text(
+                               "Add",
+                               style = MaterialTheme.typography.titleMedium,
+                               fontWeight = FontWeight.Bold,
+                           )
+                           AddFarmProductState.Loading -> {
+                               CircularProgressIndicator(
+                                   color = MaterialTheme.colorScheme.onPrimary,
+                                   modifier = Modifier.size(20.dp),
+                               )
+                           }
+                       }
                     }
                 }
             }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,16 +15,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.IOException
 import java.io.InputStream
 
 class AddFarmProductViewModel(
     private val giggyRestApi: IGiggyRestApi,
     private val farmStoreProductViewModel: FarmStoreProductViewModel,
+    private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
     private val _productInput = MutableStateFlow(Product())
     val productUiState: StateFlow<Product> = _productInput.asStateFlow()
 
     var uploadingProductImageState: UploadProductImageState by mutableStateOf(UploadProductImageState.Success)
+        private set
+
+    var addingFarmProductState: AddFarmProductState by mutableStateOf(AddFarmProductState.Success)
         private set
 
     fun uploadImage(stream: InputStream) {
@@ -49,8 +55,61 @@ class AddFarmProductViewModel(
         }
     }
 
-    fun addProduct() {
-        println(farmStoreProductViewModel.getStoreId())
+    fun setProductName(name: String) {
+        _productInput.update {
+            it.copy(name = name)
+        }
+    }
+
+    fun setProductUnit(unit: String) {
+        _productInput.update {
+            it.copy(unit = unit)
+        }
+    }
+
+    fun setProductPricePerUnit(price: String) {
+        _productInput.update {
+            it.copy(pricePerUnit = price)
+        }
+    }
+
+    fun setProductVolume(volume: String) {
+        _productInput.update {
+            it.copy(volume = volume)
+        }
+    }
+
+    private fun validProductInput(uiState: Product): Boolean {
+        return with(uiState) {
+            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank()
+        }
+    }
+
+    fun addProduct(cb: () -> Unit = {}) {
+        if (addingFarmProductState !is AddFarmProductState.Loading &&
+            validProductInput(_productInput.value) &&
+            uploadingProductImageState is UploadProductImageState.Success) {
+            addingFarmProductState = AddFarmProductState.Loading
+            viewModelScope.launch {
+                addingFarmProductState = try {
+                    giggyGraphqlApi.createStoreProduct(_productInput.value)
+                    AddFarmProductState.Success.also { cb() }
+                } catch(e: IOException) {
+                    e.printStackTrace()
+                    AddFarmProductState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    fun resetProductState() {
+        _productInput.value = Product()
+    }
+
+    init {
+        _productInput.update {
+            it.copy(storeId = farmStoreProductViewModel.getStoreId())
+        }
     }
 }
 
@@ -60,10 +119,17 @@ data class Product(
     val unit: String = "",
     val pricePerUnit: String = "",
     val volume: String = "",
+    val storeId: String = "",
 )
 
 interface UploadProductImageState {
     data object Loading: UploadProductImageState
     data class Error(val msg: String?): UploadProductImageState
     data object Success: UploadProductImageState
+}
+
+interface AddFarmProductState {
+    data object Loading: AddFarmProductState
+    data object Success: AddFarmProductState
+    data class Error(val msg: String?): AddFarmProductState
 }

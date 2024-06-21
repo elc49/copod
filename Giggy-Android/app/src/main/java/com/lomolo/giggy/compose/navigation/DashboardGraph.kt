@@ -360,6 +360,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         ) {
             Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     TopAppBar(
                         title = {
@@ -520,6 +521,11 @@ fun NavGraphBuilder.addDashboardGraph(
             CreateStoreProductScreen(
                 onGoBack = {
                     navHostController.popBackStack()
+                },
+                showToast = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Product added.", withDismissAction = true)
+                    }
                 }
             )
         }
