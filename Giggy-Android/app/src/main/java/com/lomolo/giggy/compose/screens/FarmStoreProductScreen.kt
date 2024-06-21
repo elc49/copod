@@ -108,6 +108,7 @@ internal fun FarmStoreHeader(
 fun FarmStoreProductScreen(
     modifier: Modifier = Modifier,
     viewModel: FarmStoreProductViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    onCreateStoreProduct: () -> Unit = {},
 ) {
     val tabIcon = mapOf(
         0 to R.drawable.product_box,
@@ -247,11 +248,11 @@ fun FarmStoreProductScreen(
                                             MaterialTheme.colorScheme.secondaryContainer,
                                             MaterialTheme.shapes.extraSmall
                                         )
-                                        .clickable { },
+                                        .clickable { onCreateStoreProduct() },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     OutlinedIconButton(
-                                        onClick = { /*TODO*/ },
+                                        onClick = { onCreateStoreProduct() },
                                     ) {
                                         Icon(
                                             Icons.TwoTone.Add,

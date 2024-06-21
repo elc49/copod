@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.lomolo.giggy.viewmodels.AddFarmProductViewModel
 import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
 import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
@@ -18,6 +19,8 @@ object GiggyViewModelProvider {
         lateinit var sessionViewModel: SessionViewModel
         lateinit var postingViewModel: PostingViewModel
         lateinit var storeViewModel: StoreViewModel
+        lateinit var addFarmProductViewModel: AddFarmProductViewModel
+        lateinit var farmStoreProductViewModel: FarmStoreProductViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -52,10 +55,20 @@ object GiggyViewModelProvider {
         }
 
         initializer {
-            FarmStoreProductViewModel(
+            farmStoreProductViewModel = FarmStoreProductViewModel(
                 this.createSavedStateHandle(),
                 giggyApplication().container.giggyGraphqlApiService,
             )
+            farmStoreProductViewModel
+        }
+
+        initializer {
+            addFarmProductViewModel = AddFarmProductViewModel(
+                giggyApplication().container.giggyRestApiService,
+                farmStoreProductViewModel,
+                giggyApplication().container.giggyGraphqlApiService,
+            )
+            addFarmProductViewModel
         }
     }
 }

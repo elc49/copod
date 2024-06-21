@@ -19,18 +19,33 @@ class FarmStoreProductViewModel(
     savedStateHandle: SavedStateHandle,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
-    private val storeId: String = checkNotNull(savedStateHandle[FarmStoreProductScreenDestination.storeIdArg])
+    private val storeId: String =
+        checkNotNull(savedStateHandle[FarmStoreProductScreenDestination.storeIdArg])
+
+    fun getStoreId(): String { return storeId }
 
     var gettingStoreState: GetStoreState by mutableStateOf(GetStoreState.Success(null))
         private set
 
-    var gettingStoreProductsState: GetStoreProductsState by mutableStateOf(GetStoreProductsState.Success(null))
+    var gettingStoreProductsState: GetStoreProductsState by mutableStateOf(
+        GetStoreProductsState.Success(
+            null
+        )
+    )
         private set
 
-    var gettingStoreOrdersState: GetStoreOrdersState by mutableStateOf(GetStoreOrdersState.Success(null))
+    var gettingStoreOrdersState: GetStoreOrdersState by mutableStateOf(
+        GetStoreOrdersState.Success(
+            null
+        )
+    )
         private set
 
-    var gettingStorePaymentsState: GetStorePaymentsState by mutableStateOf(GetStorePaymentsState.Success(null))
+    var gettingStorePaymentsState: GetStorePaymentsState by mutableStateOf(
+        GetStorePaymentsState.Success(
+            null
+        )
+    )
         private set
 
     fun getStore() {
@@ -40,7 +55,7 @@ class FarmStoreProductViewModel(
                 gettingStoreState = try {
                     val res = giggyGraphqlApi.getStore(storeId).dataOrThrow()
                     GetStoreState.Success(res.getStoreById)
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     GetStoreState.Error(e.localizedMessage)
                 }
@@ -55,7 +70,7 @@ class FarmStoreProductViewModel(
                 gettingStoreProductsState = try {
                     val res = giggyGraphqlApi.getStoreProducts(storeId).dataOrThrow()
                     GetStoreProductsState.Success(res.getStoreProducts)
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     GetStoreProductsState.Error(e.localizedMessage)
                 }
@@ -70,7 +85,7 @@ class FarmStoreProductViewModel(
                 gettingStoreOrdersState = try {
                     val res = giggyGraphqlApi.getStoreOrders(storeId).dataOrThrow()
                     GetStoreOrdersState.Success(res.getStoreOrders)
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     GetStoreOrdersState.Error(e.localizedMessage)
                 }
@@ -82,10 +97,10 @@ class FarmStoreProductViewModel(
         if (gettingStorePaymentsState !is GetStorePaymentsState.Loading) {
             gettingStorePaymentsState = GetStorePaymentsState.Loading
             viewModelScope.launch {
-                gettingStorePaymentsState = try  {
+                gettingStorePaymentsState = try {
                     val res = giggyGraphqlApi.getStorePayments(storeId).dataOrThrow()
                     GetStorePaymentsState.Success(res.getStorePayments)
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     GetStorePaymentsState.Error(e.localizedMessage)
                 }
@@ -93,6 +108,7 @@ class FarmStoreProductViewModel(
         }
     }
 }
+
 
 interface GetStoreState {
     data object Loading: GetStoreState

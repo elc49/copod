@@ -64,11 +64,16 @@ class StoreViewModel(
         }
     }
 
+    private fun validStoreInput(uiState: Store): Boolean {
+        return with(uiState) {
+            name.isNotBlank() && image.isNotBlank()
+        }
+    }
+
     fun saveStore(cb: () -> Unit = {}) {
-        if (_storeInput.value.name.isNotBlank() &&
-            _storeInput.value.image.isNotBlank() &&
+        if (validStoreInput(_storeInput.value) &&
             createStoreState !is CreateStoreState.Loading &&
-            storeImageUploadState !is StoreImageUploadState.Loading) {
+            storeImageUploadState is StoreImageUploadState.Success) {
             createStoreState = CreateStoreState.Loading
             viewModelScope.launch {
                 createStoreState = try {
