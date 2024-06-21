@@ -63,21 +63,6 @@ class FarmStoreProductViewModel(
         }
     }
 
-    fun getStoreProducts() {
-        if (gettingStoreProductsState !is GetStoreProductsState.Loading) {
-            gettingStoreProductsState = GetStoreProductsState.Loading
-            viewModelScope.launch {
-                gettingStoreProductsState = try {
-                    val res = giggyGraphqlApi.getStoreProducts(storeId).dataOrThrow()
-                    GetStoreProductsState.Success(res.getStoreProducts)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    GetStoreProductsState.Error(e.localizedMessage)
-                }
-            }
-        }
-    }
-
     fun getStoreOrders() {
         if (gettingStoreOrdersState !is GetStoreOrdersState.Loading) {
             gettingStoreOrdersState = GetStoreOrdersState.Loading
@@ -104,6 +89,21 @@ class FarmStoreProductViewModel(
                     e.printStackTrace()
                     GetStorePaymentsState.Error(e.localizedMessage)
                 }
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            try {
+                giggyGraphqlApi
+                    .getStoreProducts(storeId)
+                    .collect {res ->
+                        val r = res.dataOrThrow()
+                        gettingStoreProductsState = GetStoreProductsState.Success(r.getStoreProducts)
+                    }
+            } catch(e: IOException) {
+                e.printStackTrace()
             }
         }
     }

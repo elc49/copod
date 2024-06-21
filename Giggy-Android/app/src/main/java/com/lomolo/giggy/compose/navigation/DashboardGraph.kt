@@ -405,7 +405,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     onSignOut = {
                         sessionViewModel.signOut {
                             navHostController.navigate(RootNavigation.route) {
-                                popUpTo(RootNavigation.route) {
+                                popUpTo(AccountScreenDestination.route) {
                                     inclusive = true
                                 }
                             }
