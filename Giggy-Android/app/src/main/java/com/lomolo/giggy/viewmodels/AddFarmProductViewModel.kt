@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
+import com.apollographql.apollo3.exception.CacheMissException
+import com.lomolo.giggy.GetStoreProductsQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.toImmutableList
 import okio.IOException
 import java.io.InputStream
 
@@ -22,6 +26,7 @@ class AddFarmProductViewModel(
     private val giggyRestApi: IGiggyRestApi,
     private val farmStoreProductViewModel: FarmStoreProductViewModel,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
+    private val apolloStore: ApolloStore,
 ): ViewModel() {
     private val _productInput = MutableStateFlow(Product())
     val productUiState: StateFlow<Product> = _productInput.asStateFlow()
@@ -92,8 +97,35 @@ class AddFarmProductViewModel(
             addingFarmProductState = AddFarmProductState.Loading
             viewModelScope.launch {
                 addingFarmProductState = try {
-                    giggyGraphqlApi.createStoreProduct(_productInput.value)
-                    AddFarmProductState.Success.also { cb() }
+                    val res = giggyGraphqlApi.createStoreProduct(_productInput.value).dataOrThrow()
+                    try {
+                        val updatedCachedData = apolloStore.readOperation(
+                            GetStoreProductsQuery(_productInput.value.storeId)
+                        )
+                            .getStoreProducts
+                            .toMutableList()
+                            .apply {
+                                add(
+                                    GetStoreProductsQuery.GetStoreProduct(
+                                        res.createStoreProduct.id,
+                                        res.createStoreProduct.name,
+                                        res.createStoreProduct.image,
+                                        res.createStoreProduct.volume,
+                                        res.createStoreProduct.pricePerUnit,
+                                    )
+                                )
+                            }
+                            .toImmutableList()
+                        apolloStore.writeOperation(
+                            GetStoreProductsQuery(_productInput.value.storeId),
+                            GetStoreProductsQuery.Data(updatedCachedData),
+                        )
+                    } catch(e: CacheMissException) {
+                        e.printStackTrace()
+                    }
+                    AddFarmProductState.Success.also {
+                        cb()
+                    }
                 } catch(e: IOException) {
                     e.printStackTrace()
                     AddFarmProductState.Error(e.localizedMessage)

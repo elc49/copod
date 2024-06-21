@@ -2,6 +2,7 @@ package com.lomolo.giggy.network
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.cache.normalized.watch
 import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateStoreMutation
 import com.lomolo.giggy.CreateStoreProductMutation
@@ -16,6 +17,7 @@ import com.lomolo.giggy.type.NewStoreInput
 import com.lomolo.giggy.type.NewStoreProductInput
 import com.lomolo.giggy.viewmodels.Product
 import com.lomolo.giggy.viewmodels.Store
+import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
     suspend fun createPost(input: NewPostInput): ApolloResponse<CreatePostMutation.Data>
@@ -23,7 +25,7 @@ interface IGiggyGraphqlApi {
     suspend fun createStore(input: Store): ApolloResponse<CreateStoreMutation.Data>
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
     suspend fun getStore(id: String): ApolloResponse<GetStoreByIdQuery.Data>
-    suspend fun getStoreProducts(id: String): ApolloResponse<GetStoreProductsQuery.Data>
+    suspend fun getStoreProducts(id: String): Flow<ApolloResponse<GetStoreProductsQuery.Data>>
     suspend fun getStoreOrders(id: String): ApolloResponse<GetStoreOrdersQuery.Data>
     suspend fun getStorePayments(id: String): ApolloResponse<GetStorePaymentsQuery.Data>
     suspend fun createStoreProduct(input: Product): ApolloResponse<CreateStoreProductMutation.Data>
@@ -59,7 +61,7 @@ class GiggyGraphqlApi(
 
     override suspend fun getStoreProducts(id: String) = apolloClient
         .query(GetStoreProductsQuery(id))
-        .execute()
+        .watch()
 
     override suspend fun getStoreOrders(id: String) = apolloClient
         .query(GetStoreOrdersQuery(id))

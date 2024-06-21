@@ -126,7 +126,6 @@ fun FarmStoreProductScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getStore()
-        viewModel.getStoreProducts()
         viewModel.getStoreOrders()
         viewModel.getStorePayments()
     }

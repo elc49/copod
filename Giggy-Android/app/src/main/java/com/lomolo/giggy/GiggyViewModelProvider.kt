@@ -67,6 +67,7 @@ object GiggyViewModelProvider {
                 giggyApplication().container.giggyRestApiService,
                 farmStoreProductViewModel,
                 giggyApplication().container.giggyGraphqlApiService,
+                giggyApplication().container.apolloClient.apolloStore,
             )
             addFarmProductViewModel
         }
