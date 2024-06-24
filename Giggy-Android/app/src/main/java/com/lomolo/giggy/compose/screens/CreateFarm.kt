@@ -37,23 +37,23 @@ import coil.request.ImageRequest
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.CreateStoreState
-import com.lomolo.giggy.viewmodels.StoreImageUploadState
-import com.lomolo.giggy.viewmodels.StoreViewModel
+import com.lomolo.giggy.viewmodels.CreateFarmState
+import com.lomolo.giggy.viewmodels.FarmImageUploadState
+import com.lomolo.giggy.viewmodels.FarmViewModel
 import kotlinx.coroutines.launch
 
-object CreateFarmStoreScreenDestination: Navigation {
-    override val title = R.string.create_farm_store
-    override val route = "dashboard/create_store"
+object CreateFarmScreenDestination: Navigation {
+    override val title = R.string.create_farm
+    override val route = "dashboard/create_farm"
 }
 
 @Composable
-fun CreateFarmStoreScreen(
+fun CreateFarmScreen(
     modifier: Modifier = Modifier,
-    onCreateStore: () -> Unit = {},
-    storeViewModel: StoreViewModel = viewModel(),
+    onCreateFarm: () -> Unit = {},
+    farmViewModel: FarmViewModel = viewModel(),
 ) {
-    val store by storeViewModel.storeUiState.collectAsState()
+    val farm by farmViewModel.farmUiState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pickMedia = rememberLauncherForActivityResult(
@@ -62,15 +62,15 @@ fun CreateFarmStoreScreen(
         if (it != null) {
             val stream = context.contentResolver.openInputStream(it)
             if (stream != null) {
-                storeViewModel.uploadImage(stream)
+                farmViewModel.uploadImage(stream)
             }
         }
     }
-    val image = when(storeViewModel.storeImageUploadState) {
-        StoreImageUploadState.Loading -> {
+    val image = when(farmViewModel.farmImageUploadState) {
+        FarmImageUploadState.Loading -> {
             R.drawable.loading_img
         }
-        is StoreImageUploadState.Error -> {
+        is FarmImageUploadState.Error -> {
             R.drawable.ic_broken_image
         }
         else -> {
@@ -86,33 +86,33 @@ fun CreateFarmStoreScreen(
     ) {
         Row {
             Text(
-                stringResource(R.string.store_headline),
+                stringResource(R.string.farm_headline),
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
         OutlinedTextField(
             label = {
                 Text(
-                    stringResource(R.string.store_name),
+                    stringResource(R.string.farm_name),
                     style = MaterialTheme.typography.labelMedium,
                 )
             },
-            value = store.name,
-            onValueChange = { storeViewModel.setName(it) },
+            value = farm.name,
+            onValueChange = { farmViewModel.setName(it) },
             singleLine = true,
         )
         Text(
-            stringResource(R.string.add_store_image),
+            stringResource(R.string.add_farm_image),
             style = MaterialTheme.typography.bodyLarge,
         )
-        if (store.image.isBlank()) {
+        if (farm.image.isBlank()) {
             Image(
                 painter = painterResource(image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(120.dp)
                     .clickable {
-                        if (storeViewModel.storeImageUploadState !is StoreImageUploadState.Loading) {
+                        if (farmViewModel.farmImageUploadState !is FarmImageUploadState.Loading) {
                             scope.launch {
                                 pickMedia.launch(
                                     PickVisualMediaRequest(
@@ -127,7 +127,7 @@ fun CreateFarmStoreScreen(
         } else {
            AsyncImage(
                model = ImageRequest.Builder(context)
-                   .data(store.image)
+                   .data(farm.image)
                    .crossfade(true)
                    .build(),
                contentDescription = null,
@@ -149,18 +149,18 @@ fun CreateFarmStoreScreen(
            )
         }
         Button(
-            onClick = { onCreateStore() },
+            onClick = { onCreateFarm() },
             shape = MaterialTheme.shapes.extraSmall,
             contentPadding = PaddingValues(14.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-           when(storeViewModel.createStoreState) {
-               CreateStoreState.Success -> Text(
+           when(farmViewModel.createFarmState) {
+               CreateFarmState.Success -> Text(
                    stringResource(R.string.create),
                    style = MaterialTheme.typography.bodyMedium,
                    fontWeight = FontWeight.Bold,
                )
-               CreateStoreState.Loading -> CircularProgressIndicator(
+               CreateFarmState.Loading -> CircularProgressIndicator(
                    color = MaterialTheme.colorScheme.onPrimary,
                    modifier = Modifier.size(20.dp),
                )
@@ -171,9 +171,9 @@ fun CreateFarmStoreScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun CreateFarmStoreScreenPreview() {
+fun CreateFarmFarmScreenPreview() {
     GiggyTheme {
-        CreateFarmStoreScreen()
+        CreateFarmScreen()
 
     }
 }

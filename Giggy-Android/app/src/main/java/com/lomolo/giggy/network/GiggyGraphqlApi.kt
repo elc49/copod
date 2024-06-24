@@ -3,32 +3,32 @@ package com.lomolo.giggy.network
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.watch
+import com.lomolo.giggy.CreateFarmMarketMutation
 import com.lomolo.giggy.CreatePostMutation
-import com.lomolo.giggy.CreateStoreMutation
-import com.lomolo.giggy.CreateStoreProductMutation
-import com.lomolo.giggy.GetStoreByIdQuery
-import com.lomolo.giggy.GetStoreOrdersQuery
-import com.lomolo.giggy.GetStorePaymentsQuery
-import com.lomolo.giggy.GetStoreProductsQuery
-import com.lomolo.giggy.GetStoresBelongingToUserQuery
+import com.lomolo.giggy.CreateFarmMutation
+import com.lomolo.giggy.GetFarmByIdQuery
+import com.lomolo.giggy.GetFarmOrdersQuery
+import com.lomolo.giggy.GetFarmPaymentsQuery
+import com.lomolo.giggy.GetFarmMarketsQuery
+import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
-import com.lomolo.giggy.type.NewStoreInput
-import com.lomolo.giggy.type.NewStoreProductInput
-import com.lomolo.giggy.viewmodels.Product
-import com.lomolo.giggy.viewmodels.Store
+import com.lomolo.giggy.type.NewFarmInput
+import com.lomolo.giggy.type.NewFarmMarketInput
+import com.lomolo.giggy.viewmodels.Farm
+import com.lomolo.giggy.viewmodels.Market
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
     suspend fun createPost(input: NewPostInput): ApolloResponse<CreatePostMutation.Data>
-    suspend fun getStoresBelongingToUser(): ApolloResponse<GetStoresBelongingToUserQuery.Data>
-    suspend fun createStore(input: Store): ApolloResponse<CreateStoreMutation.Data>
+    suspend fun getFarmsBelongingToUser(): ApolloResponse<GetFarmsBelongingToUserQuery.Data>
+    suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
-    suspend fun getStore(id: String): ApolloResponse<GetStoreByIdQuery.Data>
-    suspend fun getStoreProducts(id: String): Flow<ApolloResponse<GetStoreProductsQuery.Data>>
-    suspend fun getStoreOrders(id: String): ApolloResponse<GetStoreOrdersQuery.Data>
-    suspend fun getStorePayments(id: String): ApolloResponse<GetStorePaymentsQuery.Data>
-    suspend fun createStoreProduct(input: Product): ApolloResponse<CreateStoreProductMutation.Data>
+    suspend fun getFarm(id: String): ApolloResponse<GetFarmByIdQuery.Data>
+    suspend fun getFarmMarkets(id: String): Flow<ApolloResponse<GetFarmMarketsQuery.Data>>
+    suspend fun getFarmOrders(id: String): ApolloResponse<GetFarmOrdersQuery.Data>
+    suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
+    suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -38,13 +38,13 @@ class GiggyGraphqlApi(
         .mutation(CreatePostMutation(input))
         .execute()
 
-    override suspend fun getStoresBelongingToUser() = apolloClient
-        .query(GetStoresBelongingToUserQuery())
+    override suspend fun getFarmsBelongingToUser() = apolloClient
+        .query(GetFarmsBelongingToUserQuery())
         .execute()
 
-    override suspend fun createStore(input: Store) = apolloClient
-        .mutation(CreateStoreMutation(
-            NewStoreInput(
+    override suspend fun createFarm(input: Farm) = apolloClient
+        .mutation(CreateFarmMutation(
+            NewFarmInput(
                 name = input.name,
                 thumbnail = input.image,
             )
@@ -55,30 +55,32 @@ class GiggyGraphqlApi(
         .query(GetUserQuery())
         .execute()
 
-    override suspend fun getStore(id: String) = apolloClient
-        .query(GetStoreByIdQuery(id))
+    override suspend fun getFarm(id: String) = apolloClient
+        .query(GetFarmByIdQuery(id))
         .execute()
 
-    override suspend fun getStoreProducts(id: String) = apolloClient
-        .query(GetStoreProductsQuery(id))
+    override suspend fun getFarmMarkets(id: String) = apolloClient
+        .query(GetFarmMarketsQuery(id))
         .watch()
 
-    override suspend fun getStoreOrders(id: String) = apolloClient
-        .query(GetStoreOrdersQuery(id))
+    override suspend fun getFarmOrders(id: String) = apolloClient
+        .query(GetFarmOrdersQuery(id))
         .execute()
 
-    override suspend fun getStorePayments(id: String) = apolloClient
-        .query(GetStorePaymentsQuery(id))
+    override suspend fun getFarmPayments(id: String) = apolloClient
+        .query(GetFarmPaymentsQuery(id))
         .execute()
 
-    override suspend fun createStoreProduct(input: Product) = apolloClient
-        .mutation(CreateStoreProductMutation(
-            NewStoreProductInput(
-                storeId = input.storeId,
-                name = input.name,
+    override suspend fun createFarmMarket(input: Market) = apolloClient
+        .mutation(CreateFarmMarketMutation(
+            NewFarmMarketInput(
+                farmId = input.storeId,
+                product = input.name,
                 image = input.image,
                 unit = input.unit,
                 pricePerUnit = input.pricePerUnit.toInt(),
+                harvestDate = "",
+                tag = "",
                 volume = input.volume.toInt(),
             )
         ))

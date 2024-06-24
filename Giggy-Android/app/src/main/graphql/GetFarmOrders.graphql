@@ -1,5 +1,5 @@
-query GetStoreOrders($id: UUID!) {
-    getStoreOrders(id: $id) {
+query GetFarmOrders($id: UUID!) {
+    getFarmOrders(id: $id) {
         id
         volume
         toBePaid

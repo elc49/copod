@@ -51,27 +51,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.giggy.GetStoreByIdQuery
+import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
-import com.lomolo.giggy.viewmodels.GetStoreOrdersState
-import com.lomolo.giggy.viewmodels.GetStorePaymentsState
-import com.lomolo.giggy.viewmodels.GetStoreProductsState
-import com.lomolo.giggy.viewmodels.GetStoreState
+import com.lomolo.giggy.viewmodels.FarmMarketViewModel
+import com.lomolo.giggy.viewmodels.GetFarmMarketsState
+import com.lomolo.giggy.viewmodels.GetFarmOrdersState
+import com.lomolo.giggy.viewmodels.GetFarmPaymentsState
+import com.lomolo.giggy.viewmodels.GetFarmState
 
-object FarmStoreProductScreenDestination: Navigation {
-    override val title = R.string.farm_store
+object FarmMarketScreenDestination: Navigation {
+    override val title = R.string.farm
     override val route = "dashboard/farm_product"
-    const val storeIdArg = "storeId"
-    val routeWithArgs = "$route/{$storeIdArg}"
+    const val farmIdArg = "farmId"
+    val routeWithArgs = "$route/{$farmIdArg}"
 }
 
 @Composable
-internal fun FarmStoreHeader(
-    store: GetStoreByIdQuery.GetStoreById?,
+internal fun FarmHeader(
+    farm: GetFarmByIdQuery.GetFarmById?,
 ) {
     Row(
         Modifier
@@ -81,7 +81,7 @@ internal fun FarmStoreHeader(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(store?.thumbnail)
+                .data(farm?.thumbnail)
                 .crossfade(true)
                 .build(),
             contentScale = ContentScale.Crop,
@@ -92,7 +92,7 @@ internal fun FarmStoreHeader(
             placeholder = painterResource(id = R.drawable.loading_img),
             contentDescription = null
         )
-        store?.name?.let {
+        farm?.name?.let {
             Text(
                 text = it,
                 textAlign = TextAlign.Start,
@@ -105,40 +105,40 @@ internal fun FarmStoreHeader(
 
 @ExperimentalMaterial3Api
 @Composable
-fun FarmStoreProductScreen(
+fun FarmMarketScreen(
     modifier: Modifier = Modifier,
-    viewModel: FarmStoreProductViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-    onCreateStoreProduct: () -> Unit = {},
+    viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    onCreateFarmMarket: () -> Unit = {},
 ) {
     val tabIcon = mapOf(
         0 to R.drawable.product_box,
         1 to R.drawable.orders,
         2 to R.drawable.bank,
     )
-    val titles = listOf("Product", "Orders", "Payments")
+    val titles = listOf("Market", "Orders", "Payments")
     var state by remember {
         mutableIntStateOf(0)
     }
-    val store = viewModel.gettingStoreState
-    val products = viewModel.gettingStoreProductsState
-    val orders = viewModel.gettingStoreOrdersState
-    val payments = viewModel.gettingStorePaymentsState
+    val farm = viewModel.gettingFarmState
+    val markets = viewModel.gettingFarmMarketsState
+    val orders = viewModel.gettingFarmOrdersState
+    val payments = viewModel.gettingFarmPaymentsState
 
     LaunchedEffect(Unit) {
-        viewModel.getStore()
-        viewModel.getStoreOrders()
-        viewModel.getStorePayments()
+        viewModel.getFarm()
+        viewModel.getFarmOrders()
+        viewModel.getFarmPayments()
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        when(store) {
-            is GetStoreState.Success -> FarmStoreHeader(
-                store = store.success
+        when(farm) {
+            is GetFarmState.Success -> FarmHeader(
+                farm = farm.success
             )
-            GetStoreState.Loading -> Row(
+            GetFarmState.Loading -> Row(
                 Modifier
                     .height(280.dp)
                     .fillMaxWidth(),
@@ -152,9 +152,9 @@ fun FarmStoreProductScreen(
             modifier = Modifier.fillMaxWidth(),
             selectedTabIndex = state,
             divider = {
-                if (products is GetStoreProductsState.Loading ||
-                    orders is GetStoreOrdersState.Loading ||
-                    payments is GetStorePaymentsState.Loading) {
+                if (markets is GetFarmMarketsState.Loading ||
+                    orders is GetFarmOrdersState.Loading ||
+                    payments is GetFarmPaymentsState.Loading) {
                     LinearProgressIndicator()
                 } else {
                     HorizontalDivider()
@@ -192,10 +192,10 @@ fun FarmStoreProductScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                when(products) {
-                    is GetStoreProductsState.Success -> {
-                        if (products.success != null) {
-                            items(products.success) {
+                when(markets) {
+                    is GetFarmMarketsState.Success -> {
+                        if (markets.success != null) {
+                            items(markets.success) {
                                 Box(
                                     Modifier
                                         .background(
@@ -247,11 +247,11 @@ fun FarmStoreProductScreen(
                                             MaterialTheme.colorScheme.secondaryContainer,
                                             MaterialTheme.shapes.extraSmall
                                         )
-                                        .clickable { onCreateStoreProduct() },
+                                        .clickable { onCreateFarmMarket() },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     OutlinedIconButton(
-                                        onClick = { onCreateStoreProduct() },
+                                        onClick = { onCreateFarmMarket() },
                                     ) {
                                         Icon(
                                             Icons.TwoTone.Add,
@@ -262,7 +262,7 @@ fun FarmStoreProductScreen(
                             }
                         }
                     }
-                    is GetStoreProductsState.Error -> {
+                    is GetFarmMarketsState.Error -> {
                         item {
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -275,11 +275,12 @@ fun FarmStoreProductScreen(
                                 )
                             }
                         }
-                    }                }
+                    }
+                }
             }
             1 -> LazyColumn {
                 when(orders) {
-                    is GetStoreOrdersState.Success -> {
+                    is GetFarmOrdersState.Success -> {
                         if (orders.success != null) {
                             item {
                                 if (orders.success.isNotEmpty()) {
@@ -291,7 +292,7 @@ fun FarmStoreProductScreen(
                                             .padding(8.dp),
                                     ) {
                                         Text(
-                                            "Product",
+                                            "Market",
                                             style = MaterialTheme.typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                         )
@@ -346,7 +347,7 @@ fun FarmStoreProductScreen(
                             }
                         }
                     }
-                    is GetStoreOrdersState.Error -> {
+                    is GetFarmOrdersState.Error -> {
                         item {
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -364,7 +365,7 @@ fun FarmStoreProductScreen(
             }
             2 -> LazyColumn {
                 when (payments) {
-                    is GetStorePaymentsState.Success -> {
+                    is GetFarmPaymentsState.Success -> {
                         if (payments.success != null) {
                             item {
                                 if (payments.success.isNotEmpty()) {
@@ -438,7 +439,7 @@ fun FarmStoreProductScreen(
                             }
                         }
                     }
-                    is GetStorePaymentsState.Error -> {
+                    is GetFarmPaymentsState.Error -> {
                         item {
                             Row(
                                 Modifier.fillMaxWidth(),
@@ -462,8 +463,8 @@ fun FarmStoreProductScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun FarmStoreProductScreenPreview() {
+fun FarmFarmMarketScreenPreview() {
     GiggyTheme {
-        FarmStoreProductScreen()
+        FarmMarketScreen()
     }
 }

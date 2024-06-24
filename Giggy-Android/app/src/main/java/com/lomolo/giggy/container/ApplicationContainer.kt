@@ -11,9 +11,9 @@ import com.lomolo.giggy.network.GiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.repository.ISession
-import com.lomolo.giggy.repository.IStore
+import com.lomolo.giggy.repository.IFarm
 import com.lomolo.giggy.repository.SessionRepository
-import com.lomolo.giggy.repository.StoreRepository
+import com.lomolo.giggy.repository.FarmRepository
 import com.lomolo.giggy.sql.Store
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -27,7 +27,7 @@ interface IApplicationContainer{
     val sessionRepository: ISession
     val apolloClient: ApolloClient
     val giggyGraphqlApiService: IGiggyGraphqlApi
-    val storeRepository: IStore
+    val storeRepository: IFarm
 }
 
 class ApplicationContainer(
@@ -78,7 +78,7 @@ class ApplicationContainer(
         GiggyGraphqlApi(apolloClient)
     }
 
-    override val storeRepository: IStore by lazy {
-        StoreRepository(giggyGraphqlApiService)
+    override val storeRepository: IFarm by lazy {
+        FarmRepository(giggyGraphqlApiService)
     }
 }

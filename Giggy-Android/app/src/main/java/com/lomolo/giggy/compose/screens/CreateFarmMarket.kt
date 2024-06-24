@@ -50,22 +50,22 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.AddFarmProductState
-import com.lomolo.giggy.viewmodels.AddFarmProductViewModel
-import com.lomolo.giggy.viewmodels.UploadProductImageState
+import com.lomolo.giggy.viewmodels.AddFarmMarketState
+import com.lomolo.giggy.viewmodels.AddFarmMarketViewModel
+import com.lomolo.giggy.viewmodels.UploadMarketImageState
 import kotlinx.coroutines.launch
 
-object CreateStoreProductDestination: Navigation {
+object CreateFarmMarketDestination: Navigation {
     override val title = null
-    override val route = "dashboard/farm_product/add_product"
+    override val route = "dashboard/farm_market/add_market"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateStoreProductScreen(
+fun CreateFarmMarketScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit = {},
-    viewModel: AddFarmProductViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: AddFarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     showToast: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -79,12 +79,12 @@ fun CreateStoreProductScreen(
             }
         }
     }
-    val product by viewModel.productUiState.collectAsState()
-    val image = when(viewModel.uploadingProductImageState) {
-        UploadProductImageState.Loading -> {
+    val market by viewModel.marketUiState.collectAsState()
+    val image = when(viewModel.uploadingMarketImageState) {
+        UploadMarketImageState.Loading -> {
             R.drawable.loading_img
         }
-        is UploadProductImageState.Error -> {
+        is UploadMarketImageState.Error -> {
             R.drawable.ic_broken_image
         }
         else -> {
@@ -98,7 +98,7 @@ fun CreateStoreProductScreen(
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.add_product),
+                        stringResource(R.string.add_market),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -133,11 +133,11 @@ fun CreateStoreProductScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     OutlinedTextField(
-                        value = product.name,
-                        onValueChange = { viewModel.setProductName(it) },
+                        value = market.name,
+                        onValueChange = { viewModel.setMarketName(it) },
                         label = {
                             Text(
-                                stringResource(R.string.product_name),
+                                stringResource(R.string.market_name),
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         },
@@ -154,7 +154,7 @@ fun CreateStoreProductScreen(
                             stringResource(R.string.image),
                             style = MaterialTheme.typography.labelMedium,
                         )
-                        if (product.image.isBlank()) {
+                        if (market.image.isBlank()) {
                             Image(
                                 painter = painterResource(image),
                                 contentDescription = null,
@@ -172,10 +172,10 @@ fun CreateStoreProductScreen(
                                         }
                                     }
                             )
-                        } else if (product.image.isNotBlank()) {
+                        } else if (market.image.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(context)
-                                    .data(product.image)
+                                    .data(market.image)
                                     .crossfade(true)
                                     .build(),
                                 contentDescription = null,
@@ -206,8 +206,8 @@ fun CreateStoreProductScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     OutlinedTextField(
-                        value = product.unit,
-                        onValueChange = { viewModel.setProductUnit(it) },
+                        value = market.unit,
+                        onValueChange = { viewModel.setMarketUnit(it) },
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 4.dp),
@@ -225,8 +225,8 @@ fun CreateStoreProductScreen(
                         singleLine = true,
                     )
                     OutlinedTextField(
-                        value = product.pricePerUnit,
-                        onValueChange = { viewModel.setProductPricePerUnit(it) },
+                        value = market.pricePerUnit,
+                        onValueChange = { viewModel.setMarketPricePerUnit(it) },
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 4.dp),
@@ -250,8 +250,8 @@ fun CreateStoreProductScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedTextField(
-                        value = product.volume,
-                        onValueChange = { viewModel.setProductVolume(it) },
+                        value = market.volume,
+                        onValueChange = { viewModel.setMarketVolume(it) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         label = {
@@ -273,9 +273,9 @@ fun CreateStoreProductScreen(
                 ) {
                     Button(
                         onClick = {
-                            viewModel.addProduct {
+                            viewModel.addMarket {
                                 onGoBack()
-                                viewModel.resetProductState()
+                                viewModel.resetMarketState()
                                 showToast()
                             }
                         },
@@ -283,13 +283,13 @@ fun CreateStoreProductScreen(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(14.dp),
                     ) {
-                       when(viewModel.addingFarmProductState) {
-                           AddFarmProductState.Success -> Text(
+                       when(viewModel.addingFarmMarketState) {
+                           AddFarmMarketState.Success -> Text(
                                "Add",
                                style = MaterialTheme.typography.titleMedium,
                                fontWeight = FontWeight.Bold,
                            )
-                           AddFarmProductState.Loading -> {
+                           AddFarmMarketState.Loading -> {
                                CircularProgressIndicator(
                                    color = MaterialTheme.colorScheme.onPrimary,
                                    modifier = Modifier.size(20.dp),
@@ -305,8 +305,8 @@ fun CreateStoreProductScreen(
 
 @Preview
 @Composable
-fun CreateStoreProductScreenPreview() {
+fun CreateFarmMarketScreenPreview() {
     GiggyTheme {
-        CreateStoreProductScreen()
+        CreateFarmMarketScreen()
     }
 }

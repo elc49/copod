@@ -1,0 +1,10 @@
+mutation CreateFarmMarket($input: NewFarmMarketInput!) {
+    createFarmMarket(input: $input) {
+        id
+        name
+        image
+        unit
+        pricePerUnit
+        volume
+    }
+}

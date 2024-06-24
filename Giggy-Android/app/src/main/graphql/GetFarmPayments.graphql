@@ -1,0 +1,8 @@
+query GetFarmPayments($id: UUID!) {
+    getFarmPayments(id: $id) {
+        id
+        amount
+        status
+        customer
+    }
+}
