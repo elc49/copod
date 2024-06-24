@@ -2,21 +2,26 @@ package com.lomolo.giggy.compose.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
+import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.Signin
 import com.lomolo.giggy.viewmodels.StoreViewModel
+import kotlinx.coroutines.delay
 
 object RootNavigation: Navigation {
     override val title = null
@@ -46,30 +51,41 @@ fun GiggyNavigationHost(
     val session by sessionViewModel.sessionUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    var loaded by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(Unit) {
+        delay(1500L)
+        loaded = true
+    }
 
-    NavHost(
-        navController = navHostController,
-        startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
-        route = RootNavigation.route,
-    ) {
-        addHomeGraph(
-            deviceDetails = deviceDetails,
-            signinPhoneValid = signinPhoneValid,
-            initializing = initializing,
-            navHostController = navHostController,
-            signInDetails = signInDetails,
-            mainViewModel = mainViewModel,
-            sessionViewModel = sessionViewModel,
-        )
-        addDashboardGraph(
-            modifier = modifier,
-            navHostController = navHostController,
-            sessionViewModel = sessionViewModel,
-            postingViewModel = postingViewModel,
-            storeViewModel = storeViewModel,
-            scope = scope,
-            snackbarHostState = snackbarHostState,
-            session = session,
-        )
+    if (!loaded) {
+        GenesisScreen()
+    } else {
+        NavHost(
+            navController = navHostController,
+            startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
+            route = RootNavigation.route,
+        ) {
+            addHomeGraph(
+                deviceDetails = deviceDetails,
+                signinPhoneValid = signinPhoneValid,
+                initializing = initializing,
+                navHostController = navHostController,
+                signInDetails = signInDetails,
+                mainViewModel = mainViewModel,
+                sessionViewModel = sessionViewModel,
+            )
+            addDashboardGraph(
+                modifier = modifier,
+                navHostController = navHostController,
+                sessionViewModel = sessionViewModel,
+                postingViewModel = postingViewModel,
+                storeViewModel = storeViewModel,
+                scope = scope,
+                snackbarHostState = snackbarHostState,
+                session = session,
+            )
+        }
     }
 }
