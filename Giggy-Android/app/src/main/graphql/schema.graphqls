@@ -1,15 +1,73 @@
+type Farm {
+  id: UUID!
+
+  name: String!
+
+  thumbnail: String!
+
+  userId: UUID!
+
+  created_at: Time!
+
+  updated_at: Time!
+
+  deleted_at: Time
+}
+
 input GpsInput {
   lat: Float!
 
   lng: Float!
 }
 
+type Market {
+  id: UUID!
+
+  name: String!
+
+  image: String!
+
+  volume: Int!
+
+  unit: String!
+
+  pricePerUnit: Int!
+
+  created_at: Time!
+
+  updated_at: Time!
+}
+
 type Mutation {
   createPost(input: NewPostInput!): Post!
 
-  createStore(input: NewStoreInput!): Store!
+  createFarm(input: NewFarmInput!): Farm!
 
-  createStoreProduct(input: NewStoreProductInput!): Product!
+  createFarmMarket(input: NewFarmMarketInput!): Market!
+}
+
+input NewFarmInput {
+  name: String!
+
+  thumbnail: String!
+}
+
+input NewFarmMarketInput {
+  farmId: UUID!
+
+  product: String!
+
+  image: String!
+
+  volume: Int!
+
+  harvestDate: Time!
+
+  tag: String!
+
+  unit: String!
+
+  pricePerUnit: Int!
 }
 
 input NewPostInput {
@@ -24,26 +82,6 @@ input NewPostInput {
   location: GpsInput!
 }
 
-input NewStoreInput {
-  name: String!
-
-  thumbnail: String!
-}
-
-input NewStoreProductInput {
-  storeId: UUID!
-
-  name: String!
-
-  image: String!
-
-  volume: Int!
-
-  unit: String!
-
-  pricePerUnit: Int!
-}
-
 type Order {
   id: UUID!
 
@@ -53,9 +91,9 @@ type Order {
 
   customerId: UUID!
 
-  productId: UUID!
+  marketId: UUID!
 
-  product: Product!
+  market: Market!
 
   customer: User!
 
@@ -108,54 +146,20 @@ type Post {
   updated_at: Time!
 }
 
-type Product {
-  id: UUID!
-
-  name: String!
-
-  image: String!
-
-  volume: Int!
-
-  unit: String!
-
-  pricePerUnit: Int!
-
-  created_at: Time!
-
-  updated_at: Time!
-}
-
 type Query {
   timeline: [Post!]!
 
-  getStoresBelongingToUser: [Store!]!
+  getFarmsBelongingToUser: [Farm!]!
 
   getUser: User!
 
-  getStoreById(id: UUID!): Store!
+  getFarmById(id: UUID!): Farm!
 
-  getStoreProducts(id: UUID!): [Product!]!
+  getFarmMarkets(id: UUID!): [Market!]!
 
-  getStoreOrders(id: UUID!): [Order!]!
+  getFarmOrders(id: UUID!): [Order!]!
 
-  getStorePayments(id: UUID!): [Payment!]!
-}
-
-type Store {
-  id: UUID!
-
-  name: String!
-
-  thumbnail: String!
-
-  userId: UUID!
-
-  created_at: Time!
-
-  updated_at: Time!
-
-  deleted_at: Time
+  getFarmPayments(id: UUID!): [Payment!]!
 }
 
 scalar Time

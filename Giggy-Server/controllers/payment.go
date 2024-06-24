@@ -18,6 +18,6 @@ func (c *PaymentController) Init(queries *db.Queries) {
 	c.r.Init(queries)
 }
 
-func (c *PaymentController) GetPaymentsBelongingToStore(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
-	return c.r.GetPaymentsBelongingToStore(ctx, id)
+func (c *PaymentController) GetPaymentsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
+	return c.r.GetPaymentsBelongingToFarm(ctx, id)
 }

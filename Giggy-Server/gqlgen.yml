@@ -94,7 +94,7 @@ models:
         resolver: true
   Order:
     fields:
-      product:
+      market:
         resolver: true
       customer:
         resolver: true

@@ -15,9 +15,9 @@ var log = logger.GetLogger()
 
 type Resolver struct {
 	postController    controllers.PostController
-	storeController   controllers.StoreController
+	farmController    controllers.FarmController
 	signinController  controllers.SigninController
-	productController controllers.ProductController
+	marketController  controllers.MarketController
 	orderController   controllers.OrderController
 	paymentController controllers.PaymentController
 }
@@ -25,10 +25,10 @@ type Resolver struct {
 func New(db *db.Queries, signinController controllers.SigninController) Config {
 	postController := controllers.PostController{}
 	postController.Init(db)
-	storeController := controllers.StoreController{}
-	storeController.Init(db)
-	productController := controllers.ProductController{}
-	productController.Init(db)
+	farmController := controllers.FarmController{}
+	farmController.Init(db)
+	marketController := controllers.MarketController{}
+	marketController.Init(db)
 	orderController := controllers.OrderController{}
 	orderController.Init(db)
 	paymentController := controllers.PaymentController{}
@@ -36,9 +36,9 @@ func New(db *db.Queries, signinController controllers.SigninController) Config {
 
 	resolver := &Resolver{
 		postController,
-		storeController,
+		farmController,
 		signinController,
-		productController,
+		marketController,
 		orderController,
 		paymentController,
 	}

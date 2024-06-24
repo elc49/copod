@@ -13,7 +13,7 @@ import (
 )
 
 const getOrderById = `-- name: GetOrderById :one
-SELECT id, volume, to_be_paid, customer_id, product_id, created_at, updated_at FROM orders
+SELECT id, volume, to_be_paid, customer_id, market_id, created_at, updated_at FROM orders
 WHERE id = $1
 `
 
@@ -22,7 +22,7 @@ type GetOrderByIdRow struct {
 	Volume     int32     `json:"volume"`
 	ToBePaid   int32     `json:"to_be_paid"`
 	CustomerID uuid.UUID `json:"customer_id"`
-	ProductID  uuid.UUID `json:"product_id"`
+	MarketID   uuid.UUID `json:"market_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -35,43 +35,34 @@ func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (GetOrderByIdR
 		&i.Volume,
 		&i.ToBePaid,
 		&i.CustomerID,
-		&i.ProductID,
+		&i.MarketID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const getOrdersBelongingToStore = `-- name: GetOrdersBelongingToStore :many
-SELECT id, volume, to_be_paid, customer_id, product_id, created_at, updated_at FROM orders
-WHERE store_id = $1
+const getOrdersBelongingToFarm = `-- name: GetOrdersBelongingToFarm :many
+SELECT id, volume, to_be_paid, customer_id, market_id, farm_id, created_at, updated_at FROM orders
+WHERE farm_id = $1
 `
 
-type GetOrdersBelongingToStoreRow struct {
-	ID         uuid.UUID `json:"id"`
-	Volume     int32     `json:"volume"`
-	ToBePaid   int32     `json:"to_be_paid"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	ProductID  uuid.UUID `json:"product_id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-}
-
-func (q *Queries) GetOrdersBelongingToStore(ctx context.Context, storeID uuid.UUID) ([]GetOrdersBelongingToStoreRow, error) {
-	rows, err := q.db.QueryContext(ctx, getOrdersBelongingToStore, storeID)
+func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, getOrdersBelongingToFarm, farmID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetOrdersBelongingToStoreRow{}
+	items := []Order{}
 	for rows.Next() {
-		var i GetOrdersBelongingToStoreRow
+		var i Order
 		if err := rows.Scan(
 			&i.ID,
 			&i.Volume,
 			&i.ToBePaid,
 			&i.CustomerID,
-			&i.ProductID,
+			&i.MarketID,
+			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

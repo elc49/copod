@@ -11,12 +11,49 @@ import (
 	"github.com/google/uuid"
 )
 
+type Farm struct {
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	Thumbnail string     `json:"thumbnail"`
+	UserID    uuid.UUID  `json:"userId"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+}
+
 type GpsInput struct {
 	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`
 }
 
+type Market struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Volume       int       `json:"volume"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int       `json:"pricePerUnit"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
 type Mutation struct {
+}
+
+type NewFarmInput struct {
+	Name      string `json:"name"`
+	Thumbnail string `json:"thumbnail"`
+}
+
+type NewFarmMarketInput struct {
+	FarmID       uuid.UUID `json:"farmId"`
+	Product      string    `json:"product"`
+	Image        string    `json:"image"`
+	Volume       int       `json:"volume"`
+	HarvestDate  time.Time `json:"harvestDate"`
+	Tag          string    `json:"tag"`
+	Unit         string    `json:"unit"`
+	PricePerUnit int       `json:"pricePerUnit"`
 }
 
 type NewPostInput struct {
@@ -27,27 +64,13 @@ type NewPostInput struct {
 	Location *GpsInput `json:"location"`
 }
 
-type NewStoreInput struct {
-	Name      string `json:"name"`
-	Thumbnail string `json:"thumbnail"`
-}
-
-type NewStoreProductInput struct {
-	StoreID      uuid.UUID `json:"storeId"`
-	Name         string    `json:"name"`
-	Image        string    `json:"image"`
-	Volume       int       `json:"volume"`
-	Unit         string    `json:"unit"`
-	PricePerUnit int       `json:"pricePerUnit"`
-}
-
 type Order struct {
 	ID         uuid.UUID `json:"id"`
 	Volume     int       `json:"volume"`
 	ToBePaid   int       `json:"toBePaid"`
 	CustomerID uuid.UUID `json:"customerId"`
-	ProductID  uuid.UUID `json:"productId"`
-	Product    *Product  `json:"product"`
+	MarketID   uuid.UUID `json:"marketId"`
+	Market     *Market   `json:"market"`
 	Customer   *User     `json:"customer"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -75,28 +98,7 @@ type Post struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type Product struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Image        string    `json:"image"`
-	Volume       int       `json:"volume"`
-	Unit         string    `json:"unit"`
-	PricePerUnit int       `json:"pricePerUnit"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
-
 type Query struct {
-}
-
-type Store struct {
-	ID        uuid.UUID  `json:"id"`
-	Name      string     `json:"name"`
-	Thumbnail string     `json:"thumbnail"`
-	UserID    uuid.UUID  `json:"userId"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
 type PaymentStatus string

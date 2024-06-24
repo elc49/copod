@@ -9,34 +9,34 @@ import (
 	"github.com/google/uuid"
 )
 
-type StoreRepository struct {
+type FarmRepository struct {
 	queries *db.Queries
 }
 
-func (r *StoreRepository) Init(queries *db.Queries) {
+func (r *FarmRepository) Init(queries *db.Queries) {
 	r.queries = queries
 }
 
-func (r *StoreRepository) CreateStore(ctx context.Context, args db.CreateStoreParams) (*model.Store, error) {
-	store, err := r.queries.CreateStore(ctx, args)
+func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParams) (*model.Farm, error) {
+	store, err := r.queries.CreateFarm(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.Store{
+	return &model.Farm{
 		ID: store.ID,
 	}, nil
 }
 
-func (r *StoreRepository) GetStoresBelongingToUser(ctx context.Context, id uuid.UUID) ([]*model.Store, error) {
-	var stores []*model.Store
-	s, err := r.queries.GetStoresBelongingToUser(ctx, id)
+func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UUID) ([]*model.Farm, error) {
+	var stores []*model.Farm
+	s, err := r.queries.GetFarmsBelongingToUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, item := range s {
-		store := &model.Store{
+		store := &model.Farm{
 			ID:        item.ID,
 			Name:      item.Name,
 			Thumbnail: item.Thumbnail,
@@ -47,15 +47,15 @@ func (r *StoreRepository) GetStoresBelongingToUser(ctx context.Context, id uuid.
 	return stores, nil
 }
 
-func (r *StoreRepository) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.Store, error) {
-	store, err := r.queries.GetStoreByID(ctx, id)
+func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
+	store, err := r.queries.GetFarmByID(ctx, id)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	return &model.Store{
+	return &model.Farm{
 		ID:        store.ID,
 		Name:      store.Name,
 		Thumbnail: store.Thumbnail,

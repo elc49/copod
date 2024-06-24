@@ -9,25 +9,25 @@ import (
 	"github.com/google/uuid"
 )
 
-type ProductRepository struct {
+type MarketRepository struct {
 	queries *db.Queries
 }
 
-func (r *ProductRepository) Init(queries *db.Queries) {
+func (r *MarketRepository) Init(queries *db.Queries) {
 	r.queries = queries
 }
 
-func (r *ProductRepository) GetProductsBelongingToStore(ctx context.Context, id uuid.UUID) ([]*model.Product, error) {
-	var products []*model.Product
-	ps, err := r.queries.GetProductsBelongingToStore(ctx, id)
+func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
+	var products []*model.Market
+	ps, err := r.queries.GetMarketsBelongingToFarm(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, item := range ps {
-		product := &model.Product{
+		product := &model.Market{
 			ID:           item.ID,
-			Name:         item.Name,
+			Name:         item.Product,
 			Image:        item.Image,
 			Volume:       int(item.Volume),
 			PricePerUnit: int(item.PricePerUnit),
@@ -41,17 +41,17 @@ func (r *ProductRepository) GetProductsBelongingToStore(ctx context.Context, id 
 	return products, nil
 }
 
-func (r *ProductRepository) GetProductByID(ctx context.Context, id uuid.UUID) (*model.Product, error) {
-	p, err := r.queries.GetProductByID(ctx, id)
+func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*model.Market, error) {
+	p, err := r.queries.GetMarketByID(ctx, id)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	return &model.Product{
+	return &model.Market{
 		ID:           p.ID,
-		Name:         p.Name,
+		Name:         p.Product,
 		Image:        p.Image,
 		Volume:       int(p.Volume),
 		PricePerUnit: int(p.PricePerUnit),
@@ -60,15 +60,15 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, id uuid.UUID) (*
 	}, nil
 }
 
-func (r *ProductRepository) CreateStoreProduct(ctx context.Context, args db.CreateStoreProductParams) (*model.Product, error) {
-	product, err := r.queries.CreateStoreProduct(ctx, args)
+func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateFarmMarketParams) (*model.Market, error) {
+	product, err := r.queries.CreateFarmMarket(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.Product{
+	return &model.Market{
 		ID:           product.ID,
-		Name:         product.Name,
+		Name:         product.Product,
 		Image:        product.Image,
 		Volume:       int(product.Volume),
 		PricePerUnit: int(product.PricePerUnit),

@@ -18,6 +18,6 @@ func (c *OrderController) Init(queries *db.Queries) {
 	c.r.Init(queries)
 }
 
-func (c *OrderController) GetOrdersBelongingToStore(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
-	return c.r.GetOrdersBelongingToStore(ctx, id)
+func (c *OrderController) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
+	return c.r.GetOrdersBelongingToFarm(ctx, id)
 }

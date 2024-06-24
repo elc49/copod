@@ -12,12 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const getPaymentsBelongingToStore = `-- name: GetPaymentsBelongingToStore :many
+const getPaymentsBelongingToFarm = `-- name: GetPaymentsBelongingToFarm :many
 SELECT id, customer, amount, status, created_at, updated_at FROM payments
-WHERE store_id = $1
+WHERE farm_id = $1
 `
 
-type GetPaymentsBelongingToStoreRow struct {
+type GetPaymentsBelongingToFarmRow struct {
 	ID        uuid.UUID `json:"id"`
 	Customer  string    `json:"customer"`
 	Amount    int32     `json:"amount"`
@@ -26,15 +26,15 @@ type GetPaymentsBelongingToStoreRow struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (q *Queries) GetPaymentsBelongingToStore(ctx context.Context, storeID uuid.UUID) ([]GetPaymentsBelongingToStoreRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPaymentsBelongingToStore, storeID)
+func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetPaymentsBelongingToFarmRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPaymentsBelongingToFarm, farmID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPaymentsBelongingToStoreRow{}
+	items := []GetPaymentsBelongingToFarmRow{}
 	for rows.Next() {
-		var i GetPaymentsBelongingToStoreRow
+		var i GetPaymentsBelongingToFarmRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Customer,
