@@ -16,9 +16,9 @@ func (r *OrderRepository) Init(queries *db.Queries) {
 	r.queries = queries
 }
 
-func (r *OrderRepository) GetOrdersBelongingToStore(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
+func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
 	var orders []*model.Order
-	os, err := r.queries.GetOrdersBelongingToStore(ctx, id)
+	os, err := r.queries.GetOrdersBelongingToFarm(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (r *OrderRepository) GetOrdersBelongingToStore(ctx context.Context, id uuid
 			ID:         item.ID,
 			ToBePaid:   int(item.ToBePaid),
 			CustomerID: item.CustomerID,
-			ProductID:  item.ProductID,
+			MarketID:   item.MarketID,
 		}
 
 		orders = append(orders, order)

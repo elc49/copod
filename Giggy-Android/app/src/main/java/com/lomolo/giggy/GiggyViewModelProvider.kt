@@ -6,21 +6,21 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.lomolo.giggy.viewmodels.AddFarmProductViewModel
-import com.lomolo.giggy.viewmodels.FarmStoreProductViewModel
+import com.lomolo.giggy.viewmodels.AddFarmMarketViewModel
+import com.lomolo.giggy.viewmodels.FarmMarketViewModel
 import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
-import com.lomolo.giggy.viewmodels.StoreViewModel
+import com.lomolo.giggy.viewmodels.FarmViewModel
 
 object GiggyViewModelProvider {
     val Factory = viewModelFactory {
         lateinit var mainViewModel: MainViewModel
         lateinit var sessionViewModel: SessionViewModel
         lateinit var postingViewModel: PostingViewModel
-        lateinit var storeViewModel: StoreViewModel
-        lateinit var addFarmProductViewModel: AddFarmProductViewModel
-        lateinit var farmStoreProductViewModel: FarmStoreProductViewModel
+        lateinit var storeViewModel: FarmViewModel
+        lateinit var addFarmMarketViewModel: AddFarmMarketViewModel
+        lateinit var farmMarketViewModel: FarmMarketViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -47,7 +47,7 @@ object GiggyViewModelProvider {
         }
 
         initializer {
-            storeViewModel = StoreViewModel(
+            storeViewModel = FarmViewModel(
                 giggyApplication().container.giggyRestApiService,
                 giggyApplication().container.storeRepository,
             )
@@ -55,21 +55,21 @@ object GiggyViewModelProvider {
         }
 
         initializer {
-            farmStoreProductViewModel = FarmStoreProductViewModel(
+            farmMarketViewModel = FarmMarketViewModel(
                 this.createSavedStateHandle(),
                 giggyApplication().container.giggyGraphqlApiService,
             )
-            farmStoreProductViewModel
+            farmMarketViewModel
         }
 
         initializer {
-            addFarmProductViewModel = AddFarmProductViewModel(
+            addFarmMarketViewModel = AddFarmMarketViewModel(
                 giggyApplication().container.giggyRestApiService,
-                farmStoreProductViewModel,
+                farmMarketViewModel,
                 giggyApplication().container.giggyGraphqlApiService,
                 giggyApplication().container.apolloClient.apolloStore,
             )
-            addFarmProductViewModel
+            addFarmMarketViewModel
         }
     }
 }

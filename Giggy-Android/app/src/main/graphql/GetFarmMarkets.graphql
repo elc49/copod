@@ -1,5 +1,5 @@
-query GetStoreProducts($id: UUID!) {
-    getStoreProducts(id: $id) {
+query GetFarmMarkets($id: UUID!) {
+    getFarmMarkets(id: $id) {
         id
         name
         image

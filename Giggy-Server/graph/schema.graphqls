@@ -35,8 +35,8 @@ type User {
   deleted_at: Time
 }
 
-# Store
-type Store {
+# Farm
+type Farm {
   id: UUID!
   name: String!
   thumbnail: String!
@@ -46,8 +46,8 @@ type Store {
   deleted_at: Time
 }
 
-# Product
-type Product {
+# Market
+type Market {
   id: UUID!
   name: String!
   image: String!
@@ -64,8 +64,8 @@ type Order {
   volume: Int!
   toBePaid: Int!
   customerId: UUID!
-  productId: UUID!
-  product: Product!
+  marketId: UUID!
+  market: Market!
   customer: User!
   created_at: Time!
   updated_at: Time!
@@ -96,32 +96,34 @@ input NewPostInput {
   location: GpsInput!
 }
 
-input NewStoreInput {
+input NewFarmInput {
   name: String!
   thumbnail: String!
 }
 
-input NewStoreProductInput {
-  storeId: UUID!
-  name: String!
+input NewFarmMarketInput {
+  farmId: UUID!
+  product: String!
   image: String!
   volume: Int!
+  harvestDate: Time!
+  tag: String!
   unit: String!
   pricePerUnit: Int!
 }
 
 type Query {
   timeline: [Post!]!
-  getStoresBelongingToUser: [Store!]!
+  getFarmsBelongingToUser: [Farm!]!
   getUser: User!
-  getStoreById(id: UUID!): Store!
-  getStoreProducts(id: UUID!): [Product!]!
-  getStoreOrders(id: UUID!): [Order!]!
-  getStorePayments(id: UUID!): [Payment!]!
+  getFarmById(id: UUID!): Farm!
+  getFarmMarkets(id: UUID!): [Market!]!
+  getFarmOrders(id: UUID!): [Order!]!
+  getFarmPayments(id: UUID!): [Payment!]!
 }
 
 type Mutation {
   createPost(input: NewPostInput!): Post!
-  createStore(input: NewStoreInput!): Store!
-  createStoreProduct(input: NewStoreProductInput!): Product!
+  createFarm(input: NewFarmInput!): Farm!
+  createFarmMarket(input: NewFarmMarketInput!): Market!
 }

@@ -1,7 +1,0 @@
-query GetStoreById($id: UUID!) {
-    getStoreById(id: $id) {
-        id
-        name
-        thumbnail
-    }
-}

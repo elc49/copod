@@ -11,13 +11,38 @@ import (
 	"github.com/google/uuid"
 )
 
+type Farm struct {
+	ID        uuid.UUID    `json:"id"`
+	Name      string       `json:"name"`
+	Thumbnail string       `json:"thumbnail"`
+	UserID    uuid.UUID    `json:"user_id"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+
+type Market struct {
+	ID           uuid.UUID    `json:"id"`
+	Product      string       `json:"product"`
+	Image        string       `json:"image"`
+	Volume       int32        `json:"volume"`
+	Unit         string       `json:"unit"`
+	PricePerUnit int32        `json:"price_per_unit"`
+	Location     interface{}  `json:"location"`
+	HarvestDate  sql.NullTime `json:"harvest_date"`
+	Tag          string       `json:"tag"`
+	FarmID       uuid.UUID    `json:"farm_id"`
+	CreatedAt    time.Time    `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
+}
+
 type Order struct {
 	ID         uuid.UUID `json:"id"`
 	Volume     int32     `json:"volume"`
 	ToBePaid   int32     `json:"to_be_paid"`
 	CustomerID uuid.UUID `json:"customer_id"`
-	ProductID  uuid.UUID `json:"product_id"`
-	StoreID    uuid.UUID `json:"store_id"`
+	MarketID   uuid.UUID `json:"market_id"`
+	FarmID     uuid.UUID `json:"farm_id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
@@ -29,8 +54,8 @@ type Payment struct {
 	Reason    string    `json:"reason"`
 	Status    string    `json:"status"`
 	OrderID   uuid.UUID `json:"order_id"`
-	ProductID uuid.UUID `json:"product_id"`
-	StoreID   uuid.UUID `json:"store_id"`
+	MarketID  uuid.UUID `json:"market_id"`
+	FarmID    uuid.UUID `json:"farm_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -46,35 +71,13 @@ type Post struct {
 	UpdatedAt time.Time   `json:"updated_at"`
 }
 
-type Product struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Image        string    `json:"image"`
-	Volume       int32     `json:"volume"`
-	Unit         string    `json:"unit"`
-	PricePerUnit int32     `json:"price_per_unit"`
-	StoreID      uuid.UUID `json:"store_id"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
-
-type Store struct {
-	ID        uuid.UUID    `json:"id"`
-	Name      string       `json:"name"`
-	Thumbnail string       `json:"thumbnail"`
-	UserID    uuid.UUID    `json:"user_id"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
-}
-
 type User struct {
 	ID               uuid.UUID      `json:"id"`
 	Phone            string         `json:"phone"`
 	Username         sql.NullString `json:"username"`
 	Avatar           string         `json:"avatar"`
 	HasPostingRights bool           `json:"has_posting_rights"`
-	HasStoreRights   bool           `json:"has_store_rights"`
+	HasFarmRights    bool           `json:"has_farm_rights"`
 	CreatedAt        time.Time      `json:"created_at"`
 	UpdatedAt        time.Time      `json:"updated_at"`
 	DeletedAt        sql.NullTime   `json:"deleted_at"`

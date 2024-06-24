@@ -26,7 +26,7 @@ import com.lomolo.giggy.R
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 @Composable
-fun StoreSubscriptionScreen(
+fun FarmSubscriptionScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -88,7 +88,7 @@ fun StoreSubscriptionScreen(
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        stringResource(R.string.track_products),
+                        stringResource(R.string.track_markets),
                     )
                 }
             }
@@ -101,7 +101,7 @@ fun StoreSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    "KES ${1500}",
+                    "KES ${2000}",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -112,8 +112,8 @@ fun StoreSubscriptionScreen(
 
 @Preview
 @Composable
-fun StoreSubscriptionScreenPreview() {
+fun FarmSubscriptionScreenPreview() {
     GiggyTheme {
-        StoreSubscriptionScreen()
+        FarmSubscriptionScreen()
     }
 }

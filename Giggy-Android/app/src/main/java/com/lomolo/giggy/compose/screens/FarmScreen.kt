@@ -31,32 +31,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.giggy.GetStoresBelongingToUserQuery
+import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
-import com.lomolo.giggy.viewmodels.GetStoresBelongingToUserState
+import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 
-object StoreScreenDestination: Navigation {
+object FarmScreenDestination: Navigation {
     override val title = null
-    override val route = "dashboard/store"
+    override val route = "dashboard/farm"
 }
 
 @Composable
-fun FarmStoreScreen(
+fun FarmScreen(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit = {},
-    getStoresState: GetStoresBelongingToUserState = GetStoresBelongingToUserState.Success(null),
-    getStores: () -> Unit = {},
+    getFarmsState: GetFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(null),
+    getFarms: () -> Unit = {},
 ) {
     LaunchedEffect(Unit) {
-        getStores()
+        getFarms()
     }
 
-    when(getStoresState) {
-        is GetStoresBelongingToUserState.Error -> {}
-        is GetStoresBelongingToUserState.Loading ->  {
+    when(getFarmsState) {
+        is GetFarmsBelongingToUserState.Error -> {}
+        is GetFarmsBelongingToUserState.Loading ->  {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -66,8 +66,8 @@ fun FarmStoreScreen(
                 LinearProgressIndicator()
             }
         }
-        is GetStoresBelongingToUserState.Success -> {
-            getStoresState.success?.let {
+        is GetFarmsBelongingToUserState.Success -> {
+            getFarmsState.success?.let {
                 Farms(
                     modifier = modifier,
                     onNavigateTo = onNavigateTo,
@@ -90,14 +90,14 @@ internal fun NoFarm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(R.drawable.farm_store),
+            painter = painterResource(R.drawable.farm),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.no_farm_stores),
+            text = stringResource(R.string.no_farm_farms),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displaySmall,
         )
@@ -108,7 +108,7 @@ internal fun NoFarm(
 internal fun Farms(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit,
-    farms: List<GetStoresBelongingToUserQuery.GetStoresBelongingToUser>,
+    farms: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>,
 ) {
     Column(
         modifier = modifier
@@ -173,8 +173,8 @@ internal fun Farms(
 
 @Preview(showBackground = true)
 @Composable
-fun FarmStoreScreenPreview() {
+fun FarmFarmScreenPreview() {
     GiggyTheme {
-        FarmStoreScreen()
+        FarmScreen()
     }
 }

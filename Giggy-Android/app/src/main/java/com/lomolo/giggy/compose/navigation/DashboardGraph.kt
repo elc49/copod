@@ -43,25 +43,25 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
-import com.lomolo.giggy.compose.screens.CreateFarmStoreScreen
-import com.lomolo.giggy.compose.screens.CreateFarmStoreScreenDestination
+import com.lomolo.giggy.compose.screens.CreateFarmScreen
+import com.lomolo.giggy.compose.screens.CreateFarmScreenDestination
 import com.lomolo.giggy.compose.screens.CreatePostScreen
 import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
-import com.lomolo.giggy.compose.screens.CreateStoreProductDestination
-import com.lomolo.giggy.compose.screens.CreateStoreProductScreen
+import com.lomolo.giggy.compose.screens.CreateFarmMarketDestination
+import com.lomolo.giggy.compose.screens.CreateFarmMarketScreen
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
-import com.lomolo.giggy.compose.screens.FarmStoreProductScreen
-import com.lomolo.giggy.compose.screens.FarmStoreProductScreenDestination
-import com.lomolo.giggy.compose.screens.FarmStoreScreen
+import com.lomolo.giggy.compose.screens.FarmMarketScreen
+import com.lomolo.giggy.compose.screens.FarmMarketScreenDestination
+import com.lomolo.giggy.compose.screens.FarmScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
-import com.lomolo.giggy.compose.screens.StoreScreenDestination
+import com.lomolo.giggy.compose.screens.FarmScreenDestination
 import com.lomolo.giggy.model.Session
-import com.lomolo.giggy.viewmodels.GetStoresBelongingToUserState
+import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
-import com.lomolo.giggy.viewmodels.StoreViewModel
+import com.lomolo.giggy.viewmodels.FarmViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -90,9 +90,9 @@ fun DashboardLayout(
 
     Scaffold(
         topBar = {
-            if (currentDestination?.route == FarmStoreProductScreenDestination.route) {
+            if (currentDestination?.route == FarmMarketScreenDestination.route) {
                 TopBar(
-                    title = "Farm store",
+                    title = "Farm farm",
                     canNavigateBack = true,
                     onNavigateUp = {
                         navHostController.popBackStack()
@@ -135,11 +135,11 @@ sealed class Screen(
         R.drawable.cart_filled,
         "dashboard/market",
     )
-    data object Store: Screen(
-        "Store",
-        R.drawable.store_outlined,
-        R.drawable.store_filled,
-        "dashboard/store",
+    data object Farm: Screen(
+        "Farm",
+        R.drawable.farm_outlined,
+        R.drawable.farm_filled,
+        "dashboard/farm",
     )
     data object Account: Screen(
         "You",
@@ -155,7 +155,7 @@ internal fun BottomNavBar(
     onNavigateTo: (String) -> Unit = {},
     currentDestination: NavDestination?,
 ) {
-    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Store, Screen.Account)
+    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Farm, Screen.Account)
 
     NavigationBar(
         modifier = modifier,
@@ -229,7 +229,7 @@ fun NavGraphBuilder.addDashboardGraph(
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
     postingViewModel: PostingViewModel,
-    storeViewModel: StoreViewModel,
+    farmViewModel: FarmViewModel,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
@@ -300,9 +300,9 @@ fun NavGraphBuilder.addDashboardGraph(
                 MarketScreen()
             }
         }
-        composable(route = StoreScreenDestination.route) {
+        composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
-            val stores = storeViewModel.getStoresBelongingToUserState
+            val farms = farmViewModel.getFarmsBelongingToUserState
 
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -310,16 +310,16 @@ fun NavGraphBuilder.addDashboardGraph(
                     TopAppBar(
                         title = {
                             Text(
-                                stringResource(R.string.your_stores),
+                                stringResource(R.string.your_farms),
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.Bold,
                             )
                         },
                         actions = {
-                            if (stores is GetStoresBelongingToUserState.Success && stores.success != null && stores.success.isEmpty()) {
+                            if (farms is GetFarmsBelongingToUserState.Success && farms.success != null && farms.success.isEmpty()) {
                                 IconButton(
                                     onClick = {
-                                        navHostController.navigate(CreateFarmStoreScreenDestination.route) }) {
+                                        navHostController.navigate(CreateFarmScreenDestination.route) }) {
                                     Icon(
                                         Icons.TwoTone.Add,
                                         contentDescription = null
@@ -341,21 +341,21 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    FarmStoreScreen(
-                        onNavigateTo = {storeId ->
-                            navHostController.navigate("${FarmStoreProductScreenDestination.route}/${storeId}")
+                    FarmScreen(
+                        onNavigateTo = {farmId ->
+                            navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
                         },
-                        getStores = {
-                            storeViewModel.getStoresBelongingToUser()
+                        getFarms = {
+                            farmViewModel.getFarmsBelongingToUser()
                         },
-                        getStoresState = storeViewModel.getStoresBelongingToUserState,
+                        getFarmsState = farmViewModel.getFarmsBelongingToUserState,
                     )
                 }
             }
         }
         composable(
-            route = FarmStoreProductScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmStoreProductScreenDestination.storeIdArg) {
+            route = FarmMarketScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmMarketScreenDestination.farmIdArg) {
                 type = NavType.StringType
             })
         ) {
@@ -365,7 +365,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     TopAppBar(
                         title = {
                             Text(
-                                stringResource(id = R.string.farm_store),
+                                stringResource(id = R.string.farm),
                                 style = MaterialTheme.typography.displaySmall,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -391,9 +391,9 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmStoreProductScreen(
-                        onCreateStoreProduct = {
-                            navHostController.navigate(CreateStoreProductDestination.route)
+                    FarmMarketScreen(
+                        onCreateFarmMarket = {
+                            navHostController.navigate(CreateFarmMarketDestination.route)
                         }
                     )
                 }
@@ -466,7 +466,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         dialog(
-            route = CreateFarmStoreScreenDestination.route,
+            route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
             Scaffold(
@@ -474,7 +474,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     TopAppBar(
                         title = {
                             Text(
-                                stringResource(id = CreateFarmStoreScreenDestination.title),
+                                stringResource(id = CreateFarmScreenDestination.title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -499,32 +499,32 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    CreateFarmStoreScreen(
-                        onCreateStore = {
-                            storeViewModel.saveStore {
+                    CreateFarmScreen(
+                        onCreateFarm = {
+                            farmViewModel.saveFarm {
                                 navHostController.popBackStack()
                                 scope.launch {
-                                    snackbarHostState.showSnackbar("Store created.", withDismissAction = true)
+                                    snackbarHostState.showSnackbar("Farm created.", withDismissAction = true)
                                 }
-                                storeViewModel.discardStoreInput()
+                                farmViewModel.discardFarmInput()
                             }
                         },
-                        storeViewModel = storeViewModel,
+                        farmViewModel = farmViewModel,
                     )
                 }
             }
         }
         dialog(
-            route = CreateStoreProductDestination.route,
+            route = CreateFarmMarketDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            CreateStoreProductScreen(
+            CreateFarmMarketScreen(
                 onGoBack = {
                     navHostController.popBackStack()
                 },
                 showToast = {
                     scope.launch {
-                        snackbarHostState.showSnackbar("Product added.", withDismissAction = true)
+                        snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
                     }
                 }
             )

@@ -26,35 +26,35 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostIn
 	return r.postController.CreatePost(ctx, args)
 }
 
-// CreateStore is the resolver for the createStore field.
-func (r *mutationResolver) CreateStore(ctx context.Context, input model.NewStoreInput) (*model.Store, error) {
+// CreateFarm is the resolver for the createFarm field.
+func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error) {
 	userId := StringToUUID(ctx.Value("userId").(string))
-	args := db.CreateStoreParams{
+	args := db.CreateFarmParams{
 		Name:      input.Name,
 		Thumbnail: input.Thumbnail,
 		UserID:    userId,
 	}
 
-	return r.storeController.CreateStore(ctx, args)
+	return r.farmController.CreateFarm(ctx, args)
 }
 
-// CreateStoreProduct is the resolver for the createStoreProduct field.
-func (r *mutationResolver) CreateStoreProduct(ctx context.Context, input model.NewStoreProductInput) (*model.Product, error) {
-	args := db.CreateStoreProductParams{
-		Name:         input.Name,
+// CreateFarmMarket is the resolver for the createFarmMarket field.
+func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.NewFarmMarketInput) (*model.Market, error) {
+	args := db.CreateFarmMarketParams{
+		Product:      input.Product,
 		Image:        input.Image,
 		Volume:       int32(input.Volume),
-		StoreID:      input.StoreID,
+		FarmID:       input.FarmID,
 		Unit:         input.Unit,
 		PricePerUnit: int32(input.PricePerUnit),
 	}
 
-	return r.productController.CreateStoreProduct(ctx, args)
+	return r.marketController.CreateFarmMarket(ctx, args)
 }
 
-// Product is the resolver for the product field.
-func (r *orderResolver) Product(ctx context.Context, obj *model.Order) (*model.Product, error) {
-	return r.productController.GetProductByID(ctx, obj.ProductID)
+// Market is the resolver for the market field.
+func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
+	return r.marketController.GetMarketByID(ctx, obj.MarketID)
 }
 
 // Customer is the resolver for the customer field.
@@ -72,10 +72,10 @@ func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
 	return make([]*model.Post, 0), nil
 }
 
-// GetStoresBelongingToUser is the resolver for the getStoresBelongingToUser field.
-func (r *queryResolver) GetStoresBelongingToUser(ctx context.Context) ([]*model.Store, error) {
+// GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
+func (r *queryResolver) GetFarmsBelongingToUser(ctx context.Context) ([]*model.Farm, error) {
 	userId := StringToUUID(ctx.Value("userId").(string))
-	return r.storeController.GetStoresBelongingToUser(ctx, userId)
+	return r.farmController.GetFarmsBelongingToUser(ctx, userId)
 }
 
 // GetUser is the resolver for the getUser field.
@@ -84,24 +84,24 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
-// GetStoreByID is the resolver for the getStoreById field.
-func (r *queryResolver) GetStoreByID(ctx context.Context, id uuid.UUID) (*model.Store, error) {
-	return r.storeController.GetStoreByID(ctx, id)
+// GetFarmByID is the resolver for the getFarmById field.
+func (r *queryResolver) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
+	return r.farmController.GetFarmByID(ctx, id)
 }
 
-// GetStoreProducts is the resolver for the getStoreProducts field.
-func (r *queryResolver) GetStoreProducts(ctx context.Context, id uuid.UUID) ([]*model.Product, error) {
-	return r.productController.GetProductsBelongingToStore(ctx, id)
+// GetFarmMarkets is the resolver for the getFarmMarkets field.
+func (r *queryResolver) GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
+	return r.marketController.GetMarketsBelongingToFarm(ctx, id)
 }
 
-// GetStoreOrders is the resolver for the getStoreOrders field.
-func (r *queryResolver) GetStoreOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
-	return r.orderController.GetOrdersBelongingToStore(ctx, id)
+// GetFarmOrders is the resolver for the getFarmOrders field.
+func (r *queryResolver) GetFarmOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
+	return r.orderController.GetOrdersBelongingToFarm(ctx, id)
 }
 
-// GetStorePayments is the resolver for the getStorePayments field.
-func (r *queryResolver) GetStorePayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
-	return r.paymentController.GetPaymentsBelongingToStore(ctx, id)
+// GetFarmPayments is the resolver for the getFarmPayments field.
+func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
+	return r.paymentController.GetPaymentsBelongingToFarm(ctx, id)
 }
 
 // Mutation returns MutationResolver implementation.

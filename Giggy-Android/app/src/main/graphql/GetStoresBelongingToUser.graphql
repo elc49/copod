@@ -1,7 +1,0 @@
-query GetStoresBelongingToUser {
-    getStoresBelongingToUser {
-        id
-        name
-        thumbnail
-    }
-}

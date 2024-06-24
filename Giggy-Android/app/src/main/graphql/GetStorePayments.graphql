@@ -1,8 +1,0 @@
-query GetStorePayments($id: UUID!) {
-    getStorePayments(id: $id) {
-        id
-        amount
-        status
-        customer
-    }
-}
