@@ -127,25 +127,25 @@ sealed class Screen(
         "Explore",
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
-        "dashboard/home",
+        "dashboard-home",
     )
     data object Soko: Screen(
         "Soko",
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
-        "dashboard/market",
+        "dashboard-market",
     )
     data object Farm: Screen(
         "Farm",
         R.drawable.farm_outlined,
         R.drawable.farm_filled,
-        "dashboard/farm",
+        "dashboard-farm",
     )
     data object Account: Screen(
         "You",
         R.drawable.account_outlined,
         R.drawable.account_filled,
-        "dashboard/account",
+        "dashboard-account",
     )
 }
 
@@ -344,9 +344,6 @@ fun NavGraphBuilder.addDashboardGraph(
                     FarmScreen(
                         onNavigateTo = {farmId ->
                             navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
-                        },
-                        getFarms = {
-                            farmViewModel.getFarmsBelongingToUser()
                         },
                         getFarmsState = farmViewModel.getFarmsBelongingToUserState,
                     )

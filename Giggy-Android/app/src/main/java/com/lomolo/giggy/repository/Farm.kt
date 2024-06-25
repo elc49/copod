@@ -5,9 +5,10 @@ import com.lomolo.giggy.CreateFarmMutation
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.viewmodels.Farm
+import kotlinx.coroutines.flow.Flow
 
 interface IFarm {
-    suspend fun getFarmsBelongingToUser(): ApolloResponse<GetFarmsBelongingToUserQuery.Data>
+    suspend fun getFarmsBelongingToUser(): Flow<ApolloResponse<GetFarmsBelongingToUserQuery.Data>>
     suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
 }
 

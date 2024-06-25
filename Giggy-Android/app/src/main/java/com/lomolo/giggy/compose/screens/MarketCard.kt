@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
-import com.lomolo.giggy.ui.theme.surfaceDimLight
 
 @Composable
 internal fun MarketCard(
@@ -33,7 +32,7 @@ internal fun MarketCard(
     data: Product
 ) {
     OutlinedCard(
-        modifier = Modifier
+        modifier = modifier
             .height(180.dp)
     ) {
         Row(

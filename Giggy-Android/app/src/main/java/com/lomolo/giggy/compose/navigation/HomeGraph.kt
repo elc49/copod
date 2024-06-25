@@ -38,7 +38,7 @@ import com.lomolo.giggy.viewmodels.Signin
 
 object HomeDestination: Navigation {
     override val title = null
-    override val route = "landing"
+    override val route = "home"
 }
 
 fun NavGraphBuilder.addHomeGraph(
