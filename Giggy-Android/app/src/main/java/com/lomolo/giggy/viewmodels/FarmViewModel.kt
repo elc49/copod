@@ -17,6 +17,7 @@ class FarmViewModel(
 
     init {
         viewModelScope.launch {
+            getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Loading
             try {
                 farmRepository
                     .getFarmsBelongingToUser()
@@ -25,6 +26,7 @@ class FarmViewModel(
                     }
             } catch (e: Exception) {
                 e.printStackTrace()
+                getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(listOf())
             }
         }
     }
