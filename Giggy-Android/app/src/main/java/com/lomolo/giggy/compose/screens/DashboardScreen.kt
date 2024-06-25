@@ -25,7 +25,7 @@ import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
 
 object DashboardScreenDestination: Navigation {
     override val title = null
-    override val route = "dashboard/home"
+    override val route = "dashboard-home"
 }
 
 data class Post(

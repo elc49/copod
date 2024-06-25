@@ -34,7 +34,7 @@ import com.lomolo.giggy.viewmodels.GetUserState
 
 object AccountScreenDestination: Navigation {
     override val title = R.string.account
-    override val route = "dashboard/account"
+    override val route = "dashboard-account"
 }
 
 @Composable

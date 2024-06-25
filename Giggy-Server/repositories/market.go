@@ -18,14 +18,14 @@ func (r *MarketRepository) Init(queries *db.Queries) {
 }
 
 func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
-	var products []*model.Market
+	var markets []*model.Market
 	ps, err := r.queries.GetMarketsBelongingToFarm(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, item := range ps {
-		product := &model.Market{
+		market := &model.Market{
 			ID:           item.ID,
 			Name:         item.Product,
 			Image:        item.Image,
@@ -35,10 +35,10 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 			UpdatedAt:    item.UpdatedAt,
 		}
 
-		products = append(products, product)
+		markets = append(markets, market)
 	}
 
-	return products, nil
+	return markets, nil
 }
 
 func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*model.Market, error) {
@@ -61,18 +61,18 @@ func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 }
 
 func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateFarmMarketParams) (*model.Market, error) {
-	product, err := r.queries.CreateFarmMarket(ctx, args)
+	market, err := r.queries.CreateFarmMarket(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.Market{
-		ID:           product.ID,
-		Name:         product.Product,
-		Image:        product.Image,
-		Volume:       int(product.Volume),
-		PricePerUnit: int(product.PricePerUnit),
-		CreatedAt:    product.CreatedAt,
-		UpdatedAt:    product.UpdatedAt,
+		ID:           market.ID,
+		Name:         market.Product,
+		Image:        market.Image,
+		Volume:       int(market.Volume),
+		PricePerUnit: int(market.PricePerUnit),
+		CreatedAt:    market.CreatedAt,
+		UpdatedAt:    market.UpdatedAt,
 	}, nil
 }

@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -29,32 +28,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
+import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
+import com.lomolo.giggy.viewmodels.FarmViewModel
 import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 
 object FarmScreenDestination: Navigation {
     override val title = null
-    override val route = "dashboard/farm"
+    override val route = "dashboard-farm"
 }
 
 @Composable
-fun FarmScreen(
+fun FarmsScreen(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit = {},
-    getFarmsState: GetFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(null),
-    getFarms: () -> Unit = {},
+    viewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    LaunchedEffect(Unit) {
-        getFarms()
-    }
-
-    when(getFarmsState) {
+    when(val getFarmsState = viewModel.getFarmsBelongingToUserState) {
         is GetFarmsBelongingToUserState.Error -> {}
         is GetFarmsBelongingToUserState.Loading ->  {
             Column(
@@ -175,6 +172,6 @@ internal fun Farms(
 @Composable
 fun FarmFarmScreenPreview() {
     GiggyTheme {
-        FarmScreen()
+        FarmsScreen()
     }
 }

@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
     suspend fun createPost(input: NewPostInput): ApolloResponse<CreatePostMutation.Data>
-    suspend fun getFarmsBelongingToUser(): ApolloResponse<GetFarmsBelongingToUserQuery.Data>
+    suspend fun getFarmsBelongingToUser(): Flow<ApolloResponse<GetFarmsBelongingToUserQuery.Data>>
     suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
     suspend fun getFarm(id: String): ApolloResponse<GetFarmByIdQuery.Data>
@@ -40,7 +40,7 @@ class GiggyGraphqlApi(
 
     override suspend fun getFarmsBelongingToUser() = apolloClient
         .query(GetFarmsBelongingToUserQuery())
-        .execute()
+        .watch()
 
     override suspend fun createFarm(input: Farm) = apolloClient
         .mutation(CreateFarmMutation(

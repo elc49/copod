@@ -27,7 +27,7 @@ interface IApplicationContainer{
     val sessionRepository: ISession
     val apolloClient: ApolloClient
     val giggyGraphqlApiService: IGiggyGraphqlApi
-    val storeRepository: IFarm
+    val farmRepository: IFarm
 }
 
 class ApplicationContainer(
@@ -78,7 +78,7 @@ class ApplicationContainer(
         GiggyGraphqlApi(apolloClient)
     }
 
-    override val storeRepository: IFarm by lazy {
+    override val farmRepository: IFarm by lazy {
         FarmRepository(giggyGraphqlApiService)
     }
 }

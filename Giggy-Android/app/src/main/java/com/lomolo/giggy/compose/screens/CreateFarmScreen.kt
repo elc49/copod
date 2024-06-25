@@ -34,26 +34,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.viewmodels.CreateFarmState
+import com.lomolo.giggy.viewmodels.CreateFarmViewModel
 import com.lomolo.giggy.viewmodels.FarmImageUploadState
-import com.lomolo.giggy.viewmodels.FarmViewModel
 import kotlinx.coroutines.launch
 
 object CreateFarmScreenDestination: Navigation {
     override val title = R.string.create_farm
-    override val route = "dashboard/create_farm"
+    override val route = "dashboard-create-farm"
 }
 
 @Composable
 fun CreateFarmScreen(
     modifier: Modifier = Modifier,
-    onCreateFarm: () -> Unit = {},
-    farmViewModel: FarmViewModel = viewModel(),
+    onNavigateBack: () -> Unit = {},
+    viewModel: CreateFarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    val farm by farmViewModel.farmUiState.collectAsState()
+    val farm by viewModel.farmUiState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pickMedia = rememberLauncherForActivityResult(
@@ -62,11 +63,11 @@ fun CreateFarmScreen(
         if (it != null) {
             val stream = context.contentResolver.openInputStream(it)
             if (stream != null) {
-                farmViewModel.uploadImage(stream)
+                viewModel.uploadImage(stream)
             }
         }
     }
-    val image = when(farmViewModel.farmImageUploadState) {
+    val image = when(viewModel.farmImageUploadState) {
         FarmImageUploadState.Loading -> {
             R.drawable.loading_img
         }
@@ -98,7 +99,7 @@ fun CreateFarmScreen(
                 )
             },
             value = farm.name,
-            onValueChange = { farmViewModel.setName(it) },
+            onValueChange = { viewModel.setName(it) },
             singleLine = true,
         )
         Text(
@@ -112,7 +113,7 @@ fun CreateFarmScreen(
                 modifier = Modifier
                     .size(120.dp)
                     .clickable {
-                        if (farmViewModel.farmImageUploadState !is FarmImageUploadState.Loading) {
+                        if (viewModel.farmImageUploadState !is FarmImageUploadState.Loading) {
                             scope.launch {
                                 pickMedia.launch(
                                     PickVisualMediaRequest(
@@ -149,12 +150,17 @@ fun CreateFarmScreen(
            )
         }
         Button(
-            onClick = { onCreateFarm() },
+            onClick = {
+                viewModel.saveFarm {
+                    onNavigateBack()
+                    viewModel.discardFarmInput()
+                }
+            },
             shape = MaterialTheme.shapes.extraSmall,
             contentPadding = PaddingValues(14.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-           when(farmViewModel.createFarmState) {
+           when(viewModel.createFarmState) {
                CreateFarmState.Success -> Text(
                    stringResource(R.string.create),
                    style = MaterialTheme.typography.bodyMedium,

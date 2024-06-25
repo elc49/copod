@@ -95,6 +95,7 @@ class FarmMarketViewModel(
 
     init {
         viewModelScope.launch {
+            gettingFarmMarketsState = GetFarmMarketsState.Loading
             try {
                 giggyGraphqlApi
                     .getFarmMarkets(storeId)
@@ -103,6 +104,7 @@ class FarmMarketViewModel(
                     }
             } catch(e: IOException) {
                 e.printStackTrace()
+                gettingFarmMarketsState = GetFarmMarketsState.Success(listOf())
             }
         }
     }

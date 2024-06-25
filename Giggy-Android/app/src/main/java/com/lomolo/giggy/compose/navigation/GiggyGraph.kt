@@ -11,8 +11,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
@@ -20,7 +20,6 @@ import com.lomolo.giggy.viewmodels.MainViewModel
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.Signin
-import com.lomolo.giggy.viewmodels.FarmViewModel
 import kotlinx.coroutines.delay
 
 object RootNavigation: Navigation {
@@ -42,7 +41,6 @@ fun GiggyNavigationHost(
     mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     postingViewModel: PostingViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-    farmViewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
     val initializing = mainViewModel.settingDeviceDetailsState
@@ -81,7 +79,6 @@ fun GiggyNavigationHost(
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
                 postingViewModel = postingViewModel,
-                farmViewModel = farmViewModel,
                 scope = scope,
                 snackbarHostState = snackbarHostState,
                 session = session,

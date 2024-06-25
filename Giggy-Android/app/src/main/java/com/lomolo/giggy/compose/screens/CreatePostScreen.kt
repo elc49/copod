@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 
 object CreatePostScreenDestination: Navigation {
     override val title = R.string.what_s_happening_in_your_farm
-    override val route = "dashboard/create/post"
+    override val route = "dashboard-poster"
 }
 
 @Composable

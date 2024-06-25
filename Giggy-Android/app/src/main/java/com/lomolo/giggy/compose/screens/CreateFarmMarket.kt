@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 
 object CreateFarmMarketDestination: Navigation {
     override val title = null
-    override val route = "dashboard/farm_market/add_market"
+    override val route = "dashboard-farm-market"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -38,7 +38,7 @@ import com.lomolo.giggy.viewmodels.SigninState
 
 object SignInScreenDestination: Navigation {
     override val title = null
-    override val route = "landing/signin"
+    override val route = "signin"
 }
 
 @Composable

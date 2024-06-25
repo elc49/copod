@@ -18,37 +18,39 @@ func (r *FarmRepository) Init(queries *db.Queries) {
 }
 
 func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParams) (*model.Farm, error) {
-	store, err := r.queries.CreateFarm(ctx, args)
+	farm, err := r.queries.CreateFarm(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.Farm{
-		ID: store.ID,
+		ID:        farm.ID,
+		Name:      farm.Name,
+		Thumbnail: farm.Thumbnail,
 	}, nil
 }
 
 func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UUID) ([]*model.Farm, error) {
-	var stores []*model.Farm
+	var farms []*model.Farm
 	s, err := r.queries.GetFarmsBelongingToUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, item := range s {
-		store := &model.Farm{
+		farm := &model.Farm{
 			ID:        item.ID,
 			Name:      item.Name,
 			Thumbnail: item.Thumbnail,
 		}
-		stores = append(stores, store)
+		farms = append(farms, farm)
 	}
 
-	return stores, nil
+	return farms, nil
 }
 
 func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
-	store, err := r.queries.GetFarmByID(ctx, id)
+	farm, err := r.queries.GetFarmByID(ctx, id)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
@@ -56,8 +58,8 @@ func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.
 	}
 
 	return &model.Farm{
-		ID:        store.ID,
-		Name:      store.Name,
-		Thumbnail: store.Thumbnail,
+		ID:        farm.ID,
+		Name:      farm.Name,
+		Thumbnail: farm.Thumbnail,
 	}, nil
 }
