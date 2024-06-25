@@ -24,7 +24,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object HomeScreenDestination: Navigation {
-    override val route = "landing/home"
+    override val route = "landing"
     override val title = null
 }
 

@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 
 object CreateFarmScreenDestination: Navigation {
     override val title = R.string.create_farm
-    override val route = "dashboard/create_farm"
+    override val route = "dashboard-create-farm"
 }
 
 @Composable

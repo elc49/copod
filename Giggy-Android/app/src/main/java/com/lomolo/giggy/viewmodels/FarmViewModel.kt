@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.repository.IFarm
@@ -16,12 +17,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.toImmutableList
 import java.io.IOException
 import java.io.InputStream
 
 class FarmViewModel(
     private val giggyRestApi: IGiggyRestApi,
     private val farmRepository: IFarm,
+    private val apolloStore: ApolloStore,
 ): ViewModel() {
     private val _farmInput = MutableStateFlow(Farm())
     val farmUiState: StateFlow<Farm> = _farmInput.asStateFlow()
@@ -77,7 +80,30 @@ class FarmViewModel(
             createFarmState = CreateFarmState.Loading
             viewModelScope.launch {
                 createFarmState = try {
-                    farmRepository.createFarm(_farmInput.value)
+                    val res = farmRepository.createFarm(_farmInput.value).dataOrThrow()
+                    try {
+                        val updatedCachedData = apolloStore.readOperation(
+                            GetFarmsBelongingToUserQuery()
+                        )
+                            .getFarmsBelongingToUser
+                            .toMutableList()
+                            .apply {
+                                add(
+                                    GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser(
+                                        res.createFarm.id,
+                                        res.createFarm.name,
+                                        res.createFarm.thumbnail,
+                                    )
+                                )
+                            }
+                            .toImmutableList()
+                        apolloStore.writeOperation(
+                            GetFarmsBelongingToUserQuery(),
+                            GetFarmsBelongingToUserQuery.Data(updatedCachedData)
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                     CreateFarmState.Success.also {
                         cb()
                     }
@@ -89,19 +115,22 @@ class FarmViewModel(
         }
     }
 
-    fun getFarmsBelongingToUser() = viewModelScope.launch {
-        getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Loading
-        getFarmsBelongingToUserState = try {
-            val res = farmRepository.getFarmsBelongingToUser().dataOrThrow()
-            GetFarmsBelongingToUserState.Success(res.getFarmsBelongingToUser)
-        } catch(e: IOException) {
-            e.printStackTrace()
-            GetFarmsBelongingToUserState.Error(e.localizedMessage)
-        }
-    }
-
     fun discardFarmInput() {
         _farmInput.value = Farm()
+    }
+
+    init {
+        viewModelScope.launch {
+            try {
+                farmRepository
+                    .getFarmsBelongingToUser()
+                    .collect {res ->
+                        getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
+                    }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }
 

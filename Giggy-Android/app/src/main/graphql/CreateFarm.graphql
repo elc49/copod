@@ -1,5 +1,7 @@
 mutation CreateFarm($input: NewFarmInput!) {
     createFarm(input: $input) {
         id
+        name
+        thumbnail
     }
 }

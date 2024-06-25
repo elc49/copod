@@ -12,7 +12,7 @@ import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object MarketScreenDestination: Navigation {
     override val title = null
-    override val route = "dashboard/market"
+    override val route = "dashboard-market"
 }
 
 data class Product(

@@ -40,7 +40,7 @@ import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 
 object FarmScreenDestination: Navigation {
     override val title = null
-    override val route = "dashboard/farm"
+    override val route = "dashboard-farm"
 }
 
 @Composable
@@ -48,12 +48,7 @@ fun FarmScreen(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit = {},
     getFarmsState: GetFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(null),
-    getFarms: () -> Unit = {},
 ) {
-    LaunchedEffect(Unit) {
-        getFarms()
-    }
-
     when(getFarmsState) {
         is GetFarmsBelongingToUserState.Error -> {}
         is GetFarmsBelongingToUserState.Loading ->  {
@@ -67,6 +62,7 @@ fun FarmScreen(
             }
         }
         is GetFarmsBelongingToUserState.Success -> {
+            println(getFarmsState.success)
             getFarmsState.success?.let {
                 Farms(
                     modifier = modifier,

@@ -64,7 +64,7 @@ import com.lomolo.giggy.viewmodels.GetFarmState
 
 object FarmMarketScreenDestination: Navigation {
     override val title = R.string.farm
-    override val route = "dashboard/farm_product"
+    override val route = "dashboard-market"
     const val farmIdArg = "farmId"
     val routeWithArgs = "$route/{$farmIdArg}"
 }

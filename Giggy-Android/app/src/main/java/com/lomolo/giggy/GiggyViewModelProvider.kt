@@ -50,6 +50,7 @@ object GiggyViewModelProvider {
             storeViewModel = FarmViewModel(
                 giggyApplication().container.giggyRestApiService,
                 giggyApplication().container.storeRepository,
+                giggyApplication().container.apolloClient.apolloStore,
             )
             storeViewModel
         }
