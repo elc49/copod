@@ -43,25 +43,23 @@ import androidx.navigation.navigation
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
+import com.lomolo.giggy.compose.screens.CreateFarmMarketDestination
+import com.lomolo.giggy.compose.screens.CreateFarmMarketScreen
 import com.lomolo.giggy.compose.screens.CreateFarmScreen
 import com.lomolo.giggy.compose.screens.CreateFarmScreenDestination
 import com.lomolo.giggy.compose.screens.CreatePostScreen
 import com.lomolo.giggy.compose.screens.CreatePostScreenDestination
-import com.lomolo.giggy.compose.screens.CreateFarmMarketDestination
-import com.lomolo.giggy.compose.screens.CreateFarmMarketScreen
 import com.lomolo.giggy.compose.screens.DashboardScreen
 import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmMarketScreen
 import com.lomolo.giggy.compose.screens.FarmMarketScreenDestination
-import com.lomolo.giggy.compose.screens.FarmScreen
+import com.lomolo.giggy.compose.screens.FarmScreenDestination
+import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
-import com.lomolo.giggy.compose.screens.FarmScreenDestination
 import com.lomolo.giggy.model.Session
-import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
-import com.lomolo.giggy.viewmodels.FarmViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -229,7 +227,6 @@ fun NavGraphBuilder.addDashboardGraph(
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
     postingViewModel: PostingViewModel,
-    farmViewModel: FarmViewModel,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
@@ -302,7 +299,6 @@ fun NavGraphBuilder.addDashboardGraph(
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
-            val farms = farmViewModel.getFarmsBelongingToUserState
 
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -316,15 +312,13 @@ fun NavGraphBuilder.addDashboardGraph(
                             )
                         },
                         actions = {
-                            if (farms is GetFarmsBelongingToUserState.Success && farms.success != null && farms.success.isEmpty()) {
-                                IconButton(
-                                    onClick = {
-                                        navHostController.navigate(CreateFarmScreenDestination.route) }) {
-                                    Icon(
-                                        Icons.TwoTone.Add,
-                                        contentDescription = null
-                                    )
-                                }
+                            IconButton(
+                                onClick = {
+                                    navHostController.navigate(CreateFarmScreenDestination.route) }) {
+                                Icon(
+                                    Icons.TwoTone.Add,
+                                    contentDescription = null
+                                )
                             }
                         }
                     )
@@ -341,11 +335,10 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    FarmScreen(
+                    FarmsScreen(
                         onNavigateTo = {farmId ->
                             navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
                         },
-                        getFarmsState = farmViewModel.getFarmsBelongingToUserState,
                     )
                 }
             }
@@ -497,16 +490,12 @@ fun NavGraphBuilder.addDashboardGraph(
                         .padding(innerPadding)
                 ) {
                     CreateFarmScreen(
-                        onCreateFarm = {
-                            farmViewModel.saveFarm {
-                                navHostController.popBackStack()
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Farm created.", withDismissAction = true)
-                                }
-                                farmViewModel.discardFarmInput()
+                        onNavigateBack = {
+                            navHostController.popBackStack()
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Farm created.", withDismissAction = true)
                             }
                         },
-                        farmViewModel = farmViewModel,
                     )
                 }
             }
