@@ -3,6 +3,8 @@ package com.lomolo.giggy.compose.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,12 +37,20 @@ val testMarketData = Product(
 fun MarketScreen(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        MarketCard(data = testMarketData)
+    Scaffold { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+            ) {
+                MarketCard(data = testMarketData)
+            }
+        }
     }
 }
 

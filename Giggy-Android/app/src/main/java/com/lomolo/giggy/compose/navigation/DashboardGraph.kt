@@ -266,9 +266,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = MarketScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                MarketScreen()
-            }
+            MarketScreen()
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
