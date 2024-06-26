@@ -35,9 +35,12 @@ val testMarketData = Product(
 
 @Composable
 fun MarketScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bottomNav: @Composable () -> Unit = {},
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        bottomBar = bottomNav,
+    ) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()

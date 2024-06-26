@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,24 +44,36 @@ object AccountScreenDestination: Navigation {
 fun AccountScreen(
     modifier: Modifier = Modifier,
     onSignOut: () -> Unit = {},
+    bottomNav: @Composable () -> Unit = {},
     viewModel: AccountViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     LaunchedEffect(Unit) {
        viewModel.getUser()
     }
 
-    when(val gettingUser = viewModel.gettingUserState) {
-        is GetUserState.Success -> AccountCard(
-            modifier = modifier,
-            onSignOut = onSignOut,
-            user = gettingUser.success
-        )
-        GetUserState.Loading -> Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+    Scaffold(
+        bottomBar = bottomNav
+    ) { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            LinearProgressIndicator()
+            when (val gettingUser = viewModel.gettingUserState) {
+                is GetUserState.Success -> AccountCard(
+                    modifier = modifier,
+                    onSignOut = onSignOut,
+                    user = gettingUser.success
+                )
+
+                GetUserState.Loading -> Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    LinearProgressIndicator()
+                }
+            }
         }
     }
 }

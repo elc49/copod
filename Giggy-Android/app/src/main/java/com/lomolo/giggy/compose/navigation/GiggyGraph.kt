@@ -61,10 +61,8 @@ fun GiggyNavigationHost(
             route = RootNavigation.route,
         ) {
             addHomeGraph(
-                deviceDetails = deviceDetails,
-                initializing = initializing,
+                modifier = modifier,
                 navHostController = navHostController,
-                mainViewModel = mainViewModel,
             )
             addDashboardGraph(
                 modifier = modifier,
@@ -73,6 +71,13 @@ fun GiggyNavigationHost(
                 scope = scope,
                 snackbarHostState = snackbarHostState,
                 session = session,
+            )
+            addAuthGraph(
+                modifier = modifier,
+                navHostController = navHostController,
+                deviceDetails = deviceDetails,
+                mainViewModel = mainViewModel,
+                initializing = initializing,
             )
         }
     }
