@@ -4,7 +4,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.lomolo.giggy.CreateFarmMutation
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
-import com.lomolo.giggy.viewmodels.Farm
+import com.lomolo.giggy.compose.screens.Farm
 import kotlinx.coroutines.flow.Flow
 
 interface IFarm {

@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 class FarmViewModel(
     private val farmRepository: IFarm,
 ): ViewModel() {
-    var getFarmsBelongingToUserState: GetFarmsBelongingToUserState by mutableStateOf(GetFarmsBelongingToUserState.Success(null))
+    var getFarmsBelongingToUserState: GetFarmsBelongingToUserState by mutableStateOf(
+        GetFarmsBelongingToUserState.Success(null)
+    )
         private set
 
     init {
@@ -22,7 +24,8 @@ class FarmViewModel(
                 farmRepository
                     .getFarmsBelongingToUser()
                     .collect {res ->
-                        getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
+                        getFarmsBelongingToUserState =
+                            GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
                     }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -35,5 +38,6 @@ class FarmViewModel(
 interface GetFarmsBelongingToUserState {
     data object Loading: GetFarmsBelongingToUserState
     data class Error(val msg: String?): GetFarmsBelongingToUserState
-    data class Success(val success: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>?): GetFarmsBelongingToUserState
+    data class Success(val success: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>?):
+        GetFarmsBelongingToUserState
 }

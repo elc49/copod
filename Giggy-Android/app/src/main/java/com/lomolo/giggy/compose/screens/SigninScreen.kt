@@ -16,6 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,14 +29,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.DashboardDestination
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.SigninState
 
 object SignInScreenDestination: Navigation {
     override val title = null
@@ -44,16 +47,14 @@ object SignInScreenDestination: Navigation {
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
-    deviceFlag: String = "",
-    deviceCallingCode: String = "",
     onNavigateTo: (String) -> Unit = {},
-    signIn: (cb: () -> Unit) -> Unit = {},
-    onPhoneChange: (phone: String) -> Unit = {},
-    signinPhoneValid: Boolean = true,
-    phone: String = "",
-    signingIn: SigninState = SigninState.Success,
+    deviceCallingCode: String = "",
+    deviceFlag: String = "",
+    viewModel: SigninViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val signinDetails by viewModel.signinInput.collectAsState()
+    val signinPhoneValid = viewModel.isPhoneValid(signinDetails)
 
     Column(
         modifier = modifier
@@ -75,17 +76,17 @@ fun SignInScreen(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },
-                isError = !signinPhoneValid && phone.isNotBlank(),
-                value = phone,
-                onValueChange = { onPhoneChange(it) },
+                isError = !signinPhoneValid && signinDetails.phone.isNotBlank(),
+                value = signinDetails.phone,
+                onValueChange = { viewModel.setPhone(it) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         keyboardController?.hide()
-                        if (signingIn !is SigninState.Loading && phone.isNotBlank()) {
-                            signIn {
+                        if (viewModel.signInUiState !is SigninState.Loading && signinDetails.phone.isNotBlank()) {
+                            viewModel.signIn {
                                 onNavigateTo(DashboardDestination.route)
                             }
                         }
@@ -127,14 +128,14 @@ fun SignInScreen(
                 contentPadding = PaddingValues(14.dp),
                 shape = MaterialTheme.shapes.extraSmall,
                 onClick = {
-                    if (signingIn !is SigninState.Loading && phone.isNotBlank()) {
-                        signIn {
+                    if (viewModel.signInUiState !is SigninState.Loading && signinDetails.phone.isNotBlank()) {
+                        viewModel.signIn {
                             onNavigateTo(DashboardDestination.route)
                         }
                     }
                 }
             ) {
-               when(signingIn) {
+               when(viewModel.signInUiState) {
                    SigninState.Success -> Text(
                        text = stringResource(R.string.sign_in),
                        style = MaterialTheme.typography.titleMedium,

@@ -38,9 +38,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.CreateFarmState
-import com.lomolo.giggy.viewmodels.CreateFarmViewModel
-import com.lomolo.giggy.viewmodels.FarmImageUploadState
 import kotlinx.coroutines.launch
 
 object CreateFarmScreenDestination: Navigation {

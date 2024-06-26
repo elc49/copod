@@ -32,9 +32,7 @@ import com.lomolo.giggy.compose.screens.SignInScreen
 import com.lomolo.giggy.compose.screens.SignInScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.SessionViewModel
 import com.lomolo.giggy.viewmodels.SettingDeviceDetails
-import com.lomolo.giggy.viewmodels.Signin
 
 object HomeDestination: Navigation {
     override val title = null
@@ -44,12 +42,9 @@ object HomeDestination: Navigation {
 fun NavGraphBuilder.addHomeGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    sessionViewModel: SessionViewModel,
     deviceDetails: DeviceDetails,
     mainViewModel: MainViewModel,
     initializing: SettingDeviceDetails,
-    signInDetails: Signin,
-    signinPhoneValid: Boolean,
 ) {
     navigation(
         startDestination = HomeScreenDestination.route,
@@ -77,12 +72,7 @@ fun NavGraphBuilder.addHomeGraph(
                 when(initializing) {
                     is SettingDeviceDetails.Success -> SignInScreen(
                         deviceCallingCode = deviceDetails.callingCode,
-                        onPhoneChange = { sessionViewModel.setPhone(it) },
-                        signinPhoneValid = signinPhoneValid,
-                        signIn = { sessionViewModel.signIn(it) },
-                        phone = signInDetails.phone,
                         deviceFlag = deviceDetails.countryFlag,
-                        signingIn = sessionViewModel.signInUiState,
                         onNavigateTo = { route ->
                             navHostController.navigate(route) {
                                 popUpTo(route) {

@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +54,8 @@ class CreateFarmViewModel(
     fun saveFarm(cb: () -> Unit = {}) {
         if (validFarmInput(_farmInput.value) &&
             createFarmState !is CreateFarmState.Loading &&
-            farmImageUploadState is FarmImageUploadState.Success) {
+            farmImageUploadState is FarmImageUploadState.Success
+        ) {
             createFarmState = CreateFarmState.Loading
             viewModelScope.launch {
                 createFarmState = try {
