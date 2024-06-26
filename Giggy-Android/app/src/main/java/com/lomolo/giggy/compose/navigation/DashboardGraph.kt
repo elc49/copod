@@ -275,7 +275,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 TopAppBar(title = {
                     Text(
                         stringResource(R.string.your_farms),
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }, actions = {
@@ -316,7 +316,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 TopAppBar(title = {
                     Text(
                         stringResource(id = R.string.farm),
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }, navigationIcon = {
