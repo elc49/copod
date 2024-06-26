@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

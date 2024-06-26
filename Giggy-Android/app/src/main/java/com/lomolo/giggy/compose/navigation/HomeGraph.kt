@@ -31,8 +31,8 @@ import com.lomolo.giggy.compose.screens.HomeScreenDestination
 import com.lomolo.giggy.compose.screens.SignInScreen
 import com.lomolo.giggy.compose.screens.SignInScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.SettingDeviceDetails
+import com.lomolo.giggy.MainViewModel
+import com.lomolo.giggy.SettingDeviceDetails
 
 object HomeDestination: Navigation {
     override val title = null

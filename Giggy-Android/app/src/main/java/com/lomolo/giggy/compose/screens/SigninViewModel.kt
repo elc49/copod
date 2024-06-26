@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import com.lomolo.giggy.repository.ISession
-import com.lomolo.giggy.viewmodels.MainViewModel
+import com.lomolo.giggy.MainViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

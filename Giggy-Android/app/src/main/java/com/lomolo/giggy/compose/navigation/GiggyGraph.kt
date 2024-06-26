@@ -16,8 +16,8 @@ import androidx.navigation.compose.NavHost
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.SessionViewModel
+import com.lomolo.giggy.MainViewModel
+import com.lomolo.giggy.SessionViewModel
 import kotlinx.coroutines.delay
 
 object RootNavigation: Navigation {

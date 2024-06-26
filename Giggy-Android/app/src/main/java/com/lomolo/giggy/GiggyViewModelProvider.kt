@@ -13,8 +13,6 @@ import com.lomolo.giggy.compose.screens.CreatePostViewModel
 import com.lomolo.giggy.compose.screens.FarmMarketViewModel
 import com.lomolo.giggy.compose.screens.FarmViewModel
 import com.lomolo.giggy.compose.screens.SigninViewModel
-import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.SessionViewModel
 
 object GiggyViewModelProvider {
     val Factory = viewModelFactory {

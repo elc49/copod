@@ -58,7 +58,7 @@ import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.model.Session
-import com.lomolo.giggy.viewmodels.SessionViewModel
+import com.lomolo.giggy.SessionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

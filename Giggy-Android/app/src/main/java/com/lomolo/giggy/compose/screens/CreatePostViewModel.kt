@@ -11,7 +11,7 @@ import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.NewPostInput
-import com.lomolo.giggy.viewmodels.MainViewModel
+import com.lomolo.giggy.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

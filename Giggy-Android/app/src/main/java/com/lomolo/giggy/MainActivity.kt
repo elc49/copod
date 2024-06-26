@@ -42,7 +42,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.lomolo.giggy.permissions.LocationPermission
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.MainViewModel
 import com.posthog.android.PostHogAndroid
 import com.posthog.android.PostHogAndroidConfig
 import java.util.concurrent.TimeUnit
