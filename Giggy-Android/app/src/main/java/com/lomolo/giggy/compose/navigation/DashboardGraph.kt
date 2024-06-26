@@ -183,13 +183,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }, bottomBar = {
                 BottomNavBar(
-                    onNavigateTo = { route ->
-                        navHostController.navigate(route) {
-                            popUpTo(DashboardDestination.route) {
-                                saveState = true
-                            }
-                        }
-                    },
+                    modifier = modifier,
+                    onNavigateTo = onNavigateTo,
                     currentDestination = currentDestination,
                 )
             }) { innerPadding ->
@@ -299,7 +294,13 @@ fun NavGraphBuilder.addDashboardGraph(
                 },
                 onSignOut = {
                     sessionViewModel.signOut {
-                        onNavigateTo(HomeDestination.route)
+                        navHostController.navigate(HomeDestination.route) {
+                            popUpTo(HomeDestination.route) {
+                                saveState = false
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
             )
