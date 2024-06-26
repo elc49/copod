@@ -23,14 +23,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.giggy.GetUserQuery
+import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.GetUserState
 
 object AccountScreenDestination: Navigation {
     override val title = R.string.account
@@ -41,14 +42,13 @@ object AccountScreenDestination: Navigation {
 fun AccountScreen(
     modifier: Modifier = Modifier,
     onSignOut: () -> Unit = {},
-    getUser: () -> Unit = {},
-    gettingUser: GetUserState? = null,
+    viewModel: AccountViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     LaunchedEffect(Unit) {
-       getUser()
+       viewModel.getUser()
     }
 
-    when(gettingUser) {
+    when(val gettingUser = viewModel.gettingUserState) {
         is GetUserState.Success -> AccountCard(
             modifier = modifier,
             onSignOut = onSignOut,

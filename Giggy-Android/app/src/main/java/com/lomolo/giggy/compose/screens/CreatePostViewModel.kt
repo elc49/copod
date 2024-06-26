@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +11,7 @@ import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.NewPostInput
+import com.lomolo.giggy.viewmodels.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +23,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.io.InputStream
 
-class PostingViewModel(
+class CreatePostViewModel(
     private val mainViewModel: MainViewModel,
-    private val restApi: IGiggyRestApi,
+    private val giggyRestApi: IGiggyRestApi,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): ViewModel() {
     private val _postInput = MutableStateFlow(Posting())
@@ -40,76 +41,6 @@ class PostingViewModel(
             it.copy(text = text)
         }
     }
-
-    // use ip gps if we don't have device gps permissions
-    private fun postGps(): LatLng {
-        val deviceDetails = mainViewModel.deviceDetailsState.value
-        if (deviceDetails.deviceGps.latitude == 0.0 && deviceDetails.deviceGps.longitude == 0.0) {
-            // use ip gps
-            val gps = deviceDetails.ipGps.split(",")
-            return LatLng(gps[0].toDouble(), gps[1].toDouble())
-        }
-        return deviceDetails.deviceGps
-    }
-
-    fun savePost(userId: String, cb: () -> Unit = {}) {
-        if (_postInput.value.text.isNotBlank() &&
-            postImageUploadState is PostImageUploadState.Success &&
-            submittingPostState !is SubmittingPost.Loading) {
-            submittingPostState = SubmittingPost.Loading
-            // TODO save
-            _postInput.update {
-                it.copy(location = postGps())
-            }
-            viewModelScope.launch {
-                try {
-                    giggyGraphqlApi.createPost(
-                        NewPostInput(
-                            _postInput.value.text,
-                            _postInput.value.image,
-                            _postInput.value.tags,
-                            userId,
-                            GpsInput(_postInput.value.location.latitude, _postInput.value.location.longitude),
-                        )
-                    ).dataOrThrow()
-                    submittingPostState = SubmittingPost.Success.also {
-                        cb()
-                    }
-                } catch(e: ApolloException) {
-                    e.printStackTrace()
-                    submittingPostState = SubmittingPost.Error(e.localizedMessage)
-                }
-            }
-        }
-    }
-
-    fun discardPosting() {
-        _postInput.value = Posting()
-    }
-
-    val tags = listOf(
-        "livestock",
-        "animal feeds",
-        "poultry",
-        "farm inputs",
-        "disease",
-        "outbreak",
-        "vaccine",
-        "fruits",
-        "trees",
-        "seeds",
-        "grain",
-        "rabbit",
-        "vegetables",
-        "birds",
-        "mushrooms",
-        "nuts",
-        "spices",
-        "herbs",
-        "coconut oil",
-        "butter",
-        "avocado oil",
-    )
 
     private fun addTag(tag: String) {
         _postInput.update {
@@ -149,7 +80,7 @@ class PostingViewModel(
         )
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val res = restApi.imageUpload(filePart)
+                val res = giggyRestApi.imageUpload(filePart)
                 _postInput.update {
                     it.copy(image = res.imageUri)
                 }
@@ -160,6 +91,76 @@ class PostingViewModel(
             }
         }
     }
+
+    fun savePost(userId: String, cb: () -> Unit = {}) {
+        if (_postInput.value.text.isNotBlank() &&
+            postImageUploadState is PostImageUploadState.Success &&
+            submittingPostState !is SubmittingPost.Loading) {
+            submittingPostState = SubmittingPost.Loading
+            // TODO save
+            _postInput.update {
+                it.copy(location = postGps())
+            }
+            viewModelScope.launch {
+                try {
+                    giggyGraphqlApi.createPost(
+                        NewPostInput(
+                            _postInput.value.text,
+                            _postInput.value.image,
+                            _postInput.value.tags,
+                            userId,
+                            GpsInput(_postInput.value.location.latitude, _postInput.value.location.longitude),
+                        )
+                    ).dataOrThrow()
+                    submittingPostState = SubmittingPost.Success.also {
+                        cb()
+                    }
+                } catch(e: ApolloException) {
+                    e.printStackTrace()
+                    submittingPostState = SubmittingPost.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    // use ip gps if we don't have device gps permissions
+    private fun postGps(): LatLng {
+        val deviceDetails = mainViewModel.deviceDetailsState.value
+        if (deviceDetails.deviceGps.latitude == 0.0 && deviceDetails.deviceGps.longitude == 0.0) {
+            // use ip gps
+            val gps = deviceDetails.ipGps.split(",")
+            return LatLng(gps[0].toDouble(), gps[1].toDouble())
+        }
+        return deviceDetails.deviceGps
+    }
+
+    fun discardPosting() {
+        _postInput.value = Posting()
+    }
+
+    val tags = listOf(
+        "livestock",
+        "animal feeds",
+        "poultry",
+        "farm inputs",
+        "disease",
+        "outbreak",
+        "vaccine",
+        "fruits",
+        "trees",
+        "seeds",
+        "grain",
+        "rabbit",
+        "vegetables",
+        "birds",
+        "mushrooms",
+        "nuts",
+        "spices",
+        "herbs",
+        "coconut oil",
+        "butter",
+        "avocado oil",
+    )
 }
 
 data class Posting(

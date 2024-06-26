@@ -56,11 +56,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.FarmMarketViewModel
-import com.lomolo.giggy.viewmodels.GetFarmMarketsState
-import com.lomolo.giggy.viewmodels.GetFarmOrdersState
-import com.lomolo.giggy.viewmodels.GetFarmPaymentsState
-import com.lomolo.giggy.viewmodels.GetFarmState
 
 object FarmMarketScreenDestination: Navigation {
     override val title = R.string.farm

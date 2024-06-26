@@ -17,9 +17,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
-import com.lomolo.giggy.viewmodels.Signin
 import kotlinx.coroutines.delay
 
 object RootNavigation: Navigation {
@@ -40,11 +38,8 @@ fun GiggyNavigationHost(
     navHostController: NavHostController,
     mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-    postingViewModel: PostingViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    val signInDetails: Signin by sessionViewModel.signinInput.collectAsState()
     val initializing = mainViewModel.settingDeviceDetailsState
-    val signinPhoneValid = sessionViewModel.isPhoneValid(signInDetails)
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
     val session by sessionViewModel.sessionUiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -67,18 +62,14 @@ fun GiggyNavigationHost(
         ) {
             addHomeGraph(
                 deviceDetails = deviceDetails,
-                signinPhoneValid = signinPhoneValid,
                 initializing = initializing,
                 navHostController = navHostController,
-                signInDetails = signInDetails,
                 mainViewModel = mainViewModel,
-                sessionViewModel = sessionViewModel,
             )
             addDashboardGraph(
                 modifier = modifier,
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
-                postingViewModel = postingViewModel,
                 scope = scope,
                 snackbarHostState = snackbarHostState,
                 session = session,

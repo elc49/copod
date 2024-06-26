@@ -15,8 +15,8 @@ import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
-import com.lomolo.giggy.viewmodels.Farm
-import com.lomolo.giggy.viewmodels.Market
+import com.lomolo.giggy.compose.screens.Farm
+import com.lomolo.giggy.compose.screens.Market
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {

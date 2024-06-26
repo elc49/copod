@@ -6,23 +6,27 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.lomolo.giggy.viewmodels.AddFarmMarketViewModel
-import com.lomolo.giggy.viewmodels.CreateFarmViewModel
-import com.lomolo.giggy.viewmodels.FarmMarketViewModel
+import com.lomolo.giggy.compose.screens.AccountViewModel
+import com.lomolo.giggy.compose.screens.AddFarmMarketViewModel
+import com.lomolo.giggy.compose.screens.CreateFarmViewModel
+import com.lomolo.giggy.compose.screens.CreatePostViewModel
+import com.lomolo.giggy.compose.screens.FarmMarketViewModel
+import com.lomolo.giggy.compose.screens.FarmViewModel
+import com.lomolo.giggy.compose.screens.SigninViewModel
 import com.lomolo.giggy.viewmodels.MainViewModel
-import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
-import com.lomolo.giggy.viewmodels.FarmViewModel
 
 object GiggyViewModelProvider {
     val Factory = viewModelFactory {
         lateinit var mainViewModel: MainViewModel
         lateinit var sessionViewModel: SessionViewModel
-        lateinit var postingViewModel: PostingViewModel
         lateinit var storeViewModel: FarmViewModel
         lateinit var addFarmMarketViewModel: AddFarmMarketViewModel
         lateinit var farmMarketViewModel: FarmMarketViewModel
         lateinit var createFarmViewModel: CreateFarmViewModel
+        lateinit var accountViewModel: AccountViewModel
+        lateinit var signinViewModel: SigninViewModel
+        lateinit var createPostViewModel: CreatePostViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -32,20 +36,9 @@ object GiggyViewModelProvider {
         initializer {
             sessionViewModel = SessionViewModel(
                 giggyApplication().container.sessionRepository,
-                mainViewModel,
-                giggyApplication().container.giggyGraphqlApiService,
                 giggyApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel
-        }
-
-        initializer {
-            postingViewModel = PostingViewModel(
-                mainViewModel,
-                giggyApplication().container.giggyRestApiService,
-                giggyApplication().container.giggyGraphqlApiService,
-            )
-            postingViewModel
         }
 
         initializer {
@@ -80,6 +73,30 @@ object GiggyViewModelProvider {
                 giggyApplication().container.farmRepository,
             )
             createFarmViewModel
+        }
+
+        initializer {
+            accountViewModel = AccountViewModel(
+                giggyApplication().container.giggyGraphqlApiService,
+            )
+            accountViewModel
+        }
+
+        initializer {
+            signinViewModel = SigninViewModel(
+                giggyApplication().container.sessionRepository,
+                mainViewModel
+            )
+            signinViewModel
+        }
+
+        initializer {
+            createPostViewModel = CreatePostViewModel(
+                mainViewModel,
+                giggyApplication().container.giggyRestApiService,
+                giggyApplication().container.giggyGraphqlApiService,
+            )
+            createPostViewModel
         }
     }
 }

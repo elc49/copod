@@ -37,8 +37,6 @@ import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
-import com.lomolo.giggy.viewmodels.FarmViewModel
-import com.lomolo.giggy.viewmodels.GetFarmsBelongingToUserState
 
 object FarmScreenDestination: Navigation {
     override val title = null

@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,7 +93,8 @@ class AddFarmMarketViewModel(
     fun addMarket(cb: () -> Unit = {}) {
         if (addingFarmMarketState !is AddFarmMarketState.Loading &&
             validMarketInput(_marketInput.value) &&
-            uploadingMarketImageState is UploadMarketImageState.Success) {
+            uploadingMarketImageState is UploadMarketImageState.Success
+        ) {
             addingFarmMarketState = AddFarmMarketState.Loading
             viewModelScope.launch {
                 addingFarmMarketState = try {

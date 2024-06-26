@@ -58,12 +58,11 @@ import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.model.Session
-import com.lomolo.giggy.viewmodels.PostingViewModel
 import com.lomolo.giggy.viewmodels.SessionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object DashboardDestination: Navigation {
+object DashboardDestination : Navigation {
     override val title = null
     override val route = "dashboard"
 }
@@ -86,25 +85,18 @@ fun DashboardLayout(
         }
     }
 
-    Scaffold(
-        topBar = {
-            if (currentDestination?.route == FarmMarketScreenDestination.route) {
-                TopBar(
-                    title = "Farm farm",
-                    canNavigateBack = true,
-                    onNavigateUp = {
-                        navHostController.popBackStack()
-                    }
-                )
-            }
-        },
-        bottomBar = {
-            BottomNavBar(
-                onNavigateTo = onNavigateTo,
-                currentDestination = currentDestination,
-            )
+    Scaffold(topBar = {
+        if (currentDestination?.route == FarmMarketScreenDestination.route) {
+            TopBar(title = "Farm farm", canNavigateBack = true, onNavigateUp = {
+                navHostController.popBackStack()
+            })
         }
-    ) {
+    }, bottomBar = {
+        BottomNavBar(
+            onNavigateTo = onNavigateTo,
+            currentDestination = currentDestination,
+        )
+    }) {
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -121,25 +113,28 @@ sealed class Screen(
     val activeIcon: Int,
     val route: String,
 ) {
-    data object Explore: Screen(
+    data object Explore : Screen(
         "Explore",
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
         "dashboard-home",
     )
-    data object Soko: Screen(
+
+    data object Soko : Screen(
         "Soko",
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard-market",
     )
-    data object Farm: Screen(
+
+    data object Farm : Screen(
         "Farm",
         R.drawable.farm_outlined,
         R.drawable.farm_filled,
         "dashboard-farm",
     )
-    data object Account: Screen(
+
+    data object Account : Screen(
         "You",
         R.drawable.account_outlined,
         R.drawable.account_filled,
@@ -159,31 +154,24 @@ internal fun BottomNavBar(
         modifier = modifier,
     ) {
         navItems.forEachIndexed { _, item ->
-            val isNavItemActive = currentDestination?.hierarchy?.any { it.route == item.route } == true
+            val isNavItemActive =
+                currentDestination?.hierarchy?.any { it.route == item.route } == true
 
-            NavigationBarItem(
-                selected = isNavItemActive,
-                onClick = {
-                    onNavigateTo(item.route)
-                },
-                icon = {
-                    Icon(
-                        painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
-                        modifier = Modifier
-                            .size(32.dp),
-                        contentDescription = item.name
-                    )
-                },
-                label = {
-                    Text(
-                        item.name,
-                        fontWeight = if (isNavItemActive)
-                            FontWeight.ExtraBold
-                        else
-                            FontWeight.Normal,
-                    )
-                }
-            )
+            NavigationBarItem(selected = isNavItemActive, onClick = {
+                onNavigateTo(item.route)
+            }, icon = {
+                Icon(
+                    painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = item.name
+                )
+            }, label = {
+                Text(
+                    item.name,
+                    fontWeight = if (isNavItemActive) FontWeight.ExtraBold
+                    else FontWeight.Normal,
+                )
+            })
         }
     }
 }
@@ -196,29 +184,23 @@ internal fun TopBar(
     canNavigateBack: Boolean = false,
     onNavigateUp: () -> Unit,
 ) {
-    TopAppBar(
-        modifier = modifier,
-        title = {
-            Text(
-                title,
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        navigationIcon = {
-            if (canNavigateBack) {
-                OutlinedIconButton(
-                    onClick = { onNavigateUp() }
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp),
-                    )
-                }
+    TopAppBar(modifier = modifier, title = {
+        Text(
+            title,
+            style = MaterialTheme.typography.displaySmall,
+            fontWeight = FontWeight.Bold,
+        )
+    }, navigationIcon = {
+        if (canNavigateBack) {
+            OutlinedIconButton(onClick = { onNavigateUp() }) {
+                Icon(
+                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                )
             }
         }
-    )
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -226,7 +208,6 @@ fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
-    postingViewModel: PostingViewModel,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
@@ -248,41 +229,33 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = DashboardScreenDestination.route) {
             val currentDestination = it.destination
 
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                floatingActionButton = {
-                    IconButton(
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                CircleShape,
-                            ),
-                        onClick = {
-                            navHostController.navigate(CreatePostScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        })
-                    {
-                       Icon(
-                           Icons.TwoTone.Add,
-                           tint = MaterialTheme.colorScheme.background,
-                           contentDescription = stringResource(R.string.create_post),
-                       )
+            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
+                IconButton(modifier = Modifier.background(
+                        MaterialTheme.colorScheme.primary,
+                        CircleShape,
+                    ), onClick = {
+                    navHostController.navigate(CreatePostScreenDestination.route) {
+                        launchSingleTop = true
                     }
-                },
-                bottomBar = {
-                    BottomNavBar(
-                        onNavigateTo = { route ->
-                            navHostController.navigate(route) {
-                                popUpTo(DashboardDestination.route) {
-                                    saveState = true
-                                }
-                            }
-                        },
-                        currentDestination = currentDestination,
+                }) {
+                    Icon(
+                        Icons.TwoTone.Add,
+                        tint = MaterialTheme.colorScheme.background,
+                        contentDescription = stringResource(R.string.create_post),
                     )
                 }
-            ) {innerPadding ->
+            }, bottomBar = {
+                BottomNavBar(
+                    onNavigateTo = { route ->
+                        navHostController.navigate(route) {
+                            popUpTo(DashboardDestination.route) {
+                                saveState = true
+                            }
+                        }
+                    },
+                    currentDestination = currentDestination,
+                )
+            }) { innerPadding ->
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
@@ -300,43 +273,35 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
 
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(R.string.your_farms),
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        actions = {
-                            IconButton(
-                                onClick = {
-                                    navHostController.navigate(CreateFarmScreenDestination.route) }) {
-                                Icon(
-                                    Icons.TwoTone.Add,
-                                    contentDescription = null
-                                )
-                            }
-                        }
+            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+                TopAppBar(title = {
+                    Text(
+                        stringResource(R.string.your_farms),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
                     )
-                },
-                bottomBar = {
-                    BottomNavBar(
-                        currentDestination = currentDestination,
-                        onNavigateTo = onNavigateTo,
-                    )
-                }
-            ) {innerPadding ->
+                }, actions = {
+                    IconButton(onClick = {
+                        navHostController.navigate(CreateFarmScreenDestination.route)
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Add, contentDescription = null
+                        )
+                    }
+                })
+            }, bottomBar = {
+                BottomNavBar(
+                    currentDestination = currentDestination,
+                    onNavigateTo = onNavigateTo,
+                )
+            }) { innerPadding ->
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
                     FarmsScreen(
-                        onNavigateTo = {farmId ->
+                        onNavigateTo = { farmId ->
                             navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
                         },
                     )
@@ -349,43 +314,33 @@ fun NavGraphBuilder.addDashboardGraph(
                 type = NavType.StringType
             })
         ) {
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(id = R.string.farm),
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    navHostController.popBackStack()
-                                }
-                            ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(32.dp),
-                                )
-                            }
-                        }
+            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+                TopAppBar(title = {
+                    Text(
+                        stringResource(id = R.string.farm),
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
                     )
-                }
-            ) {
+                }, navigationIcon = {
+                    IconButton(onClick = {
+                        navHostController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                        )
+                    }
+                })
+            }) {
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmMarketScreen(
-                        onCreateFarmMarket = {
-                            navHostController.navigate(CreateFarmMarketDestination.route)
-                        }
-                    )
+                    FarmMarketScreen(onCreateFarmMarket = {
+                        navHostController.navigate(CreateFarmMarketDestination.route)
+                    })
                 }
             }
         }
@@ -401,8 +356,6 @@ fun NavGraphBuilder.addDashboardGraph(
                             }
                         }
                     },
-                    getUser = { sessionViewModel.getUser() },
-                    gettingUser = sessionViewModel.gettingUserState,
                 )
             }
         }
@@ -410,80 +363,39 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreatePostScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(id = CreatePostScreenDestination.title),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    navHostController.popBackStack()
-                                    postingViewModel.discardPosting()
-                                },
-                            ) {
-                               Icon(
-                                   Icons.TwoTone.Close,
-                                   contentDescription = null
-                               )
-                            }
-                        }
-                    )
-                }
-            ) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .padding(innerPadding),
-                ) {
-                    CreatePostScreen(
-                        postingViewModel = postingViewModel,
-                        onCloseDialog = {
-                            navHostController.popBackStack()
-                        },
-                        showToast = {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Post created", withDismissAction = true)
-                            }
-                        },
-                        session = session,
-                    )
-                }
-            }
+            CreatePostScreen(
+                onCloseDialog = {
+                    navHostController.popBackStack()
+                },
+                showToast = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Post created", withDismissAction = true)
+                    }
+                },
+                session = session,
+            )
         }
         dialog(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(id = CreateFarmScreenDestination.title),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    navHostController.popBackStack()
-                                }
-                            ) {
-                               Icon(
-                                   Icons.TwoTone.Close,
-                                   contentDescription = null
-                               )
-                            }
-                        }
+            Scaffold(topBar = {
+                TopAppBar(title = {
+                    Text(
+                        stringResource(id = CreateFarmScreenDestination.title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
                     )
-                }
-            ) {innerPadding ->
+                }, navigationIcon = {
+                    IconButton(onClick = {
+                        navHostController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Close, contentDescription = null
+                        )
+                    }
+                })
+            }) { innerPadding ->
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
@@ -493,7 +405,9 @@ fun NavGraphBuilder.addDashboardGraph(
                         onNavigateBack = {
                             navHostController.popBackStack()
                             scope.launch {
-                                snackbarHostState.showSnackbar("Farm created.", withDismissAction = true)
+                                snackbarHostState.showSnackbar(
+                                    "Farm created.", withDismissAction = true
+                                )
                             }
                         },
                     )
@@ -504,16 +418,13 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreateFarmMarketDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            CreateFarmMarketScreen(
-                onGoBack = {
-                    navHostController.popBackStack()
-                },
-                showToast = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
-                    }
+            CreateFarmMarketScreen(onGoBack = {
+                navHostController.popBackStack()
+            }, showToast = {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
                 }
-            )
+            })
         }
     }
 }

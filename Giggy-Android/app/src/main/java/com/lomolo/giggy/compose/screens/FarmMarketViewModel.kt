@@ -1,4 +1,4 @@
-package com.lomolo.giggy.viewmodels
+package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,6 @@ import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GetFarmPaymentsQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
-import com.lomolo.giggy.compose.screens.FarmMarketScreenDestination
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import kotlinx.coroutines.launch
 import okio.IOException
@@ -100,7 +99,8 @@ class FarmMarketViewModel(
                 giggyGraphqlApi
                     .getFarmMarkets(storeId)
                     .collect {res ->
-                        gettingFarmMarketsState = GetFarmMarketsState.Success(res.data?.getFarmMarkets)
+                        gettingFarmMarketsState =
+                            GetFarmMarketsState.Success(res.data?.getFarmMarkets)
                     }
             } catch(e: IOException) {
                 e.printStackTrace()
@@ -131,6 +131,7 @@ interface GetFarmOrdersState {
 
 interface GetFarmPaymentsState {
     data object Loading: GetFarmPaymentsState
-    data class Success(val success: List<GetFarmPaymentsQuery.GetFarmPayment>?): GetFarmPaymentsState
+    data class Success(val success: List<GetFarmPaymentsQuery.GetFarmPayment>?):
+        GetFarmPaymentsState
     data class Error(val msg: String?): GetFarmPaymentsState
 }

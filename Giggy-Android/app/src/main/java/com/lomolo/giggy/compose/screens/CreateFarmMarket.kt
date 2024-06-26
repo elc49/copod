@@ -50,9 +50,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.lomolo.giggy.viewmodels.AddFarmMarketState
-import com.lomolo.giggy.viewmodels.AddFarmMarketViewModel
-import com.lomolo.giggy.viewmodels.UploadMarketImageState
 import kotlinx.coroutines.launch
 
 object CreateFarmMarketDestination: Navigation {
