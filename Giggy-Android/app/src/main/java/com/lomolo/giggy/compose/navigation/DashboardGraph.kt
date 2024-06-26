@@ -15,7 +15,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -23,7 +22,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,15 +30,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.giggy.R
+import com.lomolo.giggy.SessionViewModel
 import com.lomolo.giggy.compose.screens.AccountScreen
 import com.lomolo.giggy.compose.screens.AccountScreenDestination
 import com.lomolo.giggy.compose.screens.CreateFarmMarketDestination
@@ -58,53 +57,12 @@ import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.model.Session
-import com.lomolo.giggy.SessionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 object DashboardDestination : Navigation {
     override val title = null
     override val route = "dashboard"
-}
-
-@Composable
-fun DashboardLayout(
-    modifier: Modifier = Modifier,
-    navHostController: NavHostController,
-    content: @Composable () -> Unit = {},
-) {
-    val navHostBackStackEntry by navHostController.currentBackStackEntryAsState()
-    val currentDestination = navHostBackStackEntry?.destination
-    val onNavigateTo = { route: String ->
-        navHostController.navigate(route) {
-            popUpTo(DashboardDestination.route) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
-    Scaffold(topBar = {
-        if (currentDestination?.route == FarmMarketScreenDestination.route) {
-            TopBar(title = "Farm farm", canNavigateBack = true, onNavigateUp = {
-                navHostController.popBackStack()
-            })
-        }
-    }, bottomBar = {
-        BottomNavBar(
-            onNavigateTo = onNavigateTo,
-            currentDestination = currentDestination,
-        )
-    }) {
-        Surface(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            content()
-        }
-    }
 }
 
 sealed class Screen(
@@ -177,33 +135,6 @@ internal fun BottomNavBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun TopBar(
-    modifier: Modifier = Modifier,
-    title: String,
-    canNavigateBack: Boolean = false,
-    onNavigateUp: () -> Unit,
-) {
-    TopAppBar(modifier = modifier, title = {
-        Text(
-            title,
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-        )
-    }, navigationIcon = {
-        if (canNavigateBack) {
-            OutlinedIconButton(onClick = { onNavigateUp() }) {
-                Icon(
-                    Icons.AutoMirrored.TwoTone.ArrowBack,
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                )
-            }
-        }
-    })
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
@@ -214,10 +145,16 @@ fun NavGraphBuilder.addDashboardGraph(
 ) {
     val onNavigateTo = { route: String ->
         navHostController.navigate(route) {
-            popUpTo(DashboardDestination.route) {
-                saveState = true
+            // Pop up to the start destination of the graph to
+            // avoid building up a large stack of destinations
+            // on the back stack as users select items
+            popUpTo(navHostController.graph.findStartDestination().id) {
+                saveState = false
             }
+            // Avoid multiple copies of the same destination when
+            // re-selecting the same item
             launchSingleTop = true
+            // Restore state when re-selecting a previously selected item
             restoreState = true
         }
     }
@@ -231,9 +168,9 @@ fun NavGraphBuilder.addDashboardGraph(
 
             Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
                 IconButton(modifier = Modifier.background(
-                        MaterialTheme.colorScheme.primary,
-                        CircleShape,
-                    ), onClick = {
+                    MaterialTheme.colorScheme.primary,
+                    CircleShape,
+                ), onClick = {
                     navHostController.navigate(CreatePostScreenDestination.route) {
                         launchSingleTop = true
                     }
@@ -246,13 +183,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }, bottomBar = {
                 BottomNavBar(
-                    onNavigateTo = { route ->
-                        navHostController.navigate(route) {
-                            popUpTo(DashboardDestination.route) {
-                                saveState = true
-                            }
-                        }
-                    },
+                    modifier = modifier,
+                    onNavigateTo = onNavigateTo,
                     currentDestination = currentDestination,
                 )
             }) { innerPadding ->
@@ -266,9 +198,15 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = MarketScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                MarketScreen()
-            }
+            MarketScreen(
+                bottomNav = {
+                    BottomNavBar(
+                        modifier = modifier,
+                        onNavigateTo = onNavigateTo,
+                        currentDestination = it.destination
+                    )
+                }
+            )
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
@@ -277,7 +215,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 TopAppBar(title = {
                     Text(
                         stringResource(R.string.your_farms),
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }, actions = {
@@ -291,6 +229,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 })
             }, bottomBar = {
                 BottomNavBar(
+                    modifier = modifier,
                     currentDestination = currentDestination,
                     onNavigateTo = onNavigateTo,
                 )
@@ -318,7 +257,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 TopAppBar(title = {
                     Text(
                         stringResource(id = R.string.farm),
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }, navigationIcon = {
@@ -345,19 +284,26 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = AccountScreenDestination.route) {
-            DashboardLayout(modifier = modifier, navHostController = navHostController) {
-                AccountScreen(
-                    onSignOut = {
-                        sessionViewModel.signOut {
-                            navHostController.navigate(RootNavigation.route) {
-                                popUpTo(AccountScreenDestination.route) {
-                                    inclusive = true
-                                }
+            AccountScreen(
+                bottomNav = {
+                    BottomNavBar(
+                        modifier = modifier,
+                        onNavigateTo = onNavigateTo,
+                        currentDestination = it.destination,
+                    )
+                },
+                onSignOut = {
+                    sessionViewModel.signOut {
+                        navHostController.navigate(HomeDestination.route) {
+                            popUpTo(HomeDestination.route) {
+                                saveState = false
                             }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                    },
-                )
-            }
+                    }
+                },
+            )
         }
         dialog(
             route = CreatePostScreenDestination.route,

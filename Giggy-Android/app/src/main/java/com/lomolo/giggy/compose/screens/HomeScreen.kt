@@ -20,11 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
+import com.lomolo.giggy.compose.navigation.AuthDestination
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object HomeScreenDestination: Navigation {
-    override val route = "landing"
+    override val route = "landing-home"
     override val title = null
 }
 
@@ -66,7 +67,7 @@ fun HomeScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(16.dp),
-                onClick = { onNavigateTo(SignInScreenDestination.route) },
+                onClick = { onNavigateTo(AuthDestination.route) },
                 shape = MaterialTheme.shapes.extraSmall
             ) {
                 Text(
