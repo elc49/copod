@@ -211,41 +211,22 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
 
-            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-                TopAppBar(title = {
-                    Text(
-                        stringResource(R.string.your_farms),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }, actions = {
-                    IconButton(onClick = {
-                        navHostController.navigate(CreateFarmScreenDestination.route)
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Add, contentDescription = null
-                        )
-                    }
-                })
-            }, bottomBar = {
-                BottomNavBar(
-                    modifier = modifier,
-                    currentDestination = currentDestination,
-                    onNavigateTo = onNavigateTo,
-                )
-            }) { innerPadding ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    FarmsScreen(
-                        onNavigateTo = { farmId ->
-                            navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
-                        },
+            FarmsScreen(
+                snackbarHostState = snackbarHostState,
+                onNavigateToFarmMarket = { farmId ->
+                    navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
+                },
+                onNavigateToCreateFarm = {
+                    navHostController.navigate(CreateFarmScreenDestination.route)
+                },
+                bottomNav = {
+                    BottomNavBar(
+                        modifier = modifier,
+                        currentDestination = currentDestination,
+                        onNavigateTo = onNavigateTo,
                     )
                 }
-            }
+            )
         }
         composable(
             route = FarmMarketScreenDestination.routeWithArgs,

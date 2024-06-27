@@ -9,13 +9,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,36 +49,73 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
 
-object FarmScreenDestination: Navigation {
+object FarmScreenDestination : Navigation {
     override val title = null
     override val route = "dashboard-farm"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FarmsScreen(
     modifier: Modifier = Modifier,
-    onNavigateTo: (String) -> Unit = {},
+    onNavigateToFarmMarket: (String) -> Unit = {},
+    onNavigateToCreateFarm: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    bottomNav: @Composable () -> Unit = {},
     viewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    when(val getFarmsState = viewModel.getFarmsBelongingToUserState) {
-        is GetFarmsBelongingToUserState.Error -> {}
-        is GetFarmsBelongingToUserState.Loading ->  {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                LinearProgressIndicator()
-            }
-        }
-        is GetFarmsBelongingToUserState.Success -> {
-            getFarmsState.success?.let {
-                Farms(
-                    modifier = modifier,
-                    onNavigateTo = onNavigateTo,
-                    farms = it
-                )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = bottomNav,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        stringResource(id = R.string.your_farms),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                actions = {
+                    if (!viewModel.hasFarm) {
+                        IconButton(onClick = {
+                            onNavigateToCreateFarm()
+                        }) {
+                            Icon(
+                                Icons.TwoTone.Add, contentDescription = null
+                            )
+                        }
+                    }
+                }
+            )
+        },
+    ) { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            when (val getFarmsState = viewModel.getFarmsBelongingToUserState) {
+                is GetFarmsBelongingToUserState.Error -> {}
+                is GetFarmsBelongingToUserState.Loading -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        LinearProgressIndicator()
+                    }
+                }
+                is GetFarmsBelongingToUserState.Success -> {
+                    getFarmsState.success?.let {
+                        Farms(
+                            modifier = modifier,
+                            onNavigateTo = onNavigateToFarmMarket,
+                            farms = it
+                        )
+                    }
+                }
             }
         }
     }

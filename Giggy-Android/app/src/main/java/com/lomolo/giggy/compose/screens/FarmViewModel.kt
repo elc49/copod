@@ -16,6 +16,8 @@ class FarmViewModel(
         GetFarmsBelongingToUserState.Success(null)
     )
         private set
+    var hasFarm: Boolean by mutableStateOf(false)
+        private set
 
     init {
         viewModelScope.launch {
@@ -24,6 +26,7 @@ class FarmViewModel(
                 farmRepository
                     .getFarmsBelongingToUser()
                     .collect {res ->
+                        if (!res.data?.getFarmsBelongingToUser.isNullOrEmpty()) hasFarm = true
                         getFarmsBelongingToUserState =
                             GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
                     }
