@@ -12,6 +12,7 @@ import com.lomolo.giggy.network.IGiggyRestApi
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.MainViewModel
+import com.lomolo.giggy.data.Data
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,29 +140,7 @@ class CreatePostViewModel(
         _postInput.value = Posting()
     }
 
-    val tags = listOf(
-        "livestock",
-        "animal feeds",
-        "poultry",
-        "farm inputs",
-        "disease",
-        "outbreak",
-        "vaccine",
-        "fruits",
-        "trees",
-        "seeds",
-        "grain",
-        "rabbit",
-        "vegetables",
-        "birds",
-        "mushrooms",
-        "nuts",
-        "spices",
-        "herbs",
-        "coconut oil",
-        "butter",
-        "avocado oil",
-    )
+    val tags = Data.tags
 }
 
 data class Posting(

@@ -40,6 +40,15 @@ object GiggyViewModelProvider {
         }
 
         initializer {
+            createPostViewModel = CreatePostViewModel(
+                mainViewModel,
+                giggyApplication().container.giggyRestApiService,
+                giggyApplication().container.giggyGraphqlApiService,
+            )
+            createPostViewModel
+        }
+
+        initializer {
             storeViewModel = FarmViewModel(
                 giggyApplication().container.farmRepository,
             )
@@ -86,15 +95,6 @@ object GiggyViewModelProvider {
                 mainViewModel
             )
             signinViewModel
-        }
-
-        initializer {
-            createPostViewModel = CreatePostViewModel(
-                mainViewModel,
-                giggyApplication().container.giggyRestApiService,
-                giggyApplication().container.giggyGraphqlApiService,
-            )
-            createPostViewModel
         }
     }
 }

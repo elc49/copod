@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Giggy</string>
-    <string name="lear_connect_share">Learn, Connect, and Share what works in your farm.</string>
+    <string name="learn_connect_share">Learn, Connect, and Share what works in your farm.</string>
     <string name="we_farm">We farm</string>
     <string name="get_started">Just a phone number to get started</string>
     <string name="no_posts_we_are_still_early">No posts. We are still early</string>
     <string name="start_writing">Start writing</string>
-    <string name="no_farm_farms">No farm farms</string>
+    <string name="no_farm">No farm</string>
     <string name="sell_directly_to_your_clients">Sell directly to your clients</string>
     <string name="one_time_purchase">One time purchase</string>
     <string name="no_hidden_fees">No hidden fees in your sales</string>
@@ -36,9 +36,9 @@
     <string name="volume">Volume</string>
     <string name="price_support_text">Sell per unit. This won\'t change</string>
     <string name="price_label">Price per unit</string>
-    <string name="unit_support_text">Per count(1 or 2 or pair) or KG or Grams etc</string>
+    <string name="unit_support_text">1 or 2 or pair or KG or Grams etc</string>
     <string name="unit">Unit</string>
     <string name="image">Image</string>
-    <string name="market_name">Market name</string>
-    <string name="add_market">Add market</string>
+    <string name="market_name">Product name</string>
+    <string name="add_market">Create market</string>
 </resources>

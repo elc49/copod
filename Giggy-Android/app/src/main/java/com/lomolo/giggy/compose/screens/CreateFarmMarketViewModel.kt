@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.apollographql.apollo3.exception.CacheMissException
 import com.lomolo.giggy.GetFarmMarketsQuery
+import com.lomolo.giggy.data.Data
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
 import kotlinx.coroutines.Dispatchers
@@ -139,6 +140,36 @@ class AddFarmMarketViewModel(
         _marketInput.value = Market()
     }
 
+    val tags = Data.tags
+
+    private fun addTag(tag: String) {
+        _marketInput.update {
+            val existingTags = it.tags.toMutableList()
+            existingTags.add(tag)
+            it.copy(tags = existingTags.toList())
+        }
+    }
+
+    private fun tagAlreadyExists(tag: String): Boolean {
+        return _marketInput.value.tags.contains(tag)
+    }
+
+    private fun removeTag(tag: String) {
+        _marketInput.update {
+            val existingTags = it.tags.toMutableList()
+            existingTags.remove(tag)
+            it.copy(tags = existingTags.toList())
+        }
+    }
+
+    fun addMarketTag(tag: String) {
+        if (tagAlreadyExists(tag)) {
+            removeTag(tag)
+        } else if (!tagAlreadyExists(tag)) {
+            addTag(tag)
+        }
+    }
+
     init {
         _marketInput.update {
             it.copy(storeId = farmMarketViewModel.getFarmId())
@@ -153,6 +184,7 @@ data class Market(
     val pricePerUnit: String = "",
     val volume: String = "",
     val storeId: String = "",
+    val tags: List<String> = listOf(),
 )
 
 interface UploadMarketImageState {

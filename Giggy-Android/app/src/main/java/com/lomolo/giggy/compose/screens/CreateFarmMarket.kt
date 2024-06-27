@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
@@ -40,7 +41,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -140,6 +143,7 @@ fun CreateFarmMarketScreen(
                         },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Next,
                         ),
                         singleLine = true,
                     )
@@ -219,6 +223,9 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.unit_support_text)
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                        ),
                         singleLine = true,
                     )
                     OutlinedTextField(
@@ -238,6 +245,10 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.price_support_text)
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next,
+                        ),
                         singleLine = true,
                     )
                 }
@@ -262,6 +273,19 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.volume_support_text),
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.addMarket {
+                                    onGoBack()
+                                    viewModel.resetMarketState()
+                                    showToast()
+                                }
+                            }
+                        ),
                         singleLine = true,
                     )
                 }
