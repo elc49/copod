@@ -76,8 +76,8 @@ type User struct {
 	Phone            string         `json:"phone"`
 	Username         sql.NullString `json:"username"`
 	Avatar           string         `json:"avatar"`
+	HasFarmingRights bool           `json:"has_farming_rights"`
 	HasPostingRights bool           `json:"has_posting_rights"`
-	HasFarmRights    bool           `json:"has_farm_rights"`
 	CreatedAt        time.Time      `json:"created_at"`
 	UpdatedAt        time.Time      `json:"updated_at"`
 	DeletedAt        sql.NullTime   `json:"deleted_at"`

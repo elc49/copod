@@ -38,7 +38,7 @@ INSERT INTO users (
   phone, username, avatar
 ) VALUES (
   $1, $2, $3
-) RETURNING id, phone, username, avatar, has_posting_rights, has_farm_rights, created_at, updated_at, deleted_at
+) RETURNING id, phone, username, avatar, has_farming_rights, has_posting_rights, created_at, updated_at, deleted_at
 `
 
 type CreateUserByPhoneParams struct {
@@ -55,8 +55,8 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 		&i.Phone,
 		&i.Username,
 		&i.Avatar,
+		&i.HasFarmingRights,
 		&i.HasPostingRights,
-		&i.HasFarmRights,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
