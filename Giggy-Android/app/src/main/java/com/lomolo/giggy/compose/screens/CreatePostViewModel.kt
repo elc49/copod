@@ -71,6 +71,7 @@ class CreatePostViewModel(
     }
 
     fun uploadImage(stream: InputStream) {
+        _postInput.update { it.copy(image = "") }
         postImageUploadState = PostImageUploadState.Loading
         val request = stream.readBytes().toRequestBody()
         val filePart = MultipartBody.Part.createFormData(
