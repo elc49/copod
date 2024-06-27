@@ -32,6 +32,20 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.
 	}
 
 	return &model.User{
-		ID: user.ID,
+		ID:               user.ID,
+		HasFarmingRights: user.HasFarmingRights,
+		HasPosterRights:  user.HasPosterRights,
+	}, nil
+}
+
+func (r *UserRepository) SetFarmingRights(ctx context.Context, args db.SetFarmingRightsParams) (*model.User, error) {
+	user, err := r.queries.SetFarmingRights(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:               user.ID,
+		HasFarmingRights: user.HasFarmingRights,
 	}, nil
 }

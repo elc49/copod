@@ -13,6 +13,7 @@ import (
 var (
 	queries *db.Queries
 	phone   = "254791215745"
+	avatar  = "https://avatar.jpg"
 )
 
 func init() {

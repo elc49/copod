@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS users(
   phone TEXT NOT NULL UNIQUE,
   username VARCHAR(6) UNIQUE,
   avatar TEXT NOT NULL,
-  has_posting_rights BOOLEAN NOT NULL DEFAULT false,
-  has_farm_rights BOOLEAN NOT NULL DEFAULT false,
+  has_farming_rights BOOLEAN NOT NULL DEFAULT false,
+  has_poster_rights BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMPTZ

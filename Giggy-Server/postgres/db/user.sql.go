@@ -38,7 +38,7 @@ INSERT INTO users (
   phone, username, avatar
 ) VALUES (
   $1, $2, $3
-) RETURNING id, phone, username, avatar, has_posting_rights, has_farm_rights, created_at, updated_at, deleted_at
+) RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
 `
 
 type CreateUserByPhoneParams struct {
@@ -55,8 +55,8 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 		&i.Phone,
 		&i.Username,
 		&i.Avatar,
-		&i.HasPostingRights,
-		&i.HasFarmRights,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -65,16 +65,18 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, phone, avatar, created_at, updated_at FROM users
+SELECT id, phone, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	ID        uuid.UUID `json:"id"`
-	Phone     string    `json:"phone"`
-	Avatar    string    `json:"avatar"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID               uuid.UUID `json:"id"`
+	Phone            string    `json:"phone"`
+	Avatar           string    `json:"avatar"`
+	HasFarmingRights bool      `json:"has_farming_rights"`
+	HasPosterRights  bool      `json:"has_poster_rights"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
@@ -84,6 +86,8 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 		&i.ID,
 		&i.Phone,
 		&i.Avatar,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -110,6 +114,34 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPh
 		&i.Phone,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const setFarmingRights = `-- name: SetFarmingRights :one
+UPDATE users SET has_farming_rights = $1
+WHERE id = $2
+RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
+`
+
+type SetFarmingRightsParams struct {
+	HasFarmingRights bool      `json:"has_farming_rights"`
+	ID               uuid.UUID `json:"id"`
+}
+
+func (q *Queries) SetFarmingRights(ctx context.Context, arg SetFarmingRightsParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, setFarmingRights, arg.HasFarmingRights, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Username,
+		&i.Avatar,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
