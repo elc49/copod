@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import java.text.NumberFormat
 
 @Composable
 fun FarmSubscriptionScreen(
@@ -35,7 +36,7 @@ fun FarmSubscriptionScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Buy store service",
+            "Buy farm service",
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center
         )
@@ -101,7 +102,7 @@ fun FarmSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    "KES ${2000}",
+                    NumberFormat.getCurrencyInstance().format(2000),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )

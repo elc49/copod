@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import java.text.NumberFormat
 
 @Composable
 fun PostingSubscriptionScreen(
@@ -35,7 +36,7 @@ fun PostingSubscriptionScreen(
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = stringResource(R.string.buy_posting_rights),
+            text = stringResource(R.string.buy_poster_rights),
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
         )
@@ -98,11 +99,11 @@ fun PostingSubscriptionScreen(
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-               Text(
-                   "KES ${1800}",
-                   fontWeight = FontWeight.Bold,
-                   style = MaterialTheme.typography.titleMedium,
-               )
+                Text(
+                    NumberFormat.getCurrencyInstance().format(1800),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
         }
     }
