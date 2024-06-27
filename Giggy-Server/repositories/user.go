@@ -49,3 +49,15 @@ func (r *UserRepository) SetFarmingRights(ctx context.Context, args db.SetFarmin
 		HasFarmingRights: user.HasFarmingRights,
 	}, nil
 }
+
+func (r *UserRepository) SetPosterRights(ctx context.Context, args db.SetPosterRightsParams) (*model.User, error) {
+	user, err := r.queries.SetPosterRights(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		ID:              user.ID,
+		HasPosterRights: user.HasPosterRights,
+	}, nil
+}
