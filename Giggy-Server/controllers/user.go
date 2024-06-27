@@ -27,5 +27,5 @@ func (c *UserController) GetUserByID(ctx context.Context, id uuid.UUID) (*model.
 }
 
 func (c *UserController) SetFarmingRights(ctx context.Context, args db.SetFarmingRightsParams) (*model.User, error) {
-	return c.r.GrantFarmingRights(ctx, args)
+	return c.r.SetFarmingRights(ctx, args)
 }
