@@ -22,6 +22,8 @@ class SessionRepository(
         val newS = Session(
             id = res.userId,
             token = res.token,
+            hasFarmingRights = res.hasFarmingRights,
+            hasPosterRights = res.hasPosterRights,
         )
         sessionDao.create(newS)
     }
@@ -36,6 +38,8 @@ class SessionRepository(
         val newS = Session(
             id = res.userId,
             token = res.token,
+            hasFarmingRights = res.hasFarmingRights,
+            hasPosterRights = res.hasPosterRights,
         )
         sessionDao.update(newS)
     }
