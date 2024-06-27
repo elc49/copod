@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class FarmViewModel(
     private val farmRepository: IFarm,
-): ViewModel() {
+) : ViewModel() {
     var getFarmsBelongingToUserState: GetFarmsBelongingToUserState by mutableStateOf(
         GetFarmsBelongingToUserState.Success(null)
     )
@@ -25,7 +25,7 @@ class FarmViewModel(
             try {
                 farmRepository
                     .getFarmsBelongingToUser()
-                    .collect {res ->
+                    .collect { res ->
                         if (!res.data?.getFarmsBelongingToUser.isNullOrEmpty()) hasFarm = true
                         getFarmsBelongingToUserState =
                             GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
@@ -39,8 +39,8 @@ class FarmViewModel(
 }
 
 interface GetFarmsBelongingToUserState {
-    data object Loading: GetFarmsBelongingToUserState
-    data class Error(val msg: String?): GetFarmsBelongingToUserState
-    data class Success(val success: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>?):
+    data object Loading : GetFarmsBelongingToUserState
+    data class Error(val msg: String?) : GetFarmsBelongingToUserState
+    data class Success(val success: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>?) :
         GetFarmsBelongingToUserState
 }
