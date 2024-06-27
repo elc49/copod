@@ -95,15 +95,17 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 }
 
 const getUserByPhone = `-- name: GetUserByPhone :one
-SELECT id, phone, created_at, updated_at FROM users
+SELECT id, phone, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE phone = $1 AND deleted_at IS NULL
 `
 
 type GetUserByPhoneRow struct {
-	ID        uuid.UUID `json:"id"`
-	Phone     string    `json:"phone"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID               uuid.UUID `json:"id"`
+	Phone            string    `json:"phone"`
+	HasFarmingRights bool      `json:"has_farming_rights"`
+	HasPosterRights  bool      `json:"has_poster_rights"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error) {
@@ -112,6 +114,8 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPh
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

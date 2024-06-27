@@ -9,7 +9,7 @@ INSERT INTO users (
 ) RETURNING *;
 
 -- name: GetUserByPhone :one
-SELECT id, phone, created_at, updated_at FROM users
+SELECT id, phone, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE phone = $1 AND deleted_at IS NULL;
 
 -- name: GetUserByID :one

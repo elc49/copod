@@ -31,10 +31,15 @@ func Test_API(t *testing.T) {
 		assert.Equal(t, res.StatusCode, http.StatusOK)
 
 		var result struct {
-			Token string `json:"token"`
+			Token            string `json:"token"`
+			HasFarmingRights bool   `json:"has_farming_rights"`
+			HasPosterRights  bool   `json:"has_poster_rights"`
 		}
+
 		err = json.NewDecoder(res.Body).Decode(&result)
 		assert.Nil(t, err)
 		assert.True(t, len(result.Token) > 1, "should have jsonwebtoken string")
+		assert.False(t, result.HasFarmingRights, "should be false")
+		assert.False(t, result.HasPosterRights, "should be false")
 	})
 }
