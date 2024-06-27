@@ -71,6 +71,8 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		}
 		res.Token = jwt
 		res.UserID = user.ID
+		res.HasFarmingRights = user.HasFarmingRights
+		res.HasPosterRights = user.HasPosterRights
 
 		result, err := json.Marshal(res)
 		if err != nil {

@@ -30,8 +30,10 @@ func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone, avata
 	}
 
 	return &model.User{
-		ID:    newUser.ID,
-		Phone: newUser.Phone,
+		ID:               newUser.ID,
+		Phone:            newUser.Phone,
+		HasFarmingRights: newUser.HasFarmingRights,
+		HasPosterRights:  newUser.HasPosterRights,
 	}, nil
 }
 
@@ -44,8 +46,10 @@ func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (
 	}
 
 	return &model.User{
-		ID:    user.ID,
-		Phone: user.Phone,
+		ID:               user.ID,
+		Phone:            user.Phone,
+		HasFarmingRights: user.HasFarmingRights,
+		HasPosterRights:  user.HasPosterRights,
 	}, nil
 }
 
@@ -58,8 +62,10 @@ func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*mo
 	}
 
 	return &model.User{
-		ID:     user.ID,
-		Phone:  user.Phone,
-		Avatar: user.Avatar,
+		ID:               user.ID,
+		Phone:            user.Phone,
+		Avatar:           user.Avatar,
+		HasFarmingRights: user.HasFarmingRights,
+		HasPosterRights:  user.HasPosterRights,
 	}, nil
 }
