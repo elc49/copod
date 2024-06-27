@@ -25,3 +25,7 @@ func (c *UserController) CountUsers(ctx context.Context) (int, error) {
 func (c *UserController) GetUserByID(ctx context.Context, id uuid.UUID) (*model.User, error) {
 	return c.r.GetUserByID(ctx, id)
 }
+
+func (c *UserController) SetFarmingRights(ctx context.Context, args db.SetFarmingRightsParams) (*model.User, error) {
+	return c.r.GrantFarmingRights(ctx, args)
+}

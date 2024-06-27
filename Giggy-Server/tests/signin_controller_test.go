@@ -12,7 +12,6 @@ func TestSigninController(t *testing.T) {
 	ctx := context.Background()
 	var u *model.User
 	signinC := signinController()
-	avatar := "https://avatar.jpg"
 
 	defer func() {
 		queries.ClearTestUsers(ctx)

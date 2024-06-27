@@ -26,6 +26,7 @@ type Querier interface {
 	GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetPaymentsBelongingToFarmRow, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)
+	SetFarmingRights(ctx context.Context, arg SetFarmingRightsParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
