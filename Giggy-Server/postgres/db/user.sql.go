@@ -145,3 +145,31 @@ func (q *Queries) SetFarmingRights(ctx context.Context, arg SetFarmingRightsPara
 	)
 	return i, err
 }
+
+const setPosterRights = `-- name: SetPosterRights :one
+UPDATE users SET has_poster_rights = $1
+WHERE id = $2
+RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
+`
+
+type SetPosterRightsParams struct {
+	HasPosterRights bool      `json:"has_poster_rights"`
+	ID              uuid.UUID `json:"id"`
+}
+
+func (q *Queries) SetPosterRights(ctx context.Context, arg SetPosterRightsParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, setPosterRights, arg.HasPosterRights, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Username,
+		&i.Avatar,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}

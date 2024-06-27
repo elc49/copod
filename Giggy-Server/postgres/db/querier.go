@@ -27,6 +27,7 @@ type Querier interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)
 	SetFarmingRights(ctx context.Context, arg SetFarmingRightsParams) (User, error)
+	SetPosterRights(ctx context.Context, arg SetPosterRightsParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

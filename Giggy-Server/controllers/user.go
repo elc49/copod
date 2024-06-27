@@ -29,3 +29,7 @@ func (c *UserController) GetUserByID(ctx context.Context, id uuid.UUID) (*model.
 func (c *UserController) SetFarmingRights(ctx context.Context, args db.SetFarmingRightsParams) (*model.User, error) {
 	return c.r.SetFarmingRights(ctx, args)
 }
+
+func (c *UserController) SetPosterRights(ctx context.Context, args db.SetPosterRightsParams) (*model.User, error) {
+	return c.r.SetPosterRights(ctx, args)
+}

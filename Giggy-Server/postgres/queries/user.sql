@@ -21,5 +21,10 @@ UPDATE users SET has_farming_rights = $1
 WHERE id = $2
 RETURNING *;
 
+-- name: SetPosterRights :one
+UPDATE users SET has_poster_rights = $1
+WHERE id = $2
+RETURNING *;
+
 -- name: ClearTestUsers :exec
 DELETE FROM users;

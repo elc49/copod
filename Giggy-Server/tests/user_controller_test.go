@@ -31,4 +31,16 @@ func TestUserController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.False(t, u.HasFarmingRights, "shoule be false")
 	})
+
+	t.Run("grant_poster_rights", func(t *testing.T) {
+		u, err := userC.SetPosterRights(ctx, db.SetPosterRightsParams{ID: user.ID, HasPosterRights: true})
+		assert.Nil(t, err)
+		assert.True(t, u.HasPosterRights, "should be true")
+	})
+
+	t.Run("revoke_poster_rights", func(t *testing.T) {
+		u, err := userC.SetPosterRights(ctx, db.SetPosterRightsParams{ID: user.ID, HasPosterRights: false})
+		assert.Nil(t, err)
+		assert.False(t, u.HasPosterRights, "should be false")
+	})
 }
