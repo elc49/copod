@@ -53,6 +53,7 @@ type Market {
   image: String!
   volume: Int!
   unit: String!
+  tag: String!
   pricePerUnit: Int!
   created_at: Time!
   updated_at: Time!
@@ -106,7 +107,7 @@ input NewFarmMarketInput {
   product: String!
   image: String!
   volume: Int!
-  harvestDate: Time!
+  location: GpsInput!
   tag: String!
   unit: String!
   pricePerUnit: Int!

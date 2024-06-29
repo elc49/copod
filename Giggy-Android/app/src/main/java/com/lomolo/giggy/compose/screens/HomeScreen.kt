@@ -56,7 +56,7 @@ fun HomeScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Text(
-                    text = stringResource(R.string.lear_connect_share),
+                    text = stringResource(R.string.learn_connect_share),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,

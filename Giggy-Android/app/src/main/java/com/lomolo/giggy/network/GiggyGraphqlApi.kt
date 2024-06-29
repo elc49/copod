@@ -17,6 +17,7 @@ import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
+import com.lomolo.giggy.type.GpsInput
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
@@ -79,8 +80,8 @@ class GiggyGraphqlApi(
                 image = input.image,
                 unit = input.unit,
                 pricePerUnit = input.pricePerUnit.toInt(),
-                harvestDate = "",
-                tag = "",
+                tag = input.tag,
+                location = GpsInput(input.location.latitude, input.location.longitude),
                 volume = input.volume.toInt(),
             )
         ))

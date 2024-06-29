@@ -13,13 +13,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +45,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,7 +59,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.GiggyTheme
 import kotlinx.coroutines.launch
 
-object CreateFarmMarketDestination: Navigation {
+object CreateFarmMarketDestination : Navigation {
     override val title = null
     override val route = "dashboard-farm-market"
 }
@@ -77,40 +84,37 @@ fun CreateFarmMarketScreen(
         }
     }
     val market by viewModel.marketUiState.collectAsState()
-    val image = when(viewModel.uploadingMarketImageState) {
+    val image = when (viewModel.uploadingMarketImageState) {
         UploadMarketImageState.Loading -> {
             R.drawable.loading_img
         }
+
         is UploadMarketImageState.Error -> {
             R.drawable.ic_broken_image
         }
+
         else -> {
             R.drawable.upload
         }
     }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.add_market),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onGoBack() }) {
-                       Icon(
-                           Icons.TwoTone.Close,
-                           contentDescription = null,
-                       )
-                    }
-                }
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                stringResource(R.string.add_market),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
             )
-        }
-    ) { innerPadding ->
+        }, navigationIcon = {
+            IconButton(onClick = { onGoBack() }) {
+                Icon(
+                    Icons.TwoTone.Close,
+                    contentDescription = null,
+                )
+            }
+        })
+    }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -122,6 +126,42 @@ fun CreateFarmMarketScreen(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                Row(
+                    Modifier.padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column {
+                        Text(
+                            stringResource(R.string.market_for),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(viewModel.tags) {
+                                FilterChip(
+                                    selected = viewModel.tagAlreadyExists(it),
+                                    onClick = { viewModel.addMarketTag(it) },
+                                    label = {
+                                        Text(
+                                            it,
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    },
+                                    leadingIcon = {
+                                        if (viewModel.tagAlreadyExists(it)) {
+                                            Icon(
+                                                Icons.TwoTone.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp),
+                                            )
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -140,6 +180,7 @@ fun CreateFarmMarketScreen(
                         },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Next,
                         ),
                         singleLine = true,
                     )
@@ -152,8 +193,7 @@ fun CreateFarmMarketScreen(
                             style = MaterialTheme.typography.labelMedium,
                         )
                         if (market.image.isBlank()) {
-                            Image(
-                                painter = painterResource(image),
+                            Image(painter = painterResource(image),
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -167,14 +207,10 @@ fun CreateFarmMarketScreen(
                                                 )
                                             )
                                         }
-                                    }
-                            )
+                                    })
                         } else if (market.image.isNotBlank()) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data(market.image)
-                                    .crossfade(true)
-                                    .build(),
+                            AsyncImage(model = ImageRequest.Builder(context).data(market.image)
+                                .crossfade(true).build(),
                                 contentDescription = null,
                                 placeholder = painterResource(id = R.drawable.loading_img),
                                 error = painterResource(id = R.drawable.ic_broken_image),
@@ -190,12 +226,11 @@ fun CreateFarmMarketScreen(
                                                 )
                                             )
                                         }
-                                    }
-                            )
+                                    })
                         }
                     }
                 }
-                Row (
+                Row(
                     Modifier
                         .fillMaxWidth()
                         .padding(4.dp),
@@ -219,6 +254,9 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.unit_support_text)
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                        ),
                         singleLine = true,
                     )
                     OutlinedTextField(
@@ -238,19 +276,21 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.price_support_text)
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next,
+                        ),
                         singleLine = true,
                     )
                 }
-                Row (
-                    Modifier
-                        .fillMaxWidth(),
+                Row(
+                    Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedTextField(
                         value = market.volume,
                         onValueChange = { viewModel.setMarketVolume(it) },
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
                                 stringResource(R.string.volume),
@@ -262,6 +302,17 @@ fun CreateFarmMarketScreen(
                                 stringResource(R.string.volume_support_text),
                             )
                         },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done,
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            viewModel.addMarket {
+                                onGoBack()
+                                viewModel.resetMarketState()
+                                showToast()
+                            }
+                        }),
                         singleLine = true,
                     )
                 }
@@ -280,19 +331,20 @@ fun CreateFarmMarketScreen(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(14.dp),
                     ) {
-                       when(viewModel.addingFarmMarketState) {
-                           AddFarmMarketState.Success -> Text(
-                               "Add",
-                               style = MaterialTheme.typography.titleMedium,
-                               fontWeight = FontWeight.Bold,
-                           )
-                           AddFarmMarketState.Loading -> {
-                               CircularProgressIndicator(
-                                   color = MaterialTheme.colorScheme.onPrimary,
-                                   modifier = Modifier.size(20.dp),
-                               )
-                           }
-                       }
+                        when (viewModel.addingFarmMarketState) {
+                            AddFarmMarketState.Success -> Text(
+                                "Add",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+
+                            AddFarmMarketState.Loading -> {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -140,7 +140,7 @@ internal fun NoFarm(
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.no_farm_farms),
+            text = stringResource(R.string.no_farm),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displaySmall,
         )

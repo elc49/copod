@@ -1,7 +1,6 @@
 package com.lomolo.giggy.compose.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,15 +16,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -103,7 +99,6 @@ internal fun FarmHeader(
 fun FarmMarketScreen(
     modifier: Modifier = Modifier,
     viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-    onCreateFarmMarket: () -> Unit = {},
 ) {
     val tabIcon = mapOf(
         0 to R.drawable.product_box,
@@ -231,27 +226,6 @@ fun FarmMarketScreen(
                                                 textAlign = TextAlign.Center,
                                             )
                                         }
-                                    }
-                                }
-                            }
-                            item {
-                                Box(
-                                    Modifier
-                                        .size(128.dp)
-                                        .background(
-                                            MaterialTheme.colorScheme.secondaryContainer,
-                                            MaterialTheme.shapes.extraSmall
-                                        )
-                                        .clickable { onCreateFarmMarket() },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    OutlinedIconButton(
-                                        onClick = { onCreateFarmMarket() },
-                                    ) {
-                                        Icon(
-                                            Icons.TwoTone.Add,
-                                            contentDescription = null
-                                        )
                                     }
                                 }
                             }

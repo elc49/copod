@@ -251,16 +251,26 @@ fun NavGraphBuilder.addDashboardGraph(
                             modifier = Modifier.size(32.dp),
                         )
                     }
-                })
+                },
+                    actions = {
+                        IconButton(onClick = {
+                            navHostController.navigate(
+                                CreateFarmMarketDestination.route
+                            )
+                        }) {
+                            Icon(
+                                Icons.TwoTone.Add,
+                                contentDescription = null
+                            )
+                        }
+                    })
             }) {
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmMarketScreen(onCreateFarmMarket = {
-                        navHostController.navigate(CreateFarmMarketDestination.route)
-                    })
+                    FarmMarketScreen()
                 }
             }
         }
