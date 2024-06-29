@@ -70,6 +70,7 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 		ID:           market.ID,
 		Name:         market.Product,
 		Image:        market.Image,
+		Tag:          market.Tag,
 		Volume:       int(market.Volume),
 		PricePerUnit: int(market.PricePerUnit),
 		CreatedAt:    market.CreatedAt,

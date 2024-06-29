@@ -41,4 +41,5 @@
     <string name="image">Image</string>
     <string name="market_name">Product name</string>
     <string name="add_market">Create market</string>
+    <string name="market_for">You are creating a market for?</string>
 </resources>

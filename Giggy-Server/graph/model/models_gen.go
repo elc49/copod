@@ -32,6 +32,7 @@ type Market struct {
 	Image        string    `json:"image"`
 	Volume       int       `json:"volume"`
 	Unit         string    `json:"unit"`
+	Tag          string    `json:"tag"`
 	PricePerUnit int       `json:"pricePerUnit"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
@@ -50,7 +51,7 @@ type NewFarmMarketInput struct {
 	Product      string    `json:"product"`
 	Image        string    `json:"image"`
 	Volume       int       `json:"volume"`
-	HarvestDate  time.Time `json:"harvestDate"`
+	Location     *GpsInput `json:"location"`
 	Tag          string    `json:"tag"`
 	Unit         string    `json:"unit"`
 	PricePerUnit int       `json:"pricePerUnit"`

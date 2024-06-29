@@ -52,6 +52,17 @@ class MainViewModel(
         }
     }
 
+    fun getValidDeviceGps(): LatLng {
+        val deviceGps = _deviceDetails.value.deviceGps
+        val ipGps = _deviceDetails.value.ipGps
+        if (deviceGps.latitude == 0.0 && deviceGps.longitude == 0.0) {
+            val ipLocation = ipGps.split(",")
+            return LatLng(ipLocation[0].toDouble(), ipLocation[1].toDouble())
+        }
+
+        return deviceGps
+    }
+
     init {
         getDeviceDetails()
     }

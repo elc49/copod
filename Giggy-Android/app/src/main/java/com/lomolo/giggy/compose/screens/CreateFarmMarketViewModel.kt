@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.apollographql.apollo3.exception.CacheMissException
+import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.GetFarmMarketsQuery
+import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.data.Data
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
@@ -28,7 +30,8 @@ class AddFarmMarketViewModel(
     private val farmMarketViewModel: FarmMarketViewModel,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
     private val apolloStore: ApolloStore,
-): ViewModel() {
+    private val mainViewModel: MainViewModel,
+) : ViewModel() {
     private val _marketInput = MutableStateFlow(Market())
     val marketUiState: StateFlow<Market> = _marketInput.asStateFlow()
 
@@ -54,7 +57,7 @@ class AddFarmMarketViewModel(
                     it.copy(image = res.imageUri)
                 }
                 UploadMarketImageState.Success
-            } catch(e: java.io.IOException) {
+            } catch (e: java.io.IOException) {
                 e.printStackTrace()
                 UploadMarketImageState.Error(e.localizedMessage)
             }
@@ -87,26 +90,23 @@ class AddFarmMarketViewModel(
 
     private fun validMarketInput(uiState: Market): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank()
         }
     }
 
     fun addMarket(cb: () -> Unit = {}) {
-        if (addingFarmMarketState !is AddFarmMarketState.Loading &&
-            validMarketInput(_marketInput.value) &&
-            uploadingMarketImageState is UploadMarketImageState.Success
-        ) {
+        if (addingFarmMarketState !is AddFarmMarketState.Loading && validMarketInput(_marketInput.value) && uploadingMarketImageState is UploadMarketImageState.Success) {
             addingFarmMarketState = AddFarmMarketState.Loading
             viewModelScope.launch {
                 addingFarmMarketState = try {
+                    _marketInput.update {
+                        it.copy(location = mainViewModel.getValidDeviceGps())
+                    }
                     val res = giggyGraphqlApi.createFarmMarket(_marketInput.value).dataOrThrow()
                     try {
                         val updatedCachedData = apolloStore.readOperation(
                             GetFarmMarketsQuery(_marketInput.value.storeId)
-                        )
-                            .getFarmMarkets
-                            .toMutableList()
-                            .apply {
+                        ).getFarmMarkets.toMutableList().apply {
                                 add(
                                     GetFarmMarketsQuery.GetFarmMarket(
                                         res.createFarmMarket.id,
@@ -116,19 +116,18 @@ class AddFarmMarketViewModel(
                                         res.createFarmMarket.pricePerUnit,
                                     )
                                 )
-                            }
-                            .toImmutableList()
+                            }.toImmutableList()
                         apolloStore.writeOperation(
                             GetFarmMarketsQuery(_marketInput.value.storeId),
                             GetFarmMarketsQuery.Data(updatedCachedData),
                         )
-                    } catch(e: CacheMissException) {
+                    } catch (e: CacheMissException) {
                         e.printStackTrace()
                     }
                     AddFarmMarketState.Success.also {
                         cb()
                     }
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     AddFarmMarketState.Error(e.localizedMessage)
                 }
@@ -142,31 +141,13 @@ class AddFarmMarketViewModel(
 
     val tags = Data.tags
 
-    private fun addTag(tag: String) {
-        _marketInput.update {
-            val existingTags = it.tags.toMutableList()
-            existingTags.add(tag)
-            it.copy(tags = existingTags.toList())
-        }
-    }
-
-    private fun tagAlreadyExists(tag: String): Boolean {
-        return _marketInput.value.tags.contains(tag)
-    }
-
-    private fun removeTag(tag: String) {
-        _marketInput.update {
-            val existingTags = it.tags.toMutableList()
-            existingTags.remove(tag)
-            it.copy(tags = existingTags.toList())
-        }
+    fun tagAlreadyExists(tag: String): Boolean {
+        return _marketInput.value.tag == tag
     }
 
     fun addMarketTag(tag: String) {
-        if (tagAlreadyExists(tag)) {
-            removeTag(tag)
-        } else if (!tagAlreadyExists(tag)) {
-            addTag(tag)
+        _marketInput.update {
+            it.copy(tag = tag)
         }
     }
 
@@ -183,18 +164,19 @@ data class Market(
     val unit: String = "",
     val pricePerUnit: String = "",
     val volume: String = "",
+    val location: LatLng = LatLng(0.0, 0.0),
     val storeId: String = "",
-    val tags: List<String> = listOf(),
+    val tag: String = "",
 )
 
 interface UploadMarketImageState {
-    data object Loading: UploadMarketImageState
-    data class Error(val msg: String?): UploadMarketImageState
-    data object Success: UploadMarketImageState
+    data object Loading : UploadMarketImageState
+    data class Error(val msg: String?) : UploadMarketImageState
+    data object Success : UploadMarketImageState
 }
 
 interface AddFarmMarketState {
-    data object Loading: AddFarmMarketState
-    data object Success: AddFarmMarketState
-    data class Error(val msg: String?): AddFarmMarketState
+    data object Loading : AddFarmMarketState
+    data object Success : AddFarmMarketState
+    data class Error(val msg: String?) : AddFarmMarketState
 }
