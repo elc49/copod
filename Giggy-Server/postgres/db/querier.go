@@ -11,6 +11,10 @@ import (
 )
 
 type Querier interface {
+	ClearTestFarms(ctx context.Context) error
+	ClearTestMarkets(ctx context.Context) error
+	ClearTestOrders(ctx context.Context) error
+	ClearTestPosters(ctx context.Context) error
 	ClearTestUsers(ctx context.Context) error
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error)

@@ -13,3 +13,6 @@ INSERT INTO markets (
   $1, $2, $3, $4, $5, $6, $7, $8, sqlc.arg(location)
 )
 RETURNING *;
+
+-- name: ClearTestMarkets :exec
+DELETE FROM markets;

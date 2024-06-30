@@ -42,3 +42,21 @@ func userController() controllers.UserController {
 	c.Init(queries)
 	return c
 }
+
+func farmController() controllers.FarmController {
+	c := controllers.FarmController{}
+	c.Init(queries)
+	return c
+}
+
+func marketController() controllers.MarketController {
+	c := controllers.MarketController{}
+	c.Init(queries)
+	return c
+}
+
+func postController() controllers.PostController {
+	c := controllers.PostController{}
+	c.Init(queries)
+	return c
+}

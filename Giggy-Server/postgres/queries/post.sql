@@ -4,3 +4,6 @@ INSERT INTO posts (
 ) VALUES (
   $1, $2, $3, $4, sqlc.arg(location)
 ) RETURNING *;
+
+-- name: ClearTestPosters :exec
+DELETE FROM posts;

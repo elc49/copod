@@ -12,6 +12,15 @@ import (
 	"github.com/lib/pq"
 )
 
+const clearTestPosters = `-- name: ClearTestPosters :exec
+DELETE FROM posts
+`
+
+func (q *Queries) ClearTestPosters(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestPosters)
+	return err
+}
+
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts (
   text, image, tags, user_id, location
