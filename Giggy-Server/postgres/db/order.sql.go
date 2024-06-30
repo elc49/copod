@@ -12,6 +12,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearTestOrders = `-- name: ClearTestOrders :exec
+DELETE FROM orders
+`
+
+func (q *Queries) ClearTestOrders(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestOrders)
+	return err
+}
+
 const getOrderById = `-- name: GetOrderById :one
 SELECT id, volume, to_be_paid, customer_id, market_id, created_at, updated_at FROM orders
 WHERE id = $1

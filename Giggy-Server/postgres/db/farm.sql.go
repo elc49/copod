@@ -12,6 +12,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearTestFarms = `-- name: ClearTestFarms :exec
+DELETE FROM farms
+`
+
+func (q *Queries) ClearTestFarms(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestFarms)
+	return err
+}
+
 const createFarm = `-- name: CreateFarm :one
 INSERT INTO farms (
   name, thumbnail, user_id

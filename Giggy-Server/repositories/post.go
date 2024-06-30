@@ -22,6 +22,9 @@ func (r *PostRepository) CreatePost(ctx context.Context, args db.CreatePostParam
 	}
 
 	return &model.Post{
-		ID: newPost.ID,
+		ID:        newPost.ID,
+		Text:      newPost.Text,
+		CreatedAt: newPost.CreatedAt,
+		UpdatedAt: newPost.UpdatedAt,
 	}, nil
 }

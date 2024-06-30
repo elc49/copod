@@ -13,6 +13,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearTestMarkets = `-- name: ClearTestMarkets :exec
+DELETE FROM markets
+`
+
+func (q *Queries) ClearTestMarkets(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestMarkets)
+	return err
+}
+
 const createFarmMarket = `-- name: CreateFarmMarket :one
 INSERT INTO markets (
   product, image, volume, unit, harvest_date, tag, price_per_unit, farm_id, location

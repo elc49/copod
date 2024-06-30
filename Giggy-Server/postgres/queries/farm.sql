@@ -12,3 +12,6 @@ WHERE user_id = $1 AND deleted_at IS NULL;
 -- name: GetFarmByID :one
 SELECT id, name, thumbnail, created_at, updated_at FROM farms
 WHERE id = $1 AND deleted_at IS NULL;
+
+-- name: ClearTestFarms :exec
+DELETE FROM farms;
