@@ -86,6 +86,15 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
+// GetNearbyMarkets is the resolver for the getNearbyMarkets field.
+func (r *queryResolver) GetNearbyMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
+	args := db.GetNearbyMarketsParams{
+		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
+		Radius: 2000,
+	}
+	return r.marketController.GetNearbyMarkets(ctx, args)
+}
+
 // GetFarmByID is the resolver for the getFarmById field.
 func (r *queryResolver) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
 	return r.farmController.GetFarmByID(ctx, id)
