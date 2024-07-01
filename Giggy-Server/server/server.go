@@ -13,6 +13,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	giggyMiddleware "github.com/elc49/giggy-monorepo/Giggy-Server/middleware"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/go-chi/chi/v5"
@@ -68,7 +69,7 @@ func (s *Server) MountHandlers() {
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
-		r.With().Handle("/graphql", graphqlHandler)
+		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AllowContentType("application/json"))
 
