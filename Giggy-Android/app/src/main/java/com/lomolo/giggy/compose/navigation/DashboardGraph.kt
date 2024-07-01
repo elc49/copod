@@ -211,7 +211,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = MarketScreenDestination.route) {
-            MarketScreen(bottomNav = {
+            MarketScreen(deviceDetails = deviceDetails, bottomNav = {
                 BottomNavBar(
                     modifier = modifier,
                     onNavigateTo = onNavigateTo,

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.compose.navigation.Navigation
+import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object MarketScreenDestination: Navigation {
@@ -37,6 +38,7 @@ val testMarketData = Product(
 fun MarketScreen(
     modifier: Modifier = Modifier,
     bottomNav: @Composable () -> Unit = {},
+    deviceDetails: DeviceDetails,
 ) {
     Scaffold(
         bottomBar = bottomNav,
@@ -51,7 +53,7 @@ fun MarketScreen(
                     .fillMaxSize()
                     .padding(8.dp)
             ) {
-                MarketCard(data = testMarketData)
+                MarketCard(currencyLocale = deviceDetails.currency, data = testMarketData)
             }
         }
     }
@@ -63,6 +65,6 @@ fun MarketScreen(
 @Composable
 fun MarketScreenPreview() {
     GiggyTheme {
-        MarketScreen()
+        MarketScreen(deviceDetails = DeviceDetails())
     }
 }
