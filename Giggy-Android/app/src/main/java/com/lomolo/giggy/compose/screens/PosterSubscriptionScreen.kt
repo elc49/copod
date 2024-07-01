@@ -1,5 +1,9 @@
 package com.lomolo.giggy.compose.screens
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.icu.util.Currency
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
+import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun PostingSubscriptionScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    deviceDetails: DeviceDetails,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -100,7 +106,13 @@ fun PostingSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    NumberFormat.getCurrencyInstance().format(1800),
+                    NumberFormatter.with()
+                        .notation(Notation.compactShort())
+                        .unit(Currency.getInstance(deviceDetails.currency))
+                        .precision(Precision.maxFraction(2))
+                        .locale(Locale.US)
+                        .format(1800)
+                        .toString(),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -113,6 +125,6 @@ fun PostingSubscriptionScreen(
 @Composable
 fun PostingSubscriptionScreenPreview() {
     GiggyTheme {
-        PostingSubscriptionScreen()
+        PostingSubscriptionScreen(deviceDetails = DeviceDetails())
     }
 }

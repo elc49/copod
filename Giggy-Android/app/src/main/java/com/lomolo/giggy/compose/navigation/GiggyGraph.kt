@@ -69,6 +69,7 @@ fun GiggyNavigationHost(
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
                 scope = scope,
+                deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
                 session = session,
             )

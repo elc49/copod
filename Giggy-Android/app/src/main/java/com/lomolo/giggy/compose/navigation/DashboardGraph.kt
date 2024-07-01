@@ -56,6 +56,7 @@ import com.lomolo.giggy.compose.screens.FarmScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
+import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -139,6 +140,7 @@ fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
+    deviceDetails: DeviceDetails,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
@@ -270,7 +272,9 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmMarketScreen()
+                    FarmMarketScreen(
+                        deviceDetails = deviceDetails,
+                    )
                 }
             }
         }
