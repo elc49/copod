@@ -1,14 +1,17 @@
 package com.lomolo.giggy.compose.screens
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.icu.util.Currency
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -25,26 +28,20 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
+import java.util.Locale
 
 @Composable
 internal fun MarketCard(
-    modifier: Modifier = Modifier,
-    data: Product
+    modifier: Modifier = Modifier, data: Product, currencyLocale: String
 ) {
     OutlinedCard(
-        modifier = modifier
-            .height(180.dp)
+        modifier.height(180.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Box(Modifier.weight(1f)) {
+        Box(Modifier.fillMaxSize()) {
+            Box {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(data.img)
-                        .crossfade(true)
-                        .build(),
+                    model = ImageRequest.Builder(LocalContext.current).data(data.img)
+                        .crossfade(true).build(),
                     contentDescription = null,
                     placeholder = painterResource(id = R.drawable.loading_img),
                     contentScale = ContentScale.Crop,
@@ -53,49 +50,49 @@ internal fun MarketCard(
                         .clip(MaterialTheme.shapes.extraSmall)
                 )
             }
-            Box(
-                Modifier.weight(1f),
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    Modifier
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.shapes.extraLarge,
+                        )
+                        .padding(4.dp)
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = data.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = "KES ${data.price} per ${data.metric}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    Text(
+                        text = data.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
                 Box(
                     Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(8.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.farmer),
-                            modifier = Modifier
-                                .size(20.dp),
-                            contentDescription = null
+                        .background(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.shapes.extraLarge,
                         )
-                        Text(
-                            data.farm,
-                            style = MaterialTheme.typography.labelSmall,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                        .padding(4.dp)
+                ) {
+                    Text(
+                        "${
+                            NumberFormatter.with()
+                                .notation(Notation.simple())
+                                .unit(Currency.getInstance(currencyLocale))
+                                .precision(Precision.maxFraction(2))
+                                .locale(Locale.US)
+                                .format(data.price)
+                        } / ${data.metric}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
