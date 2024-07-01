@@ -12,6 +12,7 @@ import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -56,6 +57,8 @@ import com.lomolo.giggy.compose.screens.FarmScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
+import com.lomolo.giggy.compose.screens.PosterSubscriptionScreen
+import com.lomolo.giggy.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.model.Session
 import kotlinx.coroutines.CoroutineScope
@@ -173,8 +176,14 @@ fun NavGraphBuilder.addDashboardGraph(
                     MaterialTheme.colorScheme.primary,
                     CircleShape,
                 ), onClick = {
-                    navHostController.navigate(CreatePostScreenDestination.route) {
-                        launchSingleTop = true
+                    if (session.hasPosterRights) {
+                        navHostController.navigate(CreatePostScreenDestination.route) {
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navHostController.navigate(PosterSubscriptionScreenDestination.route) {
+                            launchSingleTop = true
+                        }
                     }
                 }) {
                     Icon(
@@ -200,35 +209,28 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = MarketScreenDestination.route) {
-            MarketScreen(
-                bottomNav = {
-                    BottomNavBar(
-                        modifier = modifier,
-                        onNavigateTo = onNavigateTo,
-                        currentDestination = it.destination
-                    )
-                }
-            )
+            MarketScreen(bottomNav = {
+                BottomNavBar(
+                    modifier = modifier,
+                    onNavigateTo = onNavigateTo,
+                    currentDestination = it.destination
+                )
+            })
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
 
-            FarmsScreen(
-                snackbarHostState = snackbarHostState,
-                onNavigateToFarmMarket = { farmId ->
-                    navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
-                },
-                onNavigateToCreateFarm = {
-                    navHostController.navigate(CreateFarmScreenDestination.route)
-                },
-                bottomNav = {
-                    BottomNavBar(
-                        modifier = modifier,
-                        currentDestination = currentDestination,
-                        onNavigateTo = onNavigateTo,
-                    )
-                }
-            )
+            FarmsScreen(snackbarHostState = snackbarHostState, onNavigateToFarmMarket = { farmId ->
+                navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
+            }, onNavigateToCreateFarm = {
+                navHostController.navigate(CreateFarmScreenDestination.route)
+            }, bottomNav = {
+                BottomNavBar(
+                    modifier = modifier,
+                    currentDestination = currentDestination,
+                    onNavigateTo = onNavigateTo,
+                )
+            })
         }
         composable(
             route = FarmMarketScreenDestination.routeWithArgs,
@@ -253,19 +255,17 @@ fun NavGraphBuilder.addDashboardGraph(
                             modifier = Modifier.size(32.dp),
                         )
                     }
-                },
-                    actions = {
-                        IconButton(onClick = {
-                            navHostController.navigate(
-                                CreateFarmMarketDestination.route
-                            )
-                        }) {
-                            Icon(
-                                Icons.TwoTone.Add,
-                                contentDescription = null
-                            )
-                        }
-                    })
+                }, actions = {
+                    IconButton(onClick = {
+                        navHostController.navigate(
+                            CreateFarmMarketDestination.route
+                        )
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Add, contentDescription = null
+                        )
+                    }
+                })
             }) {
                 Surface(
                     modifier = modifier
@@ -366,6 +366,34 @@ fun NavGraphBuilder.addDashboardGraph(
                     snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
                 }
             })
+        }
+        composable(route = PosterSubscriptionScreenDestination.route) {
+            Scaffold(
+                topBar = {
+                    LargeTopAppBar(title = {
+                        Text(
+                            stringResource(id = R.string.buy_poster_rights),
+                            style = MaterialTheme.typography.displaySmall,
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navHostController.popBackStack() }) {
+                            Icon(
+                                Icons.AutoMirrored.TwoTone.ArrowBack,
+                                contentDescription = null,
+                            )
+                        }
+                    })
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    PosterSubscriptionScreen(deviceDetails = deviceDetails)
+                }
+            }
         }
     }
 }

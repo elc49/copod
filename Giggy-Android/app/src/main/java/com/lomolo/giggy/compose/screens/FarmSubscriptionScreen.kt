@@ -109,7 +109,7 @@ fun FarmSubscriptionScreen(
             ) {
                 Text(
                     NumberFormatter.with()
-                        .notation(Notation.compactShort())
+                        .notation(Notation.simple())
                         .unit(Currency.getInstance(deviceDetails.currency))
                         .precision(Precision.maxFraction(2))
                         .locale(Locale.US)

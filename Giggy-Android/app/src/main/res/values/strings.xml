@@ -7,13 +7,13 @@
     <string name="start_writing">Start writing</string>
     <string name="no_farm">No farm</string>
     <string name="sell_directly_to_your_clients">Sell directly to your clients</string>
-    <string name="one_time_purchase">One time purchase</string>
+    <string name="one_time_purchase">It\'s a one time purchase</string>
     <string name="no_hidden_fees">No hidden fees in your sales</string>
     <string name="track_markets">Track farm harvests, markets, orders</string>
-    <string name="share_voice">Interact with other farmers voices</string>
+    <string name="share_voice">Share best farming ideas/practices</string>
     <string name="announce_events">Announce events/trade shows</string>
     <string name="buy_poster_rights">Buy poster rights</string>
-    <string name="advertise">Advertise your farm produce</string>
+    <string name="advertise">Advertise/Sell your farm harvest</string>
     <string name="phone_number">Phone number</string>
     <string name="pay">Pay</string>
     <string name="sign_in">Sign In</string>
@@ -42,4 +42,5 @@
     <string name="market_name">Product name</string>
     <string name="add_market">Create market</string>
     <string name="market_for">You are creating a market for?</string>
+    <string name="why_buy_poster_rights">Why buy poster rights?</string>
 </resources>
