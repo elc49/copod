@@ -1,8 +1,10 @@
 package com.lomolo.giggy.compose.screens
 
-import androidx.compose.foundation.background
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.icu.util.Currency
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,9 +50,11 @@ import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
+import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.ui.theme.GiggyTheme
+import java.util.Locale
 
-object FarmMarketScreenDestination: Navigation {
+object FarmMarketScreenDestination : Navigation {
     override val title = R.string.farm
     override val route = "dashboard-market"
     const val farmIdArg = "farmId"
@@ -67,13 +68,10 @@ internal fun FarmHeader(
     Row(
         Modifier
             .height(280.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(farm?.thumbnail)
-                .crossfade(true)
+            model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
                 .build(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -98,6 +96,7 @@ internal fun FarmHeader(
 @Composable
 fun FarmMarketScreen(
     modifier: Modifier = Modifier,
+    deviceDetails: DeviceDetails,
     viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val tabIcon = mapOf(
@@ -121,13 +120,13 @@ fun FarmMarketScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        when(farm) {
+        when (farm) {
             is GetFarmState.Success -> FarmHeader(
                 farm = farm.success
             )
+
             GetFarmState.Loading -> Row(
                 Modifier
                     .height(280.dp)
@@ -138,61 +137,79 @@ fun FarmMarketScreen(
                 CircularProgressIndicator()
             }
         }
-        PrimaryTabRow(
-            modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = state,
-            divider = {
-                if (markets is GetFarmMarketsState.Loading ||
-                    orders is GetFarmOrdersState.Loading ||
-                    payments is GetFarmPaymentsState.Loading) {
-                    LinearProgressIndicator()
-                } else {
-                    HorizontalDivider()
-                }
+        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state, divider = {
+            if (markets is GetFarmMarketsState.Loading || orders is GetFarmOrdersState.Loading || payments is GetFarmPaymentsState.Loading) {
+                LinearProgressIndicator()
+            } else {
+                HorizontalDivider()
             }
-        ) {
-           titles.forEachIndexed {index, title ->
-               Tab(
-                   selected = state == index,
-                   onClick = { state = index },
-                   modifier = Modifier.fillMaxWidth(),
-                   text = {
-                       Text(
-                           title,
-                           maxLines = 2,
-                           overflow = TextOverflow.Ellipsis,
-                           style = MaterialTheme.typography.titleMedium,
-                           fontWeight = FontWeight.Bold,
-                       )
-                   },
-                   icon = {
-                       Icon(
-                           painterResource(tabIcon[index]!!),
-                           modifier = Modifier.size(24.dp),
-                           contentDescription = null
-                       )
-                   }
-               )
-           }
+        }) {
+            titles.forEachIndexed { index, title ->
+                Tab(selected = state == index,
+                    onClick = { state = index },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = {
+                        Text(
+                            title,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            painterResource(tabIcon[index]!!),
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = null
+                        )
+                    })
+            }
         }
-        when(state) {
-            0 -> LazyVerticalGrid(
-                modifier = Modifier.padding(8.dp),
-                columns = GridCells.Adaptive(minSize = 128.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+        when (state) {
+            0 -> LazyColumn(
+                Modifier.padding(8.dp)
             ) {
-                when(markets) {
+                item {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            "Product",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Image",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "In-Stock",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Price",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+                when (markets) {
                     is GetFarmMarketsState.Success -> {
                         if (markets.success != null) {
                             items(markets.success) {
-                                Box(
-                                    Modifier
-                                        .background(
-                                            MaterialTheme.colorScheme.background,
-                                            MaterialTheme.shapes.extraSmall
-                                        )
+                                Row(
+                                    Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
+                                    Text(
+                                        it.name,
+                                    )
                                     AsyncImage(
                                         model = ImageRequest.Builder(LocalContext.current)
                                             .data(it.image)
@@ -200,37 +217,28 @@ fun FarmMarketScreen(
                                             .build(),
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
-                                            .fillMaxSize()
+                                            .size(36.dp)
                                             .clip(MaterialTheme.shapes.extraSmall),
                                         contentDescription = null
                                     )
-                                    Box(Modifier.align(Alignment.Center)) {
-                                        Column(
-                                            modifier = Modifier
-                                                .background(
-                                                    MaterialTheme.colorScheme.secondaryContainer,
-                                                    MaterialTheme.shapes.extraSmall,
-                                                )
-                                                .padding(8.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                        ) {
-                                            Text(
-                                                "Volume",
-                                                style = MaterialTheme.typography.titleMedium,
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                fontWeight = FontWeight.ExtraBold,
-                                            )
-                                            Text(
-                                                "${it.volume}",
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                textAlign = TextAlign.Center,
-                                            )
-                                        }
-                                    }
+                                    Text(
+                                        "${it.volume}",
+                                    )
+                                    Text(
+                                        NumberFormatter.with()
+                                            .notation(Notation.compactShort())
+                                            .unit(Currency.getInstance(deviceDetails.currency))
+                                            .precision(Precision.maxFraction(2))
+                                            .locale(Locale.US)
+                                            .format(it.pricePerUnit)
+                                            .toString(),
+                                        textAlign = TextAlign.Center,
+                                    )
                                 }
                             }
                         }
                     }
+
                     is GetFarmMarketsState.Error -> {
                         item {
                             Row(
@@ -247,36 +255,39 @@ fun FarmMarketScreen(
                     }
                 }
             }
-            1 -> LazyColumn {
-                when(orders) {
+
+            1 -> LazyColumn(
+                Modifier.padding(8.dp)
+            ) {
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Text(
+                            "Product",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Volume",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Amount",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                when (orders) {
                     is GetFarmOrdersState.Success -> {
                         if (orders.success != null) {
                             item {
-                                if (orders.success.isNotEmpty()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                    ) {
-                                        Text(
-                                            "Market",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            "Volume",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            "Amount",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                } else {
+                                if (orders.success.isEmpty()) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center,
@@ -286,7 +297,7 @@ fun FarmMarketScreen(
                                     ) {
                                         Text(
                                             "No orders",
-                                            style = MaterialTheme.typography.labelLarge,
+                                            style = MaterialTheme.typography.titleMedium,
                                         )
                                     }
                                 }
@@ -301,21 +312,19 @@ fun FarmMarketScreen(
                                 ) {
                                     // TODO show product
                                     Text(
-                                        it.customer.phone,
-                                        textAlign = TextAlign.Center
+                                        it.customer.phone, textAlign = TextAlign.Center
                                     )
                                     Text(
-                                        "${it.volume}",
-                                        textAlign = TextAlign.Center
+                                        "${it.volume}", textAlign = TextAlign.Center
                                     )
                                     Text(
-                                        "${it.toBePaid}",
-                                        textAlign = TextAlign.Center
+                                        "${it.toBePaid}", textAlign = TextAlign.Center
                                     )
                                 }
                             }
                         }
                     }
+
                     is GetFarmOrdersState.Error -> {
                         item {
                             Row(
@@ -332,46 +341,48 @@ fun FarmMarketScreen(
                     }
                 }
             }
-            2 -> LazyColumn {
+
+            2 -> LazyColumn(
+                Modifier.padding(8.dp)
+            ) {
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Text(
+                            "Customer",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Paid",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            "Status",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
                 when (payments) {
                     is GetFarmPaymentsState.Success -> {
                         if (payments.success != null) {
                             item {
-                                if (payments.success.isNotEmpty()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                    ) {
-                                        Text(
-                                            "Customer",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            "Paid",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            "Status",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                } else {
+                                if (payments.success.isEmpty()) {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(8.dp)
                                     ) {
                                         Text(
                                             "No payments",
-                                            style = MaterialTheme.typography.labelLarge,
+                                            style = MaterialTheme.typography.titleMedium,
                                         )
                                     }
                                 }
@@ -382,7 +393,6 @@ fun FarmMarketScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(8.dp)
                                 ) {
                                     Text(
                                         it.customer,
@@ -401,13 +411,17 @@ fun FarmMarketScreen(
                                             labelColor = MaterialTheme.colorScheme.background,
                                         ),
                                         label = {
-                                            Text(it.status.toString(), fontWeight = FontWeight.ExtraBold)
+                                            Text(
+                                                it.status.toString(),
+                                                fontWeight = FontWeight.ExtraBold
+                                            )
                                         },
                                     )
                                 }
                             }
                         }
                     }
+
                     is GetFarmPaymentsState.Error -> {
                         item {
                             Row(
@@ -434,6 +448,6 @@ fun FarmMarketScreen(
 @Composable
 fun FarmFarmMarketScreenPreview() {
     GiggyTheme {
-        FarmMarketScreen()
+        FarmMarketScreen(deviceDetails = DeviceDetails())
     }
 }
