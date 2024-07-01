@@ -29,3 +29,7 @@ func (c *MarketController) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 func (c *MarketController) CreateFarmMarket(ctx context.Context, args db.CreateFarmMarketParams) (*model.Market, error) {
 	return c.r.CreateFarmMarket(ctx, args)
 }
+
+func (c *MarketController) GetNearbyMarkets(ctx context.Context, args db.GetNearbyMarketsParams) ([]*model.Market, error) {
+	return c.r.GetNearbyMarkets(ctx, args)
+}

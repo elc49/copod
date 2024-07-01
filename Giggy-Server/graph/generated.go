@@ -119,6 +119,7 @@ type ComplexityRoot struct {
 		GetFarmOrders           func(childComplexity int, id uuid.UUID) int
 		GetFarmPayments         func(childComplexity int, id uuid.UUID) int
 		GetFarmsBelongingToUser func(childComplexity int) int
+		GetNearbyMarkets        func(childComplexity int, radius model.GpsInput) int
 		GetUser                 func(childComplexity int) int
 		Timeline                func(childComplexity int) int
 	}
@@ -150,6 +151,7 @@ type QueryResolver interface {
 	Timeline(ctx context.Context) ([]*model.Post, error)
 	GetFarmsBelongingToUser(ctx context.Context) ([]*model.Farm, error)
 	GetUser(ctx context.Context) (*model.User, error)
+	GetNearbyMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error)
 	GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error)
 	GetFarmOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error)
@@ -553,6 +555,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetFarmsBelongingToUser(childComplexity), true
 
+	case "Query.getNearbyMarkets":
+		if e.complexity.Query.GetNearbyMarkets == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getNearbyMarkets_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetNearbyMarkets(childComplexity, args["radius"].(model.GpsInput)), true
+
 	case "Query.getUser":
 		if e.complexity.Query.GetUser == nil {
 			break
@@ -861,6 +875,21 @@ func (ec *executionContext) field_Query_getFarmPayments_args(ctx context.Context
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getNearbyMarkets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.GpsInput
+	if tmp, ok := rawArgs["radius"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
+		arg0, err = ec.unmarshalNGpsInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGpsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["radius"] = arg0
 	return args, nil
 }
 
@@ -3152,6 +3181,81 @@ func (ec *executionContext) fieldContext_Query_getUser(_ context.Context, field 
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getNearbyMarkets(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getNearbyMarkets(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetNearbyMarkets(rctx, fc.Args["radius"].(model.GpsInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Market)
+	fc.Result = res
+	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getNearbyMarkets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Market_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Market_name(ctx, field)
+			case "image":
+				return ec.fieldContext_Market_image(ctx, field)
+			case "volume":
+				return ec.fieldContext_Market_volume(ctx, field)
+			case "unit":
+				return ec.fieldContext_Market_unit(ctx, field)
+			case "tag":
+				return ec.fieldContext_Market_tag(ctx, field)
+			case "pricePerUnit":
+				return ec.fieldContext_Market_pricePerUnit(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Market_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Market_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Market", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getNearbyMarkets_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -6477,6 +6581,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getNearbyMarkets":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getNearbyMarkets(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "getFarmById":
 			field := field
 
@@ -7074,6 +7200,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalNGpsInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (model.GpsInput, error) {
+	res, err := ec.unmarshalInputGpsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (*model.GpsInput, error) {

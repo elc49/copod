@@ -117,6 +117,7 @@ type Query {
   timeline: [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
+  getNearbyMarkets(radius: GpsInput!): [Market!]!
   getFarmById(id: UUID!): Farm!
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!

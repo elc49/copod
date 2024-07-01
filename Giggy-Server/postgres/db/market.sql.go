@@ -158,3 +158,56 @@ func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUI
 	}
 	return items, nil
 }
+
+const getNearbyMarkets = `-- name: GetNearbyMarkets :many
+SELECT id, product, image, price_per_unit, unit, location, created_at, updated_at FROM markets
+WHERE ST_DWithin(location, $1::geography, $2)
+`
+
+type GetNearbyMarketsParams struct {
+	Point  interface{} `json:"point"`
+	Radius interface{} `json:"radius"`
+}
+
+type GetNearbyMarketsRow struct {
+	ID           uuid.UUID   `json:"id"`
+	Product      string      `json:"product"`
+	Image        string      `json:"image"`
+	PricePerUnit int32       `json:"price_per_unit"`
+	Unit         string      `json:"unit"`
+	Location     interface{} `json:"location"`
+	CreatedAt    time.Time   `json:"created_at"`
+	UpdatedAt    time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) GetNearbyMarkets(ctx context.Context, arg GetNearbyMarketsParams) ([]GetNearbyMarketsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getNearbyMarkets, arg.Point, arg.Radius)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetNearbyMarketsRow{}
+	for rows.Next() {
+		var i GetNearbyMarketsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Product,
+			&i.Image,
+			&i.PricePerUnit,
+			&i.Unit,
+			&i.Location,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

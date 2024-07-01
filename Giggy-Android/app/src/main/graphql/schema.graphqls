@@ -155,6 +155,8 @@ type Query {
 
   getUser: User!
 
+  getNearbyMarkets(radius: GpsInput!): [Market!]!
+
   getFarmById(id: UUID!): Farm!
 
   getFarmMarkets(id: UUID!): [Market!]!

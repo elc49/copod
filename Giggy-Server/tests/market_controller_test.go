@@ -64,4 +64,15 @@ func TestMarketController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, len(mrkts), 1)
 	})
+
+	t.Run("get_nearby_markets", func(t *testing.T) {
+		createMarket(ctx)
+
+		mrkts, err := marketC.GetNearbyMarkets(ctx, db.GetNearbyMarketsParams{
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			Radius: 2000,
+		})
+		assert.Nil(t, err)
+		assert.True(t, len(mrkts) > 0)
+	})
 }

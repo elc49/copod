@@ -61,7 +61,7 @@ internal fun MarketCard(
                     Modifier
                         .background(
                             MaterialTheme.colorScheme.background,
-                            MaterialTheme.shapes.extraLarge,
+                            MaterialTheme.shapes.small,
                         )
                         .padding(4.dp)
                 ) {
@@ -76,7 +76,7 @@ internal fun MarketCard(
                     Modifier
                         .background(
                             MaterialTheme.colorScheme.background,
-                            MaterialTheme.shapes.extraLarge,
+                            MaterialTheme.shapes.small,
                         )
                         .padding(4.dp)
                 ) {

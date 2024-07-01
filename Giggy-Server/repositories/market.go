@@ -77,3 +77,26 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 		UpdatedAt:    market.UpdatedAt,
 	}, nil
 }
+
+func (r *MarketRepository) GetNearbyMarkets(ctx context.Context, args db.GetNearbyMarketsParams) ([]*model.Market, error) {
+	var markets []*model.Market
+	m, err := r.queries.GetNearbyMarkets(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range m {
+		market := &model.Market{
+			ID:           item.ID,
+			Name:         item.Product,
+			Image:        item.Image,
+			Unit:         item.Unit,
+			PricePerUnit: int(item.PricePerUnit),
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		}
+		markets = append(markets, market)
+	}
+
+	return markets, nil
+}
