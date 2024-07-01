@@ -54,6 +54,8 @@ import com.lomolo.giggy.compose.screens.DashboardScreenDestination
 import com.lomolo.giggy.compose.screens.FarmMarketScreen
 import com.lomolo.giggy.compose.screens.FarmMarketScreenDestination
 import com.lomolo.giggy.compose.screens.FarmScreenDestination
+import com.lomolo.giggy.compose.screens.FarmSubscriptionScreen
+import com.lomolo.giggy.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
@@ -223,7 +225,15 @@ fun NavGraphBuilder.addDashboardGraph(
             FarmsScreen(snackbarHostState = snackbarHostState, onNavigateToFarmMarket = { farmId ->
                 navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
             }, onNavigateToCreateFarm = {
-                navHostController.navigate(CreateFarmScreenDestination.route)
+                if (session.hasFarmingRights) {
+                    navHostController.navigate(CreateFarmScreenDestination.route) {
+                        launchSingleTop = true
+                    }
+                } else {
+                    navHostController.navigate(FarmSubscriptionScreenDestination.route) {
+                        launchSingleTop = true
+                    }
+                }
             }, bottomNav = {
                 BottomNavBar(
                     modifier = modifier,
@@ -368,20 +378,45 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
+            Scaffold(topBar = {
+                LargeTopAppBar(title = {
+                    Text(
+                        stringResource(id = PosterSubscriptionScreenDestination.title),
+                        style = MaterialTheme.typography.displaySmall,
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = { navHostController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                })
+            }) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    PosterSubscriptionScreen(deviceDetails = deviceDetails)
+                }
+            }
+        }
+        composable(route = FarmSubscriptionScreenDestination.route) {
             Scaffold(
                 topBar = {
                     LargeTopAppBar(title = {
                         Text(
-                            stringResource(id = R.string.buy_poster_rights),
+                            stringResource(id = FarmSubscriptionScreenDestination.title),
                             style = MaterialTheme.typography.displaySmall,
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = { navHostController.popBackStack() }) {
-                            Icon(
-                                Icons.AutoMirrored.TwoTone.ArrowBack,
-                                contentDescription = null,
-                            )
+                           Icon(
+                               Icons.AutoMirrored.TwoTone.ArrowBack,
+                               contentDescription = null,
+                           )
                         }
                     })
                 }
@@ -391,7 +426,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    PosterSubscriptionScreen(deviceDetails = deviceDetails)
+                    FarmSubscriptionScreen(deviceDetails = deviceDetails)
                 }
             }
         }

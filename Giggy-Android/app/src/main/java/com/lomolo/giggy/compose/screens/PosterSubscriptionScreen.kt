@@ -35,7 +35,7 @@ import com.lomolo.giggy.ui.theme.GiggyTheme
 import java.util.Locale
 
 object PosterSubscriptionScreenDestination : Navigation {
-    override val title = null
+    override val title = R.string.buy_poster_rights
     override val route = "dashboard_post_subscribe"
 }
 
