@@ -3,6 +3,7 @@ package com.lomolo.giggy.network
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.watch
+import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.CreateFarmMarketMutation
 import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateFarmMutation
@@ -11,6 +12,7 @@ import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GetFarmPaymentsQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
+import com.lomolo.giggy.GetNearbyMarketsQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewFarmInput
@@ -30,6 +32,7 @@ interface IGiggyGraphqlApi {
     suspend fun getFarmOrders(id: String): ApolloResponse<GetFarmOrdersQuery.Data>
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
+    suspend fun getNearbyMarkets(radius: LatLng): ApolloResponse<GetNearbyMarketsQuery.Data>
 }
 
 class GiggyGraphqlApi(
@@ -84,6 +87,12 @@ class GiggyGraphqlApi(
                 location = GpsInput(input.location.latitude, input.location.longitude),
                 volume = input.volume.toInt(),
             )
+        ))
+        .execute()
+
+    override suspend fun getNearbyMarkets(radius: LatLng) = apolloClient
+        .query(GetNearbyMarketsQuery(
+            GpsInput(radius.latitude, radius.longitude)
         ))
         .execute()
 }
