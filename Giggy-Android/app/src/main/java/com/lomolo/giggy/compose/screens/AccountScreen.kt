@@ -23,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -33,7 +32,6 @@ import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
-import com.lomolo.giggy.ui.theme.GiggyTheme
 
 object AccountScreenDestination: Navigation {
     override val title = R.string.account
@@ -155,13 +153,5 @@ internal fun AccountCard(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun AccountScreenPreview() {
-    GiggyTheme {
-        AccountScreen()
     }
 }

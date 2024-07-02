@@ -2,6 +2,8 @@ package com.lomolo.giggy.network
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.CreateFarmMarketMutation
@@ -94,5 +96,6 @@ class GiggyGraphqlApi(
         .query(GetNearbyMarketsQuery(
             GpsInput(radius.latitude, radius.longitude)
         ))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()
 }
