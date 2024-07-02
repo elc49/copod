@@ -1,0 +1,9 @@
+query GetNearbyMarkets($radius: GpsInput!) {
+    getNearbyMarkets(radius: $radius) {
+        id
+        name
+        image
+        pricePerUnit
+        unit
+    }
+}

@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -46,7 +45,6 @@ import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
-import com.lomolo.giggy.ui.theme.GiggyTheme
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
 
 object FarmScreenDestination : Navigation {
@@ -210,14 +208,5 @@ internal fun Farms(
         } else {
             NoFarm()
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun FarmFarmScreenPreview() {
-    GiggyTheme {
-        FarmsScreen()
     }
 }

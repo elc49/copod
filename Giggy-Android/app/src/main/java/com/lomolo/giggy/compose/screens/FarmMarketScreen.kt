@@ -17,9 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SuggestionChip
@@ -41,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -51,7 +48,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.ui.theme.GiggyTheme
 import java.util.Locale
 
 object FarmMarketScreenDestination : Navigation {
@@ -137,13 +133,7 @@ fun FarmMarketScreen(
                 CircularProgressIndicator()
             }
         }
-        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state, divider = {
-            if (markets is GetFarmMarketsState.Loading || orders is GetFarmOrdersState.Loading || payments is GetFarmPaymentsState.Loading) {
-                LinearProgressIndicator()
-            } else {
-                HorizontalDivider()
-            }
-        }) {
+        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
                 Tab(selected = state == index,
                     onClick = { state = index },
@@ -440,14 +430,5 @@ fun FarmMarketScreen(
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun FarmFarmMarketScreenPreview() {
-    GiggyTheme {
-        FarmMarketScreen(deviceDetails = DeviceDetails())
     }
 }
