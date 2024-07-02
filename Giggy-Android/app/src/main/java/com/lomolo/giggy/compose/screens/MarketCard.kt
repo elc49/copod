@@ -27,12 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.giggy.GetNearbyMarketsQuery
 import com.lomolo.giggy.R
 import java.util.Locale
 
 @Composable
 internal fun MarketCard(
-    modifier: Modifier = Modifier, data: Product, currencyLocale: String
+    modifier: Modifier = Modifier, data: GetNearbyMarketsQuery.GetNearbyMarket, currencyLocale: String
 ) {
     OutlinedCard(
         modifier.height(180.dp)
@@ -40,7 +41,7 @@ internal fun MarketCard(
         Box(Modifier.fillMaxSize()) {
             Box {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(data.img)
+                    model = ImageRequest.Builder(LocalContext.current).data(data.image)
                         .crossfade(true).build(),
                     contentDescription = null,
                     placeholder = painterResource(id = R.drawable.loading_img),
@@ -87,8 +88,8 @@ internal fun MarketCard(
                                 .unit(Currency.getInstance(currencyLocale))
                                 .precision(Precision.maxFraction(2))
                                 .locale(Locale.US)
-                                .format(data.price)
-                        } / ${data.metric}",
+                                .format(data.pricePerUnit)
+                        } / ${data.unit}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
