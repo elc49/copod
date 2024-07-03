@@ -14,7 +14,7 @@ INSERT INTO markets (
 )
 RETURNING *;
 
--- name: GetNearbyMarkets :many
+-- name: GetLocalizedMarkets :many
 SELECT id, product, image, price_per_unit, unit, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius));
 
