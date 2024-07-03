@@ -68,7 +68,7 @@ func TestMarketController(t *testing.T) {
 	t.Run("get_nearby_markets", func(t *testing.T) {
 		createMarket(ctx)
 
-		mrkts, err := marketC.GetNearbyMarkets(ctx, db.GetNearbyMarketsParams{
+		mrkts, err := marketC.GetLocalizedMarkets(ctx, db.GetLocalizedMarketsParams{
 			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Radius: 2000,
 		})

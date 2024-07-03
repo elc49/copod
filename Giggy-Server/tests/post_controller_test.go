@@ -32,4 +32,13 @@ func TestPostController(t *testing.T) {
 		assert.NotNil(t, p)
 		assert.Equal(t, p.Text, "Shiny evening here at the farm")
 	})
+
+	t.Run("get_localized_posters", func(t *testing.T) {
+		p, err := postC.GetLocalizedPosters(ctx, db.GetLocalizedPostersParams{
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1289, -1.2743),
+			Radius: 500,
+		})
+		assert.Nil(t, err)
+		assert.True(t, len(p) > 0)
+	})
 }
