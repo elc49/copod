@@ -39,6 +39,6 @@ func TestPostController(t *testing.T) {
 			Radius: 500,
 		})
 		assert.Nil(t, err)
-		assert.True(t, len(p) > 0)
+		assert.True(t, len(p) == 1)
 	})
 }

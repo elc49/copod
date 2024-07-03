@@ -73,6 +73,6 @@ func TestMarketController(t *testing.T) {
 			Radius: 2000,
 		})
 		assert.Nil(t, err)
-		assert.True(t, len(mrkts) > 0)
+		assert.True(t, len(mrkts) == 1)
 	})
 }
