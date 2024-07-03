@@ -114,10 +114,10 @@ input NewFarmMarketInput {
 }
 
 type Query {
-  timeline: [Post!]!
+  getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
-  getNearbyMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(radius: GpsInput!): [Market!]!
   getFarmById(id: UUID!): Farm!
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!

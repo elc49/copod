@@ -28,3 +28,26 @@ func (r *PostRepository) CreatePost(ctx context.Context, args db.CreatePostParam
 		UpdatedAt: newPost.UpdatedAt,
 	}, nil
 }
+
+func (r *PostRepository) GetLocalizedPosters(ctx context.Context, args db.GetLocalizedPostersParams) ([]*model.Post, error) {
+	var posts []*model.Post
+	p, err := r.queries.GetLocalizedPosters(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range p {
+		post := &model.Post{
+			ID:    item.ID,
+			Text:  item.Text,
+			Image: item.Image,
+			// TODO post location
+			UserID:    item.UserID,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}

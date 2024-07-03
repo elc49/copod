@@ -14,7 +14,8 @@ import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GetFarmPaymentsQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
-import com.lomolo.giggy.GetNearbyMarketsQuery
+import com.lomolo.giggy.GetLocalizedMarketsQuery
+import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewFarmInput
@@ -34,7 +35,8 @@ interface IGiggyGraphqlApi {
     suspend fun getFarmOrders(id: String): ApolloResponse<GetFarmOrdersQuery.Data>
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
-    suspend fun getNearbyMarkets(radius: LatLng): ApolloResponse<GetNearbyMarketsQuery.Data>
+    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
+    suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
 }
 
 class GiggyGraphqlApi(
@@ -92,8 +94,15 @@ class GiggyGraphqlApi(
         ))
         .execute()
 
-    override suspend fun getNearbyMarkets(radius: LatLng) = apolloClient
-        .query(GetNearbyMarketsQuery(
+    override suspend fun getLocalizedMarkets(radius: LatLng) = apolloClient
+        .query(GetLocalizedMarketsQuery(
+            GpsInput(radius.latitude, radius.longitude)
+        ))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun getLocalizedPosters(radius: LatLng) = apolloClient
+        .query(GetLocalizedPostersQuery(
             GpsInput(radius.latitude, radius.longitude)
         ))
         .fetchPolicy(FetchPolicy.NetworkFirst)

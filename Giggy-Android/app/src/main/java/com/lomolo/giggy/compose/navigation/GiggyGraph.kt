@@ -18,6 +18,7 @@ import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.SessionViewModel
+import com.lomolo.giggy.SettingDeviceDetails
 import kotlinx.coroutines.delay
 
 object RootNavigation: Navigation {
@@ -47,9 +48,9 @@ fun GiggyNavigationHost(
     var loaded by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(mainViewModel.settingDeviceDetailsState) {
         delay(1500L)
-        loaded = true
+        if (mainViewModel.settingDeviceDetailsState is SettingDeviceDetails.Success) loaded = true
     }
 
     if (!loaded) {

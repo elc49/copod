@@ -20,3 +20,7 @@ func (c *PostController) Init(queries *db.Queries) {
 func (c *PostController) CreatePost(ctx context.Context, args db.CreatePostParams) (*model.Post, error) {
 	return c.r.CreatePost(ctx, args)
 }
+
+func (c *PostController) GetLocalizedPosters(ctx context.Context, args db.GetLocalizedPostersParams) ([]*model.Post, error) {
+	return c.r.GetLocalizedPosters(ctx, args)
+}

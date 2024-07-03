@@ -27,13 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.giggy.GetNearbyMarketsQuery
+import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.R
 import java.util.Locale
 
 @Composable
 internal fun MarketCard(
-    modifier: Modifier = Modifier, data: GetNearbyMarketsQuery.GetNearbyMarket, currencyLocale: String
+    modifier: Modifier = Modifier, data: GetLocalizedMarketsQuery.GetLocalizedMarket, currencyLocale: String
 ) {
     OutlinedCard(
         modifier.height(180.dp)

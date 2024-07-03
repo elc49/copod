@@ -15,7 +15,9 @@ import com.lomolo.giggy.repository.IFarm
 import com.lomolo.giggy.repository.SessionRepository
 import com.lomolo.giggy.repository.FarmRepository
 import com.lomolo.giggy.repository.IMarkets
+import com.lomolo.giggy.repository.IPosters
 import com.lomolo.giggy.repository.MarketsRepository
+import com.lomolo.giggy.repository.PostersRepository
 import com.lomolo.giggy.sql.Store
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -31,6 +33,7 @@ interface IApplicationContainer{
     val giggyGraphqlApiService: IGiggyGraphqlApi
     val farmRepository: IFarm
     val marketsRepository: IMarkets
+    val postersRepository: IPosters
 }
 
 class ApplicationContainer(
@@ -87,5 +90,9 @@ class ApplicationContainer(
 
     override val marketsRepository: IMarkets by lazy {
         MarketsRepository(giggyGraphqlApiService)
+    }
+
+    override val postersRepository: IPosters by lazy {
+        PostersRepository(giggyGraphqlApiService)
     }
 }

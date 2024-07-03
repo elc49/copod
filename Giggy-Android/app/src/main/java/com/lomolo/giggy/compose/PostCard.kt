@@ -34,34 +34,38 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.R
-import com.lomolo.giggy.compose.screens.testPost
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostCard(
     modifier: Modifier = Modifier,
     text: String,
-    images: List<String>
+    images: List<String>,
+    tags: List<String>,
 ) {
     val context = LocalContext.current
 
     Column(modifier = modifier) {
         Row (
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){
+            // TODO post author
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
-                        .data(testPost.img)
+                        .data("")
                         .crossfade(true)
                         .build(),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(id = R.drawable.loading_img),
+                    error = painterResource(id = R.drawable.ic_broken_image),
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape),
@@ -74,6 +78,7 @@ fun PostCard(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+            // TODO post created_at
             Text(
                 text = "1h ago",
                 style = MaterialTheme.typography.bodyMedium,
@@ -129,7 +134,7 @@ fun PostCard(
         ) {
             // TODO trim extra lengthy tags
             FlowRow {
-                testPost.tags.map {
+                tags.forEach {
                     ElevatedSuggestionChip(
                         shape = MaterialTheme.shapes.extraSmall,
                         onClick = { /*TODO*/ },
@@ -152,6 +157,7 @@ fun PostCard(
                 }
             }
         }
+        // TODO post location
         Row(
             modifier = Modifier
                 .padding(start=8.dp, end=8.dp),

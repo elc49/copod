@@ -69,9 +69,13 @@ func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, 
 	return nil, nil
 }
 
-// Timeline is the resolver for the timeline field.
-func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
-	return make([]*model.Post, 0), nil
+// GetLocalizedPosters is the resolver for the getLocalizedPosters field.
+func (r *queryResolver) GetLocalizedPosters(ctx context.Context, radius model.GpsInput) ([]*model.Post, error) {
+	args := db.GetLocalizedPostersParams{
+		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
+		Radius: 5000,
+	}
+	return r.postController.GetLocalizedPosters(ctx, args)
 }
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
@@ -86,13 +90,13 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
-// GetNearbyMarkets is the resolver for the getNearbyMarkets field.
-func (r *queryResolver) GetNearbyMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
-	args := db.GetNearbyMarketsParams{
+// GetLocalizedMarkets is the resolver for the getLocalizedMarkets field.
+func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
+	args := db.GetLocalizedMarketsParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
 		Radius: 2000,
 	}
-	return r.marketController.GetNearbyMarkets(ctx, args)
+	return r.marketController.GetLocalizedMarkets(ctx, args)
 }
 
 // GetFarmByID is the resolver for the getFarmById field.

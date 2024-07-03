@@ -78,9 +78,9 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 	}, nil
 }
 
-func (r *MarketRepository) GetNearbyMarkets(ctx context.Context, args db.GetNearbyMarketsParams) ([]*model.Market, error) {
+func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, args db.GetLocalizedMarketsParams) ([]*model.Market, error) {
 	var markets []*model.Market
-	m, err := r.queries.GetNearbyMarkets(ctx, args)
+	m, err := r.queries.GetLocalizedMarkets(ctx, args)
 	if err != nil {
 		return nil, err
 	}
