@@ -69,9 +69,9 @@ func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, 
 	return nil, nil
 }
 
-// Timeline is the resolver for the timeline field.
-func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
-	return make([]*model.Post, 0), nil
+// GetLocalizedPosters is the resolver for the getLocalizedPosters field.
+func (r *queryResolver) GetLocalizedPosters(ctx context.Context) ([]*model.Post, error) {
+	panic(fmt.Errorf("not implemented: GetLocalizedPosters - getLocalizedPosters"))
 }
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
@@ -86,13 +86,13 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
-// GetNearbyMarkets is the resolver for the getNearbyMarkets field.
-func (r *queryResolver) GetNearbyMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
-	args := db.GetNearbyMarketsParams{
+// GetLocalizedMarkets is the resolver for the getLocalizedMarkets field.
+func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
+	args := db.GetLocalizedMarketsParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
 		Radius: 2000,
 	}
-	return r.marketController.GetNearbyMarkets(ctx, args)
+	return r.marketController.GetLocalizedMarkets(ctx, args)
 }
 
 // GetFarmByID is the resolver for the getFarmById field.
@@ -131,3 +131,13 @@ type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
+	return make([]*model.Post, 0), nil
+}
