@@ -71,7 +71,8 @@ func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, 
 
 // GetLocalizedPosters is the resolver for the getLocalizedPosters field.
 func (r *queryResolver) GetLocalizedPosters(ctx context.Context) ([]*model.Post, error) {
-	panic(fmt.Errorf("not implemented: GetLocalizedPosters - getLocalizedPosters"))
+	args := db.GetLocalizedPostersParams{}
+	return r.postController.GetLocalizedPosters(ctx, args)
 }
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
