@@ -1,0 +1,9 @@
+query GetLocalizedMarkets($radius: GpsInput!) {
+    getLocalizedMarkets(radius: $radius) {
+        id
+        name
+        image
+        pricePerUnit
+        unit
+    }
+}

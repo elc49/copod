@@ -149,13 +149,13 @@ type Post {
 }
 
 type Query {
-  timeline: [Post!]!
+  getLocalizedPosters: [Post!]!
 
   getFarmsBelongingToUser: [Farm!]!
 
   getUser: User!
 
-  getNearbyMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(radius: GpsInput!): [Market!]!
 
   getFarmById(id: UUID!): Farm!
 
