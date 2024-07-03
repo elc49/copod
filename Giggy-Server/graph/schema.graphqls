@@ -114,7 +114,7 @@ input NewFarmMarketInput {
 }
 
 type Query {
-  getLocalizedPosters: [Post!]!
+  getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
   getLocalizedMarkets(radius: GpsInput!): [Market!]!

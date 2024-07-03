@@ -149,7 +149,7 @@ type Post {
 }
 
 type Query {
-  getLocalizedPosters: [Post!]!
+  getLocalizedPosters(radius: GpsInput!): [Post!]!
 
   getFarmsBelongingToUser: [Farm!]!
 

@@ -120,7 +120,7 @@ type ComplexityRoot struct {
 		GetFarmPayments         func(childComplexity int, id uuid.UUID) int
 		GetFarmsBelongingToUser func(childComplexity int) int
 		GetLocalizedMarkets     func(childComplexity int, radius model.GpsInput) int
-		GetLocalizedPosters     func(childComplexity int) int
+		GetLocalizedPosters     func(childComplexity int, radius model.GpsInput) int
 		GetUser                 func(childComplexity int) int
 	}
 
@@ -148,7 +148,7 @@ type PostResolver interface {
 	User(ctx context.Context, obj *model.Post) (*model.User, error)
 }
 type QueryResolver interface {
-	GetLocalizedPosters(ctx context.Context) ([]*model.Post, error)
+	GetLocalizedPosters(ctx context.Context, radius model.GpsInput) ([]*model.Post, error)
 	GetFarmsBelongingToUser(ctx context.Context) ([]*model.Farm, error)
 	GetUser(ctx context.Context) (*model.User, error)
 	GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error)
@@ -572,7 +572,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.GetLocalizedPosters(childComplexity), true
+		args, err := ec.field_Query_getLocalizedPosters_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetLocalizedPosters(childComplexity, args["radius"].(model.GpsInput)), true
 
 	case "Query.getUser":
 		if e.complexity.Query.GetUser == nil {
@@ -879,6 +884,21 @@ func (ec *executionContext) field_Query_getFarmPayments_args(ctx context.Context
 }
 
 func (ec *executionContext) field_Query_getLocalizedMarkets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.GpsInput
+	if tmp, ok := rawArgs["radius"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
+		arg0, err = ec.unmarshalNGpsInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGpsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["radius"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getLocalizedPosters_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.GpsInput
@@ -3017,7 +3037,7 @@ func (ec *executionContext) _Query_getLocalizedPosters(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetLocalizedPosters(rctx)
+		return ec.resolvers.Query().GetLocalizedPosters(rctx, fc.Args["radius"].(model.GpsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3034,7 +3054,7 @@ func (ec *executionContext) _Query_getLocalizedPosters(ctx context.Context, fiel
 	return ec.marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPostᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_getLocalizedPosters(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getLocalizedPosters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -3061,6 +3081,17 @@ func (ec *executionContext) fieldContext_Query_getLocalizedPosters(_ context.Con
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getLocalizedPosters_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }

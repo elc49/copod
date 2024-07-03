@@ -1,0 +1,10 @@
+query GetLocalizedPosters($radius: GpsInput!) {
+    getLocalizedPosters(radius: $radius) {
+        id
+        text
+        image
+        userId
+        created_at
+        updated_at
+    }
+}

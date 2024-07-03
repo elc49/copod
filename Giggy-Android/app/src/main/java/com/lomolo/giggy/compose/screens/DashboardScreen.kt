@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -17,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.PostCard
@@ -28,39 +33,48 @@ object DashboardScreenDestination: Navigation {
     override val route = "dashboard-home"
 }
 
-data class Post(
-    val img: String,
-    val post: String,
-    val tags: List<String> = listOf(),
-)
-val testPost = Post(
-    "https://storage.googleapis.com/giggy-cloud-storage/download.jpeg",
-    "Got this beast from a local automaker. Such an awesome guy at the customer desk. Head in and ask for John Doe.",
-    listOf("Farming tools", "Farming equipment"),
-)
-
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    Content(
-        modifier = modifier,
-    )
+    val posters by viewModel.posters.collectAsState()
+
+    when(viewModel.gettingPostersState) {
+        GettingPostersState.Success -> {
+            if (posters.isNotEmpty()) {
+                Content(
+                    modifier = modifier,
+                    posters = posters,
+                )
+            } else {
+                NoContent(modifier = modifier)
+            }
+        }
+        GettingPostersState.Loading -> {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+
 }
 
 @Composable
 internal fun Content(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    posters: List<GetLocalizedPostersQuery.GetLocalizedPoster>,
 ) {
-    LazyColumn {
-        item {
+    LazyColumn(modifier = modifier) {
+        items(posters) {
             PostCard(
-                modifier = modifier,
-                text = testPost.post,
-                images = listOf(
-                    testPost.img
-                )
+                text = it.text,
+                images = listOf(it.image),
+                tags = listOf(),
             )
         }
     }
