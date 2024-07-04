@@ -85,7 +85,7 @@ sealed class Screen(
     )
 
     data object Soko : Screen(
-        "Soko",
+        "Markets",
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard-market",

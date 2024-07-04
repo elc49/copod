@@ -134,13 +134,13 @@ internal fun NoFarm(
             painter = painterResource(R.drawable.farm),
             contentDescription = null,
             modifier = Modifier
-                .size(120.dp)
+                .size(24.dp)
                 .align(Alignment.CenterHorizontally)
         )
         Text(
             text = stringResource(R.string.no_farm),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
