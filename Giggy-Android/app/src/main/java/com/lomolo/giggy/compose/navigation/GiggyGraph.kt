@@ -14,12 +14,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.lomolo.giggy.GiggyViewModelProvider
-import com.lomolo.giggy.compose.screens.GenesisScreen
-import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.SessionViewModel
 import com.lomolo.giggy.SettingDeviceDetails
-import kotlinx.coroutines.delay
+import com.lomolo.giggy.compose.screens.GenesisScreen
+import com.lomolo.giggy.model.DeviceDetails
 
 object RootNavigation: Navigation {
     override val title = null
@@ -49,7 +48,6 @@ fun GiggyNavigationHost(
         mutableStateOf(false)
     }
     LaunchedEffect(mainViewModel.settingDeviceDetailsState) {
-        delay(1500L)
         if (mainViewModel.settingDeviceDetailsState is SettingDeviceDetails.Success) loaded = true
     }
 

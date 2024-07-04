@@ -99,9 +99,9 @@ internal fun NoContent(
                 .align(Alignment.CenterHorizontally)
         )
         Text(
-            text = stringResource(R.string.no_posts_we_are_still_early),
+            text = stringResource(R.string.no_posters),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelMedium
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
