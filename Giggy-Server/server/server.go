@@ -9,9 +9,11 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/handlers"
+	webhook "github.com/elc49/giggy-monorepo/Giggy-Server/handlers/webhook"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/gcloud"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/paystack"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	giggyMiddleware "github.com/elc49/giggy-monorepo/Giggy-Server/middleware"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
@@ -49,6 +51,7 @@ func (s *Server) initServices() {
 	})
 	ip.NewIpinfoClient()
 	gcloud.New()
+	paystack.New(config.Configuration.Paystack, s.Db)
 }
 
 func (s *Server) MountHandlers() {
@@ -76,6 +79,7 @@ func (s *Server) MountHandlers() {
 			r.Handle("/ip", handlers.Ip())
 			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 			r.Handle("/refresh/token", handlers.RefreshToken(userController))
+			r.With(giggyMiddleware.Paystack).Handle("/webhook/paystack", webhook.Paystack())
 		})
 		r.Handle("/img/upload", handlers.ImageUploader())
 	})

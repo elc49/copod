@@ -18,6 +18,7 @@ type configs struct {
 	Jwt          Jwt
 	Gcloud       Gcloud
 	RemoteAvatar string
+	Paystack     Paystack
 }
 
 func env() { godotenv.Load() }
@@ -32,6 +33,7 @@ func New() {
 	c.Jwt = jwtConfig()
 	c.Gcloud = gcloudConfig()
 	c.RemoteAvatar = remoteAvatarConfig()
+	c.Paystack = paystackConfig()
 
 	Configuration = &c
 }
@@ -98,4 +100,15 @@ func remoteAvatarConfig() string {
 	url = strings.TrimSpace(os.Getenv("BASE_REMOTE_AVATAR_URL"))
 
 	return url
+}
+
+func paystackConfig() Paystack {
+	var config Paystack
+
+	config.BaseApi = strings.TrimSpace(os.Getenv("PAYSTACK_BASE_API"))
+	config.SecretKey = strings.TrimSpace(os.Getenv("PAYSTACK_SECRET_KEY"))
+	config.Provider = strings.TrimSpace(os.Getenv("PAYSTACK_PAYMENT_PROVIDER"))
+	config.TestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_TEST_ACCOUNT"))
+
+	return config
 }
