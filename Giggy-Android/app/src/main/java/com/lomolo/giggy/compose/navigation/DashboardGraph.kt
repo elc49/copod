@@ -59,6 +59,8 @@ import com.lomolo.giggy.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
+import com.lomolo.giggy.compose.screens.MpesaPaymentScreen
+import com.lomolo.giggy.compose.screens.MpesaPaymentScreenDestination
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreen
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
@@ -398,7 +400,12 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    PosterSubscriptionScreen(deviceDetails = deviceDetails)
+                    PosterSubscriptionScreen(
+                        deviceDetails = deviceDetails,
+                        onNavigateToMpesaPay = {
+                            navHostController.navigate(MpesaPaymentScreenDestination.route)
+                        }
+                    )
                 }
             }
         }
@@ -411,14 +418,14 @@ fun NavGraphBuilder.addDashboardGraph(
                             style = MaterialTheme.typography.displaySmall,
                         )
                     },
-                    navigationIcon = {
-                        IconButton(onClick = { navHostController.popBackStack() }) {
-                           Icon(
-                               Icons.AutoMirrored.TwoTone.ArrowBack,
-                               contentDescription = null,
-                           )
-                        }
-                    })
+                        navigationIcon = {
+                            IconButton(onClick = { navHostController.popBackStack() }) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        })
                 }
             ) { innerPadding ->
                 Surface(
@@ -429,6 +436,9 @@ fun NavGraphBuilder.addDashboardGraph(
                     FarmSubscriptionScreen(deviceDetails = deviceDetails)
                 }
             }
+        }
+        composable(route = MpesaPaymentScreenDestination.route) {
+            MpesaPaymentScreen(deviceDetails = deviceDetails)
         }
     }
 }
