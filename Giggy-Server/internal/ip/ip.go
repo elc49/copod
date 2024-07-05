@@ -41,7 +41,9 @@ func NewIpinfoClient() {
 
 func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	log := logger.GetLogger()
-	var ipinfo *model.Ipinfo
+	ipinfo := &model.Ipinfo{}
+	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
+	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
 
 	ipApiClient := http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://ipapi.co/%s/json/", ip), nil)
@@ -77,8 +79,6 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	}
 	ipinfo.CountryFlagURL = secondaryIpinfo.CountryFlagURL
 	ipinfo.Gps = secondaryIpinfo.Location
-	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
-	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
 
 	return ipinfo, nil
 }
