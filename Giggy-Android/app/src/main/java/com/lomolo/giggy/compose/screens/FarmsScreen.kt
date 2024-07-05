@@ -15,10 +15,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -28,6 +28,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -62,6 +64,8 @@ fun FarmsScreen(
     bottomNav: @Composable () -> Unit = {},
     viewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
+    val farms by viewModel.farms.collectAsState()
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = bottomNav,
@@ -93,8 +97,7 @@ fun FarmsScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (val getFarmsState = viewModel.getFarmsBelongingToUserState) {
-                is GetFarmsBelongingToUserState.Error -> {}
+            when (viewModel.getFarmsBelongingToUserState) {
                 is GetFarmsBelongingToUserState.Loading -> {
                     Column(
                         modifier = Modifier
@@ -102,17 +105,16 @@ fun FarmsScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        LinearProgressIndicator()
+                        CircularProgressIndicator()
                     }
                 }
+
                 is GetFarmsBelongingToUserState.Success -> {
-                    getFarmsState.success?.let {
-                        Farms(
-                            modifier = modifier,
-                            onNavigateTo = onNavigateToFarmMarket,
-                            farms = it
-                        )
-                    }
+                    Farms(
+                        modifier = modifier,
+                        onNavigateTo = onNavigateToFarmMarket,
+                        farms = farms
+                    )
                 }
             }
         }
@@ -151,6 +153,8 @@ internal fun Farms(
     onNavigateTo: (String) -> Unit,
     farms: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -171,7 +175,7 @@ internal fun Farms(
                         ) {
                             Column {
                                 AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
+                                    model = ImageRequest.Builder(context)
                                         .data(it.thumbnail)
                                         .crossfade(true)
                                         .build(),

@@ -122,7 +122,7 @@ object GiggyViewModelProvider {
 
         initializer {
             paymentViewModel = PaymentViewModel(
-                mainViewModel,
+                giggyApplication().container.paymentRepository,
             )
             paymentViewModel
         }
