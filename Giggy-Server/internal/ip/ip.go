@@ -77,6 +77,8 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	}
 	ipinfo.CountryFlagURL = secondaryIpinfo.CountryFlagURL
 	ipinfo.Gps = secondaryIpinfo.Location
+	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
+	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
 
 	return ipinfo, nil
 }

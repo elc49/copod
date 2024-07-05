@@ -26,12 +26,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.ui.theme.GiggyTheme
 import java.util.Locale
 
 object FarmSubscriptionScreenDestination: Navigation {
@@ -98,7 +96,7 @@ fun FarmSubscriptionScreen(
                         .unit(Currency.getInstance(deviceDetails.currency))
                         .precision(Precision.maxFraction(2))
                         .locale(Locale.US)
-                        .format(2000)
+                        .format(deviceDetails.farmingRightsFee)
                         .toString(),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,

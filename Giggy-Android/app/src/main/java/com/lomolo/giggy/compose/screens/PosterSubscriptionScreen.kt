@@ -96,7 +96,7 @@ fun PosterSubscriptionScreen(
                 Text(
                     NumberFormatter.with().notation(Notation.simple())
                         .unit(Currency.getInstance(deviceDetails.currency))
-                        .precision(Precision.maxFraction(2)).locale(Locale.US).format(1800)
+                        .precision(Precision.maxFraction(2)).locale(Locale.US).format(deviceDetails.posterRightsFee)
                         .toString(),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
