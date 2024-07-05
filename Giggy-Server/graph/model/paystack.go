@@ -42,7 +42,7 @@ type ChargeMpesaPhoneCallbackRes struct {
 			Channel     string `json:"channel"`
 			CountryCode string `json:"country_code"`
 			Brand       string `json:"brand"`
-			AuthCode    string `json:"auth_code"`
+			AuthCode    string `json:"authorization_code"`
 		} `json:"authorization"`
 	} `json:"data"`
 }
