@@ -34,6 +34,8 @@ class MainViewModel(
                         currency = res.currency,
                         callingCode = res.callingCode,
                         ipGps = res.ipGps,
+                        posterRightsFee = res.posterRightsFee,
+                        farmingRightsFee = res.farmingRightsFee,
                     )
                 }
                 settingDeviceDetailsState = SettingDeviceDetails.Success

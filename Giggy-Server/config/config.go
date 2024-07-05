@@ -19,6 +19,7 @@ type configs struct {
 	Gcloud       Gcloud
 	RemoteAvatar string
 	Paystack     Paystack
+	Fees         Fees
 }
 
 func env() { godotenv.Load() }
@@ -34,6 +35,7 @@ func New() {
 	c.Gcloud = gcloudConfig()
 	c.RemoteAvatar = remoteAvatarConfig()
 	c.Paystack = paystackConfig()
+	c.Fees = feesConfig()
 
 	Configuration = &c
 }
@@ -109,6 +111,24 @@ func paystackConfig() Paystack {
 	config.SecretKey = strings.TrimSpace(os.Getenv("PAYSTACK_SECRET_KEY"))
 	config.Provider = strings.TrimSpace(os.Getenv("PAYSTACK_PAYMENT_PROVIDER"))
 	config.TestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_TEST_ACCOUNT"))
+
+	return config
+}
+
+func feesConfig() Fees {
+	var config Fees
+
+	posterFees, posterErr := strconv.Atoi(strings.TrimSpace(os.Getenv("POSTER_RIGHTS_FEE")))
+	if posterErr != nil {
+		panic(posterErr)
+	}
+	farmingFees, farmingErr := strconv.Atoi(strings.TrimSpace(os.Getenv("FARMING_RIGHTS_FEE")))
+	if farmingErr != nil {
+		panic(farmingErr)
+	}
+
+	config.PosterRights = posterFees
+	config.FarmingRights = farmingFees
 
 	return config
 }

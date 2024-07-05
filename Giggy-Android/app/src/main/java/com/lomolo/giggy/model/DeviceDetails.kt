@@ -9,5 +9,7 @@ data class DeviceDetails(
     @Json(name = "gps") val ipGps: String = "",
     val currency: String = "",
     @Json(name = "country_calling_code") val callingCode: String = "",
+    @Json(name = "poster_rights_fee") val posterRightsFee: Int = 0,
+    @Json(name = "farming_rights_fee") val farmingRightsFee: Int = 0,
     val deviceGps: LatLng = LatLng(0.0, 0.0),
 )
