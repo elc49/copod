@@ -113,6 +113,12 @@ input NewFarmMarketInput {
   pricePerUnit: Int!
 }
 
+input PayWithMpesaInput {
+  amount: Int!
+  currency: String!
+  phone: String!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -128,4 +134,5 @@ type Mutation {
   createPost(input: NewPostInput!): Post!
   createFarm(input: NewFarmInput!): Farm!
   createFarmMarket(input: NewFarmMarketInput!): Market!
+  payWithMpesa(input: PayWithMpesaInput!): Boolean!
 }

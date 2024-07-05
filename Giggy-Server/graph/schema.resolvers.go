@@ -54,6 +54,11 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 	return r.marketController.CreateFarmMarket(ctx, args)
 }
 
+// PayWithMpesa is the resolver for the payWithMpesa field.
+func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (bool, error) {
+	panic(fmt.Errorf("not implemented: PayWithMpesa - payWithMpesa"))
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)
