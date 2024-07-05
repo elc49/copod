@@ -403,7 +403,9 @@ fun NavGraphBuilder.addDashboardGraph(
                     PosterSubscriptionScreen(
                         deviceDetails = deviceDetails,
                         onNavigateToMpesaPay = {
-                            navHostController.navigate(MpesaPaymentScreenDestination.route)
+                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -433,7 +435,14 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    FarmSubscriptionScreen(deviceDetails = deviceDetails)
+                    FarmSubscriptionScreen(
+                        deviceDetails = deviceDetails,
+                        onNavigateToMpesaPay = {
+                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
                 }
             }
         }

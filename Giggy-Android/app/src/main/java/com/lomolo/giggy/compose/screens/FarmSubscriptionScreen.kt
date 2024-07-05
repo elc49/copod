@@ -50,6 +50,7 @@ private val points = listOf(
 fun FarmSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    onNavigateToMpesaPay: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -86,7 +87,7 @@ fun FarmSubscriptionScreen(
         }
         Box(Modifier.padding(8.dp)) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToMpesaPay() },
                 contentPadding = PaddingValues(12.dp),
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth()
@@ -104,13 +105,5 @@ fun FarmSubscriptionScreen(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun FarmSubscriptionScreenPreview() {
-    GiggyTheme {
-        FarmSubscriptionScreen(deviceDetails = DeviceDetails())
     }
 }
