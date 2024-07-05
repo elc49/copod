@@ -438,7 +438,32 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = MpesaPaymentScreenDestination.route) {
-            MpesaPaymentScreen(deviceDetails = deviceDetails)
+            Scaffold(
+                topBar = {
+                    TopAppBar(title = {
+                        Text(
+                            stringResource(id = MpesaPaymentScreenDestination.title),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navHostController.popBackStack() }) {
+                           Icon(
+                               Icons.AutoMirrored.TwoTone.ArrowBack,
+                               contentDescription = null
+                           )
+                        }
+                    })
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    MpesaPaymentScreen(deviceDetails = deviceDetails)
+                }
+            }
         }
     }
 }

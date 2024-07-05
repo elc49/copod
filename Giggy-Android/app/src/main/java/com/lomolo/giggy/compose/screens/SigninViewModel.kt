@@ -5,10 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
-import com.lomolo.giggy.repository.ISession
 import com.lomolo.giggy.MainViewModel
+import com.lomolo.giggy.common.PhoneNumberUtility
+import com.lomolo.giggy.repository.ISession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,14 +18,13 @@ import java.io.IOException
 class SigninViewModel(
     private val sessionRepository: ISession,
     private val mainViewModel: MainViewModel,
-): ViewModel() {
+) : ViewModel() {
     var signInUiState: SigninState by mutableStateOf(SigninState.Success)
         private set
 
     private val _signinInput = MutableStateFlow(Signin())
     val signinInput: StateFlow<Signin> = _signinInput.asStateFlow()
 
-    private val phoneUtil = PhoneNumberUtil.getInstance()
 
     fun setPhone(phone: String) {
         _signinInput.update {
@@ -36,29 +34,11 @@ class SigninViewModel(
 
     fun isPhoneValid(uiState: Signin): Boolean {
         return with(uiState) {
-            isPhoneNumberValid(phone)
-        }
-    }
-
-    private fun parsePhoneNumber(phone: String): PhoneNumber {
-        var number = PhoneNumber()
-        try {
-            number = phoneUtil.parse(phone, mainViewModel.deviceDetailsState.value.countryCode)
-        } catch(e: Exception) {
-            e.printStackTrace()
-        }
-        return number
-    }
-
-    private fun isPhoneNumberValid(phone: String): Boolean {
-        return try {
-            if (phone.isEmpty()) return false
-            val p = PhoneNumber()
-            p.countryCode = mainViewModel.deviceDetailsState.value.callingCode.filter { it.toString() != "+" }.toInt()
-            p.nationalNumber = phone.toLong()
-            return phoneUtil.isValidNumber(parsePhoneNumber(phone))
-        } catch(e: Exception) {
-            false
+            PhoneNumberUtility.isValid(
+                phone,
+                mainViewModel.deviceDetailsState.value.countryCode,
+                mainViewModel.deviceDetailsState.value.callingCode
+            )
         }
     }
 
@@ -67,7 +47,9 @@ class SigninViewModel(
             signInUiState = SigninState.Loading
             viewModelScope.launch {
                 signInUiState = try {
-                    val phone = parsePhoneNumber(_signinInput.value.phone)
+                    val phone = PhoneNumberUtility.parseNumber(
+                        _signinInput.value.phone, mainViewModel.deviceDetailsState.value.countryCode
+                    )
                     sessionRepository.signIn(phone.countryCode.toString() + phone.nationalNumber.toString())
                     SigninState.Success.also {
                         cb()
@@ -91,7 +73,7 @@ data class Signin(
 )
 
 interface SigninState {
-    data object Loading: SigninState
-    data class Error(val msg: String?): SigninState
-    data object Success: SigninState
+    data object Loading : SigninState
+    data class Error(val msg: String?) : SigninState
+    data object Success : SigninState
 }

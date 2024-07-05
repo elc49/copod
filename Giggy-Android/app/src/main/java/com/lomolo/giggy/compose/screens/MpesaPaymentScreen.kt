@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -19,9 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -33,7 +38,7 @@ import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
 
 object MpesaPaymentScreenDestination : Navigation {
-    override val title = R.string.payment
+    override val title = R.string.m_pesa
     override val route = "dashboard_payment"
 }
 
@@ -44,7 +49,8 @@ fun MpesaPaymentScreen(
     viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val paymentData by viewModel.paymentUiState.collectAsState()
-    val validInput = viewModel.validatePayByMpesa(paymentData)
+    val validInput = viewModel.validatePayByMpesa(paymentData, deviceDetails)
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = modifier
@@ -52,13 +58,16 @@ fun MpesaPaymentScreen(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            stringResource(R.string.m_pesa),
-            style = MaterialTheme.typography.titleLarge,
-        )
-        OutlinedTextField(value = paymentData.phone,
-            isError = !validInput,
+        OutlinedTextField(
+            value = paymentData.phone,
+            isError = !validInput && paymentData.phone.isNotBlank(),
             onValueChange = { viewModel.setPhone(it) },
+            label = {
+                Text(
+                    stringResource(id = R.string.phone_number),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
             leadingIcon = {
                 Row(
                     modifier = Modifier.padding(start = 8.dp),
@@ -82,12 +91,16 @@ fun MpesaPaymentScreen(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.phone_number),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            })
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done,
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            )
+        )
         Button(
             onClick = { /*TODO*/ },
             shape = MaterialTheme.shapes.extraSmall,
