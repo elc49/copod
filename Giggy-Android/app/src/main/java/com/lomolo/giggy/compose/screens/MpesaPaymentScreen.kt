@@ -99,7 +99,8 @@ fun MpesaPaymentScreen(
                 onDone = {
                     keyboardController?.hide()
                 }
-            )
+            ),
+            singleLine = true,
         )
         Button(
             onClick = { /*TODO*/ },
