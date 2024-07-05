@@ -84,6 +84,11 @@ type Payment {
   updated_at: Time!
 }
 
+# PayWithMpesa
+type PayWithMpesa {
+  referenceId: String!
+}
+
 input GpsInput {
   lat: Float!
   lng: Float!
@@ -134,5 +139,5 @@ type Mutation {
   createPost(input: NewPostInput!): Post!
   createFarm(input: NewFarmInput!): Farm!
   createFarmMarket(input: NewFarmMarketInput!): Market!
-  payWithMpesa(input: PayWithMpesaInput!): Boolean!
+  payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
 }

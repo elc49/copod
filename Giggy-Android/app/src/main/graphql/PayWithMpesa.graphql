@@ -1,0 +1,3 @@
+mutation PayWithMpesa($input: PayWithMpesaInput!) {
+    payWithMpesa(input: $input)
+}

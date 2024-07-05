@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -76,13 +77,11 @@ fun MpesaPaymentScreen(
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(deviceDetails.countryFlag)
-                            .decoderFactory(SvgDecoder.Factory())
+                            .data(deviceDetails.countryFlag).decoderFactory(SvgDecoder.Factory())
                             .build(),
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(id = R.drawable.loading_img),
-                        modifier = Modifier
-                            .size(32.dp),
+                        modifier = Modifier.size(32.dp),
                         contentDescription = null
                     )
                     Text(
@@ -95,23 +94,32 @@ fun MpesaPaymentScreen(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done,
             ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
-            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             singleLine = true,
         )
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                viewModel.payWithMpesa(
+                    deviceDetails.farmingRightsFee, deviceDetails.currency
+                )
+            },
             shape = MaterialTheme.shapes.extraSmall,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
         ) {
-            Text(
-                stringResource(R.string.pay),
-                fontWeight = FontWeight.Bold,
-            )
+            when (viewModel.payingWithMpesaState) {
+                PayingWithMpesa.Success -> Text(
+                    stringResource(R.string.pay),
+                    fontWeight = FontWeight.Bold,
+                )
+
+                PayingWithMpesa.Loading -> CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
     }
 }

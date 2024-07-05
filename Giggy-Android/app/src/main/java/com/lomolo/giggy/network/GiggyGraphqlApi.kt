@@ -17,12 +17,14 @@ import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GetUserQuery
+import com.lomolo.giggy.PayWithMpesaMutation
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
 import com.lomolo.giggy.type.GpsInput
+import com.lomolo.giggy.type.PayWithMpesaInput
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
@@ -37,6 +39,7 @@ interface IGiggyGraphqlApi {
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
     suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
     suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
+    suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -106,5 +109,9 @@ class GiggyGraphqlApi(
             GpsInput(radius.latitude, radius.longitude)
         ))
         .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun payWithMpesa(input: PayWithMpesaInput) = apolloClient
+        .mutation(PayWithMpesaMutation(input))
         .execute()
 }

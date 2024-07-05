@@ -92,6 +92,10 @@ type ComplexityRoot struct {
 		Volume     func(childComplexity int) int
 	}
 
+	PayWithMpesa struct {
+		ReferenceID func(childComplexity int) int
+	}
+
 	Payment struct {
 		Amount    func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
@@ -140,7 +144,7 @@ type MutationResolver interface {
 	CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error)
 	CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error)
 	CreateFarmMarket(ctx context.Context, input model.NewFarmMarketInput) (*model.Market, error)
-	PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (bool, error)
+	PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -401,6 +405,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.Volume(childComplexity), true
+
+	case "PayWithMpesa.referenceId":
+		if e.complexity.PayWithMpesa.ReferenceID == nil {
+			break
+		}
+
+		return e.complexity.PayWithMpesa.ReferenceID(childComplexity), true
 
 	case "Payment.amount":
 		if e.complexity.Payment.Amount == nil {
@@ -1927,9 +1938,9 @@ func (ec *executionContext) _Mutation_payWithMpesa(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*model.PayWithMpesa)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesa(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_payWithMpesa(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1939,7 +1950,11 @@ func (ec *executionContext) fieldContext_Mutation_payWithMpesa(ctx context.Conte
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "referenceId":
+				return ec.fieldContext_PayWithMpesa_referenceId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PayWithMpesa", field.Name)
 		},
 	}
 	defer func() {
@@ -2383,6 +2398,50 @@ func (ec *executionContext) fieldContext_Order_updated_at(_ context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PayWithMpesa_referenceId(ctx context.Context, field graphql.CollectedField, obj *model.PayWithMpesa) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PayWithMpesa_referenceId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReferenceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PayWithMpesa_referenceId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PayWithMpesa",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -6481,6 +6540,45 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var payWithMpesaImplementors = []string{"PayWithMpesa"}
+
+func (ec *executionContext) _PayWithMpesa(ctx context.Context, sel ast.SelectionSet, obj *model.PayWithMpesa) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, payWithMpesaImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PayWithMpesa")
+		case "referenceId":
+			out.Values[i] = ec._PayWithMpesa_referenceId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var paymentImplementors = []string{"Payment"}
 
 func (ec *executionContext) _Payment(ctx context.Context, sel ast.SelectionSet, obj *model.Payment) graphql.Marshaler {
@@ -7516,6 +7614,20 @@ func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmono
 		return graphql.Null
 	}
 	return ec._Order(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPayWithMpesa2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v model.PayWithMpesa) graphql.Marshaler {
+	return ec._PayWithMpesa(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v *model.PayWithMpesa) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PayWithMpesa(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesaInput(ctx context.Context, v interface{}) (model.PayWithMpesaInput, error) {
