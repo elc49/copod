@@ -7,40 +7,57 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.repository.IFarm
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FarmViewModel(
     private val farmRepository: IFarm,
 ) : ViewModel() {
+    private val _farmsData: MutableStateFlow<List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>> =
+        MutableStateFlow(
+            listOf()
+        )
+    val farms: StateFlow<List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>> =
+        _farmsData.asStateFlow()
+
     var getFarmsBelongingToUserState: GetFarmsBelongingToUserState by mutableStateOf(
-        GetFarmsBelongingToUserState.Success(null)
+        GetFarmsBelongingToUserState.Success
     )
         private set
+
     var hasFarm: Boolean by mutableStateOf(false)
         private set
 
-    init {
-        viewModelScope.launch {
+    private fun getFarmsBelongingToUser() {
+        if (getFarmsBelongingToUserState !is GetFarmsBelongingToUserState.Loading) {
             getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Loading
-            try {
-                farmRepository
-                    .getFarmsBelongingToUser()
-                    .collect { res ->
+            viewModelScope.launch {
+                try {
+                    farmRepository.getFarmsBelongingToUser().collect { res ->
                         if (!res.data?.getFarmsBelongingToUser.isNullOrEmpty()) hasFarm = true
+                        _farmsData.update { res.data?.getFarmsBelongingToUser ?: listOf() }
                         getFarmsBelongingToUserState =
-                            GetFarmsBelongingToUserState.Success(res.data?.getFarmsBelongingToUser)
+                            GetFarmsBelongingToUserState.Success
                     }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Success(listOf())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Error(e.localizedMessage)
+                }
             }
         }
+    }
+
+    init {
+        getFarmsBelongingToUser()
     }
 }
 
 interface GetFarmsBelongingToUserState {
     data object Loading : GetFarmsBelongingToUserState
     data class Error(val msg: String?) : GetFarmsBelongingToUserState
-    data class Success(val success: List<GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser>?) :
+    data object Success:
         GetFarmsBelongingToUserState
 }

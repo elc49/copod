@@ -26,12 +26,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
-import com.lomolo.giggy.ui.theme.GiggyTheme
 import java.util.Locale
 
 object PosterSubscriptionScreenDestination : Navigation {
@@ -50,6 +48,7 @@ private val points = listOf(
 fun PosterSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    onNavigateToMpesaPay: () -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -90,7 +89,7 @@ fun PosterSubscriptionScreen(
         Box(Modifier.padding(8.dp)) {
             Button(
                 contentPadding = PaddingValues(12.dp),
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToMpesaPay() },
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -104,13 +103,5 @@ fun PosterSubscriptionScreen(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun PostingSubscriptionScreenPreview() {
-    GiggyTheme {
-        PosterSubscriptionScreen(deviceDetails = DeviceDetails())
     }
 }

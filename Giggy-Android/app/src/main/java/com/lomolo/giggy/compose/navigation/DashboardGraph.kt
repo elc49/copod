@@ -59,6 +59,8 @@ import com.lomolo.giggy.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
+import com.lomolo.giggy.compose.screens.MpesaPaymentScreen
+import com.lomolo.giggy.compose.screens.MpesaPaymentScreenDestination
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreen
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
@@ -398,7 +400,14 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    PosterSubscriptionScreen(deviceDetails = deviceDetails)
+                    PosterSubscriptionScreen(
+                        deviceDetails = deviceDetails,
+                        onNavigateToMpesaPay = {
+                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -411,11 +420,46 @@ fun NavGraphBuilder.addDashboardGraph(
                             style = MaterialTheme.typography.displaySmall,
                         )
                     },
+                        navigationIcon = {
+                            IconButton(onClick = { navHostController.popBackStack() }) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        })
+                }
+            ) { innerPadding ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    FarmSubscriptionScreen(
+                        deviceDetails = deviceDetails,
+                        onNavigateToMpesaPay = {
+                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
+        composable(route = MpesaPaymentScreenDestination.route) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(title = {
+                        Text(
+                            stringResource(id = MpesaPaymentScreenDestination.title),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { navHostController.popBackStack() }) {
                            Icon(
                                Icons.AutoMirrored.TwoTone.ArrowBack,
-                               contentDescription = null,
+                               contentDescription = null
                            )
                         }
                     })
@@ -426,7 +470,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    FarmSubscriptionScreen(deviceDetails = deviceDetails)
+                    MpesaPaymentScreen(deviceDetails = deviceDetails)
                 }
             }
         }

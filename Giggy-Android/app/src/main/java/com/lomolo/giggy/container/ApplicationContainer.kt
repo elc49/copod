@@ -15,8 +15,10 @@ import com.lomolo.giggy.repository.IFarm
 import com.lomolo.giggy.repository.SessionRepository
 import com.lomolo.giggy.repository.FarmRepository
 import com.lomolo.giggy.repository.IMarkets
+import com.lomolo.giggy.repository.IPayment
 import com.lomolo.giggy.repository.IPosters
 import com.lomolo.giggy.repository.MarketsRepository
+import com.lomolo.giggy.repository.PaymentRepository
 import com.lomolo.giggy.repository.PostersRepository
 import com.lomolo.giggy.sql.Store
 import com.squareup.moshi.Moshi
@@ -34,6 +36,7 @@ interface IApplicationContainer{
     val farmRepository: IFarm
     val marketsRepository: IMarkets
     val postersRepository: IPosters
+    val paymentRepository: IPayment
 }
 
 class ApplicationContainer(
@@ -94,5 +97,9 @@ class ApplicationContainer(
 
     override val postersRepository: IPosters by lazy {
         PostersRepository(giggyGraphqlApiService)
+    }
+
+    override val paymentRepository: IPayment by lazy {
+        PaymentRepository(giggyGraphqlApiService)
     }
 }
