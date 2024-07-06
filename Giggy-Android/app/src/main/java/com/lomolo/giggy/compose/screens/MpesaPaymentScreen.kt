@@ -102,7 +102,7 @@ fun MpesaPaymentScreen(
         Button(
             onClick = {
                 viewModel.payWithMpesa(
-                    deviceDetails.farmingRightsFee, deviceDetails.currency
+                    deviceDetails.farmingRightsFee, deviceDetails.currency, deviceDetails
                 )
             },
             shape = MaterialTheme.shapes.extraSmall,
@@ -116,6 +116,11 @@ fun MpesaPaymentScreen(
                 )
 
                 PayingWithMpesa.Loading -> CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp),
+                )
+
+                PayingWithMpesa.PayingOffline -> CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp),
                 )

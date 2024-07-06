@@ -18,7 +18,7 @@ import okio.IOException
 
 class PaymentViewModel(
     private val paymentRepository: IPayment,
-): ViewModel() {
+) : ViewModel() {
     private val _paymentInput: MutableStateFlow<MpesaPay> = MutableStateFlow(MpesaPay())
     val paymentUiState: StateFlow<MpesaPay> = _paymentInput.asStateFlow()
 
@@ -31,12 +31,17 @@ class PaymentViewModel(
 
     fun validatePayByMpesa(uiState: MpesaPay, deviceDetails: DeviceDetails): Boolean {
         with(uiState) {
-            return PhoneNumberUtility.isValid(phone, deviceDetails.countryCode, deviceDetails.callingCode)
+            return PhoneNumberUtility.isValid(
+                phone, deviceDetails.countryCode, deviceDetails.callingCode
+            )
         }
     }
 
-    fun payWithMpesa(amount: Int, currency: String) {
-        if (payingWithMpesaState !is PayingWithMpesa.Loading) {
+    fun payWithMpesa(amount: Int, currency: String, deviceDetails: DeviceDetails) {
+        if (payingWithMpesaState !is PayingWithMpesa.Loading && validatePayByMpesa(
+                _paymentInput.value, deviceDetails
+            )
+        ) {
             payingWithMpesaState = PayingWithMpesa.Loading
             viewModelScope.launch {
                 payingWithMpesaState = try {
@@ -63,8 +68,8 @@ data class MpesaPay(
 )
 
 interface PayingWithMpesa {
-    data object Success: PayingWithMpesa
-    data object Loading: PayingWithMpesa
-    data object PayingOffline: PayingWithMpesa
-    data class Error(val msg: String?): PayingWithMpesa
+    data object Success : PayingWithMpesa
+    data object Loading : PayingWithMpesa
+    data object PayingOffline : PayingWithMpesa
+    data class Error(val msg: String?) : PayingWithMpesa
 }
