@@ -116,6 +116,8 @@ input PayWithMpesaInput {
   currency: String!
 
   phone: String!
+
+  reason: String!
 }
 
 type Payment {

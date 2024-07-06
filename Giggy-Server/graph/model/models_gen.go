@@ -85,6 +85,7 @@ type PayWithMpesaInput struct {
 	Amount   int    `json:"amount"`
 	Currency string `json:"currency"`
 	Phone    string `json:"phone"`
+	Reason   string `json:"reason"`
 }
 
 type Payment struct {

@@ -122,6 +122,7 @@ input PayWithMpesaInput {
   amount: Int!
   currency: String!
   phone: String!
+  reason: String!
 }
 
 type Query {

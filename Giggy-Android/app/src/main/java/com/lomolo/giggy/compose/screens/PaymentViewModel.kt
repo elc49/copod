@@ -54,6 +54,7 @@ class PaymentViewModel(
                             amount = amount,
                             currency = currency,
                             phone = _paymentInput.value.phone,
+                            reason = paymentReason,
                         )
                     )
                     PayingWithMpesa.PayingOffline
