@@ -1,3 +1,5 @@
 mutation PayWithMpesa($input: PayWithMpesaInput!) {
-    payWithMpesa(input: $input)
+    payWithMpesa(input: $input) {
+        referenceId
+    }
 }
