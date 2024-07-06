@@ -72,7 +72,7 @@ func (s *Server) MountHandlers() {
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
-		r.With().Handle("/graphql", graphqlHandler)
+		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AllowContentType("application/json"))
 
