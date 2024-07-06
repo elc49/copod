@@ -3,6 +3,7 @@ package com.lomolo.giggy.compose.screens
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomolo.giggy.common.PhoneNumberUtility
@@ -18,12 +19,15 @@ import okio.IOException
 
 class PaymentViewModel(
     private val paymentRepository: IPayment,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _paymentInput: MutableStateFlow<MpesaPay> = MutableStateFlow(MpesaPay())
     val paymentUiState: StateFlow<MpesaPay> = _paymentInput.asStateFlow()
 
     var payingWithMpesaState: PayingWithMpesa by mutableStateOf(PayingWithMpesa.Success)
         private set
+
+    private val paymentReason: String = checkNotNull(savedStateHandle[MpesaPaymentScreenDestination.paymentReason])
 
     fun setPhone(phone: String) {
         _paymentInput.update { it.copy(phone = phone) }

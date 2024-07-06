@@ -402,11 +402,9 @@ fun NavGraphBuilder.addDashboardGraph(
                 ) {
                     PosterSubscriptionScreen(
                         deviceDetails = deviceDetails,
-                        onNavigateToMpesaPay = {
-                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        }
+                        onNavigateTo = {reason ->
+                            navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
+                        },
                     )
                 }
             }
@@ -437,16 +435,19 @@ fun NavGraphBuilder.addDashboardGraph(
                 ) {
                     FarmSubscriptionScreen(
                         deviceDetails = deviceDetails,
-                        onNavigateToMpesaPay = {
-                            navHostController.navigate(MpesaPaymentScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        }
+                        onNavigateTo = {reason ->
+                            navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
+                        },
                     )
                 }
             }
         }
-        composable(route = MpesaPaymentScreenDestination.route) {
+        composable(
+            route = MpesaPaymentScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(MpesaPaymentScreenDestination.paymentReason) {
+                type = NavType.StringType
+            })
+        ) {
             Scaffold(
                 topBar = {
                     TopAppBar(title = {

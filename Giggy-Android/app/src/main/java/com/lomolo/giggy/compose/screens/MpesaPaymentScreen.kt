@@ -41,6 +41,8 @@ import com.lomolo.giggy.model.DeviceDetails
 object MpesaPaymentScreenDestination : Navigation {
     override val title = R.string.m_pesa
     override val route = "dashboard_payment"
+    const val paymentReason = "paymentReason"
+    val routeWithArgs = "$route/{$paymentReason}"
 }
 
 @Composable
