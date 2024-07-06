@@ -26,9 +26,9 @@ type Paystack interface {
 	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
 }
 
-func New(cfg config.Paystack, queries *db.Queries) {
+func New(queries *db.Queries) {
 	PayStack = &paystack{
-		cfg,
+		config.Configuration.Paystack,
 		queries,
 		logger.GetLogger(),
 	}
