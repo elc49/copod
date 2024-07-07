@@ -35,7 +35,7 @@ func New(db *db.Queries, signinController controllers.SigninController) Config {
 	paymentController := controllers.PaymentController{}
 	paymentController.Init(db)
 	subscriptionController := controllers.SubscriptionController{}
-	subscriptionController.Init()
+	subscriptionController.Init(db)
 
 	resolver := &Resolver{
 		postController,

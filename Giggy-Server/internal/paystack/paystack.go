@@ -9,16 +9,14 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
-	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/sirupsen/logrus"
 )
 
 var PayStack *paystack
 
 type paystack struct {
-	config  config.Paystack
-	queries *db.Queries
-	log     *logrus.Logger
+	config config.Paystack
+	log    *logrus.Logger
 }
 
 type Paystack interface {
@@ -26,10 +24,9 @@ type Paystack interface {
 	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
 }
 
-func New(queries *db.Queries) {
+func New() {
 	PayStack = &paystack{
 		config.Configuration.Paystack,
-		queries,
 		logger.GetLogger(),
 	}
 }
@@ -38,7 +35,13 @@ func GetPaystackService() Paystack { return PayStack }
 
 func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesaPhoneInput) (*model.ChargeMpesaPhoneRes, error) {
 	var chargeRes *model.ChargeMpesaPhoneRes
+
 	chargeApi := p.config.BaseApi + "/charge"
+	input.Provider.Provider = p.config.Provider
+	if p.config.Env == "development" {
+		input.Provider.Phone = p.config.MobileTestAccount
+	}
+
 	payload, err := json.Marshal(input)
 	if err != nil {
 		p.log.WithError(err).Errorf("paystack: ChargeMpesaPhone: json.Marshal")
