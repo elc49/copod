@@ -2,7 +2,6 @@ package paystack
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
@@ -12,12 +11,7 @@ import (
 func Paystack() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		paystackRes := &model.ChargeMpesaPhoneCallbackRes{}
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			logrus.WithError(err).Errorf("paystack webhook: io.ReadAll(r.Body)")
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		body := r.Context().Value("body").([]byte)
 
 		mErr := json.Unmarshal(body, &paystackRes)
 		if mErr != nil {

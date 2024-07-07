@@ -35,10 +35,10 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, input mod
 	}
 
 	switch input.Reason {
-	case "posting_rights":
-		input.Amount = config.Configuration.Fees.PosterRights * 100
+	case "poster_rights":
+		args.Amount = config.Configuration.Fees.PosterRights * 100
 	case "farming_rights":
-		input.Amount = config.Configuration.Fees.FarmingRights * 100
+		args.Amount = config.Configuration.Fees.FarmingRights * 100
 	default:
 	}
 

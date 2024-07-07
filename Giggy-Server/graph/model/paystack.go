@@ -25,7 +25,7 @@ type ChargeMpesaPhoneCallbackRes struct {
 	Data  struct {
 		Status    string `json:"success"`
 		Reference string `json:"reference"`
-		Amount    string `json:"amount"`
+		Amount    int    `json:"amount"`
 		PaidAt    string `json:"paid_at"`
 		Customer  struct {
 			ID           int    `json:"id"`

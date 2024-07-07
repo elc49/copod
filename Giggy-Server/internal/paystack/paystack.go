@@ -42,6 +42,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 		input.Provider.Phone = p.config.MobileTestAccount
 	}
 
+	p.log.Infoln(input)
 	payload, err := json.Marshal(input)
 	if err != nil {
 		p.log.WithError(err).Errorf("paystack: ChargeMpesaPhone: json.Marshal")

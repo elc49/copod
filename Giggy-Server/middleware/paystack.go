@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/hex"
@@ -30,6 +31,11 @@ func Paystack(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		// Because we're going to chain this middleware to paystack webhook
+		// handler we create a copy of request body for the handler since
+		// reading it here to handshake with paystack signature will pass
+		// nil value to the next handler
+		ctx := context.WithValue(r.Context(), "body", body)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
