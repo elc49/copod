@@ -46,6 +46,8 @@ type Mutation {
   createFarm(input: NewFarmInput!): Farm!
 
   createFarmMarket(input: NewFarmMarketInput!): Market!
+
+  payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
 }
 
 input NewFarmInput {
@@ -102,6 +104,20 @@ type Order {
   created_at: Time!
 
   updated_at: Time!
+}
+
+type PayWithMpesa {
+  referenceId: String!
+}
+
+input PayWithMpesaInput {
+  amount: Int!
+
+  currency: String!
+
+  phone: String!
+
+  reason: String!
 }
 
 type Payment {

@@ -48,7 +48,7 @@ private val points = listOf(
 fun FarmSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
-    onNavigateToMpesaPay: () -> Unit,
+    onNavigateTo: (String) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -85,7 +85,7 @@ fun FarmSubscriptionScreen(
         }
         Box(Modifier.padding(8.dp)) {
             Button(
-                onClick = { onNavigateToMpesaPay() },
+                onClick = { onNavigateTo("farming_rights") },
                 contentPadding = PaddingValues(12.dp),
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth()

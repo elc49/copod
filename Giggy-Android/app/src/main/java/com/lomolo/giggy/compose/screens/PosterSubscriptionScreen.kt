@@ -48,7 +48,7 @@ private val points = listOf(
 fun PosterSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
-    onNavigateToMpesaPay: () -> Unit,
+    onNavigateTo: (String) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -89,7 +89,7 @@ fun PosterSubscriptionScreen(
         Box(Modifier.padding(8.dp)) {
             Button(
                 contentPadding = PaddingValues(12.dp),
-                onClick = { onNavigateToMpesaPay() },
+                onClick = { onNavigateTo("poster_rights") },
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
             ) {

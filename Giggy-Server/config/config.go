@@ -110,7 +110,8 @@ func paystackConfig() Paystack {
 	config.BaseApi = strings.TrimSpace(os.Getenv("PAYSTACK_BASE_API"))
 	config.SecretKey = strings.TrimSpace(os.Getenv("PAYSTACK_SECRET_KEY"))
 	config.Provider = strings.TrimSpace(os.Getenv("PAYSTACK_PAYMENT_PROVIDER"))
-	config.TestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_TEST_ACCOUNT"))
+	config.MobileTestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_MOBILE_TEST_ACCOUNT"))
+	config.Env = strings.TrimSpace(os.Getenv("PAYSTACK_ENV"))
 
 	return config
 }

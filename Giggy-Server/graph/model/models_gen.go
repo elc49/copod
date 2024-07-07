@@ -77,6 +77,17 @@ type Order struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+type PayWithMpesa struct {
+	ReferenceID string `json:"referenceId"`
+}
+
+type PayWithMpesaInput struct {
+	Amount   int    `json:"amount"`
+	Currency string `json:"currency"`
+	Phone    string `json:"phone"`
+	Reason   string `json:"reason"`
+}
+
 type Payment struct {
 	ID        uuid.UUID     `json:"id"`
 	Customer  string        `json:"customer"`

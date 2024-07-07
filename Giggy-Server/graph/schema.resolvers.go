@@ -54,6 +54,16 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 	return r.marketController.CreateFarmMarket(ctx, args)
 }
 
+// PayWithMpesa is the resolver for the payWithMpesa field.
+func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error) {
+	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.PayWithMpesa{ReferenceID: res.Data.Reference}, nil
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)

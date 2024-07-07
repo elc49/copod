@@ -30,20 +30,20 @@ type Server struct {
 func New() *Server {
 	s := &Server{}
 	s.Router = chi.NewRouter()
-	s.initConfig()
-	s.Db = s.initDatabase(config.Configuration.Rdbms)
-	s.initServices()
+	s.Config()
+	s.Db = s.Database(config.Configuration.Rdbms)
+	s.Services()
 	return s
 }
 
-func (s *Server) initDatabase(dbConfig config.Rdbms) *db.Queries {
+func (s *Server) Database(dbConfig config.Rdbms) *db.Queries {
 	queries := postgres.Init(dbConfig)
 	return queries
 }
 
-func (s *Server) initConfig() { config.New() }
+func (s *Server) Config() { config.New() }
 
-func (s *Server) initServices() {
+func (s *Server) Services() {
 	logger.New()
 	jwt.New(config.Jwt{
 		Secret:  config.Configuration.Jwt.Secret,
@@ -51,7 +51,7 @@ func (s *Server) initServices() {
 	})
 	ip.NewIpinfoClient()
 	gcloud.New()
-	paystack.New(config.Configuration.Paystack, s.Db)
+	paystack.New()
 }
 
 func (s *Server) MountHandlers() {
