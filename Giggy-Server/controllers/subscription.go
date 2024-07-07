@@ -22,7 +22,6 @@ func (c *SubscriptionController) Init(db *db.Queries) {
 }
 
 func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
-	fmt.Println(input)
 	args := model.ChargeMpesaPhoneInput{
 		Currency: input.Currency,
 		Email:    fmt.Sprintf("%s@giggy.app", util.RandomStringByLength(5)),
@@ -30,7 +29,7 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, input mod
 			Phone    string `json:"phone"`
 			Provider string `json:"provider"`
 		}{
-			Phone: input.Phone,
+			Phone: "+" + input.Phone,
 		},
 	}
 

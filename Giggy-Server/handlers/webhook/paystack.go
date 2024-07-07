@@ -20,7 +20,6 @@ func Paystack() http.Handler {
 			return
 		}
 
-		logrus.Infoln(paystackRes)
 		w.WriteHeader(http.StatusOK)
 	})
 }
