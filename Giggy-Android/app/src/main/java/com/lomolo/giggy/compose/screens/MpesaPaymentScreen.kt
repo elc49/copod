@@ -98,11 +98,15 @@ fun MpesaPaymentScreen(
             ),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
+                viewModel.payWithMpesa(
+                    deviceDetails.farmingRightsFee, deviceDetails.currency, deviceDetails
+                )
             }),
             singleLine = true,
         )
         Button(
             onClick = {
+                keyboardController?.hide()
                 viewModel.payWithMpesa(
                     deviceDetails.farmingRightsFee, deviceDetails.currency, deviceDetails
                 )

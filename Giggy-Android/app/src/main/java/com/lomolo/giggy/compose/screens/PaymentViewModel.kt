@@ -42,18 +42,19 @@ class PaymentViewModel(
     }
 
     fun payWithMpesa(amount: Int, currency: String, deviceDetails: DeviceDetails) {
-        if (payingWithMpesaState !is PayingWithMpesa.Loading && validatePayByMpesa(
+        if (payingWithMpesaState !is PayingWithMpesa.Loading && payingWithMpesaState !is PayingWithMpesa.PayingOffline && validatePayByMpesa(
                 _paymentInput.value, deviceDetails
             )
         ) {
             payingWithMpesaState = PayingWithMpesa.Loading
             viewModelScope.launch {
                 payingWithMpesaState = try {
+                    val phone = PhoneNumberUtility.parseNumber(_paymentInput.value.phone, deviceDetails.countryCode)
                     paymentRepository.payWithMpesa(
                         PayWithMpesaInput(
                             amount = amount,
                             currency = currency,
-                            phone = _paymentInput.value.phone,
+                            phone = phone.countryCode.toString()+phone.nationalNumber.toString(),
                             reason = paymentReason,
                         )
                     )
