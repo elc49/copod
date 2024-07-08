@@ -99,6 +99,11 @@ type Payment struct {
 	UpdatedAt time.Time     `json:"updated_at"`
 }
 
+type PaymentUpdate struct {
+	ReferenceID string `json:"referenceId"`
+	Status      string `json:"status"`
+}
+
 type Post struct {
 	ID        uuid.UUID `json:"id"`
 	Text      string    `json:"text"`
@@ -111,6 +116,9 @@ type Post struct {
 }
 
 type Query struct {
+}
+
+type Subscription struct {
 }
 
 type PaymentStatus string

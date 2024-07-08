@@ -8,7 +8,9 @@ import (
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,6 +19,7 @@ var PayStack *paystack
 type paystack struct {
 	config config.Paystack
 	log    *logrus.Logger
+	pubsub *redis.Client
 }
 
 type Paystack interface {
@@ -28,6 +31,7 @@ func New() {
 	PayStack = &paystack{
 		config.Configuration.Paystack,
 		logger.GetLogger(),
+		cache.GetCache().GetRedis(),
 	}
 }
 
@@ -69,5 +73,21 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 }
 
 func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
+	go func() {
+		u := model.PaymentUpdate{
+			ReferenceID: input.Data.Reference,
+			Status:      input.Data.Status,
+		}
+		update, err := json.Marshal(u)
+		if err != nil {
+			p.log.WithError(err).Error("paystack: json.Marshal update")
+			return
+		}
+		pubSubErr := p.pubsub.Publish(context.Background(), cache.PAYMENT_UPDATES, update).Err()
+		if pubSubErr != nil {
+			return
+		}
+	}()
+
 	return nil
 }

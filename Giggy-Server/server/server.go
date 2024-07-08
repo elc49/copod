@@ -4,12 +4,14 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/handlers"
 	webhook "github.com/elc49/giggy-monorepo/Giggy-Server/handlers/webhook"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/gcloud"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/ip"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
@@ -45,6 +47,7 @@ func (s *Server) Config() { config.New() }
 
 func (s *Server) Services() {
 	logger.New()
+	cache.New()
 	jwt.New(config.Jwt{
 		Secret:  config.Configuration.Jwt.Secret,
 		Expires: config.Configuration.Jwt.Expires,
@@ -61,6 +64,10 @@ func (s *Server) MountHandlers() {
 	userController := controllers.UserController{}
 	userController.Init(s.Db)
 
+	// GraphQL handler
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
+	graphqlHandler.AddTransport(&transport.Websocket{})
+
 	// Middlewares
 	s.Router.Use(middleware.Heartbeat("/ping"))
 	s.Router.Use(middleware.CleanPath)
@@ -68,8 +75,7 @@ func (s *Server) MountHandlers() {
 	s.Router.Use(middleware.Recoverer)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Timeout(60 * time.Minute))
-
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
+	// Routes
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)

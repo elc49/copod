@@ -20,6 +20,7 @@ type configs struct {
 	RemoteAvatar string
 	Paystack     Paystack
 	Fees         Fees
+	Redis        Redis
 }
 
 func env() { godotenv.Load() }
@@ -36,6 +37,7 @@ func New() {
 	c.RemoteAvatar = remoteAvatarConfig()
 	c.Paystack = paystackConfig()
 	c.Fees = feesConfig()
+	c.Redis = redisConfig()
 
 	Configuration = &c
 }
@@ -130,6 +132,14 @@ func feesConfig() Fees {
 
 	config.PosterRights = posterFees
 	config.FarmingRights = farmingFees
+
+	return config
+}
+
+func redisConfig() Redis {
+	var config Redis
+
+	config.Url = strings.TrimSpace(os.Getenv("REDIS_ENDPOINT"))
 
 	return config
 }
