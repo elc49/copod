@@ -85,6 +85,7 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 		}
 		pubSubErr := p.pubsub.Publish(context.Background(), cache.PAYMENT_UPDATES, update).Err()
 		if pubSubErr != nil {
+			p.log.WithError(pubSubErr).Errorf("paystack: pubsub.Publish update")
 			return
 		}
 	}()
