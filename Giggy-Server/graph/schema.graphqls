@@ -89,6 +89,12 @@ type PayWithMpesa {
   referenceId: String!
 }
 
+# PaymentUpdate
+type PaymentUpdate {
+  referenceId: String!
+  status: String!
+}
+
 input GpsInput {
   lat: Float!
   lng: Float!
@@ -141,4 +147,8 @@ type Mutation {
   createFarm(input: NewFarmInput!): Farm!
   createFarmMarket(input: NewFarmMarketInput!): Market!
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
+}
+
+type Subscription {
+  paymentUpdate(referenceId: String!): PaymentUpdate!
 }

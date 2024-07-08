@@ -32,9 +32,9 @@ func Paystack(next http.Handler) http.Handler {
 		}
 
 		// Because we're going to chain this middleware to paystack webhook
-		// handler we create a copy of request body for the handler since
+		// handler we create a copy of r.Body for the handler since
 		// reading it here to handshake with paystack signature will pass
-		// nil value to the next handler
+		// nil value after reading r.Body to the next handler
 		r.Body = io.NopCloser(bytes.NewBuffer(body))
 		next.ServeHTTP(w, r)
 	})

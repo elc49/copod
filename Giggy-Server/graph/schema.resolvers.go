@@ -6,11 +6,14 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 // CreatePost is the resolver for the createPost field.
@@ -129,6 +132,28 @@ func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*m
 	return r.paymentController.GetPaymentsBelongingToFarm(ctx, id)
 }
 
+// PaymentUpdate is the resolver for the paymentUpdate field.
+func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, referenceID string) (<-chan *model.PaymentUpdate, error) {
+	pubsub := r.redisClient.Subscribe(context.Background(), cache.PAYMENT_UPDATES)
+	ch := make(chan *model.PaymentUpdate)
+
+	go func() {
+		for msg := range pubsub.Channel() {
+			var update *model.PaymentUpdate
+			if err := json.Unmarshal([]byte(msg.Payload), &update); err != nil {
+				logrus.WithError(err).Errorf("resolver: PaymentUpdate()")
+				return
+			}
+
+			if update.ReferenceID == referenceID {
+				ch <- update
+			}
+		}
+	}()
+
+	return ch, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -141,7 +166,11 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Subscription returns SubscriptionResolver implementation.
+func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

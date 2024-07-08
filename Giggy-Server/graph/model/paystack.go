@@ -23,7 +23,7 @@ type ChargeMpesaPhoneRes struct {
 type ChargeMpesaPhoneCallbackRes struct {
 	Event string `json:"event"`
 	Data  struct {
-		Status    string `json:"success"`
+		Status    string `json:"status"`
 		Reference string `json:"reference"`
 		Amount    int    `json:"amount"`
 		PaidAt    string `json:"paid_at"`

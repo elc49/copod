@@ -6,11 +6,13 @@ import (
 	"net/http"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/paystack"
 	"github.com/sirupsen/logrus"
 )
 
 func Paystack() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pS := paystack.GetPaystackService()
 		paystackRes := &model.ChargeMpesaPhoneCallbackRes{}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -25,6 +27,11 @@ func Paystack() http.Handler {
 			logrus.WithError(mErr).Error("paystack webhook: json.Unmarshal()")
 			http.Error(w, mErr.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		psErr := pS.ReconcileMpesaChargeCallback(r.Context(), *paystackRes)
+		if psErr != nil {
+			logrus.WithError(psErr).Error("paystack webhook: paystack.ReconcileMpesaChargeCallback")
 		}
 
 		w.WriteHeader(http.StatusOK)
