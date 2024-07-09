@@ -448,6 +448,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 type = NavType.StringType
             })
         ) {
+            val reason = it.arguments?.getString("paymentReason")
+
             Scaffold(
                 topBar = {
                     TopAppBar(title = {
@@ -471,7 +473,19 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    MpesaPaymentScreen(deviceDetails = deviceDetails)
+                    MpesaPaymentScreen(
+                        onNavigateTo = {
+                            when(reason) {
+                                "poster_rights" -> {
+                                    onNavigateTo(DashboardScreenDestination.route)
+                                }
+                                "farming_rights" -> {
+                                    onNavigateTo(FarmScreenDestination.route)
+                                }
+                            }
+                        },
+                        deviceDetails = deviceDetails,
+                    )
                 }
             }
         }

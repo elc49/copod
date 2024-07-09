@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"net/http"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -22,6 +24,8 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -66,7 +70,22 @@ func (s *Server) MountHandlers() {
 
 	// GraphQL handler
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
-	graphqlHandler.AddTransport(&transport.Websocket{})
+	webSocketInit := func(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
+		logrus.Infoln(initPayload)
+		ctxNew := context.WithValue(ctx, "token", nil)
+		return ctxNew, nil, nil
+	}
+	graphqlHandler.AddTransport(&transport.Websocket{
+		KeepAlivePingInterval: time.Second * 10,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
+			return webSocketInit(ctx, initPayload)
+		},
+	})
 
 	// Middlewares
 	s.Router.Use(middleware.Heartbeat("/ping"))
@@ -75,10 +94,12 @@ func (s *Server) MountHandlers() {
 	s.Router.Use(middleware.Recoverer)
 	s.Router.Use(middleware.Logger)
 	s.Router.Use(middleware.Timeout(60 * time.Minute))
+
 	// Routes
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)
+		r.Handle("/subscription", graphqlHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AllowContentType("application/json"))
 

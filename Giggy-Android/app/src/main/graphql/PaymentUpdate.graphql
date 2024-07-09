@@ -1,0 +1,5 @@
+subscription PaymentUpdate($referenceId: String!) {
+    paymentUpdate(referenceId: $referenceId) {
+        status
+    }
+}

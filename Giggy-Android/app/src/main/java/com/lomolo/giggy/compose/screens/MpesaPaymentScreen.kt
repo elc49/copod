@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,8 +50,15 @@ object MpesaPaymentScreenDestination : Navigation {
 fun MpesaPaymentScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    onNavigateTo: () -> Unit = {},
     viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
+    val paymentUpdate by viewModel.paymentUpdates().collectAsState(initial = null)
+    LaunchedEffect(key1 = paymentUpdate) {
+        if (paymentUpdate == null) return@LaunchedEffect
+        if (paymentUpdate?.data!!.paymentUpdate.status == "success") onNavigateTo()
+    }
+
     val paymentData by viewModel.paymentUiState.collectAsState()
     val validInput = viewModel.validatePayByMpesa(paymentData, deviceDetails)
     val keyboardController = LocalSoftwareKeyboardController.current

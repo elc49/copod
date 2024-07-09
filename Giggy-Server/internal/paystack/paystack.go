@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
@@ -74,6 +75,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 
 func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
 	go func() {
+		time.Sleep(5 * time.Second)
 		u := model.PaymentUpdate{
 			ReferenceID: input.Data.Reference,
 			Status:      input.Data.Status,
