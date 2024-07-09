@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"net/http"
 	"time"
 
@@ -25,7 +24,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -70,20 +68,12 @@ func (s *Server) MountHandlers() {
 
 	// GraphQL handler
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
-	webSocketInit := func(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
-		logrus.Infoln(initPayload)
-		ctxNew := context.WithValue(ctx, "token", nil)
-		return ctxNew, nil, nil
-	}
 	graphqlHandler.AddTransport(&transport.Websocket{
 		KeepAlivePingInterval: time.Second * 10,
 		Upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				return true
 			},
-		},
-		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, *transport.InitPayload, error) {
-			return webSocketInit(ctx, initPayload)
 		},
 	})
 
