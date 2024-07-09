@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -142,6 +144,7 @@ internal fun BottomNavBar(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
@@ -485,6 +488,9 @@ fun NavGraphBuilder.addDashboardGraph(
                             }
                         },
                         deviceDetails = deviceDetails,
+                        refreshSession = {id, token ->
+                            sessionViewModel.refreshSession(id = id, token = token)
+                        }
                     )
                 }
             }

@@ -18,7 +18,7 @@ func (r *PaymentRepository) Init(queries *db.Queries) {
 
 func (r *PaymentRepository) GetPaymentsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
 	var payments []*model.Payment
-	ps, err := r.queries.GetPaymentsBelongingToFarm(ctx, id)
+	ps, err := r.queries.GetPaymentsBelongingToFarm(ctx, uuid.NullUUID{UUID: id, Valid: true})
 	if err != nil {
 		return nil, err
 	}

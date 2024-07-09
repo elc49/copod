@@ -150,6 +150,10 @@ type PaymentUpdate {
   referenceId: String!
 
   status: String!
+
+  sessionId: UUID!
+
+  token: String!
 }
 
 type Post {

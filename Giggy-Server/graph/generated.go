@@ -111,7 +111,9 @@ type ComplexityRoot struct {
 
 	PaymentUpdate struct {
 		ReferenceID func(childComplexity int) int
+		SessionID   func(childComplexity int) int
 		Status      func(childComplexity int) int
+		Token       func(childComplexity int) int
 	}
 
 	Post struct {
@@ -490,12 +492,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PaymentUpdate.ReferenceID(childComplexity), true
 
+	case "PaymentUpdate.sessionId":
+		if e.complexity.PaymentUpdate.SessionID == nil {
+			break
+		}
+
+		return e.complexity.PaymentUpdate.SessionID(childComplexity), true
+
 	case "PaymentUpdate.status":
 		if e.complexity.PaymentUpdate.Status == nil {
 			break
 		}
 
 		return e.complexity.PaymentUpdate.Status(childComplexity), true
+
+	case "PaymentUpdate.token":
+		if e.complexity.PaymentUpdate.Token == nil {
+			break
+		}
+
+		return e.complexity.PaymentUpdate.Token(childComplexity), true
 
 	case "Post.created_at":
 		if e.complexity.Post.CreatedAt == nil {
@@ -2959,6 +2975,94 @@ func (ec *executionContext) fieldContext_PaymentUpdate_status(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _PaymentUpdate_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaymentUpdate_sessionId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SessionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaymentUpdate_sessionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaymentUpdate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PaymentUpdate_token(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaymentUpdate_token(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaymentUpdate_token(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaymentUpdate",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Post_id(ctx context.Context, field graphql.CollectedField, obj *model.Post) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Post_id(ctx, field)
 	if err != nil {
@@ -4075,6 +4179,10 @@ func (ec *executionContext) fieldContext_Subscription_paymentUpdate(ctx context.
 				return ec.fieldContext_PaymentUpdate_referenceId(ctx, field)
 			case "status":
 				return ec.fieldContext_PaymentUpdate_status(ctx, field)
+			case "sessionId":
+				return ec.fieldContext_PaymentUpdate_sessionId(ctx, field)
+			case "token":
+				return ec.fieldContext_PaymentUpdate_token(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PaymentUpdate", field.Name)
 		},
@@ -6913,6 +7021,16 @@ func (ec *executionContext) _PaymentUpdate(ctx context.Context, sel ast.Selectio
 			}
 		case "status":
 			out.Values[i] = ec._PaymentUpdate_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sessionId":
+			out.Values[i] = ec._PaymentUpdate_sessionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "token":
+			out.Values[i] = ec._PaymentUpdate_token(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

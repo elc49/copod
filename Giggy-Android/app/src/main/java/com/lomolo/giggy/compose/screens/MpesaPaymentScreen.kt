@@ -51,12 +51,18 @@ fun MpesaPaymentScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     onNavigateTo: () -> Unit = {},
+    refreshSession: (id: String, token: String) -> Unit,
     viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val paymentUpdate by viewModel.paymentUpdates().collectAsState(initial = null)
     LaunchedEffect(key1 = paymentUpdate) {
         if (paymentUpdate == null) return@LaunchedEffect
-        if (paymentUpdate?.data!!.paymentUpdate.status == "success") onNavigateTo()
+        if (paymentUpdate?.data!!.paymentUpdate.status == "success") {
+            val u = paymentUpdate?.data!!.paymentUpdate
+            onNavigateTo()
+            refreshSession(u.sessionId.toString(), u.token)
+            viewModel.reset()
+        }
     }
 
     val paymentData by viewModel.paymentUiState.collectAsState()

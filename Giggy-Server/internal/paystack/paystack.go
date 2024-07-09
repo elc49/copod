@@ -3,6 +3,7 @@ package paystack
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -10,7 +11,9 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
@@ -21,6 +24,7 @@ type paystack struct {
 	config config.Paystack
 	log    *logrus.Logger
 	pubsub *redis.Client
+	db     *db.Queries
 }
 
 type Paystack interface {
@@ -28,11 +32,12 @@ type Paystack interface {
 	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
 }
 
-func New() {
+func New(db *db.Queries) {
 	PayStack = &paystack{
 		config.Configuration.Paystack,
 		logger.GetLogger(),
 		cache.GetCache().GetRedis(),
+		db,
 	}
 }
 
@@ -70,21 +75,56 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 		return nil, err
 	}
 
+	user, err := p.db.GetUserByID(ctx, input.UserID)
+	if err != nil {
+		p.log.WithError(err).Error("paystack: db.GetUserByID")
+		return nil, err
+	}
+
+	args := db.BuyRightsParams{
+		Customer:    user.Phone,
+		Amount:      int32(input.Amount),
+		Reason:      input.Reason,
+		Status:      chargeRes.Data.Status,
+		UserID:      input.UserID,
+		ReferenceID: sql.NullString{String: chargeRes.Data.Reference, Valid: true},
+	}
+	_, buyErr := p.db.BuyRights(ctx, args)
+	if buyErr != nil {
+		p.log.WithError(buyErr).Errorf("paystack: goroutine: db.BuyRights")
+		return nil, buyErr
+	}
+
 	return chargeRes, nil
 }
 
 func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
+	payment, err := p.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: input.Data.Reference, Valid: true})
+	if err != nil && err != sql.ErrNoRows {
+		p.log.WithError(err).Error("paystack: GetRightsPurchageByReferenceID")
+		return err
+	}
+
+	jwtService := jwt.GetJwtService()
+	jwt, err := jwtService.Sign(jwt.NewPayload(payment.UserID.String(), jwtService.GetExpiry()))
+	if err != nil {
+		p.log.WithError(err).Error("paystack: jwtService.Sign")
+		return err
+	}
+	u := model.PaymentUpdate{
+		ReferenceID: input.Data.Reference,
+		Status:      input.Data.Status,
+		SessionID:   payment.UserID,
+		Token:       jwt,
+	}
+	update, err := json.Marshal(u)
+	if err != nil {
+		p.log.WithError(err).Error("paystack: json.Marshal update")
+		return err
+	}
+
 	go func() {
-		time.Sleep(5 * time.Second)
-		u := model.PaymentUpdate{
-			ReferenceID: input.Data.Reference,
-			Status:      input.Data.Status,
-		}
-		update, err := json.Marshal(u)
-		if err != nil {
-			p.log.WithError(err).Error("paystack: json.Marshal update")
-			return
-		}
+		time.Sleep(2 * time.Second)
 		pubSubErr := p.pubsub.Publish(context.Background(), cache.PAYMENT_UPDATES, update).Err()
 		if pubSubErr != nil {
 			p.log.WithError(pubSubErr).Errorf("paystack: pubsub.Publish update")

@@ -56,7 +56,7 @@ func (s *Server) Services() {
 	})
 	ip.NewIpinfoClient()
 	gcloud.New()
-	paystack.New()
+	paystack.New(s.Db)
 }
 
 func (s *Server) MountHandlers() {

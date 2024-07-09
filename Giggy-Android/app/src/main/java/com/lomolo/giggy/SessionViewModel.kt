@@ -11,11 +11,12 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SessionViewModel(
     private val sessionRepository: ISession,
     private val apolloStore: ApolloStore,
-): ViewModel() {
+) : ViewModel() {
     val sessionUiState: StateFlow<Session> = sessionRepository
         .get()
         .filterNotNull()
@@ -37,6 +38,14 @@ class SessionViewModel(
 
     companion object {
         private const val TIMEOUT_MILLIS = 2_000L
+    }
+
+    fun refreshSession(id: String, token: String) = viewModelScope.launch {
+        try {
+            sessionRepository.refreshSession(Session(id, token))
+        } catch(e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     fun signOut(cb: () -> Unit = {}) {

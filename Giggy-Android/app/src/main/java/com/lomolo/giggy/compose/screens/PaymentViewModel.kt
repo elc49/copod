@@ -68,6 +68,11 @@ class PaymentViewModel(
         }
     }
 
+    fun reset() {
+        _paymentInput.value = MpesaPay()
+        payingWithMpesaState = PayingWithMpesa.Success
+    }
+
     fun paymentUpdates() = paymentRepository.paymentUpdates(_paymentInput.value.payReferenceId)
 }
 

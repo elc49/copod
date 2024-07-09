@@ -16,5 +16,6 @@ class PaymentRepository(
     private val giggyGraphqlApi: IGiggyGraphqlApi,
 ): IPayment {
     override suspend fun payWithMpesa(input: PayWithMpesaInput) = giggyGraphqlApi.payWithMpesa(input)
-    override fun paymentUpdates(referenceId: String) = giggyGraphqlApi.paymentUpdates(referenceId)
+    override fun paymentUpdates(referenceId: String) =
+        giggyGraphqlApi.paymentUpdates(referenceId)
 }
