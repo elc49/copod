@@ -30,10 +30,12 @@ android {
         val posthogApiKey = properties.getProperty("POSTHOG_PROJECT_API_KEY")
         val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
         val baseApiHost = properties.getProperty("BASE_API_HOST")
+        val wssHost = properties.getProperty("WSS")
 
-        buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value = posthogApiKey)
-        buildConfigField(type="String", name="POSTHOG_API_HOST", value = posthogApiHost)
-        buildConfigField(type= "String", name="BASE_API_HOST", value = baseApiHost)
+        buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value=posthogApiKey)
+        buildConfigField(type="String", name="POSTHOG_API_HOST", value=posthogApiHost)
+        buildConfigField(type="String", name="BASE_API_HOST", value=baseApiHost)
+        buildConfigField(type="String", name="WSS", value=wssHost)
     }
 
     buildTypes {
@@ -106,5 +108,6 @@ dependencies {
 apollo {
     service("giggy") {
         packageName.set("com.lomolo.giggy")
+        generateOptionalOperationVariables.set(false)
     }
 }

@@ -1,9 +1,13 @@
 package model
 
+import "github.com/google/uuid"
+
 type ChargeMpesaPhoneInput struct {
-	Amount   int    `json:"amount"`
-	Email    string `json:"email"`
-	Currency string `json:"currency"`
+	Amount   int       `json:"amount"`
+	Email    string    `json:"email"`
+	UserID   uuid.UUID `json:"user_id,omitempty"`
+	Reason   string    `json:"reason,omitempty"`
+	Currency string    `json:"currency"`
 	Provider struct {
 		Phone    string `json:"phone"`
 		Provider string `json:"provider"`

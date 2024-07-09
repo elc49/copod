@@ -50,14 +50,15 @@ class PaymentViewModel(
             viewModelScope.launch {
                 payingWithMpesaState = try {
                     val phone = PhoneNumberUtility.parseNumber(_paymentInput.value.phone, deviceDetails.countryCode)
-                    paymentRepository.payWithMpesa(
+                    val res = paymentRepository.payWithMpesa(
                         PayWithMpesaInput(
                             amount = amount,
                             currency = currency,
                             phone = phone.countryCode.toString()+phone.nationalNumber.toString(),
                             reason = paymentReason,
                         )
-                    )
+                    ).dataOrThrow()
+                    _paymentInput.update { it.copy(payReferenceId = res.payWithMpesa.referenceId) }
                     PayingWithMpesa.PayingOffline
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -66,6 +67,13 @@ class PaymentViewModel(
             }
         }
     }
+
+    fun reset() {
+        _paymentInput.value = MpesaPay()
+        payingWithMpesaState = PayingWithMpesa.Success
+    }
+
+    fun paymentUpdates() = paymentRepository.paymentUpdates(_paymentInput.value.payReferenceId)
 }
 
 data class MpesaPay(

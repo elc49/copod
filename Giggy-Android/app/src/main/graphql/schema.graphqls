@@ -146,6 +146,16 @@ enum PaymentStatus {
   FAILED
 }
 
+type PaymentUpdate {
+  referenceId: String!
+
+  status: String!
+
+  sessionId: UUID!
+
+  token: String!
+}
+
 type Post {
   id: UUID!
 
@@ -180,6 +190,10 @@ type Query {
   getFarmOrders(id: UUID!): [Order!]!
 
   getFarmPayments(id: UUID!): [Payment!]!
+}
+
+type Subscription {
+  paymentUpdate(referenceId: String!): PaymentUpdate!
 }
 
 scalar Time
@@ -394,4 +408,5 @@ directive @specifiedBy (url: String!) on SCALAR
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }

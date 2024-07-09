@@ -100,8 +100,10 @@ type Payment struct {
 }
 
 type PaymentUpdate struct {
-	ReferenceID string `json:"referenceId"`
-	Status      string `json:"status"`
+	ReferenceID string    `json:"referenceId"`
+	Status      string    `json:"status"`
+	SessionID   uuid.UUID `json:"sessionId"`
+	Token       string    `json:"token"`
 }
 
 type Post struct {

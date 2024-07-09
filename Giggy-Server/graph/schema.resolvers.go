@@ -59,7 +59,8 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 
 // PayWithMpesa is the resolver for the payWithMpesa field.
 func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error) {
-	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, input)
+	userId := StringToUUID(ctx.Value("userId").(string))
+	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, userId, input)
 	if err != nil {
 		return nil, err
 	}

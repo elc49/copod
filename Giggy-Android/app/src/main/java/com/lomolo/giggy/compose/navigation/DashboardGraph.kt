@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -142,6 +144,7 @@ internal fun BottomNavBar(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
@@ -448,6 +451,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 type = NavType.StringType
             })
         ) {
+            val reason = it.arguments?.getString("paymentReason")
+
             Scaffold(
                 topBar = {
                     TopAppBar(title = {
@@ -471,7 +476,22 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    MpesaPaymentScreen(deviceDetails = deviceDetails)
+                    MpesaPaymentScreen(
+                        onNavigateTo = {
+                            when(reason) {
+                                "poster_rights" -> {
+                                    onNavigateTo(DashboardScreenDestination.route)
+                                }
+                                "farming_rights" -> {
+                                    onNavigateTo(FarmScreenDestination.route)
+                                }
+                            }
+                        },
+                        deviceDetails = deviceDetails,
+                        refreshSession = {id, token ->
+                            sessionViewModel.refreshSession(id = id, token = token)
+                        }
+                    )
                 }
             }
         }

@@ -9,6 +9,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/paystack"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
+	"github.com/google/uuid"
 )
 
 type SubscriptionController struct {
@@ -21,10 +22,12 @@ func (c *SubscriptionController) Init(db *db.Queries) {
 	c.db = db
 }
 
-func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
+func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uuid.UUID, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
 	args := model.ChargeMpesaPhoneInput{
 		Currency: input.Currency,
 		Email:    fmt.Sprintf("%s@giggy.app", util.RandomStringByLength(5)),
+		UserID:   userId,
+		Reason:   input.Reason,
 		Provider: struct {
 			Phone    string `json:"phone"`
 			Provider string `json:"provider"`

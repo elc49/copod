@@ -7,10 +7,56 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+const buyRights = `-- name: BuyRights :one
+INSERT INTO payments (
+  customer, amount, reason, status, reference_id, user_id
+) VALUES (
+  $1, $2, $3, $4, $5, $6
+)
+RETURNING id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
+`
+
+type BuyRightsParams struct {
+	Customer    string         `json:"customer"`
+	Amount      int32          `json:"amount"`
+	Reason      string         `json:"reason"`
+	Status      string         `json:"status"`
+	ReferenceID sql.NullString `json:"reference_id"`
+	UserID      uuid.UUID      `json:"user_id"`
+}
+
+func (q *Queries) BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, error) {
+	row := q.db.QueryRowContext(ctx, buyRights,
+		arg.Customer,
+		arg.Amount,
+		arg.Reason,
+		arg.Status,
+		arg.ReferenceID,
+		arg.UserID,
+	)
+	var i Payment
+	err := row.Scan(
+		&i.ID,
+		&i.Customer,
+		&i.Amount,
+		&i.Reason,
+		&i.Status,
+		&i.ReferenceID,
+		&i.UserID,
+		&i.OrderID,
+		&i.MarketID,
+		&i.FarmID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
 const getPaymentsBelongingToFarm = `-- name: GetPaymentsBelongingToFarm :many
 SELECT id, customer, amount, status, created_at, updated_at FROM payments
@@ -26,7 +72,7 @@ type GetPaymentsBelongingToFarmRow struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetPaymentsBelongingToFarmRow, error) {
+func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.NullUUID) ([]GetPaymentsBelongingToFarmRow, error) {
 	rows, err := q.db.QueryContext(ctx, getPaymentsBelongingToFarm, farmID)
 	if err != nil {
 		return nil, err
@@ -54,4 +100,61 @@ func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.UU
 		return nil, err
 	}
 	return items, nil
+}
+
+const getRightPurchasePaymentByReferenceID = `-- name: GetRightPurchasePaymentByReferenceID :one
+SELECT id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at FROM payments
+WHERE reference_id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetRightPurchasePaymentByReferenceID(ctx context.Context, referenceID sql.NullString) (Payment, error) {
+	row := q.db.QueryRowContext(ctx, getRightPurchasePaymentByReferenceID, referenceID)
+	var i Payment
+	err := row.Scan(
+		&i.ID,
+		&i.Customer,
+		&i.Amount,
+		&i.Reason,
+		&i.Status,
+		&i.ReferenceID,
+		&i.UserID,
+		&i.OrderID,
+		&i.MarketID,
+		&i.FarmID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateRightsPurchaseStatus = `-- name: UpdateRightsPurchaseStatus :one
+UPDATE payments SET status = $1
+WHERE reference_id = $2
+RETURNING id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
+`
+
+type UpdateRightsPurchaseStatusParams struct {
+	Status      string         `json:"status"`
+	ReferenceID sql.NullString `json:"reference_id"`
+}
+
+func (q *Queries) UpdateRightsPurchaseStatus(ctx context.Context, arg UpdateRightsPurchaseStatusParams) (Payment, error) {
+	row := q.db.QueryRowContext(ctx, updateRightsPurchaseStatus, arg.Status, arg.ReferenceID)
+	var i Payment
+	err := row.Scan(
+		&i.ID,
+		&i.Customer,
+		&i.Amount,
+		&i.Reason,
+		&i.Status,
+		&i.ReferenceID,
+		&i.UserID,
+		&i.OrderID,
+		&i.MarketID,
+		&i.FarmID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

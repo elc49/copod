@@ -5,24 +5,26 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.apollographql.apollo3.network.okHttpClient
+import com.apollographql.apollo3.network.ws.GraphQLWsProtocol
 import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.apollo.interceptors.AuthInterceptor
 import com.lomolo.giggy.network.GiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.network.IGiggyRestApi
-import com.lomolo.giggy.repository.ISession
-import com.lomolo.giggy.repository.IFarm
-import com.lomolo.giggy.repository.SessionRepository
 import com.lomolo.giggy.repository.FarmRepository
+import com.lomolo.giggy.repository.IFarm
 import com.lomolo.giggy.repository.IMarkets
 import com.lomolo.giggy.repository.IPayment
 import com.lomolo.giggy.repository.IPosters
+import com.lomolo.giggy.repository.ISession
 import com.lomolo.giggy.repository.MarketsRepository
 import com.lomolo.giggy.repository.PaymentRepository
 import com.lomolo.giggy.repository.PostersRepository
+import com.lomolo.giggy.repository.SessionRepository
 import com.lomolo.giggy.sql.Store
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -74,6 +76,12 @@ class ApplicationContainer(
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
         .httpServerUrl("${BuildConfig.BASE_API_HOST}/api/graphql")
+        .webSocketServerUrl("${BuildConfig.WSS}/api/subscription")
+        .wsProtocol(GraphQLWsProtocol.Factory())
+        .webSocketReopenWhen {_, attempt ->
+            delay(attempt * 1000)
+            true
+        }
         .addHttpInterceptor(
             AuthInterceptor(
                 Store.getStore(context).sessionDao(),

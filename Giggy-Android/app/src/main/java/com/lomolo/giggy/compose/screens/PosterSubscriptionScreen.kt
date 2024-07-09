@@ -4,6 +4,8 @@ import android.icu.number.Notation
 import android.icu.number.NumberFormatter
 import android.icu.number.Precision
 import android.icu.util.Currency
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,6 +46,7 @@ private val points = listOf(
     R.string.advertise,
 )
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun PosterSubscriptionScreen(
     modifier: Modifier = Modifier,

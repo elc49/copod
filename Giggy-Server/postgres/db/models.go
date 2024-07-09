@@ -48,16 +48,18 @@ type Order struct {
 }
 
 type Payment struct {
-	ID        uuid.UUID `json:"id"`
-	Customer  string    `json:"customer"`
-	Amount    int32     `json:"amount"`
-	Reason    string    `json:"reason"`
-	Status    string    `json:"status"`
-	OrderID   uuid.UUID `json:"order_id"`
-	MarketID  uuid.UUID `json:"market_id"`
-	FarmID    uuid.UUID `json:"farm_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uuid.UUID      `json:"id"`
+	Customer    string         `json:"customer"`
+	Amount      int32          `json:"amount"`
+	Reason      string         `json:"reason"`
+	Status      string         `json:"status"`
+	ReferenceID sql.NullString `json:"reference_id"`
+	UserID      uuid.UUID      `json:"user_id"`
+	OrderID     uuid.NullUUID  `json:"order_id"`
+	MarketID    uuid.NullUUID  `json:"market_id"`
+	FarmID      uuid.NullUUID  `json:"farm_id"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 type Post struct {

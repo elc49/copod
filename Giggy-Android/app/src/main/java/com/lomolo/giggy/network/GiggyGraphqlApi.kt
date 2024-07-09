@@ -18,6 +18,7 @@ import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
+import com.lomolo.giggy.PaymentUpdateSubscription
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
@@ -40,6 +41,7 @@ interface IGiggyGraphqlApi {
     suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
     suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
+    fun paymentUpdates(referenceId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
 }
 
 class GiggyGraphqlApi(
@@ -114,4 +116,8 @@ class GiggyGraphqlApi(
     override suspend fun payWithMpesa(input: PayWithMpesaInput) = apolloClient
         .mutation(PayWithMpesaMutation(input))
         .execute()
+
+    override fun paymentUpdates(referenceId: String) = apolloClient
+        .subscription(PaymentUpdateSubscription(referenceId))
+        .toFlow()
 }
