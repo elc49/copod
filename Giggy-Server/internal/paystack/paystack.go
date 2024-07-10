@@ -5,13 +5,12 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
-	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/redis/go-redis/v9"
@@ -30,6 +29,7 @@ type paystack struct {
 type Paystack interface {
 	ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesaPhoneInput) (*model.ChargeMpesaPhoneRes, error)
 	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
+	VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.MpesaTransactionVerification, error)
 }
 
 func New(db *db.Queries) {
@@ -105,32 +105,49 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 		return err
 	}
 
-	jwtService := jwt.GetJwtService()
-	jwt, err := jwtService.Sign(jwt.NewPayload(payment.UserID.String(), jwtService.GetExpiry()))
-	if err != nil {
-		p.log.WithError(err).Error("paystack: jwtService.Sign")
-		return err
-	}
-	u := model.PaymentUpdate{
-		ReferenceID: input.Data.Reference,
-		Status:      input.Data.Status,
-		SessionID:   payment.UserID,
-		Token:       jwt,
-	}
-	update, err := json.Marshal(u)
 	if err != nil {
 		p.log.WithError(err).Error("paystack: json.Marshal update")
 		return err
 	}
 
-	go func() {
-		time.Sleep(2 * time.Second)
-		pubSubErr := p.pubsub.Publish(context.Background(), cache.PAYMENT_UPDATES, update).Err()
-		if pubSubErr != nil {
-			p.log.WithError(pubSubErr).Errorf("paystack: pubsub.Publish update")
-			return
+	switch payment.Reason {
+	case "poster_rights":
+		args := db.SetUserPosterRightsParams{
+			ID:              payment.UserID,
+			HasPosterRights: true,
 		}
-	}()
-
+		p.db.SetUserPosterRights(ctx, args)
+	case "farming_rights":
+		args := db.SetUserFarmingRightsParams{
+			ID:               payment.UserID,
+			HasFarmingRights: true,
+		}
+		p.db.SetUserFarmingRights(ctx, args)
+	default:
+	}
 	return nil
+}
+
+func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, referenceID string) (*model.MpesaTransactionVerification, error) {
+	verifyRes := new(model.MpesaTransactionVerification)
+	verifyUrl := fmt.Sprintf("%s/transaction/verify/%s", p.config.BaseApi, referenceID)
+
+	req, err := http.NewRequest("GET", verifyUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+p.config.SecretKey)
+
+	c := &http.Client{}
+	res, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if marshalErr := json.NewDecoder(res.Body).Decode(&verifyRes); marshalErr != nil {
+		p.log.WithError(marshalErr).Error("paystack: json VerifyTransactionByReferenceID res")
+		return nil, marshalErr
+	}
+
+	return verifyRes, nil
 }

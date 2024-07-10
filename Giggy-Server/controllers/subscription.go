@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
@@ -45,4 +46,18 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uu
 	}
 
 	return c.paystack.ChargeMpesaPhone(ctx, args)
+}
+
+func (c *SubscriptionController) VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackPaymentVerificationStatus, error) {
+	payment, err := c.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: referenceId, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.paystack.VerifyTransactionByReferenceID(ctx, referenceId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.PaystackPaymentVerificationStatus{Status: res.Data.Status, SessionID: payment.UserID}, nil
 }

@@ -41,11 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
+import com.lomolo.giggy.SessionViewModel
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
 
@@ -58,12 +60,13 @@ object FarmScreenDestination : Navigation {
 @Composable
 fun FarmsScreen(
     modifier: Modifier = Modifier,
-    onNavigateToFarmMarket: (String) -> Unit = {},
-    onNavigateToCreateFarm: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     bottomNav: @Composable () -> Unit = {},
+    sessionViewModel: SessionViewModel,
+    navHostController: NavHostController,
     viewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
+    val session by sessionViewModel.sessionUiState.collectAsState()
     val farms by viewModel.farms.collectAsState()
 
     Scaffold(
@@ -81,7 +84,15 @@ fun FarmsScreen(
                 actions = {
                     if (!viewModel.hasFarm) {
                         IconButton(onClick = {
-                            onNavigateToCreateFarm()
+                            if (session.hasFarmingRights) {
+                                navHostController.navigate(CreateFarmScreenDestination.route) {
+                                    launchSingleTop = true
+                                }
+                            } else {
+                                navHostController.navigate(FarmSubscriptionScreenDestination.route) {
+                                    launchSingleTop = true
+                                }
+                            }
                         }) {
                             Icon(
                                 Icons.TwoTone.Add, contentDescription = null
@@ -112,7 +123,9 @@ fun FarmsScreen(
                 is GetFarmsBelongingToUserState.Success -> {
                     Farms(
                         modifier = modifier,
-                        onNavigateTo = onNavigateToFarmMarket,
+                        onNavigateTo = { farmId ->
+                            navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
+                        },
                         farms = farms
                     )
                 }

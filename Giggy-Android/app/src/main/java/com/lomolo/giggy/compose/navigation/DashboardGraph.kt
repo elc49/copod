@@ -2,11 +2,9 @@ package com.lomolo.giggy.compose.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Add
@@ -111,7 +109,7 @@ sealed class Screen(
 }
 
 @Composable
-internal fun BottomNavBar(
+fun BottomNavBar(
     modifier: Modifier = Modifier,
     onNavigateTo: (String) -> Unit = {},
     currentDestination: NavDestination?,
@@ -178,42 +176,13 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = DashboardScreenDestination.route) {
             val currentDestination = it.destination
 
-            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
-                IconButton(modifier = Modifier.background(
-                    MaterialTheme.colorScheme.primary,
-                    CircleShape,
-                ), onClick = {
-                    if (session.hasPosterRights) {
-                        navHostController.navigate(CreatePostScreenDestination.route) {
-                            launchSingleTop = true
-                        }
-                    } else {
-                        navHostController.navigate(PosterSubscriptionScreenDestination.route) {
-                            launchSingleTop = true
-                        }
-                    }
-                }) {
-                    Icon(
-                        Icons.TwoTone.Add,
-                        tint = MaterialTheme.colorScheme.background,
-                        contentDescription = stringResource(R.string.create_post),
-                    )
-                }
-            }, bottomBar = {
-                BottomNavBar(
-                    modifier = modifier,
-                    onNavigateTo = onNavigateTo,
-                    currentDestination = currentDestination,
-                )
-            }) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    DashboardScreen()
-                }
-            }
+            DashboardScreen(
+                onNavigateTo = onNavigateTo,
+                navHostController = navHostController,
+                sessionViewModel = sessionViewModel,
+                currentDestination = currentDestination,
+                snackbarHostState = snackbarHostState,
+            )
         }
         composable(route = MarketScreenDestination.route) {
             MarketScreen(deviceDetails = deviceDetails, bottomNav = {
@@ -227,25 +196,17 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
 
-            FarmsScreen(snackbarHostState = snackbarHostState, onNavigateToFarmMarket = { farmId ->
-                navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
-            }, onNavigateToCreateFarm = {
-                if (session.hasFarmingRights) {
-                    navHostController.navigate(CreateFarmScreenDestination.route) {
-                        launchSingleTop = true
-                    }
-                } else {
-                    navHostController.navigate(FarmSubscriptionScreenDestination.route) {
-                        launchSingleTop = true
-                    }
-                }
-            }, bottomNav = {
-                BottomNavBar(
-                    modifier = modifier,
-                    currentDestination = currentDestination,
-                    onNavigateTo = onNavigateTo,
-                )
-            })
+            FarmsScreen(
+                snackbarHostState = snackbarHostState,
+                navHostController = navHostController,
+                sessionViewModel = sessionViewModel,
+                bottomNav = {
+                    BottomNavBar(
+                        modifier = modifier,
+                        currentDestination = currentDestination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                })
         }
         composable(
             route = FarmMarketScreenDestination.routeWithArgs,
@@ -405,7 +366,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 ) {
                     PosterSubscriptionScreen(
                         deviceDetails = deviceDetails,
-                        onNavigateTo = {reason ->
+                        onNavigateTo = { reason ->
                             navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
                         },
                     )
@@ -413,24 +374,21 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(
-                topBar = {
-                    LargeTopAppBar(title = {
-                        Text(
-                            stringResource(id = FarmSubscriptionScreenDestination.title),
-                            style = MaterialTheme.typography.displaySmall,
+            Scaffold(topBar = {
+                LargeTopAppBar(title = {
+                    Text(
+                        stringResource(id = FarmSubscriptionScreenDestination.title),
+                        style = MaterialTheme.typography.displaySmall,
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = { navHostController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = null,
                         )
-                    },
-                        navigationIcon = {
-                            IconButton(onClick = { navHostController.popBackStack() }) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = null,
-                                )
-                            }
-                        })
-                }
-            ) { innerPadding ->
+                    }
+                })
+            }) { innerPadding ->
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
@@ -438,7 +396,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 ) {
                     FarmSubscriptionScreen(
                         deviceDetails = deviceDetails,
-                        onNavigateTo = {reason ->
+                        onNavigateTo = { reason ->
                             navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
                         },
                     )
@@ -453,24 +411,20 @@ fun NavGraphBuilder.addDashboardGraph(
         ) {
             val reason = it.arguments?.getString("paymentReason")
 
-            Scaffold(
-                topBar = {
-                    TopAppBar(title = {
-                        Text(
-                            stringResource(id = MpesaPaymentScreenDestination.title),
-                            style = MaterialTheme.typography.titleLarge,
+            Scaffold(topBar = {
+                TopAppBar(title = {
+                    Text(
+                        stringResource(id = MpesaPaymentScreenDestination.title),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }, navigationIcon = {
+                    IconButton(onClick = { navHostController.popBackStack() }) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navHostController.popBackStack() }) {
-                           Icon(
-                               Icons.AutoMirrored.TwoTone.ArrowBack,
-                               contentDescription = null
-                           )
-                        }
-                    })
-                }
-            ) { innerPadding ->
+                    }
+                })
+            }) { innerPadding ->
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
@@ -478,19 +432,17 @@ fun NavGraphBuilder.addDashboardGraph(
                 ) {
                     MpesaPaymentScreen(
                         onNavigateTo = {
-                            when(reason) {
+                            when (reason) {
                                 "poster_rights" -> {
                                     onNavigateTo(DashboardScreenDestination.route)
                                 }
+
                                 "farming_rights" -> {
                                     onNavigateTo(FarmScreenDestination.route)
                                 }
                             }
                         },
                         deviceDetails = deviceDetails,
-                        refreshSession = {id, token ->
-                            sessionViewModel.refreshSession(id = id, token = token)
-                        }
                     )
                 }
             }

@@ -32,7 +32,7 @@ class AuthInterceptor(
 
         return if (response.statusCode == 401) {
             session = mutex.withLock {
-                sessionRepository.refreshSession(session!!.first())
+                sessionRepository.refreshSession(session!!.first().id)
                 sessionDao
                     .get()
                     .firstOrNull()

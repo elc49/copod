@@ -35,8 +35,8 @@ type Querier interface {
 	GetRightPurchasePaymentByReferenceID(ctx context.Context, referenceID sql.NullString) (Payment, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)
-	SetFarmingRights(ctx context.Context, arg SetFarmingRightsParams) (User, error)
-	SetPosterRights(ctx context.Context, arg SetPosterRightsParams) (User, error)
+	SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error)
+	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
 	UpdateRightsPurchaseStatus(ctx context.Context, arg UpdateRightsPurchaseStatusParams) (Payment, error)
 }
 

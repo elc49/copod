@@ -129,7 +129,7 @@ type Payment {
 
   reason: String!
 
-  status: PaymentStatus!
+  status: String!
 
   orderId: UUID!
 
@@ -138,22 +138,10 @@ type Payment {
   updated_at: Time!
 }
 
-enum PaymentStatus {
-  PAID
-
-  PENDING
-
-  FAILED
-}
-
-type PaymentUpdate {
-  referenceId: String!
-
+type PaystackPaymentVerificationStatus {
   status: String!
 
   sessionId: UUID!
-
-  token: String!
 }
 
 type Post {
@@ -190,10 +178,8 @@ type Query {
   getFarmOrders(id: UUID!): [Order!]!
 
   getFarmPayments(id: UUID!): [Payment!]!
-}
 
-type Subscription {
-  paymentUpdate(referenceId: String!): PaymentUpdate!
+  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
 }
 
 scalar Time
@@ -408,5 +394,4 @@ directive @specifiedBy (url: String!) on SCALAR
 schema {
   query: Query
   mutation: Mutation
-  subscription: Subscription
 }

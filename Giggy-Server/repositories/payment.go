@@ -28,7 +28,7 @@ func (r *PaymentRepository) GetPaymentsBelongingToFarm(ctx context.Context, id u
 			ID:       item.ID,
 			Amount:   int(item.Amount),
 			Customer: item.Customer,
-			Status:   model.PaymentStatus(item.Status),
+			Status:   item.Status,
 		}
 
 		payments = append(payments, payment)

@@ -122,19 +122,19 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPh
 	return i, err
 }
 
-const setFarmingRights = `-- name: SetFarmingRights :one
+const setUserFarmingRights = `-- name: SetUserFarmingRights :one
 UPDATE users SET has_farming_rights = $1
 WHERE id = $2
 RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
 `
 
-type SetFarmingRightsParams struct {
+type SetUserFarmingRightsParams struct {
 	HasFarmingRights bool      `json:"has_farming_rights"`
 	ID               uuid.UUID `json:"id"`
 }
 
-func (q *Queries) SetFarmingRights(ctx context.Context, arg SetFarmingRightsParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, setFarmingRights, arg.HasFarmingRights, arg.ID)
+func (q *Queries) SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, setUserFarmingRights, arg.HasFarmingRights, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -150,19 +150,19 @@ func (q *Queries) SetFarmingRights(ctx context.Context, arg SetFarmingRightsPara
 	return i, err
 }
 
-const setPosterRights = `-- name: SetPosterRights :one
+const setUserPosterRights = `-- name: SetUserPosterRights :one
 UPDATE users SET has_poster_rights = $1
 WHERE id = $2
 RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
 `
 
-type SetPosterRightsParams struct {
+type SetUserPosterRightsParams struct {
 	HasPosterRights bool      `json:"has_poster_rights"`
 	ID              uuid.UUID `json:"id"`
 }
 
-func (q *Queries) SetPosterRights(ctx context.Context, arg SetPosterRightsParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, setPosterRights, arg.HasPosterRights, arg.ID)
+func (q *Queries) SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, setUserPosterRights, arg.HasPosterRights, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,

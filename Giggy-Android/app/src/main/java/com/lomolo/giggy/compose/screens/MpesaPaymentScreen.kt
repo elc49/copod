@@ -38,6 +38,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
+import kotlinx.coroutines.delay
 
 object MpesaPaymentScreenDestination : Navigation {
     override val title = R.string.m_pesa
@@ -51,17 +52,30 @@ fun MpesaPaymentScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     onNavigateTo: () -> Unit = {},
-    refreshSession: (id: String, token: String) -> Unit,
     viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    val paymentUpdate by viewModel.paymentUpdates().collectAsState(initial = null)
-    LaunchedEffect(key1 = paymentUpdate) {
-        if (paymentUpdate == null) return@LaunchedEffect
-        if (paymentUpdate?.data!!.paymentUpdate.status == "success") {
-            val u = paymentUpdate?.data!!.paymentUpdate
-            onNavigateTo()
-            refreshSession(u.sessionId.toString(), u.token)
-            viewModel.reset()
+    LaunchedEffect(key1 = viewModel.payingWithMpesaState) {
+        when (viewModel.payingWithMpesaState) {
+            PayingWithMpesa.PayingOffline -> {
+                // wait in-between for telecom prompt
+                // and pin submission for approval
+                delay(3000L)
+                // start poll - 3 times to check
+                // payment status
+                repeat(viewModel.pollingRetry) {
+                    // delay between polling just for good measure
+                    delay(2000L)
+                    // TODO poll to get payment status
+                    // success: set retry = 0 navigate
+                    // to stop running this and navigate
+                    //  to whenever we are coming from
+                    // refresh session
+                    viewModel.verifyPayment {
+                        onNavigateTo()
+                        viewModel.reset()
+                    }
+                }
+            }
         }
     }
 
@@ -131,6 +145,11 @@ fun MpesaPaymentScreen(
         ) {
             when (viewModel.payingWithMpesaState) {
                 PayingWithMpesa.Success -> Text(
+                    stringResource(R.string.pay),
+                    fontWeight = FontWeight.Bold,
+                )
+
+                PayingWithMpesa.Failed -> Text(
                     stringResource(R.string.pay),
                     fontWeight = FontWeight.Bold,
                 )

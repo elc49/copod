@@ -1,0 +1,6 @@
+query GetPaystackPaymentVerification($referenceId: String!) {
+    getPaystackPaymentVerification(referenceId: $referenceId) {
+        status
+        sessionId
+    }
+}

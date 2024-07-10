@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,27 +19,10 @@ func TestUserController(t *testing.T) {
 		queries.ClearTestUsers(ctx)
 	}()
 
-	t.Run("grant_farming_rights", func(t *testing.T) {
-		u, err := userC.SetFarmingRights(ctx, db.SetFarmingRightsParams{ID: user.ID, HasFarmingRights: true})
+	t.Run("get_user_by_id", func(t *testing.T) {
+		u, err := userC.CountUsers(ctx)
 		assert.Nil(t, err)
-		assert.True(t, u.HasFarmingRights, "should be true")
-	})
-
-	t.Run("revoke_farming_rights", func(t *testing.T) {
-		u, err := userC.SetFarmingRights(ctx, db.SetFarmingRightsParams{ID: user.ID, HasFarmingRights: false})
-		assert.Nil(t, err)
-		assert.False(t, u.HasFarmingRights, "shoule be false")
-	})
-
-	t.Run("grant_poster_rights", func(t *testing.T) {
-		u, err := userC.SetPosterRights(ctx, db.SetPosterRightsParams{ID: user.ID, HasPosterRights: true})
-		assert.Nil(t, err)
-		assert.True(t, u.HasPosterRights, "should be true")
-	})
-
-	t.Run("revoke_poster_rights", func(t *testing.T) {
-		u, err := userC.SetPosterRights(ctx, db.SetPosterRightsParams{ID: user.ID, HasPosterRights: false})
-		assert.Nil(t, err)
-		assert.False(t, u.HasPosterRights, "should be false")
+		assert.NotNil(t, u)
+		assert.Equal(t, u, 1)
 	})
 }

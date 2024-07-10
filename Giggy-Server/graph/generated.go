@@ -8,7 +8,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"io"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -46,7 +45,6 @@ type ResolverRoot interface {
 	Order() OrderResolver
 	Post() PostResolver
 	Query() QueryResolver
-	Subscription() SubscriptionResolver
 }
 
 type DirectiveRoot struct {
@@ -109,11 +107,9 @@ type ComplexityRoot struct {
 		UpdatedAt func(childComplexity int) int
 	}
 
-	PaymentUpdate struct {
-		ReferenceID func(childComplexity int) int
-		SessionID   func(childComplexity int) int
-		Status      func(childComplexity int) int
-		Token       func(childComplexity int) int
+	PaystackPaymentVerificationStatus struct {
+		SessionID func(childComplexity int) int
+		Status    func(childComplexity int) int
 	}
 
 	Post struct {
@@ -128,18 +124,15 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetFarmByID             func(childComplexity int, id uuid.UUID) int
-		GetFarmMarkets          func(childComplexity int, id uuid.UUID) int
-		GetFarmOrders           func(childComplexity int, id uuid.UUID) int
-		GetFarmPayments         func(childComplexity int, id uuid.UUID) int
-		GetFarmsBelongingToUser func(childComplexity int) int
-		GetLocalizedMarkets     func(childComplexity int, radius model.GpsInput) int
-		GetLocalizedPosters     func(childComplexity int, radius model.GpsInput) int
-		GetUser                 func(childComplexity int) int
-	}
-
-	Subscription struct {
-		PaymentUpdate func(childComplexity int, referenceID string) int
+		GetFarmByID                    func(childComplexity int, id uuid.UUID) int
+		GetFarmMarkets                 func(childComplexity int, id uuid.UUID) int
+		GetFarmOrders                  func(childComplexity int, id uuid.UUID) int
+		GetFarmPayments                func(childComplexity int, id uuid.UUID) int
+		GetFarmsBelongingToUser        func(childComplexity int) int
+		GetLocalizedMarkets            func(childComplexity int, radius model.GpsInput) int
+		GetLocalizedPosters            func(childComplexity int, radius model.GpsInput) int
+		GetPaystackPaymentVerification func(childComplexity int, referenceID string) int
+		GetUser                        func(childComplexity int) int
 	}
 
 	User struct {
@@ -175,9 +168,7 @@ type QueryResolver interface {
 	GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error)
 	GetFarmOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error)
 	GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error)
-}
-type SubscriptionResolver interface {
-	PaymentUpdate(ctx context.Context, referenceID string) (<-chan *model.PaymentUpdate, error)
+	GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentVerificationStatus, error)
 }
 
 type executableSchema struct {
@@ -485,33 +476,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Payment.UpdatedAt(childComplexity), true
 
-	case "PaymentUpdate.referenceId":
-		if e.complexity.PaymentUpdate.ReferenceID == nil {
+	case "PaystackPaymentVerificationStatus.sessionId":
+		if e.complexity.PaystackPaymentVerificationStatus.SessionID == nil {
 			break
 		}
 
-		return e.complexity.PaymentUpdate.ReferenceID(childComplexity), true
+		return e.complexity.PaystackPaymentVerificationStatus.SessionID(childComplexity), true
 
-	case "PaymentUpdate.sessionId":
-		if e.complexity.PaymentUpdate.SessionID == nil {
+	case "PaystackPaymentVerificationStatus.status":
+		if e.complexity.PaystackPaymentVerificationStatus.Status == nil {
 			break
 		}
 
-		return e.complexity.PaymentUpdate.SessionID(childComplexity), true
-
-	case "PaymentUpdate.status":
-		if e.complexity.PaymentUpdate.Status == nil {
-			break
-		}
-
-		return e.complexity.PaymentUpdate.Status(childComplexity), true
-
-	case "PaymentUpdate.token":
-		if e.complexity.PaymentUpdate.Token == nil {
-			break
-		}
-
-		return e.complexity.PaymentUpdate.Token(childComplexity), true
+		return e.complexity.PaystackPaymentVerificationStatus.Status(childComplexity), true
 
 	case "Post.created_at":
 		if e.complexity.Post.CreatedAt == nil {
@@ -648,24 +625,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetLocalizedPosters(childComplexity, args["radius"].(model.GpsInput)), true
 
+	case "Query.getPaystackPaymentVerification":
+		if e.complexity.Query.GetPaystackPaymentVerification == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getPaystackPaymentVerification_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetPaystackPaymentVerification(childComplexity, args["referenceId"].(string)), true
+
 	case "Query.getUser":
 		if e.complexity.Query.GetUser == nil {
 			break
 		}
 
 		return e.complexity.Query.GetUser(childComplexity), true
-
-	case "Subscription.paymentUpdate":
-		if e.complexity.Subscription.PaymentUpdate == nil {
-			break
-		}
-
-		args, err := ec.field_Subscription_paymentUpdate_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Subscription.PaymentUpdate(childComplexity, args["referenceId"].(string)), true
 
 	case "User.avatar":
 		if e.complexity.User.Avatar == nil {
@@ -772,23 +749,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
 			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
-			data.MarshalGQL(&buf)
-
-			return &graphql.Response{
-				Data: buf.Bytes(),
-			}
-		}
-	case ast.Subscription:
-		next := ec._Subscription(ctx, rc.Operation.SelectionSet)
-
-		var buf bytes.Buffer
-		return func(ctx context.Context) *graphql.Response {
-			buf.Reset()
-			data := next(ctx)
-
-			if data == nil {
-				return nil
-			}
 			data.MarshalGQL(&buf)
 
 			return &graphql.Response{
@@ -1027,7 +987,7 @@ func (ec *executionContext) field_Query_getLocalizedPosters_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_paymentUpdate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getPaystackPaymentVerification_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2737,9 +2697,9 @@ func (ec *executionContext) _Payment_status(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.PaymentStatus)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNPaymentStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentStatus(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Payment_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2749,7 +2709,7 @@ func (ec *executionContext) fieldContext_Payment_status(_ context.Context, field
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type PaymentStatus does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2887,52 +2847,8 @@ func (ec *executionContext) fieldContext_Payment_updated_at(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _PaymentUpdate_referenceId(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaymentUpdate_referenceId(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ReferenceID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PaymentUpdate_referenceId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PaymentUpdate",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _PaymentUpdate_status(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaymentUpdate_status(ctx, field)
+func (ec *executionContext) _PaystackPaymentVerificationStatus_status(ctx context.Context, field graphql.CollectedField, obj *model.PaystackPaymentVerificationStatus) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaystackPaymentVerificationStatus_status(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2962,9 +2878,9 @@ func (ec *executionContext) _PaymentUpdate_status(ctx context.Context, field gra
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaymentUpdate_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaystackPaymentVerificationStatus_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PaymentUpdate",
+		Object:     "PaystackPaymentVerificationStatus",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2975,8 +2891,8 @@ func (ec *executionContext) fieldContext_PaymentUpdate_status(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PaymentUpdate_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaymentUpdate_sessionId(ctx, field)
+func (ec *executionContext) _PaystackPaymentVerificationStatus_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.PaystackPaymentVerificationStatus) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaystackPaymentVerificationStatus_sessionId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3006,58 +2922,14 @@ func (ec *executionContext) _PaymentUpdate_sessionId(ctx context.Context, field 
 	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaymentUpdate_sessionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaystackPaymentVerificationStatus_sessionId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PaymentUpdate",
+		Object:     "PaystackPaymentVerificationStatus",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type UUID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _PaymentUpdate_token(ctx context.Context, field graphql.CollectedField, obj *model.PaymentUpdate) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaymentUpdate_token(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Token, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PaymentUpdate_token(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PaymentUpdate",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3993,6 +3865,67 @@ func (ec *executionContext) fieldContext_Query_getFarmPayments(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getPaystackPaymentVerification(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getPaystackPaymentVerification(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetPaystackPaymentVerification(rctx, fc.Args["referenceId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PaystackPaymentVerificationStatus)
+	fc.Result = res
+	return ec.marshalNPaystackPaymentVerificationStatus2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaystackPaymentVerificationStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getPaystackPaymentVerification(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "status":
+				return ec.fieldContext_PaystackPaymentVerificationStatus_status(ctx, field)
+			case "sessionId":
+				return ec.fieldContext_PaystackPaymentVerificationStatus_sessionId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PaystackPaymentVerificationStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getPaystackPaymentVerification_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -4118,85 +4051,6 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
 		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Subscription_paymentUpdate(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
-	fc, err := ec.fieldContext_Subscription_paymentUpdate(ctx, field)
-	if err != nil {
-		return nil
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = nil
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().PaymentUpdate(rctx, fc.Args["referenceId"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return nil
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return nil
-	}
-	return func(ctx context.Context) graphql.Marshaler {
-		select {
-		case res, ok := <-resTmp.(<-chan *model.PaymentUpdate):
-			if !ok {
-				return nil
-			}
-			return graphql.WriterFunc(func(w io.Writer) {
-				w.Write([]byte{'{'})
-				graphql.MarshalString(field.Alias).MarshalGQL(w)
-				w.Write([]byte{':'})
-				ec.marshalNPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentUpdate(ctx, field.Selections, res).MarshalGQL(w)
-				w.Write([]byte{'}'})
-			})
-		case <-ctx.Done():
-			return nil
-		}
-	}
-}
-
-func (ec *executionContext) fieldContext_Subscription_paymentUpdate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Subscription",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "referenceId":
-				return ec.fieldContext_PaymentUpdate_referenceId(ctx, field)
-			case "status":
-				return ec.fieldContext_PaymentUpdate_status(ctx, field)
-			case "sessionId":
-				return ec.fieldContext_PaymentUpdate_sessionId(ctx, field)
-			case "token":
-				return ec.fieldContext_PaymentUpdate_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PaymentUpdate", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Subscription_paymentUpdate_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
 	}
 	return fc, nil
 }
@@ -7003,34 +6857,24 @@ func (ec *executionContext) _Payment(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
-var paymentUpdateImplementors = []string{"PaymentUpdate"}
+var paystackPaymentVerificationStatusImplementors = []string{"PaystackPaymentVerificationStatus"}
 
-func (ec *executionContext) _PaymentUpdate(ctx context.Context, sel ast.SelectionSet, obj *model.PaymentUpdate) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, paymentUpdateImplementors)
+func (ec *executionContext) _PaystackPaymentVerificationStatus(ctx context.Context, sel ast.SelectionSet, obj *model.PaystackPaymentVerificationStatus) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, paystackPaymentVerificationStatusImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("PaymentUpdate")
-		case "referenceId":
-			out.Values[i] = ec._PaymentUpdate_referenceId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
+			out.Values[i] = graphql.MarshalString("PaystackPaymentVerificationStatus")
 		case "status":
-			out.Values[i] = ec._PaymentUpdate_status(ctx, field, obj)
+			out.Values[i] = ec._PaystackPaymentVerificationStatus_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
 		case "sessionId":
-			out.Values[i] = ec._PaymentUpdate_sessionId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "token":
-			out.Values[i] = ec._PaymentUpdate_token(ctx, field, obj)
+			out.Values[i] = ec._PaystackPaymentVerificationStatus_sessionId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -7357,6 +7201,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getPaystackPaymentVerification":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getPaystackPaymentVerification(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -7386,26 +7252,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	}
 
 	return out
-}
-
-var subscriptionImplementors = []string{"Subscription"}
-
-func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet) func(ctx context.Context) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
-	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
-		Object: "Subscription",
-	})
-	if len(fields) != 1 {
-		ec.Errorf(ctx, "must subscribe to exactly one stream")
-		return nil
-	}
-
-	switch fields[0].Name {
-	case "paymentUpdate":
-		return ec._Subscription_paymentUpdate(ctx, fields[0])
-	default:
-		panic("unknown field " + strconv.Quote(fields[0].Name))
-	}
 }
 
 var userImplementors = []string{"User"}
@@ -8113,28 +7959,18 @@ func (ec *executionContext) marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmo
 	return ec._Payment(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPaymentStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentStatus(ctx context.Context, v interface{}) (model.PaymentStatus, error) {
-	var res model.PaymentStatus
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+func (ec *executionContext) marshalNPaystackPaymentVerificationStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaystackPaymentVerificationStatus(ctx context.Context, sel ast.SelectionSet, v model.PaystackPaymentVerificationStatus) graphql.Marshaler {
+	return ec._PaystackPaymentVerificationStatus(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaymentStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentStatus(ctx context.Context, sel ast.SelectionSet, v model.PaymentStatus) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) marshalNPaymentUpdate2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v model.PaymentUpdate) graphql.Marshaler {
-	return ec._PaymentUpdate(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v *model.PaymentUpdate) graphql.Marshaler {
+func (ec *executionContext) marshalNPaystackPaymentVerificationStatus2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPaystackPaymentVerificationStatus(ctx context.Context, sel ast.SelectionSet, v *model.PaystackPaymentVerificationStatus) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
-	return ec._PaymentUpdate(ctx, sel, v)
+	return ec._PaystackPaymentVerificationStatus(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPost2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPost(ctx context.Context, sel ast.SelectionSet, v model.Post) graphql.Marshaler {
