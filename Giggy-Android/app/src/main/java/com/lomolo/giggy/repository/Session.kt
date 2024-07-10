@@ -9,7 +9,7 @@ interface ISession {
     fun get(): Flow<List<Session>>
     suspend fun signIn(phone: String)
     suspend fun signOut()
-    suspend fun refreshSession(session: Session)
+    suspend fun refreshSession(sessionId: String)
 }
 
 class SessionRepository(
@@ -28,11 +28,10 @@ class SessionRepository(
         sessionDao.create(newS)
     }
 
-    override suspend fun refreshSession(session: Session) {
+    override suspend fun refreshSession(sessionId: String) {
         val res = giggyRestApi.refreshSession(
             mapOf(
-                "Refresh-Token" to session.id,
-                "Authorization" to session.token,
+                "Refresh-Token" to sessionId,
             )
         )
         val newS = Session(

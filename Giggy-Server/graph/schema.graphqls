@@ -5,13 +5,6 @@
 scalar Time
 scalar UUID
 
-# PaymentStatus
-enum PaymentStatus {
-  PAID
-  PENDING
-  FAILED
-}
-
 # Post
 type Post {
   id: UUID!
@@ -78,7 +71,7 @@ type Payment {
   customer: String!
   amount: Int!
   reason: String!
-  status: PaymentStatus!
+  status: String!
   orderId: UUID!
   created_at: Time!
   updated_at: Time!
@@ -89,12 +82,10 @@ type PayWithMpesa {
   referenceId: String!
 }
 
-# PaymentUpdate
-type PaymentUpdate {
-  referenceId: String!
+# PaystackPaymentVerificationStatus
+type PaystackPaymentVerificationStatus {
   status: String!
   sessionId: UUID!
-  token: String!
 }
 
 input GpsInput {
@@ -142,6 +133,7 @@ type Query {
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!
   getFarmPayments(id: UUID!): [Payment!]!
+  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
 }
 
 type Mutation {
@@ -149,8 +141,4 @@ type Mutation {
   createFarm(input: NewFarmInput!): Farm!
   createFarmMarket(input: NewFarmMarketInput!): Market!
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
-}
-
-type Subscription {
-  paymentUpdate(referenceId: String!): PaymentUpdate!
 }

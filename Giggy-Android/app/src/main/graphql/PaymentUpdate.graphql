@@ -1,7 +1,0 @@
-subscription PaymentUpdate($referenceId: String!) {
-    paymentUpdate(referenceId: $referenceId) {
-        sessionId
-        token
-        status
-    }
-}

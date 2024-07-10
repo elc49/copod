@@ -3,9 +3,6 @@
 package model
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -89,21 +86,19 @@ type PayWithMpesaInput struct {
 }
 
 type Payment struct {
-	ID        uuid.UUID     `json:"id"`
-	Customer  string        `json:"customer"`
-	Amount    int           `json:"amount"`
-	Reason    string        `json:"reason"`
-	Status    PaymentStatus `json:"status"`
-	OrderID   uuid.UUID     `json:"orderId"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	ID        uuid.UUID `json:"id"`
+	Customer  string    `json:"customer"`
+	Amount    int       `json:"amount"`
+	Reason    string    `json:"reason"`
+	Status    string    `json:"status"`
+	OrderID   uuid.UUID `json:"orderId"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type PaymentUpdate struct {
-	ReferenceID string    `json:"referenceId"`
-	Status      string    `json:"status"`
-	SessionID   uuid.UUID `json:"sessionId"`
-	Token       string    `json:"token"`
+type PaystackPaymentVerificationStatus struct {
+	Status    string    `json:"status"`
+	SessionID uuid.UUID `json:"sessionId"`
 }
 
 type Post struct {
@@ -118,50 +113,4 @@ type Post struct {
 }
 
 type Query struct {
-}
-
-type Subscription struct {
-}
-
-type PaymentStatus string
-
-const (
-	PaymentStatusPaid    PaymentStatus = "PAID"
-	PaymentStatusPending PaymentStatus = "PENDING"
-	PaymentStatusFailed  PaymentStatus = "FAILED"
-)
-
-var AllPaymentStatus = []PaymentStatus{
-	PaymentStatusPaid,
-	PaymentStatusPending,
-	PaymentStatusFailed,
-}
-
-func (e PaymentStatus) IsValid() bool {
-	switch e {
-	case PaymentStatusPaid, PaymentStatusPending, PaymentStatusFailed:
-		return true
-	}
-	return false
-}
-
-func (e PaymentStatus) String() string {
-	return string(e)
-}
-
-func (e *PaymentStatus) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = PaymentStatus(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid PaymentStatus", str)
-	}
-	return nil
-}
-
-func (e PaymentStatus) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
 }

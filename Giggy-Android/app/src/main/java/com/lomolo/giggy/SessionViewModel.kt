@@ -22,10 +22,7 @@ class SessionViewModel(
         .filterNotNull()
         .map {
             if (it.isNotEmpty()) {
-                Session(
-                    id = it[0].id,
-                    token = it[0].token,
-                )
+                it[0]
             } else {
                 Session()
             }
@@ -37,12 +34,12 @@ class SessionViewModel(
         )
 
     companion object {
-        private const val TIMEOUT_MILLIS = 2_000L
+        private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    fun refreshSession(id: String, token: String) = viewModelScope.launch {
+    fun refreshSession(id: String) = viewModelScope.launch {
         try {
-            sessionRepository.refreshSession(Session(id, token))
+            sessionRepository.refreshSession(id)
         } catch(e: IOException) {
             e.printStackTrace()
         }

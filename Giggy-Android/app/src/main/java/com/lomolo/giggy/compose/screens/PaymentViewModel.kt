@@ -1,6 +1,7 @@
 package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.lomolo.giggy.common.PhoneNumberUtility
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.repository.IPayment
+import com.lomolo.giggy.repository.ISession
 import com.lomolo.giggy.type.PayWithMpesaInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +21,7 @@ import okio.IOException
 
 class PaymentViewModel(
     private val paymentRepository: IPayment,
+    private val sessionRepository: ISession,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _paymentInput: MutableStateFlow<MpesaPay> = MutableStateFlow(MpesaPay())
@@ -26,8 +29,11 @@ class PaymentViewModel(
 
     var payingWithMpesaState: PayingWithMpesa by mutableStateOf(PayingWithMpesa.Success)
         private set
+    var pollingRetry: Int by mutableIntStateOf(1)
+        private set
 
-    private val paymentReason: String = checkNotNull(savedStateHandle[MpesaPaymentScreenDestination.paymentReason])
+    private val paymentReason: String =
+        checkNotNull(savedStateHandle[MpesaPaymentScreenDestination.paymentReason])
 
     fun setPhone(phone: String) {
         _paymentInput.update { it.copy(phone = phone) }
@@ -49,12 +55,14 @@ class PaymentViewModel(
             payingWithMpesaState = PayingWithMpesa.Loading
             viewModelScope.launch {
                 payingWithMpesaState = try {
-                    val phone = PhoneNumberUtility.parseNumber(_paymentInput.value.phone, deviceDetails.countryCode)
+                    val phone = PhoneNumberUtility.parseNumber(
+                        _paymentInput.value.phone, deviceDetails.countryCode
+                    )
                     val res = paymentRepository.payWithMpesa(
                         PayWithMpesaInput(
                             amount = amount,
                             currency = currency,
-                            phone = phone.countryCode.toString()+phone.nationalNumber.toString(),
+                            phone = phone.countryCode.toString() + phone.nationalNumber.toString(),
                             reason = paymentReason,
                         )
                     ).dataOrThrow()
@@ -68,12 +76,29 @@ class PaymentViewModel(
         }
     }
 
-    fun reset() {
-        _paymentInput.value = MpesaPay()
-        payingWithMpesaState = PayingWithMpesa.Success
+    fun verifyPayment(cb: () -> Unit = {}) = viewModelScope.launch {
+        try {
+            val res = paymentRepository.getPaystackPaymentVerification(_paymentInput.value.payReferenceId).dataOrThrow()
+            when(res.getPaystackPaymentVerification.status) {
+                "success" -> {
+                    sessionRepository.refreshSession(res.getPaystackPaymentVerification.sessionId.toString())
+                    payingWithMpesaState = PayingWithMpesa.Success.also {
+                        pollingRetry = 0
+                        cb()
+                    }
+                }
+                "failed" -> {
+                    payingWithMpesaState = PayingWithMpesa.Failed
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
-    fun paymentUpdates() = paymentRepository.paymentUpdates(_paymentInput.value.payReferenceId)
+    fun reset() {
+        _paymentInput.value = MpesaPay()
+    }
 }
 
 data class MpesaPay(
@@ -84,6 +109,7 @@ data class MpesaPay(
 interface PayingWithMpesa {
     data object Success : PayingWithMpesa
     data object Loading : PayingWithMpesa
+    data object Failed: PayingWithMpesa
     data object PayingOffline : PayingWithMpesa
     data class Error(val msg: String?) : PayingWithMpesa
 }

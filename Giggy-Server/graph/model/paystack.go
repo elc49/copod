@@ -50,3 +50,16 @@ type ChargeMpesaPhoneCallbackRes struct {
 		} `json:"authorization"`
 	} `json:"data"`
 }
+
+type MpesaTransactionVerification struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+	Data    struct {
+		ID        int    `json:"id"`
+		Domain    string `json:"domain"`
+		Status    string `json:"status"`
+		Reference string `json:"reference"`
+		Amount    int    `json:"amount"`
+		PaidAt    string `json:"paid_at"`
+	} `json:"data"`
+}

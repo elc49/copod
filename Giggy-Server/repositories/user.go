@@ -3,9 +3,7 @@ package repositories
 import (
 	"context"
 
-	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
-	"github.com/google/uuid"
 )
 
 type UserRepository struct {
@@ -23,41 +21,4 @@ func (r *UserRepository) CountUsers(ctx context.Context) (int, error) {
 	}
 
 	return int(count), nil
-}
-
-func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*model.User, error) {
-	user, err := r.queries.GetUserByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.User{
-		ID:               user.ID,
-		HasFarmingRights: user.HasFarmingRights,
-		HasPosterRights:  user.HasPosterRights,
-	}, nil
-}
-
-func (r *UserRepository) SetFarmingRights(ctx context.Context, args db.SetFarmingRightsParams) (*model.User, error) {
-	user, err := r.queries.SetFarmingRights(ctx, args)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.User{
-		ID:               user.ID,
-		HasFarmingRights: user.HasFarmingRights,
-	}, nil
-}
-
-func (r *UserRepository) SetPosterRights(ctx context.Context, args db.SetPosterRightsParams) (*model.User, error) {
-	user, err := r.queries.SetPosterRights(ctx, args)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.User{
-		ID:              user.ID,
-		HasPosterRights: user.HasPosterRights,
-	}, nil
 }

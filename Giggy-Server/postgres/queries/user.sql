@@ -16,12 +16,12 @@ WHERE phone = $1 AND deleted_at IS NULL;
 SELECT id, phone, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL;
 
--- name: SetFarmingRights :one
+-- name: SetUserFarmingRights :one
 UPDATE users SET has_farming_rights = $1
 WHERE id = $2
 RETURNING *;
 
--- name: SetPosterRights :one
+-- name: SetUserPosterRights :one
 UPDATE users SET has_poster_rights = $1
 WHERE id = $2
 RETURNING *;

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -23,7 +22,6 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/gorilla/websocket"
 )
 
 type Server struct {
@@ -63,19 +61,10 @@ func (s *Server) MountHandlers() {
 	// Data controllers
 	signinController := controllers.SigninController{}
 	signinController.Init(s.Db)
-	userController := controllers.UserController{}
-	userController.Init(s.Db)
 
 	// GraphQL handler
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
-	graphqlHandler.AddTransport(&transport.Websocket{
-		KeepAlivePingInterval: time.Second * 10,
-		Upgrader: websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool {
-				return true
-			},
-		},
-	})
+	graphqlHandler.AddTransport(&transport.Websocket{})
 
 	// Middlewares
 	s.Router.Use(middleware.Heartbeat("/ping"))
@@ -89,13 +78,12 @@ func (s *Server) MountHandlers() {
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
 		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)
-		r.Handle("/subscription", graphqlHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AllowContentType("application/json"))
 
 			r.Handle("/ip", handlers.Ip())
 			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
-			r.Handle("/refresh/token", handlers.RefreshToken(userController))
+			r.Handle("/refresh/token", handlers.RefreshToken(signinController))
 			r.With(giggyMiddleware.Paystack).Handle("/webhook/paystack", webhook.Paystack())
 		})
 		r.Handle("/img/upload", handlers.ImageUploader())
