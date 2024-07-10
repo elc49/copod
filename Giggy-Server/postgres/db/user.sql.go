@@ -65,18 +65,19 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, phone, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
+SELECT id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	ID               uuid.UUID `json:"id"`
-	Phone            string    `json:"phone"`
-	Avatar           string    `json:"avatar"`
-	HasFarmingRights bool      `json:"has_farming_rights"`
-	HasPosterRights  bool      `json:"has_poster_rights"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	ID               uuid.UUID      `json:"id"`
+	Phone            string         `json:"phone"`
+	Username         sql.NullString `json:"username"`
+	Avatar           string         `json:"avatar"`
+	HasFarmingRights bool           `json:"has_farming_rights"`
+	HasPosterRights  bool           `json:"has_poster_rights"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
@@ -85,6 +86,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
+		&i.Username,
 		&i.Avatar,
 		&i.HasFarmingRights,
 		&i.HasPosterRights,

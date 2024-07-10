@@ -77,7 +77,7 @@ func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.
 
 // User is the resolver for the user field.
 func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
-	return nil, nil
+	return r.signinController.GetUserByID(ctx, obj.UserID)
 }
 
 // GetLocalizedPosters is the resolver for the getLocalizedPosters field.

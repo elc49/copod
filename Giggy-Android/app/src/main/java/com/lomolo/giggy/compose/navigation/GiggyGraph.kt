@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +34,7 @@ interface Navigation {
     val route: String
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun GiggyNavigationHost(
     modifier: Modifier = Modifier,

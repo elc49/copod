@@ -5,12 +5,25 @@
 scalar Time
 scalar UUID
 
+# Address
+type Address {
+  addressString: String!
+  coords: Gps!
+}
+
+# Gps
+type Gps {
+  lat: Float!
+  lng: Float!
+}
+
 # Post
 type Post {
   id: UUID!
   text: String!
   image: String!
   tags: [String!]!
+  farmAddress: Address!
   userId: UUID!
   user: User!
   created_at: Time!

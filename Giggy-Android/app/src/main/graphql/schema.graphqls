@@ -1,3 +1,9 @@
+type Address {
+  addressString: String!
+
+  coords: Gps!
+}
+
 type Farm {
   id: UUID!
 
@@ -12,6 +18,12 @@ type Farm {
   updated_at: Time!
 
   deleted_at: Time
+}
+
+type Gps {
+  lat: Float!
+
+  lng: Float!
 }
 
 input GpsInput {
@@ -152,6 +164,8 @@ type Post {
   image: String!
 
   tags: [String!]!
+
+  farmAddress: Address!
 
   userId: UUID!
 

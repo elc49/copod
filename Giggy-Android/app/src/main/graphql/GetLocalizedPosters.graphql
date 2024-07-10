@@ -4,6 +4,14 @@ query GetLocalizedPosters($radius: GpsInput!) {
         text
         image
         userId
+        tags
+        farmAddress {
+            addressString
+        }
+        user {
+            avatar
+            username
+        }
         created_at
         updated_at
     }

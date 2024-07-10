@@ -8,6 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type Address struct {
+	AddressString string `json:"addressString"`
+	Coords        *Gps   `json:"coords"`
+}
+
 type Farm struct {
 	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`
@@ -102,14 +107,15 @@ type PaystackPaymentVerificationStatus struct {
 }
 
 type Post struct {
-	ID        uuid.UUID `json:"id"`
-	Text      string    `json:"text"`
-	Image     string    `json:"image"`
-	Tags      []string  `json:"tags"`
-	UserID    uuid.UUID `json:"userId"`
-	User      *User     `json:"user"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Text        string    `json:"text"`
+	Image       string    `json:"image"`
+	Tags        []string  `json:"tags"`
+	FarmAddress *Address  `json:"farmAddress"`
+	UserID      uuid.UUID `json:"userId"`
+	User        *User     `json:"user"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Query struct {

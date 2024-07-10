@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 )
 
@@ -38,13 +39,14 @@ func (r *PostRepository) GetLocalizedPosters(ctx context.Context, args db.GetLoc
 
 	for _, item := range p {
 		post := &model.Post{
-			ID:    item.ID,
-			Text:  item.Text,
-			Image: item.Image,
-			// TODO post location
-			UserID:    item.UserID,
-			CreatedAt: item.CreatedAt,
-			UpdatedAt: item.UpdatedAt,
+			ID:          item.ID,
+			Text:        item.Text,
+			Tags:        item.Tags,
+			Image:       item.Image,
+			FarmAddress: util.ParsePostgisLocation(item.Location),
+			UserID:      item.UserID,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
 		}
 		posts = append(posts, post)
 	}

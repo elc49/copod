@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.repository.IPosters
@@ -28,12 +27,14 @@ class DashboardViewModel(
     var gettingPostersState: GettingPostersState by mutableStateOf(GettingPostersState.Success)
         private set
 
-    private fun getLocalizedPosters(radius: LatLng) {
+    private val localGps = mainViewModel.getValidDeviceGps()
+
+    fun getLocalizedPosters() {
         if (gettingPostersState !is GettingPostersState.Loading) {
             gettingPostersState = GettingPostersState.Loading
             viewModelScope.launch {
                 gettingPostersState = try {
-                    val res = postersRepository.getLocalizedPosters(radius).dataOrThrow()
+                    val res = postersRepository.getLocalizedPosters(localGps).dataOrThrow()
                     _postersData.update { res.getLocalizedPosters }
                     GettingPostersState.Success
                 } catch(e: IOException) {
@@ -42,10 +43,6 @@ class DashboardViewModel(
                 }
             }
         }
-    }
-
-    init {
-        getLocalizedPosters(mainViewModel.getValidDeviceGps())
     }
 }
 
