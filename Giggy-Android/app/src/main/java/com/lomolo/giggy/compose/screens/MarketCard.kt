@@ -4,7 +4,10 @@ import android.icu.number.Notation
 import android.icu.number.NumberFormatter
 import android.icu.number.Precision
 import android.icu.util.Currency
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,12 +34,16 @@ import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.R
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 internal fun MarketCard(
-    modifier: Modifier = Modifier, data: GetLocalizedMarketsQuery.GetLocalizedMarket, currencyLocale: String
+    modifier: Modifier = Modifier,
+    onOpenCounter: () -> Unit,
+    data: GetLocalizedMarketsQuery.GetLocalizedMarket,
+    currencyLocale: String
 ) {
     OutlinedCard(
-        modifier.height(180.dp)
+        modifier.height(180.dp).clickable { onOpenCounter() }
     ) {
         Box(Modifier.fillMaxSize()) {
             Box {
@@ -83,11 +90,9 @@ internal fun MarketCard(
                 ) {
                     Text(
                         "${
-                            NumberFormatter.with()
-                                .notation(Notation.simple())
+                            NumberFormatter.with().notation(Notation.simple())
                                 .unit(Currency.getInstance(currencyLocale))
-                                .precision(Precision.maxFraction(2))
-                                .locale(Locale.US)
+                                .precision(Precision.maxFraction(2)).locale(Locale.US)
                                 .format(data.pricePerUnit)
                         } / ${data.unit}",
                         style = MaterialTheme.typography.titleMedium,
