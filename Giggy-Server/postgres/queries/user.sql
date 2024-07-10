@@ -13,7 +13,7 @@ SELECT id, phone, has_farming_rights, has_poster_rights, created_at, updated_at 
 WHERE phone = $1 AND deleted_at IS NULL;
 
 -- name: GetUserByID :one
-SELECT id, phone, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
+SELECT id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: SetUserFarmingRights :one

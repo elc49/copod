@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,6 +50,7 @@ object DashboardScreenDestination : Navigation {
     override val route = "dashboard-home"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
@@ -57,6 +61,10 @@ fun DashboardScreen(
     sessionViewModel: SessionViewModel,
     viewModel: DashboardViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getLocalizedPosters()
+    }
+
     val session by sessionViewModel.sessionUiState.collectAsState()
     val posters by viewModel.posters.collectAsState()
 
@@ -120,6 +128,7 @@ fun DashboardScreen(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 internal fun Content(
     modifier: Modifier = Modifier,
@@ -128,9 +137,7 @@ internal fun Content(
     LazyColumn(modifier = modifier) {
         items(posters) {
             PostCard(
-                text = it.text,
-                images = listOf(it.image),
-                tags = listOf(),
+                poster = it,
             )
         }
     }

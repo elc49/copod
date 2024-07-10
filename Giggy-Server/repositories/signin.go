@@ -67,5 +67,6 @@ func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*mo
 		Avatar:           user.Avatar,
 		HasFarmingRights: user.HasFarmingRights,
 		HasPosterRights:  user.HasPosterRights,
+		Username:         user.Username.String,
 	}, nil
 }

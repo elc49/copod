@@ -51,6 +51,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Address struct {
+		AddressString func(childComplexity int) int
+		Coords        func(childComplexity int) int
+	}
+
 	Farm struct {
 		CreatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
@@ -59,6 +64,11 @@ type ComplexityRoot struct {
 		Thumbnail func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UserID    func(childComplexity int) int
+	}
+
+	Gps struct {
+		Lat func(childComplexity int) int
+		Lng func(childComplexity int) int
 	}
 
 	Market struct {
@@ -113,14 +123,15 @@ type ComplexityRoot struct {
 	}
 
 	Post struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Image     func(childComplexity int) int
-		Tags      func(childComplexity int) int
-		Text      func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-		User      func(childComplexity int) int
-		UserID    func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		FarmAddress func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Image       func(childComplexity int) int
+		Tags        func(childComplexity int) int
+		Text        func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		User        func(childComplexity int) int
+		UserID      func(childComplexity int) int
 	}
 
 	Query struct {
@@ -190,6 +201,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Address.addressString":
+		if e.complexity.Address.AddressString == nil {
+			break
+		}
+
+		return e.complexity.Address.AddressString(childComplexity), true
+
+	case "Address.coords":
+		if e.complexity.Address.Coords == nil {
+			break
+		}
+
+		return e.complexity.Address.Coords(childComplexity), true
+
 	case "Farm.created_at":
 		if e.complexity.Farm.CreatedAt == nil {
 			break
@@ -238,6 +263,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Farm.UserID(childComplexity), true
+
+	case "Gps.lat":
+		if e.complexity.Gps.Lat == nil {
+			break
+		}
+
+		return e.complexity.Gps.Lat(childComplexity), true
+
+	case "Gps.lng":
+		if e.complexity.Gps.Lng == nil {
+			break
+		}
+
+		return e.complexity.Gps.Lng(childComplexity), true
 
 	case "Market.created_at":
 		if e.complexity.Market.CreatedAt == nil {
@@ -496,6 +535,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Post.CreatedAt(childComplexity), true
+
+	case "Post.farmAddress":
+		if e.complexity.Post.FarmAddress == nil {
+			break
+		}
+
+		return e.complexity.Post.FarmAddress(childComplexity), true
 
 	case "Post.id":
 		if e.complexity.Post.ID == nil {
@@ -1040,6 +1086,100 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Address_addressString(ctx context.Context, field graphql.CollectedField, obj *model.Address) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Address_addressString(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressString, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Address_addressString(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Address",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Address_coords(ctx context.Context, field graphql.CollectedField, obj *model.Address) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Address_coords(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coords, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Gps)
+	fc.Result = res
+	return ec.marshalNGps2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGps(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Address_coords(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Address",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "lat":
+				return ec.fieldContext_Gps_lat(ctx, field)
+			case "lng":
+				return ec.fieldContext_Gps_lng(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Gps", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Farm_id(ctx context.Context, field graphql.CollectedField, obj *model.Farm) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Farm_id(ctx, field)
 	if err != nil {
@@ -1340,6 +1480,94 @@ func (ec *executionContext) fieldContext_Farm_deleted_at(_ context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Gps_lat(ctx context.Context, field graphql.CollectedField, obj *model.Gps) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Gps_lat(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lat, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Gps_lat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Gps",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Gps_lng(ctx context.Context, field graphql.CollectedField, obj *model.Gps) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Gps_lng(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lng, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Gps_lng(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Gps",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1788,6 +2016,8 @@ func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context
 				return ec.fieldContext_Post_image(ctx, field)
 			case "tags":
 				return ec.fieldContext_Post_tags(ctx, field)
+			case "farmAddress":
+				return ec.fieldContext_Post_farmAddress(ctx, field)
 			case "userId":
 				return ec.fieldContext_Post_userId(ctx, field)
 			case "user":
@@ -3111,6 +3341,56 @@ func (ec *executionContext) fieldContext_Post_tags(_ context.Context, field grap
 	return fc, nil
 }
 
+func (ec *executionContext) _Post_farmAddress(ctx context.Context, field graphql.CollectedField, obj *model.Post) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Post_farmAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FarmAddress, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Address)
+	fc.Result = res
+	return ec.marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Post_farmAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Post",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "addressString":
+				return ec.fieldContext_Address_addressString(ctx, field)
+			case "coords":
+				return ec.fieldContext_Address_coords(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Address", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Post_userId(ctx context.Context, field graphql.CollectedField, obj *model.Post) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Post_userId(ctx, field)
 	if err != nil {
@@ -3350,6 +3630,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedPosters(ctx context.C
 				return ec.fieldContext_Post_image(ctx, field)
 			case "tags":
 				return ec.fieldContext_Post_tags(ctx, field)
+			case "farmAddress":
+				return ec.fieldContext_Post_farmAddress(ctx, field)
 			case "userId":
 				return ec.fieldContext_Post_userId(ctx, field)
 			case "user":
@@ -6388,6 +6670,50 @@ func (ec *executionContext) unmarshalInputPayWithMpesaInput(ctx context.Context,
 
 // region    **************************** object.gotpl ****************************
 
+var addressImplementors = []string{"Address"}
+
+func (ec *executionContext) _Address(ctx context.Context, sel ast.SelectionSet, obj *model.Address) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, addressImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Address")
+		case "addressString":
+			out.Values[i] = ec._Address_addressString(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "coords":
+			out.Values[i] = ec._Address_coords(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var farmImplementors = []string{"Farm"}
 
 func (ec *executionContext) _Farm(ctx context.Context, sel ast.SelectionSet, obj *model.Farm) graphql.Marshaler {
@@ -6431,6 +6757,50 @@ func (ec *executionContext) _Farm(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "deleted_at":
 			out.Values[i] = ec._Farm_deleted_at(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var gpsImplementors = []string{"Gps"}
+
+func (ec *executionContext) _Gps(ctx context.Context, sel ast.SelectionSet, obj *model.Gps) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gpsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Gps")
+		case "lat":
+			out.Values[i] = ec._Gps_lat(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lng":
+			out.Values[i] = ec._Gps_lng(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6929,6 +7299,11 @@ func (ec *executionContext) _Post(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "tags":
 			out.Values[i] = ec._Post_tags(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "farmAddress":
+			out.Values[i] = ec._Post_farmAddress(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -7646,6 +8021,16 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐAddress(ctx context.Context, sel ast.SelectionSet, v *model.Address) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Address(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7732,6 +8117,16 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGps(ctx context.Context, sel ast.SelectionSet, v *model.Gps) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Gps(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNGpsInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (model.GpsInput, error) {
