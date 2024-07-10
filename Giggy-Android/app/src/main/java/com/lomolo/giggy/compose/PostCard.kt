@@ -84,8 +84,6 @@ fun PostCard(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            // TODO post created_at
-            TimeSince(poster.created_at.toString())
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -181,7 +179,7 @@ fun PostCard(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun TimeSince(date: String) {
+private fun TimeSince(date: String) {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
     val dateTime = LocalDateTime.parse(date, formatter)
     val now = LocalDateTime.now()
