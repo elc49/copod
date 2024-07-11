@@ -58,8 +58,8 @@ internal fun MarketCard(
     modifier: Modifier = Modifier,
     data: GetLocalizedMarketsQuery.GetLocalizedMarket,
     currencyLocale: String,
-    addOrder: (String) -> Unit,
-    removeOrder: (String) -> Unit,
+    addOrder: () -> Unit,
+    removeOrder: () -> Unit,
     orders: Map<String, Order>,
     increaseOrderVolume: (String) -> Unit,
     decreaseOrderVolume: (String) -> Unit,
@@ -68,13 +68,13 @@ internal fun MarketCard(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val onOpenCounter = { showBottomSheet = true }
-    val onCloseBottomSheet = { orderId: String ->
+    val onCloseBottomSheet = {
         scope.launch {
             sheetState.hide()
         }.invokeOnCompletion {
             if (!sheetState.isVisible) {
                 showBottomSheet = false
-                removeOrder(orderId)
+                removeOrder()
             }
         }
     }
@@ -82,7 +82,7 @@ internal fun MarketCard(
     OutlinedCard(
         modifier
             .height(180.dp)
-            .clickable { addOrder(data.id.toString()); onOpenCounter() }) {
+            .clickable { addOrder(); onOpenCounter() }) {
         Box(Modifier.fillMaxSize()) {
             Box {
                 AsyncImage(
@@ -142,7 +142,7 @@ internal fun MarketCard(
         }
         if (showBottomSheet) {
             CounterAction(
-                onDismissRequest = { onCloseBottomSheet(data.id.toString()) },
+                onDismissRequest = { onCloseBottomSheet() },
                 sheetState = sheetState,
                 order = orders[data.id.toString()],
                 increaseOrderVolume = { increaseOrderVolume(data.id.toString()) },
@@ -209,7 +209,7 @@ private fun CounterAction(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onDismissRequest() },
                 contentPadding = PaddingValues(14.dp),
                 modifier = Modifier
                     .weight(1f)

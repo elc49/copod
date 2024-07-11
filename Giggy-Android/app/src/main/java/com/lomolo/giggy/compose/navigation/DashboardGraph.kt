@@ -57,6 +57,8 @@ import com.lomolo.giggy.compose.screens.FarmScreenDestination
 import com.lomolo.giggy.compose.screens.FarmSubscriptionScreen
 import com.lomolo.giggy.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.giggy.compose.screens.FarmsScreen
+import com.lomolo.giggy.compose.screens.MarketCartScreen
+import com.lomolo.giggy.compose.screens.MarketCartScreenDestination
 import com.lomolo.giggy.compose.screens.MarketScreen
 import com.lomolo.giggy.compose.screens.MarketScreenDestination
 import com.lomolo.giggy.compose.screens.MpesaPaymentScreen
@@ -185,19 +187,20 @@ fun NavGraphBuilder.addDashboardGraph(
             )
         }
         composable(route = MarketScreenDestination.route) {
-            MarketScreen(deviceDetails = deviceDetails, bottomNav = {
-                BottomNavBar(
-                    modifier = modifier,
-                    onNavigateTo = onNavigateTo,
-                    currentDestination = it.destination
-                )
-            })
+            MarketScreen(deviceDetails = deviceDetails,
+                onNavigateToMarketCart = { navHostController.navigate(MarketCartScreenDestination.route) },
+                bottomNav = {
+                    BottomNavBar(
+                        modifier = modifier,
+                        onNavigateTo = onNavigateTo,
+                        currentDestination = it.destination
+                    )
+                })
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
 
-            FarmsScreen(
-                snackbarHostState = snackbarHostState,
+            FarmsScreen(snackbarHostState = snackbarHostState,
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
                 bottomNav = {
@@ -446,6 +449,16 @@ fun NavGraphBuilder.addDashboardGraph(
                     )
                 }
             }
+        }
+        dialog(
+            route = MarketCartScreenDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            MarketCartScreen(
+                onCloseDialog = {
+                    navHostController.popBackStack()
+                }
+            )
         }
     }
 }

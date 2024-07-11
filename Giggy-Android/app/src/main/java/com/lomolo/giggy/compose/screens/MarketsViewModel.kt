@@ -48,11 +48,14 @@ class MarketsViewModel(
     private val _orderData: MutableStateFlow<Map<String, Order>> = MutableStateFlow(mapOf())
     val orders: StateFlow<Map<String, Order>> = _orderData.asStateFlow()
 
-    fun addOrder(productId: String) {
-        _orderData.update {
-            val m = it.toMutableMap()
-            m[productId] = Order()
-            m.toImmutableMap()
+    fun addOrder(data: GetLocalizedMarketsQuery.GetLocalizedMarket) {
+        val productId: String = data.id.toString()
+        if (!_orderData.value.containsKey(productId)) {
+            _orderData.update {
+                val m = it.toMutableMap()
+                m[productId] = Order(productId)
+                m.toImmutableMap()
+            }
         }
     }
 
