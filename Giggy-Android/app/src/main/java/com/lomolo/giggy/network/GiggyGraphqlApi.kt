@@ -45,7 +45,7 @@ interface IGiggyGraphqlApi {
     suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
-    suspend fun getUserCartItems(): ApolloResponse<GetUserCartItemsQuery.Data>
+    suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
 }
 
@@ -126,9 +126,9 @@ class GiggyGraphqlApi(
         .query(GetPaystackPaymentVerificationQuery(referenceId = referenceId))
         .execute()
 
-    override suspend fun getUserCartItems(): ApolloResponse<GetUserCartItemsQuery.Data> = apolloClient
+    override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> = apolloClient
         .query(GetUserCartItemsQuery())
-        .execute()
+        .watch()
 
     override suspend fun addToCart(input: AddToCartInput) = apolloClient
         .mutation(AddToCartMutation(input))

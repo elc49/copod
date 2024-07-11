@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
@@ -16,12 +17,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import okhttp3.internal.toImmutableMap
 import okio.IOException
 
 class MarketsViewModel(
     private val marketsRepository: IMarkets,
     mainViewModel: MainViewModel,
+    private val apolloStore: ApolloStore,
 ) : ViewModel() {
     var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
         private set
@@ -52,10 +55,23 @@ class MarketsViewModel(
 
     fun addOrder(data: GetLocalizedMarketsQuery.GetLocalizedMarket) {
         val marketId: String = data.id.toString()
-        _orderData.update {
-            val m = it.toMutableMap()
-            m[marketId] = Order(marketId, data.farmId.toString(), 0)
-            m.toImmutableMap()
+        val itemInCart = _cartData.value.find { it.market_id.toString() == marketId }
+        if (itemInCart != null) {
+            _orderData.update {
+                val m = it.toMutableMap()
+                m[marketId] = Order(
+                    itemInCart.id.toString(),
+                    itemInCart.farm_id.toString(),
+                    itemInCart.volume,
+                )
+                m.toImmutableMap()
+            }
+        } else {
+            _orderData.update {
+                val m = it.toMutableMap()
+                m[marketId] = Order(marketId, data.farmId.toString(), 0)
+                m.toImmutableMap()
+            }
         }
     }
 
@@ -84,29 +100,34 @@ class MarketsViewModel(
         }
     }
 
-    private val _cartData: MutableStateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = MutableStateFlow(
-        listOf()
-    )
+    private val _cartData: MutableStateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> =
+        MutableStateFlow(
+            listOf()
+        )
     val cartItems: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = _cartData.asStateFlow()
     var gettingCartItems: GettingCartItemsState by mutableStateOf(GettingCartItemsState.Success)
         private set
 
     private fun getUserCartItems() = viewModelScope.launch {
-        gettingCartItems = try {
-            val res = marketsRepository.getUserCartItems().dataOrThrow()
-            _cartData.update { res.getUserCartItems }
-            GettingCartItemsState.Success
-        } catch(e: IOException) {
+        try {
+            marketsRepository
+                .getUserCartItems()
+                .collect {res ->
+                    _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                    gettingCartItems = GettingCartItemsState.Success
+                }
+        } catch (e: IOException) {
             e.printStackTrace()
-            GettingCartItemsState.Error(e.localizedMessage)
+            _cartData.update { listOf() }
+            gettingCartItems = GettingCartItemsState.Success
         }
     }
 
     var addingToCart: AddingToCartState by mutableStateOf(AddingToCartState.Success)
         private set
 
-    fun addToCart(input: Order) {
-        if (addingToCart !is AddingToCartState.Loading) {
+    fun addToCart(input: Order, cb: () -> Unit = {}) {
+        if (addingToCart !is AddingToCartState.Loading && validInput(input)) {
             addingToCart = AddingToCartState.Loading
             viewModelScope.launch {
                 addingToCart = try {
@@ -117,13 +138,37 @@ class MarketsViewModel(
                             input.farmId,
                         )
                     ).dataOrThrow()
-                    AddingToCartState.Success
-                } catch(e: IOException) {
+                    try {
+                        val updatedCacheData = apolloStore.readOperation(
+                            GetUserCartItemsQuery()
+                        ).getUserCartItems.toMutableList().apply {
+                            add(
+                                GetUserCartItemsQuery.GetUserCartItem(
+                                    res.addToCart.id,
+                                    res.addToCart.farm_id,
+                                    res.addToCart.market_id,
+                                    res.addToCart.volume,
+                                )
+                            )
+                        }.toImmutableList()
+                        apolloStore.writeOperation(
+                            GetUserCartItemsQuery(),
+                            GetUserCartItemsQuery.Data(updatedCacheData),
+                        )
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                    AddingToCartState.Success.also { cb() }
+                } catch (e: IOException) {
                     e.printStackTrace()
                     AddingToCartState.Error(e.localizedMessage)
                 }
             }
         }
+    }
+
+    private fun validInput(uiState: Order): Boolean {
+        return uiState.marketId.isNotBlank() && uiState.farmId.isNotBlank()
     }
 
     init {
@@ -139,15 +184,15 @@ data class Order(
 )
 
 interface AddingToCartState {
-    data object Success: AddingToCartState
-    data object Loading: AddingToCartState
-    data class Error(val msg: String?): AddingToCartState
+    data object Success : AddingToCartState
+    data object Loading : AddingToCartState
+    data class Error(val msg: String?) : AddingToCartState
 }
 
 interface GettingCartItemsState {
-    data object Success: GettingCartItemsState
-    data object Loading: GettingCartItemsState
-    data class Error(val msg: String?): GettingCartItemsState
+    data object Success : GettingCartItemsState
+    data object Loading : GettingCartItemsState
+    data class Error(val msg: String?) : GettingCartItemsState
 }
 
 interface GettingMarketsState {

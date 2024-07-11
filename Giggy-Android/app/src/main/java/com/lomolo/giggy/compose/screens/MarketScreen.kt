@@ -129,6 +129,8 @@ fun MarketScreen(
                                         marketId
                                     )
                                 },
+                                addToCart = { order: Order, cb: () -> Unit -> viewModel.addToCart(order) { cb () } },
+                                addingToCart = viewModel.addingToCart,
                             )
                         }
                     }

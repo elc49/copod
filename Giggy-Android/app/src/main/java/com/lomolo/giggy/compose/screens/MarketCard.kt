@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.KeyboardArrowDown
 import androidx.compose.material.icons.twotone.KeyboardArrowUp
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,6 +65,8 @@ internal fun MarketCard(
     orders: Map<String, Order>,
     increaseOrderVolume: (String) -> Unit,
     decreaseOrderVolume: (String) -> Unit,
+    addToCart: (Order, cb: () -> Unit) -> Unit,
+    addingToCart: AddingToCartState,
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -149,6 +153,8 @@ internal fun MarketCard(
                 order = orders[data.id.toString()],
                 increaseOrderVolume = { increaseOrderVolume(data.id.toString()) },
                 decreaseOrderVolume = { decreaseOrderVolume(data.id.toString()) },
+                addToCart = { order: Order -> addToCart(order) { onCloseBottomSheet() } },
+                addingToCart = addingToCart,
             )
         }
     }
@@ -166,11 +172,11 @@ private fun CounterAction(
     decreaseOrderVolume: () -> Unit,
     price: Int,
     currency: String,
+    addToCart: (Order) -> Unit,
+    addingToCart: AddingToCartState,
 ) {
     ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState
+        modifier = modifier, onDismissRequest = onDismissRequest, sheetState = sheetState
     ) {
         Row(
             Modifier
@@ -189,22 +195,19 @@ private fun CounterAction(
                 )
             }
             Text(
-                "${order?.volume}",
-                modifier = Modifier
+                "${order?.volume}", modifier = Modifier
                     .background(
                         MaterialTheme.colorScheme.surfaceDim,
                         MaterialTheme.shapes.small,
                     )
-                    .padding(start = 8.dp, end = 8.dp),
-                style = MaterialTheme.typography.titleLarge
+                    .padding(start = 8.dp, end = 8.dp), style = MaterialTheme.typography.titleLarge
             )
             OutlinedIconButton(
                 onClick = { decreaseOrderVolume() },
                 shape = MaterialTheme.shapes.small,
             ) {
                 Icon(
-                    Icons.TwoTone.KeyboardArrowDown,
-                    contentDescription = null
+                    Icons.TwoTone.KeyboardArrowDown, contentDescription = null
                 )
             }
         }
@@ -214,29 +217,42 @@ private fun CounterAction(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Button(
-                onClick = { onDismissRequest() },
+                onClick = {
+                    if (order != null) {
+                        addToCart(order)
+                    }
+                },
                 contentPadding = PaddingValues(14.dp),
                 modifier = Modifier
                     .weight(1f)
                     .padding(bottom = 16.dp),
                 shape = MaterialTheme.shapes.extraSmall,
             ) {
-                if (order?.volume != 0) {
-                    Text(
-                        "Add to Cart[${
-                            NumberFormatter.with().notation(Notation.simple())
-                                .unit(Currency.getInstance(currency))
-                                .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                .format(price.times(order?.volume ?: 0))
-                        }]",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                } else {
-                    Text(
-                        "Add to Cart",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                when (addingToCart) {
+                    AddingToCartState.Success -> {
+                        if (order?.volume != 0) {
+                            Text(
+                                "Add to Cart[${
+                                    NumberFormatter.with().notation(Notation.simple())
+                                        .unit(Currency.getInstance(currency))
+                                        .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                        .format(price.times(order?.volume ?: 0))
+                                }]",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        } else {
+                            Text(
+                                "Add to Cart",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+
+                    AddingToCartState.Loading -> CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }

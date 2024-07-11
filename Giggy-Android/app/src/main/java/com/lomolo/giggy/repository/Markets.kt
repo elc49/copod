@@ -7,10 +7,11 @@ import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import com.lomolo.giggy.type.AddToCartInput
+import kotlinx.coroutines.flow.Flow
 
 interface IMarkets {
     suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
-    suspend fun getUserCartItems(): ApolloResponse<GetUserCartItemsQuery.Data>
+    suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
 }
 
