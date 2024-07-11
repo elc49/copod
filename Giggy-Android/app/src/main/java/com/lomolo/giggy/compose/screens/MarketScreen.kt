@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,10 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
@@ -35,16 +43,43 @@ object MarketScreenDestination : Navigation {
     override val route = "dashboard-market"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun MarketScreen(
     modifier: Modifier = Modifier,
     bottomNav: @Composable () -> Unit = {},
     deviceDetails: DeviceDetails,
+    onNavigateToMarketCart: () -> Unit,
     viewModel: MarketsViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
+    val orders by viewModel.orders.collectAsState()
 
     Scaffold(
+        topBar = {
+            TopAppBar(title = {
+                Text(
+                    "Available markets",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+            actions = {
+                IconButton(onClick = onNavigateToMarketCart) {
+                   Icon(
+                       painter = painterResource(id = R.drawable.cart_outlined),
+                       modifier = Modifier.size(32.dp),
+                       contentDescription = null
+                   )
+                }
+                // TODO show counter if cart content > 0
+                Text(
+                    "[${0}]",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            })
+        },
         bottomBar = bottomNav,
     ) { innerPadding ->
         Surface(
@@ -68,8 +103,15 @@ fun MarketScreen(
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(markets) {
-                            MarketCard(currencyLocale = deviceDetails.currency, data = it)
+                        items(markets) { market ->
+                            MarketCard(currencyLocale = deviceDetails.currency,
+                                data = market,
+                                addOrder = { viewModel.addOrder(market) },
+                                removeOrder = { viewModel.removeOrder(market.id.toString()) },
+                                orders = orders,
+                                increaseOrderVolume = { orderId -> viewModel.increaseOrderVolume(orderId) },
+                                decreaseOrderVolume = { orderId -> viewModel.decreaseOrderVolume(orderId) },
+                            )
                         }
                     }
                 } else {
