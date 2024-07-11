@@ -6,6 +6,7 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
 import com.google.android.gms.maps.model.LatLng
+import com.lomolo.giggy.AddToCartMutation
 import com.lomolo.giggy.CreateFarmMarketMutation
 import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateFarmMutation
@@ -17,6 +18,7 @@ import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GetPaystackPaymentVerificationQuery
+import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
 import com.lomolo.giggy.type.NewPostInput
@@ -24,6 +26,7 @@ import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
+import com.lomolo.giggy.type.AddToCartInput
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.PayWithMpesaInput
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +45,8 @@ interface IGiggyGraphqlApi {
     suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
+    suspend fun getUserCartItems(): ApolloResponse<GetUserCartItemsQuery.Data>
+    suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -119,5 +124,13 @@ class GiggyGraphqlApi(
 
     override suspend fun getPaystackPaymentVerification(referenceId: String) = apolloClient
         .query(GetPaystackPaymentVerificationQuery(referenceId = referenceId))
+        .execute()
+
+    override suspend fun getUserCartItems(): ApolloResponse<GetUserCartItemsQuery.Data> = apolloClient
+        .query(GetUserCartItemsQuery())
+        .execute()
+
+    override suspend fun addToCart(input: AddToCartInput) = apolloClient
+        .mutation(AddToCartMutation(input))
         .execute()
 }

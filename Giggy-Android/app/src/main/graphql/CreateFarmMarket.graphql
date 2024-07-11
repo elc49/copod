@@ -6,5 +6,6 @@ mutation CreateFarmMarket($input: NewFarmMarketInput!) {
         unit
         pricePerUnit
         volume
+        farmId
     }
 }

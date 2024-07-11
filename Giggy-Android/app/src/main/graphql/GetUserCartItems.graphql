@@ -1,0 +1,8 @@
+query GetUserCartItems {
+    getUserCartItems {
+        id
+        farm_id
+        market_id
+        volume
+    }
+}

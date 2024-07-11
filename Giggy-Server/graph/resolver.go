@@ -4,7 +4,6 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
-	"github.com/google/uuid"
 )
 
 // This file will not be regenerated automatically.
@@ -21,6 +20,7 @@ type Resolver struct {
 	orderController        controllers.OrderController
 	paymentController      controllers.PaymentController
 	subscriptionController controllers.SubscriptionController
+	cartController         controllers.CartController
 }
 
 func New(db *db.Queries, signinController controllers.SigninController) Config {
@@ -36,6 +36,8 @@ func New(db *db.Queries, signinController controllers.SigninController) Config {
 	paymentController.Init(db)
 	subscriptionController := controllers.SubscriptionController{}
 	subscriptionController.Init(db)
+	cartController := controllers.CartController{}
+	cartController.Init(db)
 
 	resolver := &Resolver{
 		postController,
@@ -45,18 +47,10 @@ func New(db *db.Queries, signinController controllers.SigninController) Config {
 		orderController,
 		paymentController,
 		subscriptionController,
+		cartController,
 	}
 
 	c := Config{Resolvers: resolver}
 
 	return c
-}
-
-func StringToUUID(id string) uuid.UUID {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		log.WithError(err).Error("resolver: StringToUUID()")
-	}
-
-	return uid
 }

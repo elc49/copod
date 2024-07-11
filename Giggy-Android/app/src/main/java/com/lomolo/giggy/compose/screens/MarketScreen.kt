@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
@@ -55,6 +54,7 @@ fun MarketScreen(
 ) {
     val markets by viewModel.markets.collectAsState()
     val orders by viewModel.orders.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
 
     Scaffold(
         topBar = {
@@ -64,20 +64,29 @@ fun MarketScreen(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
-            },
-            actions = {
-                IconButton(onClick = onNavigateToMarketCart) {
-                   Icon(
-                       painter = painterResource(id = R.drawable.cart_outlined),
-                       modifier = Modifier.size(32.dp),
-                       contentDescription = null
-                   )
+            }, actions = {
+                if (markets.isNotEmpty()) {
+                    when (viewModel.gettingCartItems) {
+                        GettingCartItemsState.Success -> {
+                            IconButton(onClick = onNavigateToMarketCart) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cart_outlined),
+                                    modifier = Modifier.size(32.dp),
+                                    contentDescription = null
+                                )
+                            }
+                            // TODO show counter if cart content > 0
+                            Text(
+                                "[${cartItems.size}]",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+
+                        GettingCartItemsState.Loading -> CircularProgressIndicator(
+                            Modifier.size(24.dp)
+                        )
+                    }
                 }
-                // TODO show counter if cart content > 0
-                Text(
-                    "[${0}]",
-                    style = MaterialTheme.typography.titleLarge,
-                )
             })
         },
         bottomBar = bottomNav,
@@ -104,13 +113,22 @@ fun MarketScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(markets) { market ->
-                            MarketCard(currencyLocale = deviceDetails.currency,
+                            MarketCard(
+                                currencyLocale = deviceDetails.currency,
                                 data = market,
                                 addOrder = { viewModel.addOrder(market) },
                                 removeOrder = { viewModel.removeOrder(market.id.toString()) },
                                 orders = orders,
-                                increaseOrderVolume = { orderId -> viewModel.increaseOrderVolume(orderId) },
-                                decreaseOrderVolume = { orderId -> viewModel.decreaseOrderVolume(orderId) },
+                                increaseOrderVolume = { marketId ->
+                                    viewModel.increaseOrderVolume(
+                                        marketId
+                                    )
+                                },
+                                decreaseOrderVolume = { marketId ->
+                                    viewModel.decreaseOrderVolume(
+                                        marketId
+                                    )
+                                },
                             )
                         }
                     }

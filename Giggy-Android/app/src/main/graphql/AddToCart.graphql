@@ -1,0 +1,8 @@
+mutation AddToCart($input: AddToCartInput!) {
+    addToCart(input: $input) {
+        id
+        farm_id
+        market_id
+        volume
+    }
+}

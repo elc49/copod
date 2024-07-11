@@ -8,9 +8,25 @@ import (
 	"github.com/google/uuid"
 )
 
+type AddToCartInput struct {
+	Volume   int       `json:"volume"`
+	MarketID uuid.UUID `json:"marketId"`
+	FarmID   uuid.UUID `json:"farmId"`
+}
+
 type Address struct {
 	AddressString string `json:"addressString"`
 	Coords        *Gps   `json:"coords"`
+}
+
+type Cart struct {
+	ID        uuid.UUID `json:"id"`
+	Volume    int       `json:"volume"`
+	FarmID    uuid.UUID `json:"farm_id"`
+	MarketID  uuid.UUID `json:"market_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Farm struct {
@@ -34,6 +50,7 @@ type Market struct {
 	Image        string    `json:"image"`
 	Volume       int       `json:"volume"`
 	Unit         string    `json:"unit"`
+	FarmID       uuid.UUID `json:"farmId"`
 	Tag          string    `json:"tag"`
 	PricePerUnit int       `json:"pricePerUnit"`
 	CreatedAt    time.Time `json:"created_at"`

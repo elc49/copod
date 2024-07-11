@@ -59,6 +59,7 @@ type Market {
   image: String!
   volume: Int!
   unit: String!
+  farmId: UUID!
   tag: String!
   pricePerUnit: Int!
   created_at: Time!
@@ -101,6 +102,17 @@ type PaystackPaymentVerificationStatus {
   sessionId: UUID!
 }
 
+# Cart
+type Cart {
+  id: UUID!
+  volume: Int!
+  farm_id: UUID!
+  market_id: UUID!
+  user_id: UUID!
+  created_at: Time!
+  updated_at: Time!
+}
+
 input GpsInput {
   lat: Float!
   lng: Float!
@@ -137,6 +149,12 @@ input PayWithMpesaInput {
   reason: String!
 }
 
+input AddToCartInput {
+  volume: Int!
+  marketId: UUID!
+  farmId: UUID!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -147,6 +165,7 @@ type Query {
   getFarmOrders(id: UUID!): [Order!]!
   getFarmPayments(id: UUID!): [Payment!]!
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
+  getUserCartItems: [Cart!]!
 }
 
 type Mutation {
@@ -154,4 +173,5 @@ type Mutation {
   createFarm(input: NewFarmInput!): Farm!
   createFarmMarket(input: NewFarmMarketInput!): Market!
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
+  addToCart(input: AddToCartInput!): Cart!
 }

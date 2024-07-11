@@ -142,6 +142,8 @@ internal fun MarketCard(
         }
         if (showBottomSheet) {
             CounterAction(
+                currency = currencyLocale,
+                price = data.pricePerUnit,
                 onDismissRequest = { onCloseBottomSheet() },
                 sheetState = sheetState,
                 order = orders[data.id.toString()],
@@ -152,6 +154,7 @@ internal fun MarketCard(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CounterAction(
@@ -161,6 +164,8 @@ private fun CounterAction(
     order: Order?,
     increaseOrderVolume: () -> Unit,
     decreaseOrderVolume: () -> Unit,
+    price: Int,
+    currency: String,
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -216,11 +221,24 @@ private fun CounterAction(
                     .padding(bottom = 16.dp),
                 shape = MaterialTheme.shapes.extraSmall,
             ) {
-                Text(
-                    "Add to Cart",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                if (order?.volume != 0) {
+                    Text(
+                        "Add to Cart[${
+                            NumberFormatter.with().notation(Notation.simple())
+                                .unit(Currency.getInstance(currency))
+                                .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                .format(price.times(order?.volume ?: 0))
+                        }]",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                } else {
+                    Text(
+                        "Add to Cart",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
         }
     }

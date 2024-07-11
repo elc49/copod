@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
-	"github.com/elc49/giggy-monorepo/Giggy-Server/graph"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/jwt"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 )
 
@@ -19,7 +19,7 @@ func RefreshToken(signinController controllers.SigninController) http.Handler {
 		log := logger.GetLogger()
 		refreshToken := r.Header.Get("Refresh-Token")
 
-		user, err := signinController.GetUserByID(ctx, graph.StringToUUID(refreshToken))
+		user, err := signinController.GetUserByID(ctx, util.StringToUUID(refreshToken))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

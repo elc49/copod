@@ -74,7 +74,7 @@ func (q *Queries) CreateFarmMarket(ctx context.Context, arg CreateFarmMarketPara
 }
 
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
-SELECT id, product, image, price_per_unit, unit, location, created_at, updated_at FROM markets
+SELECT id, product, image, price_per_unit, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, $1::geography, $2)
 `
 
@@ -89,6 +89,7 @@ type GetLocalizedMarketsRow struct {
 	Image        string      `json:"image"`
 	PricePerUnit int32       `json:"price_per_unit"`
 	Unit         string      `json:"unit"`
+	FarmID       uuid.UUID   `json:"farm_id"`
 	Location     interface{} `json:"location"`
 	CreatedAt    time.Time   `json:"created_at"`
 	UpdatedAt    time.Time   `json:"updated_at"`
@@ -109,6 +110,7 @@ func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarke
 			&i.Image,
 			&i.PricePerUnit,
 			&i.Unit,
+			&i.FarmID,
 			&i.Location,
 			&i.CreatedAt,
 			&i.UpdatedAt,
