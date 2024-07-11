@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.KeyboardArrowDown
 import androidx.compose.material.icons.twotone.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,12 +60,15 @@ internal fun MarketCard(
     currencyLocale: String,
     addOrder: (String) -> Unit,
     removeOrder: (String) -> Unit,
+    orders: Map<String, Order>,
+    increaseOrderVolume: (String) -> Unit,
+    decreaseOrderVolume: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val onOpenCounter = { showBottomSheet = true }
-    val onCloseBottomSheet = {orderId: String ->
+    val onCloseBottomSheet = { orderId: String ->
         scope.launch {
             sheetState.hide()
         }.invokeOnCompletion {
@@ -139,6 +144,9 @@ internal fun MarketCard(
             CounterAction(
                 onDismissRequest = { onCloseBottomSheet(data.id.toString()) },
                 sheetState = sheetState,
+                order = orders[data.id.toString()],
+                increaseOrderVolume = { increaseOrderVolume(data.id.toString()) },
+                decreaseOrderVolume = { decreaseOrderVolume(data.id.toString()) },
             )
         }
     }
@@ -150,6 +158,9 @@ private fun CounterAction(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
+    order: Order?,
+    increaseOrderVolume: () -> Unit,
+    decreaseOrderVolume: () -> Unit,
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -157,12 +168,14 @@ private fun CounterAction(
         sheetState = sheetState
     ) {
         Row(
-            Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             OutlinedIconButton(
-                onClick = { /*TODO*/ },
+                onClick = { increaseOrderVolume() },
                 shape = MaterialTheme.shapes.small,
             ) {
                 Icon(
@@ -171,7 +184,7 @@ private fun CounterAction(
                 )
             }
             Text(
-                "${0}",
+                "${order?.volume}",
                 modifier = Modifier
                     .background(
                         MaterialTheme.colorScheme.surfaceDim,
@@ -181,12 +194,32 @@ private fun CounterAction(
                 style = MaterialTheme.typography.titleLarge
             )
             OutlinedIconButton(
-                onClick = { /*TODO*/ },
+                onClick = { decreaseOrderVolume() },
                 shape = MaterialTheme.shapes.small,
             ) {
                 Icon(
                     Icons.TwoTone.KeyboardArrowDown,
                     contentDescription = null
+                )
+            }
+        }
+        Row(
+            Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Button(
+                onClick = { /*TODO*/ },
+                contentPadding = PaddingValues(14.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(bottom = 16.dp),
+                shape = MaterialTheme.shapes.extraSmall,
+            ) {
+                Text(
+                    "Add to Cart",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }

@@ -46,6 +46,7 @@ fun MarketScreen(
     viewModel: MarketsViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
+    val orders by viewModel.orders.collectAsState()
 
     Scaffold(
         bottomBar = bottomNav,
@@ -76,6 +77,9 @@ fun MarketScreen(
                                 data = it,
                                 addOrder = { orderId -> viewModel.addOrder(orderId) },
                                 removeOrder = { orderId -> viewModel.removeOrder(orderId) },
+                                orders = orders,
+                                increaseOrderVolume = { orderId -> viewModel.increaseOrderVolume(orderId) },
+                                decreaseOrderVolume = { orderId -> viewModel.decreaseOrderVolume(orderId) },
                             )
                         }
                     }

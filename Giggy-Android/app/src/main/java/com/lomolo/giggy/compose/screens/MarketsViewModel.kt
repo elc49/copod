@@ -64,6 +64,22 @@ class MarketsViewModel(
         }
     }
 
+    fun increaseOrderVolume(productId: String) {
+        _orderData.update {
+            val m = it.toMutableMap()
+            m[productId] = m[productId]!!.copy(volume = m[productId]!!.volume.plus(1))
+            m.toImmutableMap()
+        }
+    }
+
+    fun decreaseOrderVolume(productId: String) {
+        _orderData.update {
+            val m = it.toMutableMap()
+            if (m[productId]!!.volume > 0) m[productId] = m[productId]!!.copy(volume = m[productId]!!.volume.minus(1))
+            m.toImmutableMap()
+        }
+    }
+
     init {
         getMarkets(mainViewModel.getValidDeviceGps())
     }
