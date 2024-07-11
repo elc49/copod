@@ -6,34 +6,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.KeyboardArrowDown
-import androidx.compose.material.icons.twotone.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -46,7 +31,6 @@ import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.ui.theme.inverseOnSurfaceLight
-import kotlinx.coroutines.launch
 
 object MarketScreenDestination : Navigation {
     override val title = null
@@ -54,7 +38,6 @@ object MarketScreenDestination : Navigation {
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarketScreen(
     modifier: Modifier = Modifier,
@@ -63,9 +46,6 @@ fun MarketScreen(
     viewModel: MarketsViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
-    val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = bottomNav,
@@ -92,7 +72,11 @@ fun MarketScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(markets) {
-                            MarketCard(onOpenCounter = { showBottomSheet = true }, currencyLocale = deviceDetails.currency, data = it)
+                            MarketCard(currencyLocale = deviceDetails.currency,
+                                data = it,
+                                addOrder = { orderId -> viewModel.addOrder(orderId) },
+                                removeOrder = { orderId -> viewModel.removeOrder(orderId) },
+                            )
                         }
                     }
                 } else {
@@ -115,73 +99,6 @@ fun MarketScreen(
                         )
                     }
                 }
-            }
-        }
-        if (showBottomSheet) {
-            CounterAction(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-                sheetState = sheetState,
-                onCloseBottomSheet = {
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        if (!sheetState.isVisible) {
-                            showBottomSheet = false
-                        }
-                    }
-                }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CounterAction(
-    modifier: Modifier = Modifier,
-    sheetState: SheetState,
-    onCloseBottomSheet: () -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState
-    ) {
-        Row(
-            Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            OutlinedIconButton(
-                onClick = { /*TODO*/ },
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Icon(
-                    Icons.TwoTone.KeyboardArrowUp,
-                    contentDescription = null,
-                )
-            }
-            Text(
-                "${0}",
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.surfaceDim,
-                        MaterialTheme.shapes.small,
-                    )
-                    .padding(start = 8.dp, end = 8.dp),
-                style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedIconButton(
-                onClick = { /*TODO*/ },
-                shape = MaterialTheme.shapes.small,
-            ) {
-               Icon(
-                   Icons.TwoTone.KeyboardArrowDown,
-                   contentDescription = null
-               )
             }
         }
     }

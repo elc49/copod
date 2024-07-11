@@ -14,17 +14,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableMap
 import okio.IOException
 
 class MarketsViewModel(
     private val marketsRepository: IMarkets,
     mainViewModel: MainViewModel,
-): ViewModel() {
+) : ViewModel() {
     var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
         private set
 
-    private val _marketsData: MutableStateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> = MutableStateFlow(listOf())
-    val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> = _marketsData.asStateFlow()
+    private val _marketsData: MutableStateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
+        MutableStateFlow(listOf())
+    val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
+        _marketsData.asStateFlow()
 
     private fun getMarkets(radius: LatLng) {
         if (gettingMarkets !is GettingMarketsState.Loading) {
@@ -42,13 +45,38 @@ class MarketsViewModel(
         }
     }
 
+    private val _orderData: MutableStateFlow<Map<String, Order>> = MutableStateFlow(mapOf())
+    val orders: StateFlow<Map<String, Order>> = _orderData.asStateFlow()
+
+    fun addOrder(productId: String) {
+        _orderData.update {
+            val m = it.toMutableMap()
+            m[productId] = Order()
+            m.toImmutableMap()
+        }
+    }
+
+    fun removeOrder(productId: String) {
+        _orderData.update {
+            val m = it.toMutableMap()
+            m.remove(productId)
+            m.toImmutableMap()
+        }
+    }
+
     init {
         getMarkets(mainViewModel.getValidDeviceGps())
     }
 }
 
+data class Order(
+    val productId: String = "",
+    val marketId: String = "",
+    val volume: Int = 0,
+)
+
 interface GettingMarketsState {
-    data object Loading: GettingMarketsState
-    data class Error(val msg: String?): GettingMarketsState
-    data object Success: GettingMarketsState
+    data object Loading : GettingMarketsState
+    data class Error(val msg: String?) : GettingMarketsState
+    data object Success : GettingMarketsState
 }
