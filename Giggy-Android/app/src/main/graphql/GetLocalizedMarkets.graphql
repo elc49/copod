@@ -4,6 +4,7 @@ query GetLocalizedMarkets($radius: GpsInput!) {
         name
         image
         pricePerUnit
+        farmId
         unit
     }
 }

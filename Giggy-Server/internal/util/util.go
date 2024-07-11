@@ -54,3 +54,12 @@ func ParsePostgisLocation(p interface{}) *model.Address {
 		return nil
 	}
 }
+
+func StringToUUID(id string) uuid.UUID {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		logrus.WithError(err).Error("util: StringToUUID()")
+	}
+
+	return uid
+}

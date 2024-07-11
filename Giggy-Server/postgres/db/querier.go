@@ -12,6 +12,7 @@ import (
 )
 
 type Querier interface {
+	AddToCart(ctx context.Context, arg AddToCartParams) (Cart, error)
 	BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, error)
 	ClearTestFarms(ctx context.Context) error
 	ClearTestMarkets(ctx context.Context) error
@@ -23,6 +24,7 @@ type Querier interface {
 	CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
+	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
 	GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error)
 	GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error)
@@ -35,8 +37,10 @@ type Querier interface {
 	GetRightPurchasePaymentByReferenceID(ctx context.Context, referenceID sql.NullString) (Payment, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)
+	GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]Cart, error)
 	SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error)
 	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
+	UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error)
 	UpdateRightsPurchaseStatus(ctx context.Context, arg UpdateRightsPurchaseStatusParams) (Payment, error)
 }
 

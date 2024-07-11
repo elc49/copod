@@ -108,6 +108,7 @@ object GiggyViewModelProvider {
             marketsViewModel = MarketsViewModel(
                 giggyApplication().container.marketsRepository,
                 mainViewModel,
+                giggyApplication().container.apolloClient.apolloStore,
             )
             marketsViewModel
         }

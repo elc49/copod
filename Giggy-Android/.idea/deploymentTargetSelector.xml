@@ -10,11 +10,11 @@
       </SelectionState>
       <SelectionState runConfigName="GiggyApplicationPreview">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-10T12:51:30.810237Z">
+        <DropdownSelection timestamp="2024-07-11T12:53:32.726319Z">
           <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/lomolo/.android/avd/Pixel_API_33.avd" />
-            </handle>
+            <template>
+              <DeviceId pluginId="FirebaseDirectAccess" type="TEMPLATE" identifier="model_id=dm3q/34" />
+            </template>
           </Target>
         </DropdownSelection>
         <DialogSelection />

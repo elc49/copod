@@ -1,7 +1,31 @@
+input AddToCartInput {
+  volume: Int!
+
+  marketId: UUID!
+
+  farmId: UUID!
+}
+
 type Address {
   addressString: String!
 
   coords: Gps!
+}
+
+type Cart {
+  id: UUID!
+
+  volume: Int!
+
+  farm_id: UUID!
+
+  market_id: UUID!
+
+  user_id: UUID!
+
+  created_at: Time!
+
+  updated_at: Time!
 }
 
 type Farm {
@@ -43,6 +67,8 @@ type Market {
 
   unit: String!
 
+  farmId: UUID!
+
   tag: String!
 
   pricePerUnit: Int!
@@ -60,6 +86,8 @@ type Mutation {
   createFarmMarket(input: NewFarmMarketInput!): Market!
 
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
+
+  addToCart(input: AddToCartInput!): Cart!
 }
 
 input NewFarmInput {
@@ -194,6 +222,8 @@ type Query {
   getFarmPayments(id: UUID!): [Payment!]!
 
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
+
+  getUserCartItems: [Cart!]!
 }
 
 scalar Time

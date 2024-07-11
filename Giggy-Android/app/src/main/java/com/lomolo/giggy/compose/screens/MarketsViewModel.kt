@@ -5,21 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.GetLocalizedMarketsQuery
+import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.repository.IMarkets
+import com.lomolo.giggy.type.AddToCartInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import okhttp3.internal.toImmutableMap
 import okio.IOException
 
 class MarketsViewModel(
     private val marketsRepository: IMarkets,
     mainViewModel: MainViewModel,
+    private val apolloStore: ApolloStore,
 ) : ViewModel() {
     var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
         private set
@@ -49,50 +54,146 @@ class MarketsViewModel(
     val orders: StateFlow<Map<String, Order>> = _orderData.asStateFlow()
 
     fun addOrder(data: GetLocalizedMarketsQuery.GetLocalizedMarket) {
-        val productId: String = data.id.toString()
-        if (!_orderData.value.containsKey(productId)) {
+        val marketId: String = data.id.toString()
+        val itemInCart = _cartData.value.find { it.market_id.toString() == marketId }
+        if (itemInCart != null) {
             _orderData.update {
                 val m = it.toMutableMap()
-                m[productId] = Order(productId)
+                m[marketId] = Order(
+                    itemInCart.id.toString(),
+                    itemInCart.farm_id.toString(),
+                    itemInCart.volume,
+                )
+                m.toImmutableMap()
+            }
+        } else {
+            _orderData.update {
+                val m = it.toMutableMap()
+                m[marketId] = Order(marketId, data.farmId.toString(), 0)
                 m.toImmutableMap()
             }
         }
     }
 
-    fun removeOrder(productId: String) {
+    fun removeOrder(marketId: String) {
         _orderData.update {
             val m = it.toMutableMap()
-            m.remove(productId)
+            m.remove(marketId)
             m.toImmutableMap()
         }
     }
 
-    fun increaseOrderVolume(productId: String) {
+    fun increaseOrderVolume(marketId: String) {
         _orderData.update {
             val m = it.toMutableMap()
-            m[productId] = m[productId]!!.copy(volume = m[productId]!!.volume.plus(1))
+            m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
             m.toImmutableMap()
         }
     }
 
-    fun decreaseOrderVolume(productId: String) {
+    fun decreaseOrderVolume(marketId: String) {
         _orderData.update {
             val m = it.toMutableMap()
-            if (m[productId]!!.volume > 0) m[productId] = m[productId]!!.copy(volume = m[productId]!!.volume.minus(1))
+            if (m[marketId]!!.volume > 0) m[marketId] =
+                m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
             m.toImmutableMap()
         }
+    }
+
+    private val _cartData: MutableStateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> =
+        MutableStateFlow(
+            listOf()
+        )
+    val cartItems: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = _cartData.asStateFlow()
+    var gettingCartItems: GettingCartItemsState by mutableStateOf(GettingCartItemsState.Success)
+        private set
+
+    private fun getUserCartItems() = viewModelScope.launch {
+        try {
+            marketsRepository
+                .getUserCartItems()
+                .collect {res ->
+                    _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                    gettingCartItems = GettingCartItemsState.Success
+                }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            _cartData.update { listOf() }
+            gettingCartItems = GettingCartItemsState.Success
+        }
+    }
+
+    var addingToCart: AddingToCartState by mutableStateOf(AddingToCartState.Success)
+        private set
+
+    fun addToCart(input: Order, cb: () -> Unit = {}) {
+        if (addingToCart !is AddingToCartState.Loading && validInput(input)) {
+            addingToCart = AddingToCartState.Loading
+            viewModelScope.launch {
+                addingToCart = try {
+                    val res = marketsRepository.addToCart(
+                        AddToCartInput(
+                            input.volume,
+                            input.marketId,
+                            input.farmId,
+                        )
+                    ).dataOrThrow()
+                    try {
+                        val updatedCacheData = apolloStore.readOperation(
+                            GetUserCartItemsQuery()
+                        ).getUserCartItems.toMutableList().apply {
+                            add(
+                                GetUserCartItemsQuery.GetUserCartItem(
+                                    res.addToCart.id,
+                                    res.addToCart.farm_id,
+                                    res.addToCart.market_id,
+                                    res.addToCart.volume,
+                                )
+                            )
+                        }.toImmutableList()
+                        apolloStore.writeOperation(
+                            GetUserCartItemsQuery(),
+                            GetUserCartItemsQuery.Data(updatedCacheData),
+                        )
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                    AddingToCartState.Success.also { cb() }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    AddingToCartState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    private fun validInput(uiState: Order): Boolean {
+        return uiState.marketId.isNotBlank() && uiState.farmId.isNotBlank()
     }
 
     init {
         getMarkets(mainViewModel.getValidDeviceGps())
+        getUserCartItems()
     }
 }
 
 data class Order(
-    val productId: String = "",
     val marketId: String = "",
+    val farmId: String = "",
     val volume: Int = 0,
 )
+
+interface AddingToCartState {
+    data object Success : AddingToCartState
+    data object Loading : AddingToCartState
+    data class Error(val msg: String?) : AddingToCartState
+}
+
+interface GettingCartItemsState {
+    data object Success : GettingCartItemsState
+    data object Loading : GettingCartItemsState
+    data class Error(val msg: String?) : GettingCartItemsState
+}
 
 interface GettingMarketsState {
     data object Loading : GettingMarketsState

@@ -9,13 +9,14 @@ import (
 	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/google/uuid"
 )
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
-	userId := StringToUUID(ctx.Value("userId").(string))
+	userId := util.StringToUUID(ctx.Value("userId").(string))
 	args := db.CreatePostParams{
 		Text:     input.Text,
 		Image:    input.Image,
@@ -28,7 +29,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostIn
 
 // CreateFarm is the resolver for the createFarm field.
 func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error) {
-	userId := StringToUUID(ctx.Value("userId").(string))
+	userId := util.StringToUUID(ctx.Value("userId").(string))
 	args := db.CreateFarmParams{
 		Name:      input.Name,
 		Thumbnail: input.Thumbnail,
@@ -56,13 +57,18 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 
 // PayWithMpesa is the resolver for the payWithMpesa field.
 func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error) {
-	userId := StringToUUID(ctx.Value("userId").(string))
+	userId := util.StringToUUID(ctx.Value("userId").(string))
 	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, userId, input)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.PayWithMpesa{ReferenceID: res.Data.Reference}, nil
+}
+
+// AddToCart is the resolver for the addToCart field.
+func (r *mutationResolver) AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error) {
+	return r.cartController.AddToCart(ctx, input)
 }
 
 // Market is the resolver for the market field.
@@ -91,13 +97,13 @@ func (r *queryResolver) GetLocalizedPosters(ctx context.Context, radius model.Gp
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
 func (r *queryResolver) GetFarmsBelongingToUser(ctx context.Context) ([]*model.Farm, error) {
-	userId := StringToUUID(ctx.Value("userId").(string))
+	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.farmController.GetFarmsBelongingToUser(ctx, userId)
 }
 
 // GetUser is the resolver for the getUser field.
 func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
-	userId := StringToUUID(ctx.Value("userId").(string))
+	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.signinController.GetUserByID(ctx, userId)
 }
 
@@ -105,7 +111,7 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
 	args := db.GetLocalizedMarketsParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
-		Radius: 2000,
+		Radius: 2000000,
 	}
 	return r.marketController.GetLocalizedMarkets(ctx, args)
 }
@@ -133,6 +139,11 @@ func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*m
 // GetPaystackPaymentVerification is the resolver for the getPaystackPaymentVerification field.
 func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentVerificationStatus, error) {
 	return r.subscriptionController.VerifyTransactionByReferenceID(ctx, referenceID)
+}
+
+// GetUserCartItems is the resolver for the getUserCartItems field.
+func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, error) {
+	return r.cartController.GetUserCartItems(ctx)
 }
 
 // Mutation returns MutationResolver implementation.
