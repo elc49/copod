@@ -47,4 +47,5 @@
     <string name="no_markets">Markets will soon open up</string>
     <string name="m_pesa">M-pesa</string>
     <string name="your_cart">Cart items</string>
+    <string name="no_items">No items</string>
 </resources>
