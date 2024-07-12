@@ -4,6 +4,8 @@ import android.icu.number.Notation
 import android.icu.number.NumberFormatter
 import android.icu.number.Precision
 import android.icu.util.Currency
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,6 +90,7 @@ internal fun FarmHeader(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @ExperimentalMaterial3Api
 @Composable
 fun FarmMarketScreen(
@@ -100,7 +103,7 @@ fun FarmMarketScreen(
         1 to R.drawable.orders,
         2 to R.drawable.bank,
     )
-    val titles = listOf("Market", "Orders", "Payments")
+    val titles = listOf("Market", "Orders"/*, "Payments"*/)
     var state by remember {
         mutableIntStateOf(0)
     }
