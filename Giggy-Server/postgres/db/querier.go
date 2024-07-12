@@ -14,6 +14,7 @@ import (
 type Querier interface {
 	AddToCart(ctx context.Context, arg AddToCartParams) (Cart, error)
 	BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, error)
+	ClearTestCarts(ctx context.Context) error
 	ClearTestFarms(ctx context.Context) error
 	ClearTestMarkets(ctx context.Context) error
 	ClearTestOrders(ctx context.Context) error

@@ -47,6 +47,15 @@ func (q *Queries) AddToCart(ctx context.Context, arg AddToCartParams) (Cart, err
 	return i, err
 }
 
+const clearTestCarts = `-- name: ClearTestCarts :exec
+DELETE FROM carts
+`
+
+func (q *Queries) ClearTestCarts(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestCarts)
+	return err
+}
+
 const getCartItem = `-- name: GetCartItem :one
 SELECT id, volume, market_id, farm_id, user_id, created_at, updated_at FROM carts
 WHERE market_id = $1 AND farm_id = $2 AND user_id = $3

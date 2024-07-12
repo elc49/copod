@@ -19,3 +19,6 @@ RETURNING *;
 -- name: GetUserCartItems :many
 SELECT * FROM carts
 WHERE user_id = $1;
+
+-- name: ClearTestCarts :exec
+DELETE FROM carts;

@@ -73,7 +73,14 @@ func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWith
 
 // AddToCart is the resolver for the addToCart field.
 func (r *mutationResolver) AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error) {
-	return r.cartController.AddToCart(ctx, input)
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	args := db.AddToCartParams{
+		Volume:   int32(input.Volume),
+		UserID:   userId,
+		MarketID: input.MarketID,
+		FarmID:   input.FarmID,
+	}
+	return r.cartController.AddToCart(ctx, args)
 }
 
 // Market is the resolver for the market field.
@@ -148,7 +155,8 @@ func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, refe
 
 // GetUserCartItems is the resolver for the getUserCartItems field.
 func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, error) {
-	return r.cartController.GetUserCartItems(ctx)
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.cartController.GetUserCartItems(ctx, userId)
 }
 
 // Cart returns CartResolver implementation.
