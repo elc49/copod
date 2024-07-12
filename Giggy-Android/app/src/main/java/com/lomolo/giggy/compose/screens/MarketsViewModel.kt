@@ -110,12 +110,10 @@ class MarketsViewModel(
 
     private fun getUserCartItems() = viewModelScope.launch {
         try {
-            marketsRepository
-                .getUserCartItems()
-                .collect {res ->
-                    _cartData.update { res.data?.getUserCartItems ?: listOf() }
-                    gettingCartItems = GettingCartItemsState.Success
-                }
+            marketsRepository.getUserCartItems().collect { res ->
+                _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                gettingCartItems = GettingCartItemsState.Success
+            }
         } catch (e: IOException) {
             e.printStackTrace()
             _cartData.update { listOf() }
@@ -148,6 +146,11 @@ class MarketsViewModel(
                                     res.addToCart.farm_id,
                                     res.addToCart.market_id,
                                     res.addToCart.volume,
+                                    GetUserCartItemsQuery.Market(
+                                        res.addToCart.market.image,
+                                        res.addToCart.market.name,
+                                        res.addToCart.market.pricePerUnit,
+                                    ),
                                 )
                             )
                         }.toImmutableList()

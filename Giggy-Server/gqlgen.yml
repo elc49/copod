@@ -98,3 +98,7 @@ models:
         resolver: true
       customer:
         resolver: true
+  Cart:
+    fields:
+      market:
+        resolver: true

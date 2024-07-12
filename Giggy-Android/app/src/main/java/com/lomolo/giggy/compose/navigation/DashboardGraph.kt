@@ -455,6 +455,7 @@ fun NavGraphBuilder.addDashboardGraph(
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             MarketCartScreen(
+                currencyLocale = deviceDetails.currency,
                 onCloseDialog = {
                     navHostController.popBackStack()
                 }

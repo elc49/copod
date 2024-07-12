@@ -108,6 +108,7 @@ type Cart {
   volume: Int!
   farm_id: UUID!
   market_id: UUID!
+  market: Market!
   user_id: UUID!
   created_at: Time!
   updated_at: Time!

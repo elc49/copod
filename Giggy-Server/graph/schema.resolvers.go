@@ -14,6 +14,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// Market is the resolver for the market field.
+func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Market, error) {
+	return r.marketController.GetMarketByID(ctx, obj.MarketID)
+}
+
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
@@ -146,6 +151,9 @@ func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, er
 	return r.cartController.GetUserCartItems(ctx)
 }
 
+// Cart returns CartResolver implementation.
+func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -158,6 +166,7 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type cartResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
