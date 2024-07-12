@@ -13,7 +13,7 @@ LIMIT 1;
 
 -- name: UpdateCartVolume :one
 UPDATE carts SET volume = $1
-WHERE market_id = $1 AND farm_id = $2 AND user_id = $3
+WHERE id = $2
 RETURNING *;
 
 -- name: GetUserCartItems :many
