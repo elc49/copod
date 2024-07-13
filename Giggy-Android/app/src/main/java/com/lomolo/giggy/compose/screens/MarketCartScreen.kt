@@ -6,9 +6,11 @@ import android.icu.number.Precision
 import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -77,7 +80,7 @@ fun RowScope.TableCell(
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MarketCartScreen(
     modifier: Modifier = Modifier,
@@ -86,6 +89,7 @@ fun MarketCartScreen(
     viewModel: MarketCartViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val cartItems by viewModel.cartContent.collectAsState()
+    val groupedByFarm = cartItems.groupBy { it.farm.name }
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -141,35 +145,57 @@ fun MarketCartScreen(
                             TableHeader(text = "Cost", weight = .25f)
                         }
                     }
-                    itemsIndexed(cartItems) { index, item ->
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            TableCell(
-                                "${index.plus(1)}",
-                                .1f,
-                            )
-                            TableCell(
-                                item.market.name,
-                                .25f
-                            )
-                            TableCell(
-                                "${item.volume}",
-                                .25f
-                            )
-                            TableCell(
-                                "${
-                                    NumberFormatter.with().notation(Notation.simple())
-                                        .unit(Currency.getInstance(currencyLocale))
-                                        .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                        .format(item.volume.times(item.market.pricePerUnit))
-                                }",
-                                .25f
+                    groupedByFarm.forEach { key, value ->
+                        stickyHeader {
+                            Text(
+                                key,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
+                        itemsIndexed(value) { index, item ->
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                TableCell(
+                                    "${index.plus(1)}",
+                                    .1f,
+                                )
+                                TableCell(
+                                    item.market.name,
+                                    .25f
+                                )
+                                TableCell(
+                                    "${item.volume}",
+                                    .25f
+                                )
+                                TableCell(
+                                    "${
+                                        NumberFormatter.with().notation(Notation.simple())
+                                            .unit(Currency.getInstance(currencyLocale))
+                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                            .format(item.volume.times(item.market.pricePerUnit))
+                                    }",
+                                    .25f
+                                )
+                            }
+                            Button(
+                                onClick = { /*TODO*/ },
+                                Modifier.fillMaxWidth(),
+                                shape = MaterialTheme.shapes.small,
+                                contentPadding = PaddingValues(14.dp),
+                            ) {
+                               Text(
+                                   "Send to farm",
+                                   style = MaterialTheme.typography.titleMedium,
+                                   fontWeight = FontWeight.Bold,
+                               )
+                            }
+                        }
                     }
+
                 }
             }
         }
