@@ -107,6 +107,7 @@ type Cart {
   id: UUID!
   volume: Int!
   farm_id: UUID!
+  farm: Farm!
   market_id: UUID!
   market: Market!
   user_id: UUID!

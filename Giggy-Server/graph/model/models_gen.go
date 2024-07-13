@@ -23,6 +23,7 @@ type Cart struct {
 	ID        uuid.UUID `json:"id"`
 	Volume    int       `json:"volume"`
 	FarmID    uuid.UUID `json:"farm_id"`
+	Farm      *Farm     `json:"farm"`
 	MarketID  uuid.UUID `json:"market_id"`
 	Market    *Market   `json:"market"`
 	UserID    uuid.UUID `json:"user_id"`
