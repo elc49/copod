@@ -4,9 +4,14 @@ query GetUserCartItems {
         farm_id
         market_id
         volume
+        farm {
+            id
+            name
+        }
         market {
             image
             name
+            unit
             pricePerUnit
         }
     }

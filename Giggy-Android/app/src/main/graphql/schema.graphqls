@@ -19,6 +19,8 @@ type Cart {
 
   farm_id: UUID!
 
+  farm: Farm!
+
   market_id: UUID!
 
   market: Market!
