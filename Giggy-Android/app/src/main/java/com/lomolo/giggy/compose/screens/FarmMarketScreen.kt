@@ -4,6 +4,8 @@ import android.icu.number.Notation
 import android.icu.number.NumberFormatter
 import android.icu.number.Precision
 import android.icu.util.Currency
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,6 +90,7 @@ internal fun FarmHeader(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @ExperimentalMaterial3Api
 @Composable
 fun FarmMarketScreen(
@@ -100,7 +103,7 @@ fun FarmMarketScreen(
         1 to R.drawable.orders,
         2 to R.drawable.bank,
     )
-    val titles = listOf("Market", "Orders", "Payments")
+    val titles = listOf("Market", "Orders"/*, "Payments"*/)
     var state by remember {
         mutableIntStateOf(0)
     }
@@ -166,25 +169,21 @@ fun FarmMarketScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        Text(
+                        TableHeader(
                             "Product",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "Image",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "In-Stock",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "Price",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
                     }
                 }
@@ -197,8 +196,9 @@ fun FarmMarketScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    Text(
+                                    TableCell(
                                         it.name,
+                                        .25f
                                     )
                                     AsyncImage(
                                         model = ImageRequest.Builder(LocalContext.current)
@@ -207,14 +207,16 @@ fun FarmMarketScreen(
                                             .build(),
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
-                                            .size(36.dp)
+                                            .weight(.25f)
+                                            .size(60.dp)
                                             .clip(MaterialTheme.shapes.extraSmall),
                                         contentDescription = null
                                     )
-                                    Text(
+                                    TableCell(
                                         "${it.volume}",
+                                        .25f
                                     )
-                                    Text(
+                                    TableCell(
                                         NumberFormatter.with()
                                             .notation(Notation.compactShort())
                                             .unit(Currency.getInstance(deviceDetails.currency))
@@ -222,7 +224,7 @@ fun FarmMarketScreen(
                                             .locale(Locale.US)
                                             .format(it.pricePerUnit)
                                             .toString(),
-                                        textAlign = TextAlign.Center,
+                                        .25f
                                     )
                                 }
                             }

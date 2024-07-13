@@ -13,6 +13,7 @@ import com.lomolo.giggy.compose.screens.CreatePostViewModel
 import com.lomolo.giggy.compose.screens.DashboardViewModel
 import com.lomolo.giggy.compose.screens.FarmMarketViewModel
 import com.lomolo.giggy.compose.screens.FarmViewModel
+import com.lomolo.giggy.compose.screens.MarketCartViewModel
 import com.lomolo.giggy.compose.screens.MarketsViewModel
 import com.lomolo.giggy.compose.screens.PaymentViewModel
 import com.lomolo.giggy.compose.screens.SigninViewModel
@@ -31,6 +32,7 @@ object GiggyViewModelProvider {
         lateinit var marketsViewModel: MarketsViewModel
         lateinit var dashboardViewModel: DashboardViewModel
         lateinit var paymentViewModel: PaymentViewModel
+        lateinit var marketCartViewModel: MarketCartViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -128,6 +130,13 @@ object GiggyViewModelProvider {
                 this.createSavedStateHandle(),
             )
             paymentViewModel
+        }
+
+        initializer {
+            marketCartViewModel = MarketCartViewModel(
+                marketsViewModel,
+            )
+            marketCartViewModel
         }
     }
 }

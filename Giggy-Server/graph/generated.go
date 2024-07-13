@@ -41,6 +41,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Cart() CartResolver
 	Mutation() MutationResolver
 	Order() OrderResolver
 	Post() PostResolver
@@ -60,6 +61,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		FarmID    func(childComplexity int) int
 		ID        func(childComplexity int) int
+		Market    func(childComplexity int) int
 		MarketID  func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UserID    func(childComplexity int) int
@@ -170,6 +172,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type CartResolver interface {
+	Market(ctx context.Context, obj *model.Cart) (*model.Market, error)
+}
 type MutationResolver interface {
 	CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error)
 	CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error)
@@ -250,6 +255,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Cart.ID(childComplexity), true
+
+	case "Cart.market":
+		if e.complexity.Cart.Market == nil {
+			break
+		}
+
+		return e.complexity.Cart.Market(childComplexity), true
 
 	case "Cart.market_id":
 		if e.complexity.Cart.MarketID == nil {
@@ -1457,6 +1469,72 @@ func (ec *executionContext) fieldContext_Cart_market_id(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Cart_market(ctx context.Context, field graphql.CollectedField, obj *model.Cart) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Cart_market(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Cart().Market(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Market)
+	fc.Result = res
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Cart",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Market_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Market_name(ctx, field)
+			case "image":
+				return ec.fieldContext_Market_image(ctx, field)
+			case "volume":
+				return ec.fieldContext_Market_volume(ctx, field)
+			case "unit":
+				return ec.fieldContext_Market_unit(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Market_farmId(ctx, field)
+			case "tag":
+				return ec.fieldContext_Market_tag(ctx, field)
+			case "pricePerUnit":
+				return ec.fieldContext_Market_pricePerUnit(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Market_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Market_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Market", field.Name)
 		},
 	}
 	return fc, nil
@@ -2756,6 +2834,8 @@ func (ec *executionContext) fieldContext_Mutation_addToCart(ctx context.Context,
 				return ec.fieldContext_Cart_farm_id(ctx, field)
 			case "market_id":
 				return ec.fieldContext_Cart_market_id(ctx, field)
+			case "market":
+				return ec.fieldContext_Cart_market(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Cart_user_id(ctx, field)
 			case "created_at":
@@ -4792,6 +4872,8 @@ func (ec *executionContext) fieldContext_Query_getUserCartItems(_ context.Contex
 				return ec.fieldContext_Cart_farm_id(ctx, field)
 			case "market_id":
 				return ec.fieldContext_Cart_market_id(ctx, field)
+			case "market":
+				return ec.fieldContext_Cart_market(ctx, field)
 			case "user_id":
 				return ec.fieldContext_Cart_user_id(ctx, field)
 			case "created_at":
@@ -7366,37 +7448,73 @@ func (ec *executionContext) _Cart(ctx context.Context, sel ast.SelectionSet, obj
 		case "id":
 			out.Values[i] = ec._Cart_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "volume":
 			out.Values[i] = ec._Cart_volume(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "farm_id":
 			out.Values[i] = ec._Cart_farm_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "market_id":
 			out.Values[i] = ec._Cart_market_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "market":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Cart_market(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "user_id":
 			out.Values[i] = ec._Cart_user_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
 			out.Values[i] = ec._Cart_created_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "updated_at":
 			out.Values[i] = ec._Cart_updated_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

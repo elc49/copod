@@ -82,22 +82,20 @@ fun FarmsScreen(
                     )
                 },
                 actions = {
-                    if (!viewModel.hasFarm) {
-                        IconButton(onClick = {
-                            if (session.hasFarmingRights) {
-                                navHostController.navigate(CreateFarmScreenDestination.route) {
-                                    launchSingleTop = true
-                                }
-                            } else {
-                                navHostController.navigate(FarmSubscriptionScreenDestination.route) {
-                                    launchSingleTop = true
-                                }
+                    IconButton(onClick = {
+                        if (session.hasFarmingRights) {
+                            navHostController.navigate(CreateFarmScreenDestination.route) {
+                                launchSingleTop = true
                             }
-                        }) {
-                            Icon(
-                                Icons.TwoTone.Add, contentDescription = null
-                            )
+                        } else {
+                            navHostController.navigate(FarmSubscriptionScreenDestination.route) {
+                                launchSingleTop = true
+                            }
                         }
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Add, contentDescription = null
+                        )
                     }
                 }
             )
@@ -168,62 +166,58 @@ internal fun Farms(
 ) {
     val context = LocalContext.current
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        if (farms.isNotEmpty()) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp),
-            ) {
-                items(farms) {
-                    Box {
-                        OutlinedCard(
-                            modifier = Modifier
-                                .height(180.dp)
-                                .clickable {
-                                    onNavigateTo(it.id.toString())
-                                }
-                        ) {
-                            Column {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(it.thumbnail)
-                                        .crossfade(true)
-                                        .build(),
-                                    placeholder = painterResource(id = R.drawable.loading_img),
-                                    error = painterResource(id = R.drawable.ic_broken_image),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .blur(
-                                            radiusX = 5.dp,
-                                            radiusY = 5.dp,
-                                        ),
-                                    contentScale = ContentScale.Crop,
-                                    contentDescription = null,
-                                )
+    if (farms.isNotEmpty()) {
+        LazyColumn(
+            modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(8.dp),
+        ) {
+            items(farms) {
+                Box {
+                    OutlinedCard(
+                        modifier = Modifier
+                            .height(180.dp)
+                            .clickable {
+                                onNavigateTo(it.id.toString())
                             }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .align(Alignment.Center),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                it.name,
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.displaySmall,
-                                fontWeight = FontWeight.SemiBold,
+                    ) {
+                        Column {
+                            AsyncImage(
+                                model = ImageRequest.Builder(context)
+                                    .data(it.thumbnail)
+                                    .crossfade(true)
+                                    .build(),
+                                placeholder = painterResource(id = R.drawable.loading_img),
+                                error = painterResource(id = R.drawable.ic_broken_image),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .blur(
+                                        radiusX = 5.dp,
+                                        radiusY = 5.dp,
+                                    ),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
                             )
                         }
                     }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            it.name,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
             }
-        } else {
-            NoFarm()
         }
+    } else {
+        NoFarm()
     }
 }

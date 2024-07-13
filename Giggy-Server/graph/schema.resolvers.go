@@ -14,6 +14,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// Market is the resolver for the market field.
+func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Market, error) {
+	return r.marketController.GetMarketByID(ctx, obj.MarketID)
+}
+
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
@@ -68,7 +73,14 @@ func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWith
 
 // AddToCart is the resolver for the addToCart field.
 func (r *mutationResolver) AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error) {
-	return r.cartController.AddToCart(ctx, input)
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	args := db.AddToCartParams{
+		Volume:   int32(input.Volume),
+		UserID:   userId,
+		MarketID: input.MarketID,
+		FarmID:   input.FarmID,
+	}
+	return r.cartController.AddToCart(ctx, args)
 }
 
 // Market is the resolver for the market field.
@@ -143,8 +155,12 @@ func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, refe
 
 // GetUserCartItems is the resolver for the getUserCartItems field.
 func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, error) {
-	return r.cartController.GetUserCartItems(ctx)
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.cartController.GetUserCartItems(ctx, userId)
 }
+
+// Cart returns CartResolver implementation.
+func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -158,6 +174,7 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type cartResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }

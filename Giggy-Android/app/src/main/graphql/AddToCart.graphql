@@ -4,5 +4,10 @@ mutation AddToCart($input: AddToCartInput!) {
         farm_id
         market_id
         volume
+        market {
+            image
+            name
+            pricePerUnit
+        }
     }
 }

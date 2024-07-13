@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -17,20 +18,41 @@ func (r *CartRepository) Init(db *db.Queries) {
 }
 
 func (r *CartRepository) AddToCart(ctx context.Context, args db.AddToCartParams) (*model.Cart, error) {
-	cart, err := r.db.AddToCart(ctx, args)
+	existingArgs := db.GetCartItemParams{
+		MarketID: args.MarketID,
+		FarmID:   args.FarmID,
+		UserID:   args.UserID,
+	}
+	existing, err := r.GetCartItem(ctx, existingArgs)
+	if err != nil && err == sql.ErrNoRows {
+		// Not in cart
+		cart, err := r.db.AddToCart(ctx, args)
+		if err != nil {
+			return nil, err
+		}
+
+		return &model.Cart{
+			ID:        cart.ID,
+			Volume:    int(cart.Volume),
+			MarketID:  cart.MarketID,
+			UserID:    cart.UserID,
+			FarmID:    cart.FarmID,
+			CreatedAt: cart.CreatedAt,
+			UpdatedAt: cart.UpdatedAt,
+		}, nil
+	}
+
+	// Update cart item new volume
+	updateArgs := db.UpdateCartVolumeParams{
+		ID:     existing.ID,
+		Volume: args.Volume,
+	}
+	update, err := r.UpdateCartVolume(ctx, updateArgs)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.Cart{
-		ID:        cart.ID,
-		Volume:    int(cart.Volume),
-		MarketID:  cart.MarketID,
-		UserID:    cart.UserID,
-		FarmID:    cart.FarmID,
-		CreatedAt: cart.CreatedAt,
-		UpdatedAt: cart.UpdatedAt,
-	}, nil
+	return update, nil
 }
 
 func (r *CartRepository) GetCartItem(ctx context.Context, args db.GetCartItemParams) (*model.Cart, error) {

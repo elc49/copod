@@ -47,6 +47,24 @@ func (q *Queries) AddToCart(ctx context.Context, arg AddToCartParams) (Cart, err
 	return i, err
 }
 
+const clearTestCarts = `-- name: ClearTestCarts :exec
+DELETE FROM carts
+`
+
+func (q *Queries) ClearTestCarts(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestCarts)
+	return err
+}
+
+const deleteCartItem = `-- name: DeleteCartItem :exec
+DELETE FROM carts WHERE id = $1
+`
+
+func (q *Queries) DeleteCartItem(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteCartItem, id)
+	return err
+}
+
 const getCartItem = `-- name: GetCartItem :one
 SELECT id, volume, market_id, farm_id, user_id, created_at, updated_at FROM carts
 WHERE market_id = $1 AND farm_id = $2 AND user_id = $3
@@ -112,18 +130,17 @@ func (q *Queries) GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]Car
 
 const updateCartVolume = `-- name: UpdateCartVolume :one
 UPDATE carts SET volume = $1
-WHERE market_id = $1 AND farm_id = $2 AND user_id = $3
+WHERE id = $2
 RETURNING id, volume, market_id, farm_id, user_id, created_at, updated_at
 `
 
 type UpdateCartVolumeParams struct {
 	Volume int32     `json:"volume"`
-	FarmID uuid.UUID `json:"farm_id"`
-	UserID uuid.UUID `json:"user_id"`
+	ID     uuid.UUID `json:"id"`
 }
 
 func (q *Queries) UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error) {
-	row := q.db.QueryRowContext(ctx, updateCartVolume, arg.Volume, arg.FarmID, arg.UserID)
+	row := q.db.QueryRowContext(ctx, updateCartVolume, arg.Volume, arg.ID)
 	var i Cart
 	err := row.Scan(
 		&i.ID,

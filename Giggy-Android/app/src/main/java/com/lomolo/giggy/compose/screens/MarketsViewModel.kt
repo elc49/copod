@@ -60,7 +60,7 @@ class MarketsViewModel(
             _orderData.update {
                 val m = it.toMutableMap()
                 m[marketId] = Order(
-                    itemInCart.id.toString(),
+                    marketId,
                     itemInCart.farm_id.toString(),
                     itemInCart.volume,
                 )
@@ -110,12 +110,10 @@ class MarketsViewModel(
 
     private fun getUserCartItems() = viewModelScope.launch {
         try {
-            marketsRepository
-                .getUserCartItems()
-                .collect {res ->
-                    _cartData.update { res.data?.getUserCartItems ?: listOf() }
-                    gettingCartItems = GettingCartItemsState.Success
-                }
+            marketsRepository.getUserCartItems().collect { res ->
+                _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                gettingCartItems = GettingCartItemsState.Success
+            }
         } catch (e: IOException) {
             e.printStackTrace()
             _cartData.update { listOf() }
@@ -141,15 +139,36 @@ class MarketsViewModel(
                     try {
                         val updatedCacheData = apolloStore.readOperation(
                             GetUserCartItemsQuery()
-                        ).getUserCartItems.toMutableList().apply {
-                            add(
-                                GetUserCartItemsQuery.GetUserCartItem(
+                        ).getUserCartItems.toMutableList()
+                        updatedCacheData.apply {
+                            val where = updatedCacheData.indexOfFirst { it.market_id.toString() == res.addToCart.market_id.toString() }
+                            if (where < 0) {
+                                add(
+                                    GetUserCartItemsQuery.GetUserCartItem(
+                                        res.addToCart.id,
+                                        res.addToCart.farm_id,
+                                        res.addToCart.market_id,
+                                        res.addToCart.volume,
+                                        GetUserCartItemsQuery.Market(
+                                            res.addToCart.market.image,
+                                            res.addToCart.market.name,
+                                            res.addToCart.market.pricePerUnit,
+                                        ),
+                                    )
+                                )
+                            } else {
+                                updatedCacheData[where] = GetUserCartItemsQuery.GetUserCartItem(
                                     res.addToCart.id,
                                     res.addToCart.farm_id,
                                     res.addToCart.market_id,
                                     res.addToCart.volume,
+                                    GetUserCartItemsQuery.Market(
+                                        res.addToCart.market.image,
+                                        res.addToCart.market.name,
+                                        res.addToCart.market.pricePerUnit,
+                                    ),
                                 )
-                            )
+                            }
                         }.toImmutableList()
                         apolloStore.writeOperation(
                             GetUserCartItemsQuery(),
@@ -168,7 +187,7 @@ class MarketsViewModel(
     }
 
     private fun validInput(uiState: Order): Boolean {
-        return uiState.marketId.isNotBlank() && uiState.farmId.isNotBlank()
+        return uiState.marketId.isNotBlank() && uiState.volume != 0 && uiState.farmId.isNotBlank()
     }
 
     init {

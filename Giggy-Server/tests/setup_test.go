@@ -60,3 +60,9 @@ func postController() controllers.PostController {
 	c.Init(queries)
 	return c
 }
+
+func cartController() controllers.CartController {
+	c := controllers.CartController{}
+	c.Init(queries)
+	return c
+}

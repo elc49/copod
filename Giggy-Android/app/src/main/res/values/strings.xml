@@ -30,7 +30,7 @@
     <string name="farm_headline">Sell you farm harvests, update inventory and markets, and fulfill orders.</string>
     <string name="create_farm">Create farm</string>
     <string name="farm_name">Farm name</string>
-    <string name="your_farms">Your farm</string>
+    <string name="your_farms">Your farms</string>
     <string name="add_farm_image">Add farm image</string>
     <string name="volume_support_text">How much can you stock this? This can\'t be changed and be sure it\'s what you can deliver to clients</string>
     <string name="volume">Volume</string>

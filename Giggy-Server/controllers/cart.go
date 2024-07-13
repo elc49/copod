@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
-	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/repositories"
+	"github.com/google/uuid"
 )
 
 type CartController struct {
@@ -18,18 +18,10 @@ func (c *CartController) Init(db *db.Queries) {
 	c.r.Init(db)
 }
 
-func (c *CartController) AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error) {
-	userId := util.StringToUUID(ctx.Value("userId").(string))
-	args := db.AddToCartParams{
-		Volume:   int32(input.Volume),
-		UserID:   userId,
-		MarketID: input.MarketID,
-		FarmID:   input.FarmID,
-	}
+func (c *CartController) AddToCart(ctx context.Context, args db.AddToCartParams) (*model.Cart, error) {
 	return c.r.AddToCart(ctx, args)
 }
 
-func (c *CartController) GetUserCartItems(ctx context.Context) ([]*model.Cart, error) {
-	userId := util.StringToUUID(ctx.Value("userId").(string))
-	return c.r.GetUserCartItems(ctx, userId)
+func (c *CartController) GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]*model.Cart, error) {
+	return c.r.GetUserCartItems(ctx, userID)
 }
