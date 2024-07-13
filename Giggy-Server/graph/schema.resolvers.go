@@ -16,7 +16,7 @@ import (
 
 // Farm is the resolver for the farm field.
 func (r *cartResolver) Farm(ctx context.Context, obj *model.Cart) (*model.Farm, error) {
-	panic(fmt.Errorf("not implemented: Farm - farm"))
+	return r.farmController.GetFarmByID(ctx, obj.FarmID)
 }
 
 // Market is the resolver for the market field.
