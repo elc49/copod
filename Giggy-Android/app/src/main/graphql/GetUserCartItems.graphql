@@ -11,6 +11,7 @@ query GetUserCartItems {
         market {
             image
             name
+            unit
             pricePerUnit
         }
     }

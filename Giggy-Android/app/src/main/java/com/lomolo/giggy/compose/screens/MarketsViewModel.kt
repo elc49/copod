@@ -141,7 +141,8 @@ class MarketsViewModel(
                             GetUserCartItemsQuery()
                         ).getUserCartItems.toMutableList()
                         updatedCacheData.apply {
-                            val where = updatedCacheData.indexOfFirst { it.market_id.toString() == res.addToCart.market_id.toString() }
+                            val where =
+                                updatedCacheData.indexOfFirst { it.market_id.toString() == res.addToCart.market_id.toString() }
                             if (where < 0) {
                                 add(
                                     GetUserCartItemsQuery.GetUserCartItem(
@@ -150,12 +151,13 @@ class MarketsViewModel(
                                         res.addToCart.market_id,
                                         res.addToCart.volume,
                                         GetUserCartItemsQuery.Farm(
-                                           res.addToCart.farm.id,
+                                            res.addToCart.farm.id,
                                             res.addToCart.farm.name,
                                         ),
                                         GetUserCartItemsQuery.Market(
                                             res.addToCart.market.image,
                                             res.addToCart.market.name,
+                                            res.addToCart.market.unit,
                                             res.addToCart.market.pricePerUnit,
                                         ),
                                     )
@@ -173,6 +175,7 @@ class MarketsViewModel(
                                     GetUserCartItemsQuery.Market(
                                         res.addToCart.market.image,
                                         res.addToCart.market.name,
+                                        res.addToCart.market.unit,
                                         res.addToCart.market.pricePerUnit,
                                     ),
                                 )

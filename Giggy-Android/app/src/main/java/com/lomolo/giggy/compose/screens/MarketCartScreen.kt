@@ -164,12 +164,10 @@ fun MarketCartScreen(
                                     .1f,
                                 )
                                 TableCell(
-                                    item.market.name,
-                                    .25f
+                                    item.market.name, .25f
                                 )
                                 TableCell(
-                                    "${item.volume}",
-                                    .25f
+                                    "${item.volume} ${item.market.unit}", .25f
                                 )
                                 TableCell(
                                     "${
@@ -177,9 +175,15 @@ fun MarketCartScreen(
                                             .unit(Currency.getInstance(currencyLocale))
                                             .precision(Precision.maxFraction(2)).locale(Locale.US)
                                             .format(item.volume.times(item.market.pricePerUnit))
-                                    }",
-                                    .25f
+                                    }", .25f
                                 )
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        painterResource(id = R.drawable.bin),
+                                        modifier = Modifier.size(32.dp),
+                                        contentDescription = null,
+                                    )
+                                }
                             }
                             Button(
                                 onClick = { /*TODO*/ },
@@ -187,11 +191,16 @@ fun MarketCartScreen(
                                 shape = MaterialTheme.shapes.small,
                                 contentPadding = PaddingValues(14.dp),
                             ) {
-                               Text(
-                                   "Send to farm",
-                                   style = MaterialTheme.typography.titleMedium,
-                                   fontWeight = FontWeight.Bold,
-                               )
+                                Text(
+                                    "Send to farm [${
+                                        NumberFormatter.with().notation(Notation.simple())
+                                            .unit(Currency.getInstance(currencyLocale))
+                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                            .format(item.volume.times(item.market.pricePerUnit))
+                                    }]",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
                             }
                         }
                     }
