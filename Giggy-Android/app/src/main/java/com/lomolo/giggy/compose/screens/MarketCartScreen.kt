@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,16 +32,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
@@ -49,6 +45,35 @@ import java.util.Locale
 object MarketCartScreenDestination : Navigation {
     override val title = R.string.your_cart
     override val route = "dashboard_market_cart"
+}
+
+@Composable
+fun RowScope.TableHeader(
+    text: String,
+    weight: Float,
+) {
+    Text(
+        text,
+        Modifier
+            .weight(weight)
+            .padding(8.dp),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+    )
+}
+
+@Composable
+fun RowScope.TableCell(
+    text: String,
+    weight: Float,
+) {
+    Text(
+        text,
+        Modifier
+            .weight(weight)
+            .padding(8.dp),
+        style = MaterialTheme.typography.titleMedium,
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -110,31 +135,10 @@ fun MarketCartScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Text(
-                                "#",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                "Image",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                "Product",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                "Volume",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Text(
-                                "Cost",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold,
-                            )
+                            TableHeader(text = "#", weight = .1f)
+                            TableHeader(text = "Product", weight = .25f)
+                            TableHeader(text = "Volume", weight = .25f)
+                            TableHeader(text = "Cost", weight = .25f)
                         }
                     }
                     itemsIndexed(cartItems) { index, item ->
@@ -143,33 +147,26 @@ fun MarketCartScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Text(
+                            TableCell(
                                 "${index.plus(1)}",
-                                fontWeight = FontWeight.SemiBold,
+                                .1f,
                             )
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(item.market.image).crossfade(true).build(),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.small),
-                                contentDescription = null
-                            )
-                            Text(
+                            TableCell(
                                 item.market.name,
+                                .25f
                             )
-                            Text(
+                            TableCell(
                                 "${item.volume}",
+                                .25f
                             )
-                            Text(
+                            TableCell(
                                 "${
                                     NumberFormatter.with().notation(Notation.simple())
                                         .unit(Currency.getInstance(currencyLocale))
                                         .precision(Precision.maxFraction(2)).locale(Locale.US)
                                         .format(item.volume.times(item.market.pricePerUnit))
                                 }",
-                                fontWeight = FontWeight.SemiBold,
+                                .25f
                             )
                         }
                     }
