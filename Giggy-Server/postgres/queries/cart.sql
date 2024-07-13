@@ -20,5 +20,8 @@ RETURNING *;
 SELECT * FROM carts
 WHERE user_id = $1;
 
+-- name: DeleteCartItem :exec
+DELETE FROM carts WHERE id = $1;
+
 -- name: ClearTestCarts :exec
 DELETE FROM carts;
