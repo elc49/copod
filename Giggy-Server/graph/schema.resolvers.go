@@ -14,6 +14,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// Farm is the resolver for the farm field.
+func (r *cartResolver) Farm(ctx context.Context, obj *model.Cart) (*model.Farm, error) {
+	panic(fmt.Errorf("not implemented: Farm - farm"))
+}
+
 // Market is the resolver for the market field.
 func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)
