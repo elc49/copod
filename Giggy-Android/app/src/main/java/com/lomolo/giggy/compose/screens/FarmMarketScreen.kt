@@ -169,25 +169,21 @@ fun FarmMarketScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        Text(
+                        TableHeader(
                             "Product",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "Image",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "In-Stock",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
-                        Text(
+                        TableHeader(
                             "Price",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .25f
                         )
                     }
                 }
@@ -200,8 +196,9 @@ fun FarmMarketScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    Text(
+                                    TableCell(
                                         it.name,
+                                        .25f
                                     )
                                     AsyncImage(
                                         model = ImageRequest.Builder(LocalContext.current)
@@ -210,14 +207,16 @@ fun FarmMarketScreen(
                                             .build(),
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
-                                            .size(36.dp)
+                                            .weight(.25f)
+                                            .size(60.dp)
                                             .clip(MaterialTheme.shapes.extraSmall),
                                         contentDescription = null
                                     )
-                                    Text(
+                                    TableCell(
                                         "${it.volume}",
+                                        .25f
                                     )
-                                    Text(
+                                    TableCell(
                                         NumberFormatter.with()
                                             .notation(Notation.compactShort())
                                             .unit(Currency.getInstance(deviceDetails.currency))
@@ -225,7 +224,7 @@ fun FarmMarketScreen(
                                             .locale(Locale.US)
                                             .format(it.pricePerUnit)
                                             .toString(),
-                                        textAlign = TextAlign.Center,
+                                        .25f
                                     )
                                 }
                             }
