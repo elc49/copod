@@ -19,9 +19,9 @@ func (r *CartRepository) Init(db *db.Queries) {
 
 func (r *CartRepository) AddToCart(ctx context.Context, args db.AddToCartParams) (*model.Cart, error) {
 	existingArgs := db.GetCartItemParams{
-		UserID:   args.UserID,
 		MarketID: args.MarketID,
 		FarmID:   args.FarmID,
+		UserID:   args.UserID,
 	}
 	existing, err := r.GetCartItem(ctx, existingArgs)
 	if err != nil && err == sql.ErrNoRows {
