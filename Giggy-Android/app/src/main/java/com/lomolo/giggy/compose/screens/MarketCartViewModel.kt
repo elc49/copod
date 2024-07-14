@@ -24,7 +24,7 @@ class MarketCartViewModel(
         private set
 
     fun deleteCartItem(id: String) {
-        if (deleteCartItemState !is DeleteCartItemState.Loading) {
+        if (deleteCartItemState !is DeleteCartItemState.Loading && deletingItemId.isBlank()) {
             deletingItemId = id
             deleteCartItemState = DeleteCartItemState.Loading
             viewModelScope.launch {
@@ -47,6 +47,8 @@ class MarketCartViewModel(
                 } catch(e: IOException) {
                     e.printStackTrace()
                     DeleteCartItemState.Error(e.localizedMessage)
+                } finally {
+                    deletingItemId = ""
                 }
             }
         }
