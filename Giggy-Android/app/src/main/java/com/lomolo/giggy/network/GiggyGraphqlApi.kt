@@ -8,13 +8,13 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.AddToCartMutation
 import com.lomolo.giggy.CreateFarmMarketMutation
-import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.CreateFarmMutation
+import com.lomolo.giggy.CreatePostMutation
 import com.lomolo.giggy.DeleteCartItemMutation
 import com.lomolo.giggy.GetFarmByIdQuery
+import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GetFarmPaymentsQuery
-import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetLocalizedPostersQuery
@@ -23,15 +23,14 @@ import com.lomolo.giggy.GetPaystackPaymentVerificationQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
-import com.lomolo.giggy.type.NewPostInput
-import com.lomolo.giggy.type.NewFarmInput
-import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
 import com.lomolo.giggy.type.AddToCartInput
 import com.lomolo.giggy.type.GpsInput
+import com.lomolo.giggy.type.NewFarmInput
+import com.lomolo.giggy.type.NewFarmMarketInput
+import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.PayWithMpesaInput
-import com.lomolo.giggy.type.UUID
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
@@ -50,7 +49,7 @@ interface IGiggyGraphqlApi {
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
     suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
-    suspend fun deleteCartItem(id: UUID): ApolloResponse<DeleteCartItemMutation.Data>
+    suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
 }
 
@@ -139,7 +138,7 @@ class GiggyGraphqlApi(
         .mutation(AddToCartMutation(input))
         .execute()
 
-    override suspend fun deleteCartItem(id: UUID) = apolloClient
+    override suspend fun deleteCartItem(id: String) = apolloClient
         .mutation(DeleteCartItemMutation(id))
         .execute()
 
