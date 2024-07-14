@@ -102,6 +102,7 @@ type ComplexityRoot struct {
 		CreateFarm       func(childComplexity int, input model.NewFarmInput) int
 		CreateFarmMarket func(childComplexity int, input model.NewFarmMarketInput) int
 		CreatePost       func(childComplexity int, input model.NewPostInput) int
+		DeleteCartItem   func(childComplexity int, id uuid.UUID) int
 		PayWithMpesa     func(childComplexity int, input model.PayWithMpesaInput) int
 	}
 
@@ -157,6 +158,7 @@ type ComplexityRoot struct {
 		GetFarmsBelongingToUser        func(childComplexity int) int
 		GetLocalizedMarkets            func(childComplexity int, radius model.GpsInput) int
 		GetLocalizedPosters            func(childComplexity int, radius model.GpsInput) int
+		GetOrdersBelongingToUser       func(childComplexity int) int
 		GetPaystackPaymentVerification func(childComplexity int, referenceID string) int
 		GetUser                        func(childComplexity int) int
 		GetUserCartItems               func(childComplexity int) int
@@ -184,6 +186,7 @@ type MutationResolver interface {
 	CreateFarmMarket(ctx context.Context, input model.NewFarmMarketInput) (*model.Market, error)
 	PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error)
 	AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error)
+	DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -203,6 +206,7 @@ type QueryResolver interface {
 	GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error)
 	GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentVerificationStatus, error)
 	GetUserCartItems(ctx context.Context) ([]*model.Cart, error)
+	GetOrdersBelongingToUser(ctx context.Context) ([]*model.Order, error)
 }
 
 type executableSchema struct {
@@ -481,6 +485,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreatePost(childComplexity, args["input"].(model.NewPostInput)), true
+
+	case "Mutation.deleteCartItem":
+		if e.complexity.Mutation.DeleteCartItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCartItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCartItem(childComplexity, args["id"].(uuid.UUID)), true
 
 	case "Mutation.payWithMpesa":
 		if e.complexity.Mutation.PayWithMpesa == nil {
@@ -776,6 +792,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetLocalizedPosters(childComplexity, args["radius"].(model.GpsInput)), true
 
+	case "Query.getOrdersBelongingToUser":
+		if e.complexity.Query.GetOrdersBelongingToUser == nil {
+			break
+		}
+
+		return e.complexity.Query.GetOrdersBelongingToUser(childComplexity), true
+
 	case "Query.getPaystackPaymentVerification":
 		if e.complexity.Query.GetPaystackPaymentVerification == nil {
 			break
@@ -1038,6 +1061,21 @@ func (ec *executionContext) field_Mutation_createPost_args(ctx context.Context, 
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCartItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -2926,6 +2964,61 @@ func (ec *executionContext) fieldContext_Mutation_addToCart(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_addToCart_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCartItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCartItem(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCartItem(rctx, fc.Args["id"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCartItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCartItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4956,6 +5049,70 @@ func (ec *executionContext) fieldContext_Query_getUserCartItems(_ context.Contex
 				return ec.fieldContext_Cart_updated_at(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Cart", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getOrdersBelongingToUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getOrdersBelongingToUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetOrdersBelongingToUser(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Order)
+	fc.Result = res
+	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Order_id(ctx, field)
+			case "volume":
+				return ec.fieldContext_Order_volume(ctx, field)
+			case "toBePaid":
+				return ec.fieldContext_Order_toBePaid(ctx, field)
+			case "customerId":
+				return ec.fieldContext_Order_customerId(ctx, field)
+			case "marketId":
+				return ec.fieldContext_Order_marketId(ctx, field)
+			case "market":
+				return ec.fieldContext_Order_market(ctx, field)
+			case "customer":
+				return ec.fieldContext_Order_customer(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Order_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Order_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Order", field.Name)
 		},
 	}
 	return fc, nil
@@ -7897,6 +8054,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "deleteCartItem":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCartItem(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8555,6 +8719,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getUserCartItems(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getOrdersBelongingToUser":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getOrdersBelongingToUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

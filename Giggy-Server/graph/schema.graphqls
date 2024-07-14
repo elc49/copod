@@ -168,6 +168,7 @@ type Query {
   getFarmPayments(id: UUID!): [Payment!]!
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
   getUserCartItems: [Cart!]!
+  getOrdersBelongingToUser: [Order!]!
 }
 
 type Mutation {
@@ -176,4 +177,5 @@ type Mutation {
   createFarmMarket(input: NewFarmMarketInput!): Market!
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
   addToCart(input: AddToCartInput!): Cart!
+  deleteCartItem(id: UUID!): Boolean!
 }

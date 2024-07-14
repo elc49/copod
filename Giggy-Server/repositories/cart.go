@@ -112,3 +112,12 @@ func (r *CartRepository) GetUserCartItems(ctx context.Context, userID uuid.UUID)
 
 	return carts, nil
 }
+
+func (r *CartRepository) DeleteCartItem(ctx context.Context, cartID uuid.UUID) (bool, error) {
+	err := r.db.DeleteCartItem(ctx, cartID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

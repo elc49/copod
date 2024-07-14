@@ -21,3 +21,11 @@ func (c *OrderController) Init(queries *db.Queries) {
 func (c *OrderController) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
 	return c.r.GetOrdersBelongingToFarm(ctx, id)
 }
+
+func (c *OrderController) CreateOrder(ctx context.Context, args db.CreateOrderParams) (*model.Order, error) {
+	return c.r.CreateOrder(ctx, args)
+}
+
+func (c *OrderController) GetOrdersBelongingToUser(ctx context.Context, userID uuid.UUID) ([]*model.Order, error) {
+	return c.r.GetOrdersBelongingToUser(ctx, userID)
+}

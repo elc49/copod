@@ -73,4 +73,38 @@ func TestCartController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotEqual(t, cart.Volume, u.Volume)
 	})
+
+	t.Run("get_user_cart_items", func(t *testing.T) {
+		market, _ := createMarket(ctx)
+		_, err := cartC.AddToCart(ctx, db.AddToCartParams{
+			Volume:   14,
+			UserID:   user.ID,
+			MarketID: market.ID,
+			FarmID:   farm.ID,
+		})
+		assert.Nil(t, err)
+
+		c, err := cartC.GetUserCartItems(ctx, user.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, len(c), 1)
+	})
+
+	t.Run("delete_cart_item", func(t *testing.T) {
+		market, _ := createMarket(ctx)
+		c, err := cartC.AddToCart(ctx, db.AddToCartParams{
+			Volume:   14,
+			UserID:   user.ID,
+			MarketID: market.ID,
+			FarmID:   farm.ID,
+		})
+		assert.Nil(t, err)
+
+		b, err := cartC.DeleteCartItem(ctx, c.ID)
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		uc, err := cartC.GetUserCartItems(ctx, user.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, len(uc), 0)
+	})
 }

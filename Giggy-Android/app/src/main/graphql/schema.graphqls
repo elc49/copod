@@ -92,6 +92,8 @@ type Mutation {
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
 
   addToCart(input: AddToCartInput!): Cart!
+
+  deleteCartItem(id: UUID!): Boolean!
 }
 
 input NewFarmInput {
@@ -228,6 +230,8 @@ type Query {
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
 
   getUserCartItems: [Cart!]!
+
+  getOrdersBelongingToUser: [Order!]!
 }
 
 scalar Time
