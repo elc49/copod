@@ -49,6 +49,7 @@ type Market struct {
 type Order struct {
 	ID         uuid.UUID `json:"id"`
 	Volume     int32     `json:"volume"`
+	Status     string    `json:"status"`
 	ToBePaid   int32     `json:"to_be_paid"`
 	CustomerID uuid.UUID `json:"customer_id"`
 	MarketID   uuid.UUID `json:"market_id"`

@@ -23,6 +23,7 @@ type Querier interface {
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error)
 	CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error)
+	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	DeleteCartItem(ctx context.Context, id uuid.UUID) error
@@ -33,8 +34,9 @@ type Querier interface {
 	GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error)
 	GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByIDRow, error)
 	GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetMarketsBelongingToFarmRow, error)
-	GetOrderById(ctx context.Context, id uuid.UUID) (GetOrderByIdRow, error)
+	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error)
+	GetOrdersBelongingToUser(ctx context.Context, customerID uuid.UUID) ([]Order, error)
 	GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.NullUUID) ([]GetPaymentsBelongingToFarmRow, error)
 	GetRightPurchasePaymentByReferenceID(ctx context.Context, referenceID sql.NullString) (Payment, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error)

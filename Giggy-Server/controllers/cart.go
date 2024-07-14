@@ -25,3 +25,7 @@ func (c *CartController) AddToCart(ctx context.Context, args db.AddToCartParams)
 func (c *CartController) GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]*model.Cart, error) {
 	return c.r.GetUserCartItems(ctx, userID)
 }
+
+func (c *CartController) DeleteCartItem(ctx context.Context, cartID uuid.UUID) (bool, error) {
+	return c.r.DeleteCartItem(ctx, cartID)
+}

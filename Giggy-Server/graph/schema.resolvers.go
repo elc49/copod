@@ -88,6 +88,11 @@ func (r *mutationResolver) AddToCart(ctx context.Context, input model.AddToCartI
 	return r.cartController.AddToCart(ctx, args)
 }
 
+// DeleteCartItem is the resolver for the deleteCartItem field.
+func (r *mutationResolver) DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteCartItem - deleteCartItem"))
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)
@@ -162,6 +167,12 @@ func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, refe
 func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.cartController.GetUserCartItems(ctx, userId)
+}
+
+// GetOrdersBelongingToUser is the resolver for the getOrdersBelongingToUser field.
+func (r *queryResolver) GetOrdersBelongingToUser(ctx context.Context) ([]*model.Order, error) {
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.orderController.GetOrdersBelongingToUser(ctx, userId)
 }
 
 // Cart returns CartResolver implementation.

@@ -66,3 +66,9 @@ func cartController() controllers.CartController {
 	c.Init(queries)
 	return c
 }
+
+func orderController() controllers.OrderController {
+	c := controllers.OrderController{}
+	c.Init(queries)
+	return c
+}
