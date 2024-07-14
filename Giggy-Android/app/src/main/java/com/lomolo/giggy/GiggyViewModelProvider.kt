@@ -17,6 +17,7 @@ import com.lomolo.giggy.compose.screens.MarketCartViewModel
 import com.lomolo.giggy.compose.screens.MarketsViewModel
 import com.lomolo.giggy.compose.screens.PaymentViewModel
 import com.lomolo.giggy.compose.screens.SigninViewModel
+import com.lomolo.giggy.compose.screens.UserOrdersViewModel
 
 object GiggyViewModelProvider {
     val Factory = viewModelFactory {
@@ -33,6 +34,7 @@ object GiggyViewModelProvider {
         lateinit var dashboardViewModel: DashboardViewModel
         lateinit var paymentViewModel: PaymentViewModel
         lateinit var marketCartViewModel: MarketCartViewModel
+        lateinit var userOrdersViewModel: UserOrdersViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -134,9 +136,18 @@ object GiggyViewModelProvider {
 
         initializer {
             marketCartViewModel = MarketCartViewModel(
+                giggyApplication().container.marketsRepository,
+                giggyApplication().container.apolloClient.apolloStore,
                 marketsViewModel,
             )
             marketCartViewModel
+        }
+
+        initializer {
+            userOrdersViewModel = UserOrdersViewModel(
+                giggyApplication().container.marketsRepository,
+            )
+            userOrdersViewModel
         }
     }
 }

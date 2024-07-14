@@ -50,6 +50,7 @@ fun MarketScreen(
     bottomNav: @Composable () -> Unit = {},
     deviceDetails: DeviceDetails,
     onNavigateToMarketCart: () -> Unit,
+    onNavigateToUserOrders: () -> Unit,
     viewModel: MarketsViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
@@ -78,6 +79,18 @@ fun MarketScreen(
                             // TODO show counter if cart content > 0
                             Text(
                                 "[${cartItems.size}]",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                            IconButton(onClick = onNavigateToUserOrders) {
+                                Icon(painterResource(
+                                    id = R.drawable.product_box),
+                                    modifier = Modifier
+                                        .size(32.dp),
+                                    contentDescription = null,
+                                )
+                            }
+                            Text(
+                                "[${0}]",
                                 style = MaterialTheme.typography.titleLarge,
                             )
                         }

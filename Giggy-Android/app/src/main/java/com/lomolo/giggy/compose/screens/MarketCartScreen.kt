@@ -143,6 +143,7 @@ fun MarketCartScreen(
                             TableHeader(text = "Product", weight = .25f)
                             TableHeader(text = "Volume", weight = .25f)
                             TableHeader(text = "Cost", weight = .25f)
+                            TableHeader(text = "", weight = .15f)
                         }
                     }
                     groupedByFarm.forEach { key, value ->

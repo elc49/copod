@@ -65,6 +65,8 @@ import com.lomolo.giggy.compose.screens.MpesaPaymentScreen
 import com.lomolo.giggy.compose.screens.MpesaPaymentScreenDestination
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreen
 import com.lomolo.giggy.compose.screens.PosterSubscriptionScreenDestination
+import com.lomolo.giggy.compose.screens.UserOrdersScreen
+import com.lomolo.giggy.compose.screens.UserOrdersScreenDestination
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.model.Session
 import kotlinx.coroutines.CoroutineScope
@@ -189,6 +191,7 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = MarketScreenDestination.route) {
             MarketScreen(deviceDetails = deviceDetails,
                 onNavigateToMarketCart = { navHostController.navigate(MarketCartScreenDestination.route) },
+                onNavigateToUserOrders = { navHostController.navigate(UserOrdersScreenDestination.route) },
                 bottomNav = {
                     BottomNavBar(
                         modifier = modifier,
@@ -458,6 +461,11 @@ fun NavGraphBuilder.addDashboardGraph(
             MarketCartScreen(currencyLocale = deviceDetails.currency, onCloseDialog = {
                 navHostController.popBackStack()
             })
+        }
+        composable(route = UserOrdersScreenDestination.route) {
+            UserOrdersScreen(modifier = modifier,
+            onNavigateBack = { navHostController.popBackStack() },
+            )
         }
     }
 }
