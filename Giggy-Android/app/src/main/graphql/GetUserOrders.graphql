@@ -1,0 +1,6 @@
+query GetOrdersBelongingToUser {
+    getOrdersBelongingToUser {
+        id
+        volume
+    }
+}
