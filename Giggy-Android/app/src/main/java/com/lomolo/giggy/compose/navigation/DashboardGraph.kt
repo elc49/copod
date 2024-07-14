@@ -220,7 +220,7 @@ fun NavGraphBuilder.addDashboardGraph(
             Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
                 TopAppBar(title = {
                     Text(
-                        stringResource(id = R.string.farm),
+                        stringResource(id = R.string.farm_store),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -231,7 +231,6 @@ fun NavGraphBuilder.addDashboardGraph(
                         Icon(
                             Icons.AutoMirrored.TwoTone.ArrowBack,
                             contentDescription = null,
-                            modifier = Modifier.size(32.dp),
                         )
                     }
                 }, actions = {
@@ -311,7 +310,9 @@ fun NavGraphBuilder.addDashboardGraph(
                         navHostController.popBackStack()
                     }) {
                         Icon(
-                            Icons.TwoTone.Close, contentDescription = null
+                            Icons.TwoTone.Close,
+                            modifier = Modifier.size(28.dp),
+                            contentDescription = null,
                         )
                     }
                 })
@@ -454,12 +455,9 @@ fun NavGraphBuilder.addDashboardGraph(
             route = MarketCartScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            MarketCartScreen(
-                currencyLocale = deviceDetails.currency,
-                onCloseDialog = {
-                    navHostController.popBackStack()
-                }
-            )
+            MarketCartScreen(currencyLocale = deviceDetails.currency, onCloseDialog = {
+                navHostController.popBackStack()
+            })
         }
     }
 }

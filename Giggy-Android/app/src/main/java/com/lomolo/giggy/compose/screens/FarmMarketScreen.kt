@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,8 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +50,7 @@ import com.lomolo.giggy.model.DeviceDetails
 import java.util.Locale
 
 object FarmMarketScreenDestination : Navigation {
-    override val title = R.string.farm
+    override val title = R.string.farm_store
     override val route = "dashboard-market"
     const val farmIdArg = "farmId"
     val routeWithArgs = "$route/{$farmIdArg}"
@@ -192,7 +189,9 @@ fun FarmMarketScreen(
                         if (markets.success != null) {
                             items(markets.success) {
                                 Row(
-                                    Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
@@ -228,6 +227,21 @@ fun FarmMarketScreen(
                                     )
                                 }
                             }
+                            item {
+                                if (markets.success.isEmpty()) {
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            "No harvest for sale",
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -258,20 +272,17 @@ fun FarmMarketScreen(
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
-                        Text(
+                        TableHeader(
                             "Product",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .3f
                         )
-                        Text(
+                        TableHeader(
                             "Volume",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            .3f
                         )
-                        Text(
+                        TableHeader(
                             "Amount",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            .3f
                         )
                     }
                 }
@@ -303,14 +314,17 @@ fun FarmMarketScreen(
                                         .padding(8.dp)
                                 ) {
                                     // TODO show product
-                                    Text(
-                                        it.customer.phone, textAlign = TextAlign.Center
+                                    TableCell(
+                                        it.customer.phone,
+                                        .3f
                                     )
-                                    Text(
-                                        "${it.volume}", textAlign = TextAlign.Center
+                                    TableCell(
+                                        "${it.volume}",
+                                        .3f
                                     )
-                                    Text(
-                                        "${it.toBePaid}", textAlign = TextAlign.Center
+                                    TableCell(
+                                        "${it.toBePaid}",
+                                        .3f
                                     )
                                 }
                             }
@@ -334,6 +348,7 @@ fun FarmMarketScreen(
                 }
             }
 
+            /*
             2 -> LazyColumn(
                 Modifier.padding(8.dp)
             ) {
@@ -431,6 +446,7 @@ fun FarmMarketScreen(
 
                 }
             }
+             */
         }
     }
 }
