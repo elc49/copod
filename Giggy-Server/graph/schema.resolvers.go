@@ -90,7 +90,7 @@ func (r *mutationResolver) AddToCart(ctx context.Context, input model.AddToCartI
 
 // DeleteCartItem is the resolver for the deleteCartItem field.
 func (r *mutationResolver) DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteCartItem - deleteCartItem"))
+	return r.cartController.DeleteCartItem(ctx, id)
 }
 
 // Market is the resolver for the market field.

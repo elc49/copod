@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -178,12 +179,32 @@ fun MarketCartScreen(
                                             .format(item.volume.times(item.market.pricePerUnit))
                                     }", .25f
                                 )
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Icon(
-                                        painterResource(id = R.drawable.bin),
-                                        modifier = Modifier.size(32.dp),
-                                        contentDescription = null,
-                                    )
+                                when (viewModel.deleteCartItemState) {
+                                    DeleteCartItemState.Success -> {
+                                        IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                            Icon(
+                                                painterResource(id = R.drawable.bin),
+                                                modifier = Modifier.size(32.dp),
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
+
+                                    DeleteCartItemState.Loading -> {
+                                        if (item.id == viewModel.deletingItemId) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        } else {
+                                            IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                Icon(
+                                                    painterResource(id = R.drawable.bin),
+                                                    modifier = Modifier.size(32.dp),
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             Button(
