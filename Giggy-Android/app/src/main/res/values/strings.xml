@@ -17,7 +17,7 @@
     <string name="phone_number">Phone number</string>
     <string name="pay">Pay</string>
     <string name="sign_in">Sign In</string>
-    <string name="farm">Farm</string>
+    <string name="farm_store">Farm store</string>
     <string name="account">Account</string>
     <string name="create_post">create post</string>
     <string name="what_s_happening_in_your_farm">What\'s happening in your farm</string>
@@ -36,7 +36,7 @@
     <string name="volume">Volume</string>
     <string name="price_support_text">Sell per unit. This won\'t change</string>
     <string name="price_label">Price per unit</string>
-    <string name="unit_support_text">1 or 2 or pair or KG or Grams etc</string>
+    <string name="unit_support_text">1 or 2 or pair or kg or grams or trays etc</string>
     <string name="unit">Unit</string>
     <string name="image">Image</string>
     <string name="market_name">Product name</string>

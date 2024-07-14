@@ -92,7 +92,7 @@ fun CreateFarmScreen(
             label = {
                 Text(
                     stringResource(R.string.farm_name),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelLarge,
                 )
             },
             value = farm.name,

@@ -73,32 +73,30 @@ fun FarmsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = bottomNav,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        stringResource(id = R.string.your_farms),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                },
-                actions = {
-                    IconButton(onClick = {
-                        if (session.hasFarmingRights) {
-                            navHostController.navigate(CreateFarmScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        } else {
-                            navHostController.navigate(FarmSubscriptionScreenDestination.route) {
-                                launchSingleTop = true
-                            }
+            TopAppBar(title = {
+                Text(
+                    stringResource(id = R.string.your_farms),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+            }, actions = {
+                IconButton(onClick = {
+                    if (session.hasFarmingRights) {
+                        navHostController.navigate(CreateFarmScreenDestination.route) {
+                            launchSingleTop = true
                         }
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Add, contentDescription = null
-                        )
+                    } else {
+                        navHostController.navigate(FarmSubscriptionScreenDestination.route) {
+                            launchSingleTop = true
+                        }
                     }
+                }) {
+                    Icon(
+                        Icons.TwoTone.Add,
+                        contentDescription = null,
+                    )
                 }
-            )
+            })
         },
     ) { innerPadding ->
         Surface(
@@ -109,8 +107,7 @@ fun FarmsScreen(
             when (viewModel.getFarmsBelongingToUserState) {
                 is GetFarmsBelongingToUserState.Loading -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
@@ -120,11 +117,9 @@ fun FarmsScreen(
 
                 is GetFarmsBelongingToUserState.Success -> {
                     Farms(
-                        modifier = modifier,
-                        onNavigateTo = { farmId ->
+                        modifier = modifier, onNavigateTo = { farmId ->
                             navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
-                        },
-                        farms = farms
+                        }, farms = farms
                     )
                 }
             }
@@ -174,19 +169,15 @@ internal fun Farms(
         ) {
             items(farms) {
                 Box {
-                    OutlinedCard(
-                        modifier = Modifier
-                            .height(180.dp)
-                            .clickable {
-                                onNavigateTo(it.id.toString())
-                            }
-                    ) {
+                    OutlinedCard(modifier = Modifier
+                        .height(180.dp)
+                        .clickable {
+                            onNavigateTo(it.id.toString())
+                        }) {
                         Column {
                             AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data(it.thumbnail)
-                                    .crossfade(true)
-                                    .build(),
+                                model = ImageRequest.Builder(context).data(it.thumbnail)
+                                    .crossfade(true).build(),
                                 placeholder = painterResource(id = R.drawable.loading_img),
                                 error = painterResource(id = R.drawable.ic_broken_image),
                                 modifier = Modifier

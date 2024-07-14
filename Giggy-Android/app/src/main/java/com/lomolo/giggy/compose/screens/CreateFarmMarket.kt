@@ -112,6 +112,7 @@ fun CreateFarmMarketScreen(
             IconButton(onClick = { onGoBack() }) {
                 Icon(
                     Icons.TwoTone.Close,
+                    modifier = Modifier.size(28.dp),
                     contentDescription = null,
                 )
             }
@@ -135,7 +136,8 @@ fun CreateFarmMarketScreen(
                     Column {
                         Text(
                             stringResource(R.string.market_for),
-                            style = MaterialTheme.typography.labelMedium,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
                         )
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -147,7 +149,6 @@ fun CreateFarmMarketScreen(
                                     label = {
                                         Text(
                                             it,
-                                            style = MaterialTheme.typography.labelMedium,
                                         )
                                     },
                                     leadingIcon = {
@@ -177,7 +178,7 @@ fun CreateFarmMarketScreen(
                         label = {
                             Text(
                                 stringResource(R.string.market_name),
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         keyboardOptions = KeyboardOptions(
@@ -248,7 +249,7 @@ fun CreateFarmMarketScreen(
                         label = {
                             Text(
                                 stringResource(R.string.unit),
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         supportingText = {
@@ -270,7 +271,7 @@ fun CreateFarmMarketScreen(
                         label = {
                             Text(
                                 stringResource(R.string.price_label),
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         supportingText = {
@@ -296,7 +297,7 @@ fun CreateFarmMarketScreen(
                         label = {
                             Text(
                                 stringResource(R.string.volume),
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         supportingText = {
