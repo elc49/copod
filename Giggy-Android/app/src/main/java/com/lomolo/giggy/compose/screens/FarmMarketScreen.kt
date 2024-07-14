@@ -107,12 +107,12 @@ fun FarmMarketScreen(
     val farm = viewModel.gettingFarmState
     val markets = viewModel.gettingFarmMarketsState
     val orders = viewModel.gettingFarmOrdersState
-    val payments = viewModel.gettingFarmPaymentsState
+    //val payments = viewModel.gettingFarmPaymentsState
 
     LaunchedEffect(Unit) {
         viewModel.getFarm()
         viewModel.getFarmOrders()
-        viewModel.getFarmPayments()
+        //viewModel.getFarmPayments()
     }
 
     Column(
@@ -167,20 +167,16 @@ fun FarmMarketScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         TableHeader(
-                            "Product",
-                            .25f
+                            "Product", .25f
                         )
                         TableHeader(
-                            "Image",
-                            .25f
+                            "Image", .25f
                         )
                         TableHeader(
-                            "In-Stock",
-                            .25f
+                            "In-Stock", .25f
                         )
                         TableHeader(
-                            "Price",
-                            .25f
+                            "Price", .25f
                         )
                     }
                 }
@@ -196,14 +192,11 @@ fun FarmMarketScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     TableCell(
-                                        it.name,
-                                        .25f
+                                        it.name, .25f
                                     )
                                     AsyncImage(
                                         model = ImageRequest.Builder(LocalContext.current)
-                                            .data(it.image)
-                                            .crossfade(true)
-                                            .build(),
+                                            .data(it.image).crossfade(true).build(),
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
                                             .weight(.25f)
@@ -212,18 +205,13 @@ fun FarmMarketScreen(
                                         contentDescription = null
                                     )
                                     TableCell(
-                                        "${it.volume}",
-                                        .25f
+                                        "${it.volume}", .25f
                                     )
                                     TableCell(
-                                        NumberFormatter.with()
-                                            .notation(Notation.compactShort())
+                                        NumberFormatter.with().notation(Notation.compactShort())
                                             .unit(Currency.getInstance(deviceDetails.currency))
-                                            .precision(Precision.maxFraction(2))
-                                            .locale(Locale.US)
-                                            .format(it.pricePerUnit)
-                                            .toString(),
-                                        .25f
+                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                            .format(it.pricePerUnit).toString(), .25f
                                     )
                                 }
                             }
@@ -269,20 +257,16 @@ fun FarmMarketScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         TableHeader(
-                            "Product",
-                            .3f
+                            "Product", .3f
                         )
                         TableHeader(
-                            "Volume",
-                            .3f
+                            "Volume", .3f
                         )
                         TableHeader(
-                            "Amount",
-                            .3f
+                            "Amount", .3f
                         )
                     }
                 }
@@ -315,16 +299,13 @@ fun FarmMarketScreen(
                                 ) {
                                     // TODO show product
                                     TableCell(
-                                        it.customer.phone,
-                                        .3f
+                                        it.customer.phone, .3f
                                     )
                                     TableCell(
-                                        "${it.volume}",
-                                        .3f
+                                        "${it.volume}", .3f
                                     )
                                     TableCell(
-                                        "${it.toBePaid}",
-                                        .3f
+                                        "${it.toBePaid}", .3f
                                     )
                                 }
                             }

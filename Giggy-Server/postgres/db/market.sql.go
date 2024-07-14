@@ -129,7 +129,7 @@ func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarke
 }
 
 const getMarketByID = `-- name: GetMarketByID :one
-SELECT id, product, image, volume, unit, tag, price_per_unit, created_at, updated_at FROM markets
+SELECT id, product, image, volume, unit, farm_id, tag, price_per_unit, created_at, updated_at FROM markets
 WHERE id = $1
 `
 
@@ -139,6 +139,7 @@ type GetMarketByIDRow struct {
 	Image        string    `json:"image"`
 	Volume       int32     `json:"volume"`
 	Unit         string    `json:"unit"`
+	FarmID       uuid.UUID `json:"farm_id"`
 	Tag          string    `json:"tag"`
 	PricePerUnit int32     `json:"price_per_unit"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -154,6 +155,7 @@ func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByI
 		&i.Image,
 		&i.Volume,
 		&i.Unit,
+		&i.FarmID,
 		&i.Tag,
 		&i.PricePerUnit,
 		&i.CreatedAt,
@@ -163,7 +165,7 @@ func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByI
 }
 
 const getMarketsBelongingToFarm = `-- name: GetMarketsBelongingToFarm :many
-SELECT id, product, image, volume, unit, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
+SELECT id, product, image, volume, unit, farm_id, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
 WHERE farm_id = $1
 `
 
@@ -173,6 +175,7 @@ type GetMarketsBelongingToFarmRow struct {
 	Image        string       `json:"image"`
 	Volume       int32        `json:"volume"`
 	Unit         string       `json:"unit"`
+	FarmID       uuid.UUID    `json:"farm_id"`
 	PricePerUnit int32        `json:"price_per_unit"`
 	Tag          string       `json:"tag"`
 	HarvestDate  sql.NullTime `json:"harvest_date"`
@@ -195,6 +198,7 @@ func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUI
 			&i.Image,
 			&i.Volume,
 			&i.Unit,
+			&i.FarmID,
 			&i.PricePerUnit,
 			&i.Tag,
 			&i.HarvestDate,

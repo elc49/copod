@@ -1,9 +1,9 @@
 -- name: GetMarketsBelongingToFarm :many
-SELECT id, product, image, volume, unit, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
+SELECT id, product, image, volume, unit, farm_id, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
 WHERE farm_id = $1;
 
 -- name: GetMarketByID :one
-SELECT id, product, image, volume, unit, tag, price_per_unit, created_at, updated_at FROM markets
+SELECT id, product, image, volume, unit, farm_id, tag, price_per_unit, created_at, updated_at FROM markets
 WHERE id = $1;
 
 -- name: CreateFarmMarket :one
