@@ -1,5 +1,11 @@
 package com.lomolo.giggy.compose.screens
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.number.Precision
+import android.icu.util.Currency
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,12 +39,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
+import java.util.Locale
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
     override val route = "dashboard_user_orders"
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserOrdersScreen(
@@ -49,9 +57,7 @@ fun UserOrdersScreen(
     val orders by viewModel.userOrders.collectAsState()
     val barScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection),
-        topBar = {
+    Scaffold(modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection), topBar = {
         LargeTopAppBar(title = {
             Text(stringResource(UserOrdersScreenDestination.title))
         }, navigationIcon = {
@@ -91,17 +97,32 @@ fun UserOrdersScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    TableHeader(text = "Volume", weight = .25f)
+                                    TableHeader(text = "#", weight = .1f)
+                                    TableHeader(text = "Product", weight = .2f)
+                                    TableHeader(text = "Volume", weight = .2f)
+                                    TableHeader(text = "Status", weight = .2f)
+                                    TableHeader(text = "Cost", weight = .2f)
                                 }
                             }
                         }
-                        items(orders) {
+                        itemsIndexed(orders) { index, item ->
                             Row(
                                 Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                TableCell(text = "${it.volume}", weight = .25f)
+                                TableCell(text = "${index.plus(1)}", weight = .1f)
+                                TableCell(text = item.market.name, weight = .2f)
+                                TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
+                                TableCell(text = item.status.toString(), weight = .2f)
+                                TableCell(
+                                    text = "${
+                                        NumberFormatter.with().notation(Notation.simple())
+                                            .unit(Currency.getInstance(item.currency))
+                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
+                                            .format(item.volume.times(item.market.pricePerUnit))
+                                    }", weight = .2f
+                                )
                             }
                         }
                     }

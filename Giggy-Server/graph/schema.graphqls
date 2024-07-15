@@ -5,6 +5,14 @@
 scalar Time
 scalar UUID
 
+# OrderStatus
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DELIVERED
+  CANCELLED
+}
+
 # Address
 type Address {
   addressString: String!
@@ -75,6 +83,7 @@ type Order {
   customerId: UUID!
   marketId: UUID!
   market: Market!
+  status: OrderStatus!
   customer: User!
   created_at: Time!
   updated_at: Time!
@@ -159,6 +168,7 @@ input AddToCartInput {
 }
 
 input SendOrderToFarmInput {
+  cartId: UUID!
   volume: Int!
   toBePaid: Int!
   currency: String!

@@ -9,6 +9,7 @@ query GetUserCartItems {
             name
         }
         market {
+            id
             image
             name
             unit

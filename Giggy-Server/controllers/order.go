@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"errors"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -51,6 +52,10 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 			Volume: int32(item.Volume),
 		}); err != nil {
 			return false, err
+		}
+
+		if b := c.r.DeleteCartItemFromOrder(ctx, item.CartID); !b {
+			return false, errors.New("order: delete cart item from order")
 		}
 	}
 	return true, nil

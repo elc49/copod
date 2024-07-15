@@ -115,6 +115,7 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Market     func(childComplexity int) int
 		MarketID   func(childComplexity int) int
+		Status     func(childComplexity int) int
 		ToBePaid   func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
 		Volume     func(childComplexity int) int
@@ -193,6 +194,7 @@ type MutationResolver interface {
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
+
 	Customer(ctx context.Context, obj *model.Order) (*model.User, error)
 }
 type PostResolver interface {
@@ -573,6 +575,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.MarketID(childComplexity), true
+
+	case "Order.status":
+		if e.complexity.Order.Status == nil {
+			break
+		}
+
+		return e.complexity.Order.Status(childComplexity), true
 
 	case "Order.toBePaid":
 		if e.complexity.Order.ToBePaid == nil {
@@ -3448,6 +3457,50 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Order_status(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Order_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.OrderStatus)
+	fc.Result = res
+	return ec.marshalNOrderStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐOrderStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Order_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Order",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type OrderStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Order_customer(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_customer(ctx, field)
 	if err != nil {
@@ -4971,6 +5024,8 @@ func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context
 				return ec.fieldContext_Order_marketId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
+			case "status":
+				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
 				return ec.fieldContext_Order_customer(ctx, field)
 			case "created_at":
@@ -5246,6 +5301,8 @@ func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ contex
 				return ec.fieldContext_Order_marketId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
+			case "status":
+				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
 				return ec.fieldContext_Order_customer(ctx, field)
 			case "created_at":
@@ -7761,13 +7818,20 @@ func (ec *executionContext) unmarshalInputSendOrderToFarmInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"volume", "toBePaid", "currency", "marketId", "farmId"}
+	fieldsInOrder := [...]string{"cartId", "volume", "toBePaid", "currency", "marketId", "farmId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "cartId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cartId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CartID = data
 		case "volume":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("volume"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -8364,6 +8428,11 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "status":
+			out.Values[i] = ec._Order_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "customer":
 			field := field
 
@@ -9705,6 +9774,16 @@ func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmono
 		return graphql.Null
 	}
 	return ec._Order(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNOrderStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, v interface{}) (model.OrderStatus, error) {
+	var res model.OrderStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNOrderStatus2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, sel ast.SelectionSet, v model.OrderStatus) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNPayWithMpesa2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v model.PayWithMpesa) graphql.Marshaler {
