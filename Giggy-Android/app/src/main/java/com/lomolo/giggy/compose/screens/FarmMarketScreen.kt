@@ -6,8 +6,10 @@ import android.icu.number.Precision
 import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,14 +22,20 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +55,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 object FarmMarketScreenDestination : Navigation {
@@ -108,6 +117,22 @@ fun FarmMarketScreen(
     val markets = viewModel.gettingFarmMarketsState
     val orders = viewModel.gettingFarmOrdersState
     //val payments = viewModel.gettingFarmPaymentsState
+    val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+    val openOrderCounter = { showBottomSheet = true }
+    val onCloseBottomSheet = {
+        scope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                showBottomSheet = false
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getFarm()
@@ -260,14 +285,15 @@ fun FarmMarketScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         TableHeader(
-                            "Product", .3f
+                            "Product", .25f
                         )
                         TableHeader(
-                            "Volume", .3f
+                            "Volume", .25f
                         )
                         TableHeader(
-                            "Amount", .3f
+                            "Cost", .25f
                         )
+                        TableHeader(text = "", weight = .25f)
                     }
                 }
                 when (orders) {
@@ -296,17 +322,21 @@ fun FarmMarketScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
+                                        .clickable { openOrderCounter() }
                                 ) {
-                                    // TODO show product
+                                    TableCell(text = it.market.name, weight = .25f)
                                     TableCell(
-                                        it.customer.phone, .3f
+                                        "${it.volume} ${it.market.unit}", .25f
                                     )
                                     TableCell(
-                                        "${it.volume}", .3f
+                                        "${
+                                            NumberFormatter.with().notation(Notation.simple())
+                                                .unit(Currency.getInstance(it.currency))
+                                                .precision(Precision.maxFraction(2))
+                                                .locale(Locale.US).format(it.toBePaid)
+                                        }", .25f
                                     )
-                                    TableCell(
-                                        "${it.toBePaid}", .3f
-                                    )
+                                    TableCell(text = it.status.toString(), weight = .25f)
                                 }
                             }
                         }
@@ -428,6 +458,71 @@ fun FarmMarketScreen(
                 }
             }
              */
+        }
+        if (showBottomSheet) {
+            OrderActions(
+                sheetState = sheetState,
+                onDismiss = { onCloseBottomSheet() },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun OrderActions(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
+) {
+    ModalBottomSheet(
+        modifier = modifier,
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            TextButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                contentPadding = PaddingValues(8.dp),
+            ) {
+               Text(
+                   "Confirm",
+                   style = MaterialTheme.typography.titleMedium,
+                   fontWeight = FontWeight.Bold,
+               )
+            }
+            TextButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                contentPadding = PaddingValues(8.dp),
+            ) {
+                Text(
+                    "Delivered",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            TextButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                contentPadding = PaddingValues(8.dp),
+            ) {
+                Text(
+                    "Cancel order",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
     }
 }
