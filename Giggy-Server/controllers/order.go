@@ -29,3 +29,29 @@ func (c *OrderController) CreateOrder(ctx context.Context, args db.CreateOrderPa
 func (c *OrderController) GetOrdersBelongingToUser(ctx context.Context, userID uuid.UUID) ([]*model.Order, error) {
 	return c.r.GetOrdersBelongingToUser(ctx, userID)
 }
+
+func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID, orders []*model.SendOrderToFarmInput) (bool, error) {
+	for _, item := range orders {
+		if supplyExists := c.r.MarketHasSupply(ctx, item.MarketID); !supplyExists {
+			continue
+		}
+		_, err := c.CreateOrder(ctx, db.CreateOrderParams{
+			Volume:     int32(item.Volume),
+			ToBePaid:   int32(item.ToBePaid),
+			Currency:   item.Currency,
+			CustomerID: userID,
+			MarketID:   item.MarketID,
+			FarmID:     item.FarmID,
+		})
+		if err != nil {
+			return false, err
+		}
+		if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
+			ID:     item.MarketID,
+			Volume: int32(item.Volume),
+		}); err != nil {
+			return false, err
+		}
+	}
+	return true, nil
+}

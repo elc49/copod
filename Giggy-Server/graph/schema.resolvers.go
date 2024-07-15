@@ -93,6 +93,12 @@ func (r *mutationResolver) DeleteCartItem(ctx context.Context, id uuid.UUID) (bo
 	return r.cartController.DeleteCartItem(ctx, id)
 }
 
+// SendOrderToFarm is the resolver for the sendOrderToFarm field.
+func (r *mutationResolver) SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error) {
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.orderController.SendOrderToFarm(ctx, userId, input)
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)

@@ -51,6 +51,7 @@ type Order struct {
 	Volume     int32     `json:"volume"`
 	Status     string    `json:"status"`
 	ToBePaid   int32     `json:"to_be_paid"`
+	Currency   string    `json:"currency"`
 	CustomerID uuid.UUID `json:"customer_id"`
 	MarketID   uuid.UUID `json:"market_id"`
 	FarmID     uuid.UUID `json:"farm_id"`

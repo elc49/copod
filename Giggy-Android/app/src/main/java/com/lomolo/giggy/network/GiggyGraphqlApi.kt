@@ -23,14 +23,17 @@ import com.lomolo.giggy.GetPaystackPaymentVerificationQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
+import com.lomolo.giggy.SendOrderToFarmMutation
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
+import com.lomolo.giggy.compose.screens.SendOrderToFarm
 import com.lomolo.giggy.type.AddToCartInput
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.NewFarmInput
 import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.PayWithMpesaInput
+import com.lomolo.giggy.type.SendOrderToFarmInput
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
@@ -51,6 +54,7 @@ interface IGiggyGraphqlApi {
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
+    suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -87,6 +91,7 @@ class GiggyGraphqlApi(
 
     override suspend fun getFarmOrders(id: String) = apolloClient
         .query(GetFarmOrdersQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()
 
     override suspend fun getFarmPayments(id: String) = apolloClient
@@ -145,5 +150,19 @@ class GiggyGraphqlApi(
     override suspend fun getOrdersBelongingToUser() = apolloClient
         .query(GetOrdersBelongingToUserQuery())
         .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun sendOrderToFarm(input: List<SendOrderToFarm>) = apolloClient
+        .mutation(SendOrderToFarmMutation(
+            input.map {
+                SendOrderToFarmInput(
+                    it.volume,
+                    it.toBePaid,
+                    it.currency,
+                    it.marketId,
+                    it.farmId,
+                )
+            }
+        ))
         .execute()
 }

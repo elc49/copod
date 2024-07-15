@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"sync"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
@@ -10,10 +11,12 @@ import (
 
 type OrderRepository struct {
 	db *db.Queries
+	mu sync.Mutex
 }
 
 func (r *OrderRepository) Init(db *db.Queries) {
 	r.db = db
+	r.mu = sync.Mutex{}
 }
 
 func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
@@ -28,6 +31,7 @@ func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 			ID:         item.ID,
 			Volume:     int(item.Volume),
 			ToBePaid:   int(item.ToBePaid),
+			Currency:   item.Currency,
 			CustomerID: item.CustomerID,
 			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
@@ -49,6 +53,7 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, args db.CreateOrderPa
 	return &model.Order{
 		ID:         order.ID,
 		ToBePaid:   int(order.ToBePaid),
+		Currency:   order.Currency,
 		Volume:     int(order.Volume),
 		CustomerID: order.CustomerID,
 		MarketID:   order.MarketID,
@@ -69,6 +74,7 @@ func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID u
 			ID:         item.ID,
 			Volume:     int(item.Volume),
 			ToBePaid:   int(item.ToBePaid),
+			Currency:   item.Currency,
 			CustomerID: item.CustomerID,
 			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
@@ -79,4 +85,36 @@ func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID u
 	}
 
 	return orders, nil
+}
+
+func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.UpdateMarketVolumeParams) (*model.Market, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	market, err := r.db.GetMarketByID(ctx, args.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	args.Volume = market.Volume - args.Volume
+	m, err := r.db.UpdateMarketVolume(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Market{
+		ID:        m.ID,
+		Volume:    int(m.Volume),
+		FarmID:    m.FarmID,
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
+	}, nil
+}
+
+func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUID) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	m, _ := r.db.GetMarketByID(ctx, marketID)
+	return m.Volume != 0
 }
