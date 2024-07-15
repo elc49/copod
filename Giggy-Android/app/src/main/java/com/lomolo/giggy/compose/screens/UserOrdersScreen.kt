@@ -100,8 +100,8 @@ fun UserOrdersScreen(
                                     TableHeader(text = "#", weight = .1f)
                                     TableHeader(text = "Product", weight = .2f)
                                     TableHeader(text = "Volume", weight = .2f)
-                                    TableHeader(text = "Status", weight = .2f)
                                     TableHeader(text = "Cost", weight = .2f)
+                                    TableHeader(text = "", weight = .2f)
                                 }
                             }
                         }
@@ -114,15 +114,15 @@ fun UserOrdersScreen(
                                 TableCell(text = "${index.plus(1)}", weight = .1f)
                                 TableCell(text = item.market.name, weight = .2f)
                                 TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
-                                TableCell(text = item.status.toString(), weight = .2f)
                                 TableCell(
                                     text = "${
                                         NumberFormatter.with().notation(Notation.simple())
                                             .unit(Currency.getInstance(item.currency))
                                             .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(item.volume.times(item.market.pricePerUnit))
+                                            .format(item.volume.times(item.toBePaid))
                                     }", weight = .2f
                                 )
+                                TableCell(text = item.status.toString(), weight = .2f)
                             }
                         }
                     }

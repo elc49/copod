@@ -7,7 +7,6 @@ query GetOrdersBelongingToUser {
             image
             name
             unit
-            pricePerUnit
         }
         volume
         status
