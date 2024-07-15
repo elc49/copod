@@ -22,16 +22,17 @@ func (q *Queries) ClearTestOrders(ctx context.Context) error {
 
 const createOrder = `-- name: CreateOrder :one
 INSERT INTO orders (
-  volume, to_be_paid, customer_id, market_id, farm_id
+  volume, to_be_paid, currency, customer_id, market_id, farm_id
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
-RETURNING id, volume, status, to_be_paid, customer_id, market_id, farm_id, created_at, updated_at
+RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at
 `
 
 type CreateOrderParams struct {
 	Volume     int32     `json:"volume"`
 	ToBePaid   int32     `json:"to_be_paid"`
+	Currency   string    `json:"currency"`
 	CustomerID uuid.UUID `json:"customer_id"`
 	MarketID   uuid.UUID `json:"market_id"`
 	FarmID     uuid.UUID `json:"farm_id"`
@@ -41,6 +42,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 	row := q.db.QueryRowContext(ctx, createOrder,
 		arg.Volume,
 		arg.ToBePaid,
+		arg.Currency,
 		arg.CustomerID,
 		arg.MarketID,
 		arg.FarmID,
@@ -51,6 +53,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		&i.Volume,
 		&i.Status,
 		&i.ToBePaid,
+		&i.Currency,
 		&i.CustomerID,
 		&i.MarketID,
 		&i.FarmID,
@@ -61,7 +64,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 }
 
 const getOrderById = `-- name: GetOrderById :one
-SELECT id, volume, status, to_be_paid, customer_id, market_id, farm_id, created_at, updated_at FROM orders
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
 WHERE id = $1
 `
 
@@ -73,6 +76,7 @@ func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 		&i.Volume,
 		&i.Status,
 		&i.ToBePaid,
+		&i.Currency,
 		&i.CustomerID,
 		&i.MarketID,
 		&i.FarmID,
@@ -83,7 +87,7 @@ func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 }
 
 const getOrdersBelongingToFarm = `-- name: GetOrdersBelongingToFarm :many
-SELECT id, volume, status, to_be_paid, customer_id, market_id, farm_id, created_at, updated_at FROM orders
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
 WHERE farm_id = $1
 `
 
@@ -101,6 +105,7 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 			&i.Volume,
 			&i.Status,
 			&i.ToBePaid,
+			&i.Currency,
 			&i.CustomerID,
 			&i.MarketID,
 			&i.FarmID,
@@ -121,7 +126,7 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 }
 
 const getOrdersBelongingToUser = `-- name: GetOrdersBelongingToUser :many
-SELECT id, volume, status, to_be_paid, customer_id, market_id, farm_id, created_at, updated_at FROM orders
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
 WHERE customer_id = $1
 `
 
@@ -139,6 +144,7 @@ func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.
 			&i.Volume,
 			&i.Status,
 			&i.ToBePaid,
+			&i.Currency,
 			&i.CustomerID,
 			&i.MarketID,
 			&i.FarmID,

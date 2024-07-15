@@ -90,6 +90,7 @@ type Order struct {
 	ID         uuid.UUID `json:"id"`
 	Volume     int       `json:"volume"`
 	ToBePaid   int       `json:"toBePaid"`
+	Currency   string    `json:"currency"`
 	CustomerID uuid.UUID `json:"customerId"`
 	MarketID   uuid.UUID `json:"marketId"`
 	Market     *Market   `json:"market"`
@@ -138,4 +139,12 @@ type Post struct {
 }
 
 type Query struct {
+}
+
+type SendOrderToFarmInput struct {
+	Volume   int       `json:"volume"`
+	ToBePaid int       `json:"toBePaid"`
+	Currency string    `json:"currency"`
+	MarketID uuid.UUID `json:"marketId"`
+	FarmID   uuid.UUID `json:"farmId"`
 }

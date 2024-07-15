@@ -94,6 +94,8 @@ type Mutation {
   addToCart(input: AddToCartInput!): Cart!
 
   deleteCartItem(id: UUID!): Boolean!
+
+  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
 }
 
 input NewFarmInput {
@@ -138,6 +140,8 @@ type Order {
   volume: Int!
 
   toBePaid: Int!
+
+  currency: String!
 
   customerId: UUID!
 
@@ -232,6 +236,18 @@ type Query {
   getUserCartItems: [Cart!]!
 
   getOrdersBelongingToUser: [Order!]!
+}
+
+input SendOrderToFarmInput {
+  volume: Int!
+
+  toBePaid: Int!
+
+  currency: String!
+
+  marketId: UUID!
+
+  farmId: UUID!
 }
 
 scalar Time

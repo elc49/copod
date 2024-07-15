@@ -71,6 +71,7 @@ type Order {
   id: UUID!
   volume: Int!
   toBePaid: Int!
+  currency: String!
   customerId: UUID!
   marketId: UUID!
   market: Market!
@@ -157,6 +158,14 @@ input AddToCartInput {
   farmId: UUID!
 }
 
+input SendOrderToFarmInput {
+  volume: Int!
+  toBePaid: Int!
+  currency: String!
+  marketId: UUID!
+  farmId: UUID!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -178,4 +187,5 @@ type Mutation {
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
   addToCart(input: AddToCartInput!): Cart!
   deleteCartItem(id: UUID!): Boolean!
+  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
 }

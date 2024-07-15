@@ -208,21 +208,52 @@ fun MarketCartScreen(
                                 }
                             }
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    viewModel.sendOrderToFarm(
+                                        key, value.map {
+                                            SendOrderToFarm(
+                                                it.id.toString(),
+                                                it.volume,
+                                                currencyLocale,
+                                                it.market_id.toString(),
+                                                it.farm_id.toString(),
+                                                it.volume.times(it.market.pricePerUnit),
+                                            )
+                                        }
+                                    )
+                                },
                                 Modifier.fillMaxWidth(),
                                 shape = MaterialTheme.shapes.small,
                                 contentPadding = PaddingValues(14.dp),
                             ) {
-                                Text(
-                                    "Send to farm [${
-                                        NumberFormatter.with().notation(Notation.simple())
-                                            .unit(Currency.getInstance(currencyLocale))
-                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(item.volume.times(item.market.pricePerUnit))
-                                    }]",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
+                                when (viewModel.sendToFarmState) {
+                                    SendToFarmState.Success -> Text(
+                                        "Send to farm [${
+                                            NumberFormatter.with().notation(Notation.simple())
+                                                .unit(Currency.getInstance(currencyLocale))
+                                                .precision(Precision.maxFraction(2))
+                                                .locale(Locale.US)
+                                                .format(item.volume.times(item.market.pricePerUnit))
+                                        }]",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+
+                                    SendToFarmState.Loading -> if (viewModel.sendingKey == key) CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    ) else Text(
+                                        "Send to farm [${
+                                            NumberFormatter.with().notation(Notation.simple())
+                                                .unit(Currency.getInstance(currencyLocale))
+                                                .precision(Precision.maxFraction(2))
+                                                .locale(Locale.US)
+                                                .format(item.volume.times(item.market.pricePerUnit))
+                                        }]",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                }
                             }
                         }
                     }

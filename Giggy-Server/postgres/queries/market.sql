@@ -18,5 +18,10 @@ RETURNING *;
 SELECT id, product, image, price_per_unit, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius));
 
+-- name: UpdateMarketVolume :one
+UPDATE markets SET volume = $1
+WHERE id = $2
+RETURNING *;
+
 -- name: ClearTestMarkets :exec
 DELETE FROM markets;

@@ -22,6 +22,8 @@ class MarketCartViewModel(
         private set
     var deletingItemId: String by mutableStateOf("")
         private set
+    var sendingKey: String by mutableStateOf("")
+        private set
 
     fun deleteCartItem(id: String) {
         if (deleteCartItemState !is DeleteCartItemState.Loading && deletingItemId.isBlank()) {
@@ -53,6 +55,55 @@ class MarketCartViewModel(
             }
         }
     }
+
+    var sendToFarmState: SendToFarmState by mutableStateOf(SendToFarmState.Success)
+        private set
+
+    fun sendOrderToFarm(key: String, order: List<SendOrderToFarm>) {
+        if (sendToFarmState !is SendToFarmState.Loading) {
+            sendingKey = key
+            sendToFarmState = SendToFarmState.Loading
+            viewModelScope.launch {
+                sendToFarmState = try {
+                    marketsRepository.sendOrderToFarm(order)
+                    order.forEach { item ->
+                        try {
+                            val updatedCacheData = apolloStore.readOperation(
+                                GetUserCartItemsQuery()
+                            ).getUserCartItems.toMutableList()
+                            val where = updatedCacheData.indexOfFirst { it.id.toString() == item.id }
+                            updatedCacheData.removeAt(where)
+                            apolloStore.writeOperation(
+                                GetUserCartItemsQuery(),
+                                GetUserCartItemsQuery.Data(updatedCacheData)
+                            )
+                        } catch(e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    SendToFarmState.Success
+                } catch(e: IOException) {
+                    e.printStackTrace()
+                    SendToFarmState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+}
+
+data class SendOrderToFarm(
+    val id: String = "",
+    val volume: Int = 0,
+    val currency: String = "",
+    val marketId: String = "",
+    val farmId: String = "",
+    val toBePaid: Int = 0,
+)
+
+interface SendToFarmState {
+    data object Loading: SendToFarmState
+    data object Success: SendToFarmState
+    data class Error(val msg: String?): SendToFarmState
 }
 
 interface DeleteCartItemState {

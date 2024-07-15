@@ -217,3 +217,34 @@ func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUI
 	}
 	return items, nil
 }
+
+const updateMarketVolume = `-- name: UpdateMarketVolume :one
+UPDATE markets SET volume = $1
+WHERE id = $2
+RETURNING id, product, image, volume, unit, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
+`
+
+type UpdateMarketVolumeParams struct {
+	Volume int32     `json:"volume"`
+	ID     uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateMarketVolume(ctx context.Context, arg UpdateMarketVolumeParams) (Market, error) {
+	row := q.db.QueryRowContext(ctx, updateMarketVolume, arg.Volume, arg.ID)
+	var i Market
+	err := row.Scan(
+		&i.ID,
+		&i.Product,
+		&i.Image,
+		&i.Volume,
+		&i.Unit,
+		&i.PricePerUnit,
+		&i.Location,
+		&i.HarvestDate,
+		&i.Tag,
+		&i.FarmID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

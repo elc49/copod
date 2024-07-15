@@ -8,9 +8,9 @@ WHERE id = $1;
 
 -- name: CreateOrder :one
 INSERT INTO orders (
-  volume, to_be_paid, customer_id, market_id, farm_id
+  volume, to_be_paid, currency, customer_id, market_id, farm_id
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 

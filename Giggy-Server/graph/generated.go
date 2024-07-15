@@ -104,10 +104,12 @@ type ComplexityRoot struct {
 		CreatePost       func(childComplexity int, input model.NewPostInput) int
 		DeleteCartItem   func(childComplexity int, id uuid.UUID) int
 		PayWithMpesa     func(childComplexity int, input model.PayWithMpesaInput) int
+		SendOrderToFarm  func(childComplexity int, input []*model.SendOrderToFarmInput) int
 	}
 
 	Order struct {
 		CreatedAt  func(childComplexity int) int
+		Currency   func(childComplexity int) int
 		Customer   func(childComplexity int) int
 		CustomerID func(childComplexity int) int
 		ID         func(childComplexity int) int
@@ -187,6 +189,7 @@ type MutationResolver interface {
 	PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error)
 	AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error)
 	DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error)
+	SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -510,12 +513,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.PayWithMpesa(childComplexity, args["input"].(model.PayWithMpesaInput)), true
 
+	case "Mutation.sendOrderToFarm":
+		if e.complexity.Mutation.SendOrderToFarm == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_sendOrderToFarm_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SendOrderToFarm(childComplexity, args["input"].([]*model.SendOrderToFarmInput)), true
+
 	case "Order.created_at":
 		if e.complexity.Order.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Order.CreatedAt(childComplexity), true
+
+	case "Order.currency":
+		if e.complexity.Order.Currency == nil {
+			break
+		}
+
+		return e.complexity.Order.Currency(childComplexity), true
 
 	case "Order.customer":
 		if e.complexity.Order.Customer == nil {
@@ -888,6 +910,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewFarmMarketInput,
 		ec.unmarshalInputNewPostInput,
 		ec.unmarshalInputPayWithMpesaInput,
+		ec.unmarshalInputSendOrderToFarmInput,
 	)
 	first := true
 
@@ -1086,6 +1109,21 @@ func (ec *executionContext) field_Mutation_payWithMpesa_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐPayWithMpesaInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_sendOrderToFarm_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []*model.SendOrderToFarmInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3025,6 +3063,61 @@ func (ec *executionContext) fieldContext_Mutation_deleteCartItem(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_sendOrderToFarm(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_sendOrderToFarm(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SendOrderToFarm(rctx, fc.Args["input"].([]*model.SendOrderToFarmInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_sendOrderToFarm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_sendOrderToFarm_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Order_id(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_id(ctx, field)
 	if err != nil {
@@ -3152,6 +3245,50 @@ func (ec *executionContext) fieldContext_Order_toBePaid(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Order_currency(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Order_currency(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Currency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Order_currency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Order",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4826,6 +4963,8 @@ func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context
 				return ec.fieldContext_Order_volume(ctx, field)
 			case "toBePaid":
 				return ec.fieldContext_Order_toBePaid(ctx, field)
+			case "currency":
+				return ec.fieldContext_Order_currency(ctx, field)
 			case "customerId":
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
@@ -5099,6 +5238,8 @@ func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ contex
 				return ec.fieldContext_Order_volume(ctx, field)
 			case "toBePaid":
 				return ec.fieldContext_Order_toBePaid(ctx, field)
+			case "currency":
+				return ec.fieldContext_Order_currency(ctx, field)
 			case "customerId":
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
@@ -7613,6 +7754,61 @@ func (ec *executionContext) unmarshalInputPayWithMpesaInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSendOrderToFarmInput(ctx context.Context, obj interface{}) (model.SendOrderToFarmInput, error) {
+	var it model.SendOrderToFarmInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"volume", "toBePaid", "currency", "marketId", "farmId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "volume":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("volume"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Volume = data
+		case "toBePaid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toBePaid"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToBePaid = data
+		case "currency":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currency"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Currency = data
+		case "marketId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MarketID = data
+		case "farmId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("farmId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FarmID = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -8061,6 +8257,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "sendOrderToFarm":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_sendOrderToFarm(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8107,6 +8310,11 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "toBePaid":
 			out.Values[i] = ec._Order_toBePaid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "currency":
+			out.Values[i] = ec._Order_currency(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -9642,6 +9850,28 @@ func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonor
 		return graphql.Null
 	}
 	return ec._Post(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx context.Context, v interface{}) ([]*model.SendOrderToFarmInput, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.SendOrderToFarmInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋgiggyᚑmonorepoᚋGiggyᚑServerᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (*model.SendOrderToFarmInput, error) {
+	res, err := ec.unmarshalInputSendOrderToFarmInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
