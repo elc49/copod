@@ -9,6 +9,7 @@ mutation AddToCart($input: AddToCartInput!) {
             name
         }
         market {
+            id
             image
             name
             unit

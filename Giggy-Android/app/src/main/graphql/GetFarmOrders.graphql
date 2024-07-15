@@ -6,6 +6,7 @@ query GetFarmOrders($id: UUID!) {
         customer {
             id
             phone
+            avatar
         }
     }
 }

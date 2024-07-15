@@ -1,6 +1,16 @@
 query GetOrdersBelongingToUser {
     getOrdersBelongingToUser {
         id
+        currency
+        market {
+            id
+            image
+            name
+            unit
+            pricePerUnit
+        }
         volume
+        status
+        toBePaid
     }
 }

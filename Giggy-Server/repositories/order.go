@@ -32,6 +32,7 @@ func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 			Volume:     int(item.Volume),
 			ToBePaid:   int(item.ToBePaid),
 			Currency:   item.Currency,
+			Status:     model.OrderStatus(item.Status),
 			CustomerID: item.CustomerID,
 			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
@@ -56,6 +57,7 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, args db.CreateOrderPa
 		Currency:   order.Currency,
 		Volume:     int(order.Volume),
 		CustomerID: order.CustomerID,
+		Status:     model.OrderStatus(order.Status),
 		MarketID:   order.MarketID,
 		CreatedAt:  order.CreatedAt,
 		UpdatedAt:  order.UpdatedAt,
@@ -76,6 +78,7 @@ func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID u
 			ToBePaid:   int(item.ToBePaid),
 			Currency:   item.Currency,
 			CustomerID: item.CustomerID,
+			Status:     model.OrderStatus(item.Status),
 			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
 			UpdatedAt:  item.UpdatedAt,
@@ -117,4 +120,12 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 
 	m, _ := r.db.GetMarketByID(ctx, marketID)
 	return m.Volume != 0
+}
+
+func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uuid.UUID) bool {
+	if err := r.db.DeleteCartItem(ctx, cartID); err != nil {
+		return false
+	}
+
+	return true
 }

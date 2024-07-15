@@ -3,6 +3,9 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -87,16 +90,17 @@ type NewPostInput struct {
 }
 
 type Order struct {
-	ID         uuid.UUID `json:"id"`
-	Volume     int       `json:"volume"`
-	ToBePaid   int       `json:"toBePaid"`
-	Currency   string    `json:"currency"`
-	CustomerID uuid.UUID `json:"customerId"`
-	MarketID   uuid.UUID `json:"marketId"`
-	Market     *Market   `json:"market"`
-	Customer   *User     `json:"customer"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID         uuid.UUID   `json:"id"`
+	Volume     int         `json:"volume"`
+	ToBePaid   int         `json:"toBePaid"`
+	Currency   string      `json:"currency"`
+	CustomerID uuid.UUID   `json:"customerId"`
+	MarketID   uuid.UUID   `json:"marketId"`
+	Market     *Market     `json:"market"`
+	Status     OrderStatus `json:"status"`
+	Customer   *User       `json:"customer"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
 }
 
 type PayWithMpesa struct {
@@ -142,9 +146,55 @@ type Query struct {
 }
 
 type SendOrderToFarmInput struct {
+	CartID   uuid.UUID `json:"cartId"`
 	Volume   int       `json:"volume"`
 	ToBePaid int       `json:"toBePaid"`
 	Currency string    `json:"currency"`
 	MarketID uuid.UUID `json:"marketId"`
 	FarmID   uuid.UUID `json:"farmId"`
+}
+
+type OrderStatus string
+
+const (
+	OrderStatusPending   OrderStatus = "PENDING"
+	OrderStatusConfirmed OrderStatus = "CONFIRMED"
+	OrderStatusDelivered OrderStatus = "DELIVERED"
+	OrderStatusCancelled OrderStatus = "CANCELLED"
+)
+
+var AllOrderStatus = []OrderStatus{
+	OrderStatusPending,
+	OrderStatusConfirmed,
+	OrderStatusDelivered,
+	OrderStatusCancelled,
+}
+
+func (e OrderStatus) IsValid() bool {
+	switch e {
+	case OrderStatusPending, OrderStatusConfirmed, OrderStatusDelivered, OrderStatusCancelled:
+		return true
+	}
+	return false
+}
+
+func (e OrderStatus) String() string {
+	return string(e)
+}
+
+func (e *OrderStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = OrderStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid OrderStatus", str)
+	}
+	return nil
+}
+
+func (e OrderStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

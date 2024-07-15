@@ -149,11 +149,23 @@ type Order {
 
   market: Market!
 
+  status: OrderStatus!
+
   customer: User!
 
   created_at: Time!
 
   updated_at: Time!
+}
+
+enum OrderStatus {
+  PENDING
+
+  CONFIRMED
+
+  DELIVERED
+
+  CANCELLED
 }
 
 type PayWithMpesa {
@@ -239,6 +251,8 @@ type Query {
 }
 
 input SendOrderToFarmInput {
+  cartId: UUID!
+
   volume: Int!
 
   toBePaid: Int!
