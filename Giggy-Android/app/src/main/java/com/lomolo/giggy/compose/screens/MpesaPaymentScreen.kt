@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,7 +37,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
-import kotlinx.coroutines.delay
 
 object MpesaPaymentScreenDestination : Navigation {
     override val title = R.string.m_pesa
@@ -54,34 +52,15 @@ fun MpesaPaymentScreen(
     onNavigateTo: () -> Unit = {},
     viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    LaunchedEffect(key1 = viewModel.payingWithMpesaState) {
-        when (viewModel.payingWithMpesaState) {
-            PayingWithMpesa.PayingOffline -> {
-                // wait in-between for telecom prompt
-                // and pin submission for approval
-                delay(3000L)
-                // start poll - 3 times to check
-                // payment status
-                repeat(viewModel.pollingRetry) {
-                    // delay between polling just for good measure
-                    delay(2000L)
-                    // TODO poll to get payment status
-                    // success: set retry = 0 navigate
-                    // to stop running this and navigate
-                    //  to whenever we are coming from
-                    // refresh session
-                    viewModel.verifyPayment {
-                        onNavigateTo()
-                        viewModel.reset()
-                    }
-                }
-            }
-        }
-    }
-
     val paymentData by viewModel.paymentUiState.collectAsState()
     val validInput = viewModel.validatePayByMpesa(paymentData, deviceDetails)
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    when (viewModel.payingWithMpesaState) {
+        PayingWithMpesa.Success -> {
+            onNavigateTo()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -144,7 +123,7 @@ fun MpesaPaymentScreen(
             contentPadding = PaddingValues(16.dp),
         ) {
             when (viewModel.payingWithMpesaState) {
-                PayingWithMpesa.Success -> Text(
+                PayingWithMpesa.Default -> Text(
                     stringResource(R.string.pay),
                     fontWeight = FontWeight.Bold,
                 )
@@ -159,9 +138,14 @@ fun MpesaPaymentScreen(
                     modifier = Modifier.size(20.dp),
                 )
 
-                PayingWithMpesa.PayingOffline -> CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(20.dp),
+                PayingWithMpesa.PayingOffline -> Text(
+                    stringResource(R.string.complete_from_m_pesa),
+                    fontWeight = FontWeight.Bold,
+                )
+
+                PayingWithMpesa.Refreshing -> Text(
+                    stringResource(R.string.confirming_payment),
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }

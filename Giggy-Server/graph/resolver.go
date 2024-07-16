@@ -2,8 +2,10 @@ package graph
 
 import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/controllers"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
+	"github.com/redis/go-redis/v9"
 )
 
 // This file will not be regenerated automatically.
@@ -21,6 +23,7 @@ type Resolver struct {
 	paymentController      controllers.PaymentController
 	subscriptionController controllers.SubscriptionController
 	cartController         controllers.CartController
+	redis                  *redis.Client
 }
 
 func New(db *db.Queries, signinController controllers.SigninController) Config {
@@ -48,6 +51,7 @@ func New(db *db.Queries, signinController controllers.SigninController) Config {
 		paymentController,
 		subscriptionController,
 		cartController,
+		cache.GetCache().GetRedis(),
 	}
 
 	c := Config{Resolvers: resolver}

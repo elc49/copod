@@ -200,7 +200,9 @@ type Payment {
   updated_at: Time!
 }
 
-type PaystackPaymentVerificationStatus {
+type PaystackPaymentUpdate {
+  referenceId: String!
+
   status: String!
 
   sessionId: UUID!
@@ -243,7 +245,7 @@ type Query {
 
   getFarmPayments(id: UUID!): [Payment!]!
 
-  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
+  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentUpdate!
 
   getUserCartItems: [Cart!]!
 
@@ -262,6 +264,10 @@ input SendOrderToFarmInput {
   marketId: UUID!
 
   farmId: UUID!
+}
+
+type Subscription {
+  paymentUpdate(userId: UUID!): PaystackPaymentUpdate!
 }
 
 scalar Time
@@ -476,4 +482,5 @@ directive @specifiedBy (url: String!) on SCALAR
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }

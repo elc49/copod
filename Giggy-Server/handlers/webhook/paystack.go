@@ -1,6 +1,7 @@
 package paystack
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -29,10 +30,10 @@ func Paystack() http.Handler {
 			return
 		}
 
-		psErr := pS.ReconcileMpesaChargeCallback(r.Context(), *paystackRes)
-		if psErr != nil {
-			logrus.WithError(psErr).Error("paystack webhook: paystack.ReconcileMpesaChargeCallback")
-		}
+		go func() {
+			ctx := context.Background()
+			pS.ReconcileMpesaChargeCallback(ctx, *paystackRes)
+		}()
 
 		w.WriteHeader(http.StatusOK)
 	})

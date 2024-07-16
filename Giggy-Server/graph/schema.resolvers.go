@@ -6,12 +6,15 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/subscription"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 // Farm is the resolver for the farm field.
@@ -165,7 +168,7 @@ func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*m
 }
 
 // GetPaystackPaymentVerification is the resolver for the getPaystackPaymentVerification field.
-func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentVerificationStatus, error) {
+func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentUpdate, error) {
 	return r.subscriptionController.VerifyTransactionByReferenceID(ctx, referenceID)
 }
 
@@ -179,6 +182,28 @@ func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, er
 func (r *queryResolver) GetOrdersBelongingToUser(ctx context.Context) ([]*model.Order, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.orderController.GetOrdersBelongingToUser(ctx, userId)
+}
+
+// PaymentUpdate is the resolver for the paymentUpdate field.
+func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error) {
+	ch := make(chan *model.PaystackPaymentUpdate)
+	pubsub := r.redis.Subscribe(context.Background(), subscription.PAYMENT_UPDATES)
+
+	go func() {
+		for msg := range pubsub.Channel() {
+			var result *model.PaystackPaymentUpdate
+			if err := json.Unmarshal([]byte(msg.Payload), &result); err != nil {
+				logrus.WithError(err).Error("resolver: paystack websocket update")
+				return
+			}
+
+			if result.SessionID == userID {
+				ch <- result
+			}
+		}
+	}()
+
+	return ch, nil
 }
 
 // Cart returns CartResolver implementation.
@@ -196,8 +221,12 @@ func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+// Subscription returns SubscriptionResolver implementation.
+func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
+
 type cartResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

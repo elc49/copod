@@ -23,6 +23,7 @@ import com.lomolo.giggy.GetPaystackPaymentVerificationQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
+import com.lomolo.giggy.PaymentUpdateSubscription
 import com.lomolo.giggy.SendOrderToFarmMutation
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
@@ -55,6 +56,7 @@ interface IGiggyGraphqlApi {
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
+    fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
 }
 
 class GiggyGraphqlApi(
@@ -166,4 +168,8 @@ class GiggyGraphqlApi(
             }
         ))
         .execute()
+
+    override fun paymentUpdate(sessionId: String) = apolloClient
+        .subscription(PaymentUpdateSubscription(sessionId))
+        .toFlow()
 }

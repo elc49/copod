@@ -125,9 +125,10 @@ type Payment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type PaystackPaymentVerificationStatus struct {
-	Status    string    `json:"status"`
-	SessionID uuid.UUID `json:"sessionId"`
+type PaystackPaymentUpdate struct {
+	ReferenceID string    `json:"referenceId"`
+	Status      string    `json:"status"`
+	SessionID   uuid.UUID `json:"sessionId"`
 }
 
 type Post struct {
@@ -152,6 +153,9 @@ type SendOrderToFarmInput struct {
 	Currency string    `json:"currency"`
 	MarketID uuid.UUID `json:"marketId"`
 	FarmID   uuid.UUID `json:"farmId"`
+}
+
+type Subscription struct {
 }
 
 type OrderStatus string

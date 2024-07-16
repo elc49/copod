@@ -125,7 +125,6 @@ fun DashboardScreen(
             }
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

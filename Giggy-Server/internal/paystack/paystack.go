@@ -7,10 +7,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/cache"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/subscription"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/redis/go-redis/v9"
@@ -24,6 +26,7 @@ type paystack struct {
 	log    *logrus.Logger
 	pubsub *redis.Client
 	db     *db.Queries
+	mu     sync.Mutex
 }
 
 type Paystack interface {
@@ -38,6 +41,7 @@ func New(db *db.Queries) {
 		logger.GetLogger(),
 		cache.GetCache().GetRedis(),
 		db,
+		sync.Mutex{},
 	}
 }
 
@@ -99,6 +103,9 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 }
 
 func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	payment, err := p.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: input.Data.Reference, Valid: true})
 	if err != nil && err != sql.ErrNoRows {
 		p.log.WithError(err).Error("paystack: GetRightsPurchageByReferenceID")
@@ -125,6 +132,24 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 		p.db.SetUserFarmingRights(ctx, args)
 	default:
 	}
+
+	pubPayload := model.PaystackPaymentUpdate{
+		ReferenceID: input.Data.Reference,
+		Status:      input.Data.Status,
+		SessionID:   payment.UserID,
+	}
+	pBytes, err := json.Marshal(pubPayload)
+	if err != nil {
+		p.log.WithError(err).Error("paystack: pubsub: json.Marshal pubPayload")
+		return err
+	}
+
+	pubErr := p.pubsub.Publish(ctx, subscription.PAYMENT_UPDATES, pBytes).Err()
+	if pubErr != nil {
+		p.log.WithError(pubErr).Error("paystack: pubsub: ReconcileMpesaChargeCallback")
+		return pubErr
+	}
+
 	return nil
 }
 

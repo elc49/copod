@@ -48,7 +48,7 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uu
 	return c.paystack.ChargeMpesaPhone(ctx, args)
 }
 
-func (c *SubscriptionController) VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackPaymentVerificationStatus, error) {
+func (c *SubscriptionController) VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackPaymentUpdate, error) {
 	payment, err := c.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: referenceId, Valid: true})
 	if err != nil {
 		return nil, err
@@ -59,5 +59,5 @@ func (c *SubscriptionController) VerifyTransactionByReferenceID(ctx context.Cont
 		return nil, err
 	}
 
-	return &model.PaystackPaymentVerificationStatus{Status: res.Data.Status, SessionID: payment.UserID}, nil
+	return &model.PaystackPaymentUpdate{Status: res.Data.Status, SessionID: payment.UserID}, nil
 }
