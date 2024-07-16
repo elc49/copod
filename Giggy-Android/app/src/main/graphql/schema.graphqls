@@ -267,8 +267,6 @@ input SendOrderToFarmInput {
 }
 
 type Subscription {
-  currentTime: String!
-
   paymentUpdate(userId: UUID!): PaystackPaymentUpdate!
 }
 

@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/subscription"
@@ -183,30 +182,6 @@ func (r *queryResolver) GetUserCartItems(ctx context.Context) ([]*model.Cart, er
 func (r *queryResolver) GetOrdersBelongingToUser(ctx context.Context) ([]*model.Order, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.orderController.GetOrdersBelongingToUser(ctx, userId)
-}
-
-// CurrentTime is the resolver for the currentTime field.
-func (r *subscriptionResolver) CurrentTime(ctx context.Context) (<-chan string, error) {
-	pubsub := r.redis.Subscribe(context.Background(), subscription.PAYMENT_UPDATES)
-	ch := make(chan string)
-
-	go func() {
-		for msg := range pubsub.Channel() {
-			var t int
-			if err := json.Unmarshal([]byte(msg.Payload), &t); err != nil {
-				logrus.WithError(err).Error(err.Error())
-				return
-			}
-			select {
-			case <-ctx.Done():
-				fmt.Println("Subscription closed")
-				return
-			case ch <- strconv.Itoa(t):
-			}
-		}
-	}()
-
-	return ch, nil
 }
 
 // PaymentUpdate is the resolver for the paymentUpdate field.

@@ -10,7 +10,6 @@ import com.lomolo.giggy.AddToCartMutation
 import com.lomolo.giggy.CreateFarmMarketMutation
 import com.lomolo.giggy.CreateFarmMutation
 import com.lomolo.giggy.CreatePostMutation
-import com.lomolo.giggy.CurrentTimeSubscription
 import com.lomolo.giggy.DeleteCartItemMutation
 import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
@@ -57,7 +56,6 @@ interface IGiggyGraphqlApi {
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
-    fun currentTime(): Flow<ApolloResponse<CurrentTimeSubscription.Data>>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
 }
 
@@ -170,10 +168,6 @@ class GiggyGraphqlApi(
             }
         ))
         .execute()
-
-    override fun currentTime() = apolloClient
-        .subscription(CurrentTimeSubscription())
-        .toFlow()
 
     override fun paymentUpdate(sessionId: String) = apolloClient
         .subscription(PaymentUpdateSubscription(sessionId))
