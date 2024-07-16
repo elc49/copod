@@ -89,7 +89,7 @@ func (s *Server) MountHandlers() {
 	// Routes
 	s.Router.Handle("/", playground.Handler("GraphQL playground", "/api/graphql"))
 	s.Router.Route("/api", func(r chi.Router) {
-		r.With().Handle("/graphql", graphqlHandler)
+		r.With(giggyMiddleware.Auth).Handle("/graphql", graphqlHandler)
 		r.Handle("/subscription", graphqlHandler)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.AllowContentType("application/json"))
