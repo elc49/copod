@@ -78,4 +78,10 @@ func TestOrderController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, len(orders), 2)
 	})
+
+	t.Run("get_user_orders_count", func(t *testing.T) {
+		c, err := orderC.GetUserOrdersCount(ctx, user.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, c, 2)
+	})
 }

@@ -7,9 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomolo.giggy.GetFarmByIdQuery
-import com.lomolo.giggy.GetFarmOrdersQuery
-import com.lomolo.giggy.GetFarmPaymentsQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
+import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
 import kotlinx.coroutines.launch
 import okio.IOException
@@ -17,11 +16,13 @@ import okio.IOException
 class FarmMarketViewModel(
     savedStateHandle: SavedStateHandle,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
-): ViewModel() {
+) : ViewModel() {
     private val storeId: String =
         checkNotNull(savedStateHandle[FarmMarketScreenDestination.farmIdArg])
 
-    fun getFarmId(): String { return storeId }
+    fun getFarmId(): String {
+        return storeId
+    }
 
     var gettingFarmState: GetFarmState by mutableStateOf(GetFarmState.Success(null))
         private set
@@ -40,14 +41,7 @@ class FarmMarketViewModel(
     )
         private set
 
-    var gettingFarmPaymentsState: GetFarmPaymentsState by mutableStateOf(
-        GetFarmPaymentsState.Success(
-            null
-        )
-    )
-        private set
-
-    fun getFarm() {
+    private fun getFarm() {
         if (gettingFarmState !is GetFarmState.Loading) {
             gettingFarmState = GetFarmState.Loading
             viewModelScope.launch {
@@ -62,7 +56,7 @@ class FarmMarketViewModel(
         }
     }
 
-    fun getFarmOrders() {
+    private fun getFarmOrders() {
         if (gettingFarmOrdersState !is GetFarmOrdersState.Loading) {
             gettingFarmOrdersState = GetFarmOrdersState.Loading
             viewModelScope.launch {
@@ -77,61 +71,45 @@ class FarmMarketViewModel(
         }
     }
 
-    fun getFarmPayments() {
-        if (gettingFarmPaymentsState !is GetFarmPaymentsState.Loading) {
-            gettingFarmPaymentsState = GetFarmPaymentsState.Loading
-            viewModelScope.launch {
-                gettingFarmPaymentsState = try {
-                    val res = giggyGraphqlApi.getFarmPayments(storeId).dataOrThrow()
-                    GetFarmPaymentsState.Success(res.getFarmPayments)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    GetFarmPaymentsState.Error(e.localizedMessage)
-                }
-            }
-        }
-    }
-
-    init {
+    private fun getFarmMarkets() {
         viewModelScope.launch {
             gettingFarmMarketsState = GetFarmMarketsState.Loading
             try {
                 giggyGraphqlApi
                     .getFarmMarkets(storeId)
-                    .collect {res ->
+                    .collect { res ->
                         gettingFarmMarketsState =
                             GetFarmMarketsState.Success(res.data?.getFarmMarkets)
                     }
-            } catch(e: IOException) {
+            } catch (e: IOException) {
                 e.printStackTrace()
                 gettingFarmMarketsState = GetFarmMarketsState.Success(listOf())
             }
         }
     }
+
+    init {
+        getFarm()
+        getFarmMarkets()
+        getFarmOrders()
+    }
 }
 
 
 interface GetFarmState {
-    data object Loading: GetFarmState
-    data class Error(val msg: String?): GetFarmState
-    data class Success(val success: GetFarmByIdQuery.GetFarmById?): GetFarmState
+    data object Loading : GetFarmState
+    data class Error(val msg: String?) : GetFarmState
+    data class Success(val success: GetFarmByIdQuery.GetFarmById?) : GetFarmState
 }
 
 interface GetFarmMarketsState {
-    data object Loading: GetFarmMarketsState
-    data class Success(val success: List<GetFarmMarketsQuery.GetFarmMarket>?): GetFarmMarketsState
-    data class Error(val msg: String?): GetFarmMarketsState
+    data object Loading : GetFarmMarketsState
+    data class Success(val success: List<GetFarmMarketsQuery.GetFarmMarket>?) : GetFarmMarketsState
+    data class Error(val msg: String?) : GetFarmMarketsState
 }
 
 interface GetFarmOrdersState {
-    data object Loading: GetFarmOrdersState
-    data class Success(val success: List<GetFarmOrdersQuery.GetFarmOrder>?): GetFarmOrdersState
-    data class Error(val msg: String?): GetFarmOrdersState
-}
-
-interface GetFarmPaymentsState {
-    data object Loading: GetFarmPaymentsState
-    data class Success(val success: List<GetFarmPaymentsQuery.GetFarmPayment>?):
-        GetFarmPaymentsState
-    data class Error(val msg: String?): GetFarmPaymentsState
+    data object Loading : GetFarmOrdersState
+    data class Success(val success: List<GetFarmOrdersQuery.GetFarmOrder>?) : GetFarmOrdersState
+    data class Error(val msg: String?) : GetFarmOrdersState
 }

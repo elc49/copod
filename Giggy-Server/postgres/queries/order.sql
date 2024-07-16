@@ -18,5 +18,9 @@ RETURNING *;
 SELECT * FROM orders
 WHERE customer_id = $1;
 
+-- name: GetUserOrdersCount :one
+SELECT count(*) FROM orders
+WHERE customer_id = $1 AND status = 'PENDING';
+
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

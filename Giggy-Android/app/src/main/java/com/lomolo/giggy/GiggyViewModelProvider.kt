@@ -145,7 +145,7 @@ object GiggyViewModelProvider {
 
         initializer {
             userOrdersViewModel = UserOrdersViewModel(
-                marketsViewModel,
+                giggyApplication().container.marketsRepository,
             )
             userOrdersViewModel
         }

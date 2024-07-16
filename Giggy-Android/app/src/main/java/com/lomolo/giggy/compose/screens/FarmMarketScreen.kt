@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.GetFarmByIdQuery
+import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
@@ -116,8 +116,6 @@ fun FarmMarketScreen(
     val farm = viewModel.gettingFarmState
     val markets = viewModel.gettingFarmMarketsState
     val orders = viewModel.gettingFarmOrdersState
-    //val payments = viewModel.gettingFarmPaymentsState
-    val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -132,12 +130,6 @@ fun FarmMarketScreen(
                 showBottomSheet = false
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getFarm()
-        viewModel.getFarmOrders()
-        //viewModel.getFarmPayments()
     }
 
     Column(
@@ -338,6 +330,13 @@ fun FarmMarketScreen(
                                     )
                                     TableCell(text = it.status.toString(), weight = .25f)
                                 }
+                                if (showBottomSheet) {
+                                    OrderActions(
+                                        sheetState = sheetState,
+                                        onDismiss = { onCloseBottomSheet() },
+                                        order = it,
+                                    )
+                                }
                             }
                         }
                     }
@@ -459,12 +458,6 @@ fun FarmMarketScreen(
             }
              */
         }
-        if (showBottomSheet) {
-            OrderActions(
-                sheetState = sheetState,
-                onDismiss = { onCloseBottomSheet() },
-            )
-        }
     }
 }
 
@@ -474,6 +467,7 @@ internal fun OrderActions(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismiss: () -> Unit,
+    order: GetFarmOrdersQuery.GetFarmOrder,
 ) {
     ModalBottomSheet(
         modifier = modifier,
