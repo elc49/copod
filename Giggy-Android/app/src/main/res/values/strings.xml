@@ -49,4 +49,6 @@
     <string name="your_cart">Cart items</string>
     <string name="no_items">No items</string>
     <string name="your_orders">Your orders</string>
+    <string name="complete_from_m_pesa">Complete from M-pesa</string>
+    <string name="confirming_payment">Confirming payment...</string>
 </resources>

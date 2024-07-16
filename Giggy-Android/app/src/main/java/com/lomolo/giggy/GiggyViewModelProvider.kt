@@ -128,7 +128,7 @@ object GiggyViewModelProvider {
         initializer {
             paymentViewModel = PaymentViewModel(
                 giggyApplication().container.paymentRepository,
-                giggyApplication().container.sessionRepository,
+                sessionViewModel = sessionViewModel,
                 this.createSavedStateHandle(),
             )
             paymentViewModel

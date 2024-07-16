@@ -1,0 +1,5 @@
+subscription PaymentUpdate($userId: UUID!) {
+    paymentUpdate(userId: $userId) {
+        sessionId
+    }
+}

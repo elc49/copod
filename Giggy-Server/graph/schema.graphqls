@@ -106,8 +106,9 @@ type PayWithMpesa {
   referenceId: String!
 }
 
-# PaystackPaymentVerificationStatus
-type PaystackPaymentVerificationStatus {
+# PaystackPaymentUpdate
+type PaystackPaymentUpdate {
+  referenceId: String!
   status: String!
   sessionId: UUID!
 }
@@ -185,7 +186,7 @@ type Query {
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!
   getFarmPayments(id: UUID!): [Payment!]!
-  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentVerificationStatus!
+  getPaystackPaymentVerification(referenceId: String!): PaystackPaymentUpdate!
   getUserCartItems: [Cart!]!
   getOrdersBelongingToUser: [Order!]!
 }
@@ -198,4 +199,9 @@ type Mutation {
   addToCart(input: AddToCartInput!): Cart!
   deleteCartItem(id: UUID!): Boolean!
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+}
+
+type Subscription {
+  currentTime: String!
+  paymentUpdate(userId: UUID!): PaystackPaymentUpdate!
 }
