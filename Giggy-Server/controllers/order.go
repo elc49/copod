@@ -60,3 +60,7 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 	}
 	return true, nil
 }
+
+func (c *OrderController) GetUserOrdersCount(ctx context.Context, userID uuid.UUID) (int, error) {
+	return c.r.GetUserOrdersCount(ctx, userID)
+}

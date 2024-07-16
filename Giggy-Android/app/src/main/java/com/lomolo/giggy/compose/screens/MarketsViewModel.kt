@@ -1,14 +1,15 @@
 package com.lomolo.giggy.compose.screens
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
+import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.giggy.GetLocalizedMarketsQuery
-import com.lomolo.giggy.GetOrdersBelongingToUserQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.repository.IMarkets
@@ -34,6 +35,8 @@ class MarketsViewModel(
         MutableStateFlow(listOf())
     val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
         _marketsData.asStateFlow()
+    var ordersCount: Int by mutableIntStateOf(0)
+        private set
 
     private fun getMarkets(radius: LatLng) {
         if (gettingMarkets !is GettingMarketsState.Loading) {
@@ -200,37 +203,26 @@ class MarketsViewModel(
         }
     }
 
-    private val _ordersData: MutableStateFlow<List<GetOrdersBelongingToUserQuery.GetOrdersBelongingToUser>> = MutableStateFlow(
-        listOf()
-    )
-    val userOrders: StateFlow<List<GetOrdersBelongingToUserQuery.GetOrdersBelongingToUser>> = _ordersData.asStateFlow()
-    var getUserOrdersState: GetUserOrdersState by mutableStateOf(GetUserOrdersState.Success)
-        private set
-
-    private fun getUserOrders() {
-        if (getUserOrdersState !is GetUserOrdersState.Loading) {
-            getUserOrdersState = GetUserOrdersState.Loading
-            viewModelScope.launch {
-                getUserOrdersState = try {
-                    val res = marketsRepository.getOrdersBelongingToUser().dataOrThrow()
-                    _ordersData.update { res.getOrdersBelongingToUser }
-                    GetUserOrdersState.Success
-                } catch (e: java.io.IOException) {
-                    e.printStackTrace()
-                    GetUserOrdersState.Error(e.localizedMessage)
-                }
-            }
-        }
-    }
-
     private fun validInput(uiState: Order): Boolean {
         return uiState.marketId.isNotBlank() && uiState.volume != 0 && uiState.farmId.isNotBlank()
+    }
+
+    private fun getUserOrdersCount() {
+        viewModelScope.launch {
+            ordersCount = try {
+                val res = marketsRepository.getUserOrdersCount().dataOrThrow()
+                res.getUserOrdersCount
+            } catch (e: ApolloException) {
+                e.printStackTrace()
+                0
+            }
+        }
     }
 
     init {
         getMarkets(mainViewModel.getValidDeviceGps())
         getUserCartItems()
-        getUserOrders()
+        getUserOrdersCount()
     }
 }
 
@@ -256,10 +248,4 @@ interface GettingMarketsState {
     data object Loading : GettingMarketsState
     data class Error(val msg: String?) : GettingMarketsState
     data object Success : GettingMarketsState
-}
-
-interface GetUserOrdersState {
-    data object Loading: GetUserOrdersState
-    data object Success: GetUserOrdersState
-    data class Error(val msg: String?): GetUserOrdersState
 }

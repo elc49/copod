@@ -163,3 +163,15 @@ func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.
 	}
 	return items, nil
 }
+
+const getUserOrdersCount = `-- name: GetUserOrdersCount :one
+SELECT count(*) FROM orders
+WHERE customer_id = $1 AND status = 'PENDING'
+`
+
+func (q *Queries) GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getUserOrdersCount, customerID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}

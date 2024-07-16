@@ -129,3 +129,12 @@ func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uu
 
 	return true
 }
+
+func (r *OrderRepository) GetUserOrdersCount(ctx context.Context, userID uuid.UUID) (int, error) {
+	c, err := r.db.GetUserOrdersCount(ctx, userID)
+	if err != nil {
+		return 0, nil
+	}
+
+	return int(c), nil
+}

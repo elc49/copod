@@ -250,6 +250,8 @@ type Query {
   getUserCartItems: [Cart!]!
 
   getOrdersBelongingToUser: [Order!]!
+
+  getUserOrdersCount: Int!
 }
 
 input SendOrderToFarmInput {

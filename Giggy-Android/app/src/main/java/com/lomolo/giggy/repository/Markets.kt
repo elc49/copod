@@ -7,6 +7,7 @@ import com.lomolo.giggy.DeleteCartItemMutation
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.GetOrdersBelongingToUserQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
+import com.lomolo.giggy.GetUserOrdersCountQuery
 import com.lomolo.giggy.SendOrderToFarmMutation
 import com.lomolo.giggy.compose.screens.SendOrderToFarm
 import com.lomolo.giggy.network.IGiggyGraphqlApi
@@ -20,6 +21,7 @@ interface IMarkets {
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
+    suspend fun getUserOrdersCount(): ApolloResponse<GetUserOrdersCountQuery.Data>
 }
 
 class MarketsRepository(
@@ -31,4 +33,5 @@ class MarketsRepository(
     override suspend fun deleteCartItem(id: String) = giggyGraphqlApi.deleteCartItem(id)
     override suspend fun getOrdersBelongingToUser() = giggyGraphqlApi.getOrdersBelongingToUser()
     override suspend fun sendOrderToFarm(input: List<SendOrderToFarm>) = giggyGraphqlApi.sendOrderToFarm(input)
+    override suspend fun getUserOrdersCount() = giggyGraphqlApi.getUserOrdersCount()
 }

@@ -21,6 +21,7 @@ import com.lomolo.giggy.GetLocalizedPostersQuery
 import com.lomolo.giggy.GetOrdersBelongingToUserQuery
 import com.lomolo.giggy.GetPaystackPaymentVerificationQuery
 import com.lomolo.giggy.GetUserCartItemsQuery
+import com.lomolo.giggy.GetUserOrdersCountQuery
 import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
 import com.lomolo.giggy.PaymentUpdateSubscription
@@ -57,6 +58,7 @@ interface IGiggyGraphqlApi {
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
+    suspend fun getUserOrdersCount(): ApolloResponse<GetUserOrdersCountQuery.Data>
 }
 
 class GiggyGraphqlApi(
@@ -172,4 +174,10 @@ class GiggyGraphqlApi(
     override fun paymentUpdate(sessionId: String) = apolloClient
         .subscription(PaymentUpdateSubscription(sessionId))
         .toFlow()
+
+    override suspend fun getUserOrdersCount() = apolloClient
+
+        .query(GetUserOrdersCountQuery())
+        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
 }

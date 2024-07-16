@@ -56,7 +56,6 @@ fun MarketScreen(
     val markets by viewModel.markets.collectAsState()
     val orders by viewModel.orders.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
-    val userOrders by viewModel.userOrders.collectAsState()
 
     Scaffold(
         topBar = {
@@ -91,7 +90,7 @@ fun MarketScreen(
                                 )
                             }
                             Text(
-                                "[${userOrders.size}]",
+                                "[${viewModel.ordersCount}]",
                                 style = MaterialTheme.typography.titleLarge,
                             )
                         }

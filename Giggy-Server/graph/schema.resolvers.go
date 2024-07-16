@@ -184,6 +184,12 @@ func (r *queryResolver) GetOrdersBelongingToUser(ctx context.Context) ([]*model.
 	return r.orderController.GetOrdersBelongingToUser(ctx, userId)
 }
 
+// GetUserOrdersCount is the resolver for the getUserOrdersCount field.
+func (r *queryResolver) GetUserOrdersCount(ctx context.Context) (int, error) {
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.orderController.GetUserOrdersCount(ctx, userId)
+}
+
 // PaymentUpdate is the resolver for the paymentUpdate field.
 func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error) {
 	ch := make(chan *model.PaystackPaymentUpdate)

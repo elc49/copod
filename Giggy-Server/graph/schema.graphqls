@@ -189,6 +189,7 @@ type Query {
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentUpdate!
   getUserCartItems: [Cart!]!
   getOrdersBelongingToUser: [Order!]!
+  getUserOrdersCount: Int!
 }
 
 type Mutation {
