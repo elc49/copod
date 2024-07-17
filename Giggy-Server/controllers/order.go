@@ -64,3 +64,7 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 func (c *OrderController) GetUserOrdersCount(ctx context.Context, userID uuid.UUID) (int, error) {
 	return c.r.GetUserOrdersCount(ctx, userID)
 }
+
+func (c *OrderController) UpdateOrderStatus(ctx context.Context, args db.UpdateOrderStatusParams) (*model.Order, error) {
+	return c.r.UpdateOrderStatus(ctx, args)
+}

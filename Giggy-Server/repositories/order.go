@@ -138,3 +138,17 @@ func (r *OrderRepository) GetUserOrdersCount(ctx context.Context, userID uuid.UU
 
 	return int(c), nil
 }
+
+func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateOrderStatusParams) (*model.Order, error) {
+	o, err := r.db.UpdateOrderStatus(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Order{
+		ID:        o.ID,
+		Status:    model.OrderStatus(o.Status),
+		CreatedAt: o.CreatedAt,
+		UpdatedAt: o.UpdatedAt,
+	}, nil
+}

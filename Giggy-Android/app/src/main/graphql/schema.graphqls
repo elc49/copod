@@ -96,6 +96,8 @@ type Mutation {
   deleteCartItem(id: UUID!): Boolean!
 
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+
+  updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 }
 
 input NewFarmInput {
@@ -275,6 +277,12 @@ type Subscription {
 scalar Time
 
 scalar UUID
+
+input UpdateOrderStatusInput {
+  id: UUID!
+
+  status: OrderStatus!
+}
 
 type User {
   id: UUID!

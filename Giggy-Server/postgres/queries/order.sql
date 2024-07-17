@@ -22,5 +22,10 @@ WHERE customer_id = $1;
 SELECT count(*) FROM orders
 WHERE customer_id = $1 AND status = 'PENDING';
 
+-- name: UpdateOrderStatus :one
+UPDATE orders SET status = $1
+WHERE id = $2
+RETURNING *;
+
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

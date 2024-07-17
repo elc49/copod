@@ -26,9 +26,11 @@ import com.lomolo.giggy.GetUserQuery
 import com.lomolo.giggy.PayWithMpesaMutation
 import com.lomolo.giggy.PaymentUpdateSubscription
 import com.lomolo.giggy.SendOrderToFarmMutation
+import com.lomolo.giggy.UpdateOrderStatusMutation
 import com.lomolo.giggy.compose.screens.Farm
 import com.lomolo.giggy.compose.screens.Market
 import com.lomolo.giggy.compose.screens.SendOrderToFarm
+import com.lomolo.giggy.compose.screens.UpdateOrderStatus
 import com.lomolo.giggy.type.AddToCartInput
 import com.lomolo.giggy.type.GpsInput
 import com.lomolo.giggy.type.NewFarmInput
@@ -36,6 +38,7 @@ import com.lomolo.giggy.type.NewFarmMarketInput
 import com.lomolo.giggy.type.NewPostInput
 import com.lomolo.giggy.type.PayWithMpesaInput
 import com.lomolo.giggy.type.SendOrderToFarmInput
+import com.lomolo.giggy.type.UpdateOrderStatusInput
 import kotlinx.coroutines.flow.Flow
 
 interface IGiggyGraphqlApi {
@@ -45,7 +48,7 @@ interface IGiggyGraphqlApi {
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
     suspend fun getFarm(id: String): ApolloResponse<GetFarmByIdQuery.Data>
     suspend fun getFarmMarkets(id: String): Flow<ApolloResponse<GetFarmMarketsQuery.Data>>
-    suspend fun getFarmOrders(id: String): ApolloResponse<GetFarmOrdersQuery.Data>
+    suspend fun getFarmOrders(id: String): Flow<ApolloResponse<GetFarmOrdersQuery.Data>>
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
     suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
@@ -59,6 +62,7 @@ interface IGiggyGraphqlApi {
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
     suspend fun getUserOrdersCount(): ApolloResponse<GetUserOrdersCountQuery.Data>
+    suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
 }
 
 class GiggyGraphqlApi(
@@ -95,8 +99,7 @@ class GiggyGraphqlApi(
 
     override suspend fun getFarmOrders(id: String) = apolloClient
         .query(GetFarmOrdersQuery(id))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+        .watch()
 
     override suspend fun getFarmPayments(id: String) = apolloClient
         .query(GetFarmPaymentsQuery(id))
@@ -179,5 +182,14 @@ class GiggyGraphqlApi(
 
         .query(GetUserOrdersCountQuery())
         .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun updateOrderStatus(input: UpdateOrderStatus) = apolloClient
+        .mutation(UpdateOrderStatusMutation(
+            UpdateOrderStatusInput(
+                input.id,
+                input.status,
+            )
+        ))
         .execute()
 }

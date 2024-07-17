@@ -1,0 +1,6 @@
+mutation UpdateOrderStatus($input: UpdateOrderStatusInput!) {
+    updateOrderStatus(input: $input) {
+        id
+        status
+    }
+}

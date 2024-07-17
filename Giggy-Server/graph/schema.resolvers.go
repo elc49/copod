@@ -102,6 +102,15 @@ func (r *mutationResolver) SendOrderToFarm(ctx context.Context, input []*model.S
 	return r.orderController.SendOrderToFarm(ctx, userId, input)
 }
 
+// UpdateOrderStatus is the resolver for the updateOrderStatus field.
+func (r *mutationResolver) UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error) {
+	args := db.UpdateOrderStatusParams{
+		ID:     input.ID,
+		Status: input.Status.String(),
+	}
+	return r.orderController.UpdateOrderStatus(ctx, args)
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)

@@ -158,6 +158,11 @@ type SendOrderToFarmInput struct {
 type Subscription struct {
 }
 
+type UpdateOrderStatusInput struct {
+	ID     uuid.UUID   `json:"id"`
+	Status OrderStatus `json:"status"`
+}
+
 type OrderStatus string
 
 const (
