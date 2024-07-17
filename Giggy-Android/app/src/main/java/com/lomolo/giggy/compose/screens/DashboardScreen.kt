@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -119,7 +120,36 @@ fun DashboardScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+
+                is GettingPostersState.Error -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ErrorComposable()
+                        Button(
+                            onClick = { viewModel.getLocalizedPosters() },
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            when (viewModel.gettingPostersState) {
+                                GettingPostersState.Loading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+
+                                else -> Text(
+                                    "Retry",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+
+                            }
+                        }
                     }
                 }
             }

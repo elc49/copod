@@ -2,15 +2,16 @@ package com.lomolo.giggy.compose.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -19,10 +20,11 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.MainViewModel
 import com.lomolo.giggy.SessionViewModel
 import com.lomolo.giggy.SettingDeviceDetails
+import com.lomolo.giggy.compose.screens.ErrorComposable
 import com.lomolo.giggy.compose.screens.GenesisScreen
 import com.lomolo.giggy.model.DeviceDetails
 
-object RootNavigation: Navigation {
+object RootNavigation : Navigation {
     override val title = null
     override val route = "root"
 }
@@ -30,6 +32,7 @@ object RootNavigation: Navigation {
 interface Navigation {
     // Title - can be use in top bar
     val title: Int?
+
     // Route path
     val route: String
 }
@@ -47,41 +50,47 @@ fun GiggyNavigationHost(
     val session by sessionViewModel.sessionUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var loaded by remember {
-        mutableStateOf(false)
-    }
-    LaunchedEffect(mainViewModel.settingDeviceDetailsState) {
-        if (mainViewModel.settingDeviceDetailsState is SettingDeviceDetails.Success) loaded = true
-    }
 
-    if (!loaded) {
-        GenesisScreen()
-    } else {
-        NavHost(
-            navController = navHostController,
-            startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
-            route = RootNavigation.route,
-        ) {
-            addHomeGraph(
-                modifier = modifier,
-                navHostController = navHostController,
-            )
-            addDashboardGraph(
-                modifier = modifier,
-                navHostController = navHostController,
-                sessionViewModel = sessionViewModel,
-                scope = scope,
-                deviceDetails = deviceDetails,
-                snackbarHostState = snackbarHostState,
-                session = session,
-            )
-            addAuthGraph(
-                modifier = modifier,
-                navHostController = navHostController,
-                deviceDetails = deviceDetails,
-                mainViewModel = mainViewModel,
-                initializing = initializing,
-            )
+    when (mainViewModel.settingDeviceDetailsState) {
+        SettingDeviceDetails.Loading -> GenesisScreen()
+
+        is SettingDeviceDetails.Error -> {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                ErrorComposable()
+            }
+        }
+
+        else -> {
+            NavHost(
+                navController = navHostController,
+                startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
+                route = RootNavigation.route,
+            ) {
+                addHomeGraph(
+                    modifier = modifier,
+                    navHostController = navHostController,
+                )
+                addDashboardGraph(
+                    modifier = modifier,
+                    navHostController = navHostController,
+                    sessionViewModel = sessionViewModel,
+                    scope = scope,
+                    deviceDetails = deviceDetails,
+                    snackbarHostState = snackbarHostState,
+                    session = session,
+                )
+                addAuthGraph(
+                    modifier = modifier,
+                    navHostController = navHostController,
+                    deviceDetails = deviceDetails,
+                    mainViewModel = mainViewModel,
+                    initializing = initializing,
+                )
+            }
         }
     }
 }

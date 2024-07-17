@@ -16,7 +16,7 @@ class AccountViewModel(
     var gettingUserState: GetUserState by mutableStateOf(GetUserState.Success(null))
         private set
 
-    private fun getUser() {
+    fun getUser() {
         gettingUserState = GetUserState.Loading
         viewModelScope.launch {
             gettingUserState = try {
