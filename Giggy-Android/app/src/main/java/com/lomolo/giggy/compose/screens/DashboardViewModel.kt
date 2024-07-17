@@ -44,6 +44,10 @@ class DashboardViewModel(
             }
         }
     }
+
+    init {
+        getLocalizedPosters()
+    }
 }
 
 interface GettingPostersState {

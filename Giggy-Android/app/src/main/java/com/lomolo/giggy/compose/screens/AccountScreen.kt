@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -32,7 +34,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 
-object AccountScreenDestination: Navigation {
+object AccountScreenDestination : Navigation {
     override val title = R.string.account
     override val route = "dashboard-account"
 }
@@ -54,9 +56,7 @@ fun AccountScreen(
         ) {
             when (val gettingUser = viewModel.gettingUserState) {
                 is GetUserState.Success -> AccountCard(
-                    modifier = modifier,
-                    onSignOut = onSignOut,
-                    user = gettingUser.success
+                    modifier = modifier, onSignOut = onSignOut, user = gettingUser.success
                 )
 
                 GetUserState.Loading -> Column(
@@ -65,6 +65,32 @@ fun AccountScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LinearProgressIndicator()
+                }
+
+                is GetUserState.Error -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ErrorComposable()
+                        Button(
+                            onClick = { viewModel.getUser() },
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            when (viewModel.gettingUserState) {
+                                GetUserState.Loading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+
+                                else -> Text(
+                                    "Retry",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -94,11 +120,8 @@ internal fun AccountCard(
             }
             Row {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(user?.avatar)
-                        .decoderFactory(SvgDecoder.Factory())
-                        .crossfade(true)
-                        .build(),
+                    model = ImageRequest.Builder(LocalContext.current).data(user?.avatar)
+                        .decoderFactory(SvgDecoder.Factory()).crossfade(true).build(),
                     contentScale = ContentScale.Crop,
                     error = painterResource(id = R.drawable.ic_broken_image),
                     placeholder = painterResource(id = R.drawable.loading_img),
@@ -133,13 +156,9 @@ internal fun AccountCard(
             }
         }
         Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
+            modifier = Modifier.align(Alignment.BottomStart)
         ) {
-            TextButton(
-                shape = MaterialTheme.shapes.extraSmall,
-                onClick = { onSignOut() }
-            ) {
+            TextButton(shape = MaterialTheme.shapes.extraSmall, onClick = { onSignOut() }) {
                 Text(
                     text = "Sign out",
                     style = MaterialTheme.typography.titleMedium,

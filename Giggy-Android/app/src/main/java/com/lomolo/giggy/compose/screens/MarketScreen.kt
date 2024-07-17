@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -82,10 +83,11 @@ fun MarketScreen(
                                 style = MaterialTheme.typography.titleLarge,
                             )
                             IconButton(onClick = onNavigateToUserOrders) {
-                                Icon(painterResource(
-                                    id = R.drawable.product_box),
-                                    modifier = Modifier
-                                        .size(32.dp),
+                                Icon(
+                                    painterResource(
+                                        id = R.drawable.product_box
+                                    ),
+                                    modifier = Modifier.size(32.dp),
                                     contentDescription = null,
                                 )
                             }
@@ -95,8 +97,24 @@ fun MarketScreen(
                             )
                         }
 
+                        is GettingCartItemsState.Error -> {
+                            IconButton(onClick = {}) {
+                                Icon(
+                                    painterResource(
+                                        id = R.drawable.product_box
+                                    ),
+                                    modifier = Modifier.size(32.dp),
+                                    contentDescription = null,
+                                )
+                            }
+                            Text(
+                                "[${0}]",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+
                         GettingCartItemsState.Loading -> CircularProgressIndicator(
-                            Modifier.size(24.dp)
+                            Modifier.size(20.dp)
                         )
                     }
                 }
@@ -115,7 +133,37 @@ fun MarketScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+
+                is GettingMarketsState.Error -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ErrorComposable()
+                        Button(
+                            onClick = { viewModel.getMarkets() },
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            when (viewModel.gettingMarkets) {
+                                GettingMarketsState.Loading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+
+                                else -> Text(
+                                    "Retry",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+
+
+                            }
+                        }
+                    }
                 }
 
                 GettingMarketsState.Success -> if (markets.isNotEmpty()) {
@@ -142,7 +190,11 @@ fun MarketScreen(
                                         marketId
                                     )
                                 },
-                                addToCart = { order: Order, cb: () -> Unit -> viewModel.addToCart(order) { cb () } },
+                                addToCart = { order: Order, cb: () -> Unit ->
+                                    viewModel.addToCart(
+                                        order
+                                    ) { cb() }
+                                },
                                 addingToCart = viewModel.addingToCart,
                             )
                         }

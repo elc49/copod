@@ -37,13 +37,14 @@ class MarketsViewModel(
         _marketsData.asStateFlow()
     var ordersCount: Int by mutableIntStateOf(0)
         private set
+    private val validGps: LatLng = mainViewModel.getValidDeviceGps()
 
-    private fun getMarkets(radius: LatLng) {
+    fun getMarkets() {
         if (gettingMarkets !is GettingMarketsState.Loading) {
             gettingMarkets = GettingMarketsState.Loading
             viewModelScope.launch {
                 gettingMarkets = try {
-                    val res = marketsRepository.getLocalizedMarkets(radius).dataOrThrow()
+                    val res = marketsRepository.getLocalizedMarkets(validGps).dataOrThrow()
                     _marketsData.update { res.getLocalizedMarkets }
                     GettingMarketsState.Success
                 } catch (e: IOException) {
@@ -220,7 +221,7 @@ class MarketsViewModel(
     }
 
     init {
-        getMarkets(mainViewModel.getValidDeviceGps())
+        getMarkets()
         getUserCartItems()
         getUserOrdersCount()
     }

@@ -31,7 +31,7 @@ class FarmViewModel(
     var hasFarm: Boolean by mutableStateOf(false)
         private set
 
-    private fun getFarmsBelongingToUser() {
+    fun getFarmsBelongingToUser() {
         if (getFarmsBelongingToUserState !is GetFarmsBelongingToUserState.Loading) {
             getFarmsBelongingToUserState = GetFarmsBelongingToUserState.Loading
             viewModelScope.launch {

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -112,6 +113,32 @@ fun FarmsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         CircularProgressIndicator()
+                    }
+                }
+
+                is GetFarmsBelongingToUserState.Error -> {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ErrorComposable()
+                        Button(
+                            onClick = { viewModel.getFarmsBelongingToUser() },
+                            shape = MaterialTheme.shapes.small,
+                        ) {
+                            when (viewModel.getFarmsBelongingToUserState) {
+                                GetFarmsBelongingToUserState.Loading -> CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+
+                                else -> Text(
+                                    "Retry",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
                     }
                 }
 
