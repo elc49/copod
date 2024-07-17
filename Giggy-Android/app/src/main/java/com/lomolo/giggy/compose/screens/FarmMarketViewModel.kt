@@ -6,16 +6,21 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo3.cache.normalized.ApolloStore
+import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.network.IGiggyGraphqlApi
+import com.lomolo.giggy.type.OrderStatus
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import okio.IOException
 
 class FarmMarketViewModel(
     savedStateHandle: SavedStateHandle,
     private val giggyGraphqlApi: IGiggyGraphqlApi,
+    private val apolloStore: ApolloStore,
 ) : ViewModel() {
     private val storeId: String =
         checkNotNull(savedStateHandle[FarmMarketScreenDestination.farmIdArg])
@@ -60,12 +65,13 @@ class FarmMarketViewModel(
         if (gettingFarmOrdersState !is GetFarmOrdersState.Loading) {
             gettingFarmOrdersState = GetFarmOrdersState.Loading
             viewModelScope.launch {
-                gettingFarmOrdersState = try {
-                    val res = giggyGraphqlApi.getFarmOrders(storeId).dataOrThrow()
-                    GetFarmOrdersState.Success(res.getFarmOrders)
+                try {
+                    giggyGraphqlApi.getFarmOrders(storeId).collect {res ->
+                        gettingFarmOrdersState = GetFarmOrdersState.Success(res.data?.getFarmOrders)
+                    }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    GetFarmOrdersState.Error(e.localizedMessage)
+                    gettingFarmOrdersState = GetFarmOrdersState.Error(e.localizedMessage)
                 }
             }
         }
@@ -88,6 +94,46 @@ class FarmMarketViewModel(
         }
     }
 
+    var updatingOrderState:  UpdateOrderState by mutableStateOf(UpdateOrderState.Success)
+        private set
+
+    fun updateOrderStatus(id: String, status: OrderStatus, cb: () -> Unit = {}) {
+       if (updatingOrderState !is UpdateOrderState.Loading) {
+           updatingOrderState = UpdateOrderState.Loading
+           viewModelScope.launch {
+               updatingOrderState = try {
+                   val res = giggyGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status)).dataOrThrow()
+                   try {
+                       val updatedCacheData = apolloStore.readOperation(
+                           GetFarmOrdersQuery(storeId)
+                       ).getFarmOrders.toMutableList()
+                       val where = updatedCacheData.indexOfFirst { it.id.toString() == id }
+                       updatedCacheData[where] = GetFarmOrdersQuery.GetFarmOrder(
+                           res.updateOrderStatus.id,
+                           updatedCacheData[where].currency,
+                           updatedCacheData[where].volume,
+                           updatedCacheData[where].toBePaid,
+                           updatedCacheData[where].market,
+                           updatedCacheData[where].customer,
+                           res.updateOrderStatus.status,
+                       )
+                       updatedCacheData.toImmutableList()
+                       apolloStore.writeOperation(
+                           GetFarmOrdersQuery(storeId),
+                           GetFarmOrdersQuery.Data(updatedCacheData),
+                       )
+                   } catch(e: Exception) {
+                       e.printStackTrace()
+                   }
+                   UpdateOrderState.Success.also { cb() }
+               } catch(e: ApolloException) {
+                   e.printStackTrace()
+                   UpdateOrderState.Error(e.localizedMessage)
+               }
+           }
+       }
+    }
+
     init {
         getFarm()
         getFarmMarkets()
@@ -95,6 +141,16 @@ class FarmMarketViewModel(
     }
 }
 
+data class UpdateOrderStatus(
+    val id: String = "",
+    val status: OrderStatus = OrderStatus.PENDING,
+)
+
+interface UpdateOrderState {
+    data object Loading: UpdateOrderState
+    data object Success: UpdateOrderState
+    data class Error(val msg: String?): UpdateOrderState
+}
 
 interface GetFarmState {
     data object Loading : GetFarmState

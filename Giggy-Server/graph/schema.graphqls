@@ -177,6 +177,11 @@ input SendOrderToFarmInput {
   farmId: UUID!
 }
 
+input UpdateOrderStatusInput {
+  id: UUID!
+  status: OrderStatus!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -200,6 +205,7 @@ type Mutation {
   addToCart(input: AddToCartInput!): Cart!
   deleteCartItem(id: UUID!): Boolean!
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+  updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 }
 
 type Subscription {

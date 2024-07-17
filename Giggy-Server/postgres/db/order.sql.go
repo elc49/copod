@@ -175,3 +175,32 @@ func (q *Queries) GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) 
 	err := row.Scan(&count)
 	return count, err
 }
+
+const updateOrderStatus = `-- name: UpdateOrderStatus :one
+UPDATE orders SET status = $1
+WHERE id = $2
+RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at
+`
+
+type UpdateOrderStatusParams struct {
+	Status string    `json:"status"`
+	ID     uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (Order, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderStatus, arg.Status, arg.ID)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.Volume,
+		&i.Status,
+		&i.ToBePaid,
+		&i.Currency,
+		&i.CustomerID,
+		&i.MarketID,
+		&i.FarmID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

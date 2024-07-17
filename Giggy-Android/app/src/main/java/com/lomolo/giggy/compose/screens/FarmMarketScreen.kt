@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
@@ -55,6 +54,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
+import com.lomolo.giggy.type.OrderStatus
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -70,16 +70,14 @@ internal fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
 ) {
     Row(
-        Modifier
-            .height(280.dp)
-            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
                 .build(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(180.dp)
+                .size(68.dp)
                 .padding(8.dp)
                 .clip(MaterialTheme.shapes.extraSmall),
             placeholder = painterResource(id = R.drawable.loading_img),
@@ -152,7 +150,8 @@ fun FarmMarketScreen(
         }
         PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
-                Tab(selected = state == index,
+                Tab(
+                    selected = state == index,
                     onClick = { state = index },
                     modifier = Modifier.fillMaxWidth(),
                     text = {
@@ -164,13 +163,7 @@ fun FarmMarketScreen(
                             fontWeight = FontWeight.Bold,
                         )
                     },
-                    icon = {
-                        Icon(
-                            painterResource(tabIcon[index]!!),
-                            modifier = Modifier.size(24.dp),
-                            contentDescription = null
-                        )
-                    })
+                )
             }
         }
         when (state) {
@@ -184,16 +177,13 @@ fun FarmMarketScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         TableHeader(
-                            "Product", .25f
+                            "Product", .3f
                         )
                         TableHeader(
-                            "Image", .25f
+                            "In-Stock", .3f
                         )
                         TableHeader(
-                            "In-Stock", .25f
-                        )
-                        TableHeader(
-                            "Price", .25f
+                            "Price", .3f
                         )
                     }
                 }
@@ -209,26 +199,16 @@ fun FarmMarketScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
                                     TableCell(
-                                        it.name, .25f
-                                    )
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(LocalContext.current)
-                                            .data(it.image).crossfade(true).build(),
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .weight(.25f)
-                                            .size(60.dp)
-                                            .clip(MaterialTheme.shapes.extraSmall),
-                                        contentDescription = null
+                                        it.name, .3f
                                     )
                                     TableCell(
-                                        "${it.volume}", .25f
+                                        "${it.volume}", .3f
                                     )
                                     TableCell(
-                                        NumberFormatter.with().notation(Notation.compactShort())
+                                        NumberFormatter.with().notation(Notation.simple())
                                             .unit(Currency.getInstance(deviceDetails.currency))
                                             .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(it.pricePerUnit).toString(), .25f
+                                            .format(it.pricePerUnit).toString(), .3f
                                     )
                                 }
                             }
@@ -308,14 +288,12 @@ fun FarmMarketScreen(
                                 }
                             }
                             items(orders.success) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
+                                Row(verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
-                                        .clickable { openOrderCounter() }
-                                ) {
+                                        .clickable { openOrderCounter() }) {
                                     TableCell(text = it.market.name, weight = .25f)
                                     TableCell(
                                         "${it.volume} ${it.market.unit}", .25f
@@ -335,6 +313,10 @@ fun FarmMarketScreen(
                                         sheetState = sheetState,
                                         onDismiss = { onCloseBottomSheet() },
                                         order = it,
+                                        updateOrderStatus = { id: String, status: OrderStatus ->
+                                            viewModel.updateOrderStatus(id, status) { onCloseBottomSheet() }
+                                        },
+                                        updatingOrderState = viewModel.updatingOrderState,
                                     )
                                 }
                             }
@@ -468,6 +450,8 @@ internal fun OrderActions(
     sheetState: SheetState,
     onDismiss: () -> Unit,
     order: GetFarmOrdersQuery.GetFarmOrder,
+    updateOrderStatus: (String, OrderStatus) -> Unit,
+    updatingOrderState: UpdateOrderState,
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -475,47 +459,59 @@ internal fun OrderActions(
         sheetState = sheetState,
     ) {
         Column(
+            Modifier.fillMaxWidth().padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            TextButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                contentPadding = PaddingValues(8.dp),
-            ) {
-               Text(
-                   "Confirm",
-                   style = MaterialTheme.typography.titleMedium,
-                   fontWeight = FontWeight.Bold,
-               )
-            }
-            TextButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                contentPadding = PaddingValues(8.dp),
-            ) {
-                Text(
-                    "Delivered",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+            when (updatingOrderState) {
+                UpdateOrderState.Success -> {
+                    TextButton(
+                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.CONFIRMED) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        contentPadding = PaddingValues(8.dp),
+                    ) {
+                        Text(
+                            "Confirm",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    TextButton(
+                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.DELIVERED) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        contentPadding = PaddingValues(8.dp),
+                    ) {
+                        Text(
+                            "Delivered",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    TextButton(
+                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.CANCELLED) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        contentPadding = PaddingValues(8.dp),
+                    ) {
+                        Text(
+                            "Cancel order",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+
+                UpdateOrderState.Loading -> CircularProgressIndicator(
+                    Modifier.size(20.dp),
                 )
-            }
-            TextButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                contentPadding = PaddingValues(8.dp),
-            ) {
-                Text(
-                    "Cancel order",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.error,
-                )
+
+                is UpdateOrderState.Error -> ErrorComposable()
             }
         }
     }
