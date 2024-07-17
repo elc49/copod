@@ -47,7 +47,7 @@ type Querier interface {
 	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
 	UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error)
 	UpdateMarketVolume(ctx context.Context, arg UpdateMarketVolumeParams) (Market, error)
-	UpdateRightsPurchaseStatus(ctx context.Context, arg UpdateRightsPurchaseStatusParams) (Payment, error)
+	UpdatePaystackPaymentStatus(ctx context.Context, arg UpdatePaystackPaymentStatusParams) (Payment, error)
 }
 
 var _ Querier = (*Queries)(nil)

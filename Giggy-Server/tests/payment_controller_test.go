@@ -14,7 +14,4 @@ func TestPaymentController(t *testing.T) {
 		queries.ClearTestMarkets(ctx)
 		queries.ClearTestOrders(ctx)
 	}()
-
-	t.Run("create_payment", func(t *testing.T) {
-	})
 }

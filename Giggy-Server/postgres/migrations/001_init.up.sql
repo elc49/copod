@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS payments(
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   customer TEXT NOT NULL,
   amount INTEGER NOT NULL,
+  currency TEXT NOT NULL,
   reason TEXT NOT NULL,
   status TEXT NOT NULL,
   reference_id TEXT,

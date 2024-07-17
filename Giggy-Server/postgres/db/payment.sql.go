@@ -15,16 +15,17 @@ import (
 
 const buyRights = `-- name: BuyRights :one
 INSERT INTO payments (
-  customer, amount, reason, status, reference_id, user_id
+  customer, amount, currency, reason, status, reference_id, user_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7
 )
-RETURNING id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
+RETURNING id, customer, amount, currency, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
 `
 
 type BuyRightsParams struct {
 	Customer    string         `json:"customer"`
 	Amount      int32          `json:"amount"`
+	Currency    string         `json:"currency"`
 	Reason      string         `json:"reason"`
 	Status      string         `json:"status"`
 	ReferenceID sql.NullString `json:"reference_id"`
@@ -35,6 +36,7 @@ func (q *Queries) BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, 
 	row := q.db.QueryRowContext(ctx, buyRights,
 		arg.Customer,
 		arg.Amount,
+		arg.Currency,
 		arg.Reason,
 		arg.Status,
 		arg.ReferenceID,
@@ -45,6 +47,7 @@ func (q *Queries) BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, 
 		&i.ID,
 		&i.Customer,
 		&i.Amount,
+		&i.Currency,
 		&i.Reason,
 		&i.Status,
 		&i.ReferenceID,
@@ -59,7 +62,7 @@ func (q *Queries) BuyRights(ctx context.Context, arg BuyRightsParams) (Payment, 
 }
 
 const getPaymentsBelongingToFarm = `-- name: GetPaymentsBelongingToFarm :many
-SELECT id, customer, amount, status, created_at, updated_at FROM payments
+SELECT id, customer, amount, currency, status, created_at, updated_at FROM payments
 WHERE farm_id = $1
 `
 
@@ -67,6 +70,7 @@ type GetPaymentsBelongingToFarmRow struct {
 	ID        uuid.UUID `json:"id"`
 	Customer  string    `json:"customer"`
 	Amount    int32     `json:"amount"`
+	Currency  string    `json:"currency"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -85,6 +89,7 @@ func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.Nu
 			&i.ID,
 			&i.Customer,
 			&i.Amount,
+			&i.Currency,
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -103,7 +108,7 @@ func (q *Queries) GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.Nu
 }
 
 const getRightPurchasePaymentByReferenceID = `-- name: GetRightPurchasePaymentByReferenceID :one
-SELECT id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at FROM payments
+SELECT id, customer, amount, currency, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at FROM payments
 WHERE reference_id = $1
 LIMIT 1
 `
@@ -115,6 +120,7 @@ func (q *Queries) GetRightPurchasePaymentByReferenceID(ctx context.Context, refe
 		&i.ID,
 		&i.Customer,
 		&i.Amount,
+		&i.Currency,
 		&i.Reason,
 		&i.Status,
 		&i.ReferenceID,
@@ -128,24 +134,25 @@ func (q *Queries) GetRightPurchasePaymentByReferenceID(ctx context.Context, refe
 	return i, err
 }
 
-const updateRightsPurchaseStatus = `-- name: UpdateRightsPurchaseStatus :one
+const updatePaystackPaymentStatus = `-- name: UpdatePaystackPaymentStatus :one
 UPDATE payments SET status = $1
 WHERE reference_id = $2
-RETURNING id, customer, amount, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
+RETURNING id, customer, amount, currency, reason, status, reference_id, user_id, order_id, market_id, farm_id, created_at, updated_at
 `
 
-type UpdateRightsPurchaseStatusParams struct {
+type UpdatePaystackPaymentStatusParams struct {
 	Status      string         `json:"status"`
 	ReferenceID sql.NullString `json:"reference_id"`
 }
 
-func (q *Queries) UpdateRightsPurchaseStatus(ctx context.Context, arg UpdateRightsPurchaseStatusParams) (Payment, error) {
-	row := q.db.QueryRowContext(ctx, updateRightsPurchaseStatus, arg.Status, arg.ReferenceID)
+func (q *Queries) UpdatePaystackPaymentStatus(ctx context.Context, arg UpdatePaystackPaymentStatusParams) (Payment, error) {
+	row := q.db.QueryRowContext(ctx, updatePaystackPaymentStatus, arg.Status, arg.ReferenceID)
 	var i Payment
 	err := row.Scan(
 		&i.ID,
 		&i.Customer,
 		&i.Amount,
+		&i.Currency,
 		&i.Reason,
 		&i.Status,
 		&i.ReferenceID,

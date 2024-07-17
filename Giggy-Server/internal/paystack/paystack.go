@@ -87,8 +87,9 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 
 	args := db.BuyRightsParams{
 		Customer:    user.Phone,
-		Amount:      int32(input.Amount),
+		Amount:      int32(input.Amount / 100),
 		Reason:      input.Reason,
+		Currency:    input.Currency,
 		Status:      chargeRes.Data.Status,
 		UserID:      input.UserID,
 		ReferenceID: sql.NullString{String: chargeRes.Data.Reference, Valid: true},
@@ -142,6 +143,16 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 	if err != nil {
 		p.log.WithError(err).Error("paystack: pubsub: json.Marshal pubPayload")
 		return err
+	}
+
+	updateArgs := db.UpdatePaystackPaymentStatusParams{
+		ReferenceID: sql.NullString{String: input.Data.Reference, Valid: true},
+		Status:      input.Data.Status,
+	}
+	_, uErr := p.db.UpdatePaystackPaymentStatus(ctx, updateArgs)
+	if uErr != nil {
+		p.log.WithError(uErr).Error("paystack: UpdatePaystackPaymentStatus")
+		return uErr
 	}
 
 	pubErr := p.pubsub.Publish(ctx, subscription.PAYMENT_UPDATES, pBytes).Err()

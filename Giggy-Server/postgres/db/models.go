@@ -63,6 +63,7 @@ type Payment struct {
 	ID          uuid.UUID      `json:"id"`
 	Customer    string         `json:"customer"`
 	Amount      int32          `json:"amount"`
+	Currency    string         `json:"currency"`
 	Reason      string         `json:"reason"`
 	Status      string         `json:"status"`
 	ReferenceID sql.NullString `json:"reference_id"`
