@@ -82,12 +82,12 @@ func (s *Server) MountHandlers() {
 	graphqlHandler.Use(extension.Introspection{})
 
 	// Middlewares
+	s.Router.Use(giggyMiddleware.Sentry)
 	s.Router.Use(middleware.Heartbeat("/ping"))
 	s.Router.Use(middleware.CleanPath)
 	s.Router.Use(middleware.RealIP)
 	s.Router.Use(middleware.Recoverer)
 	s.Router.Use(middleware.Logger)
-	s.Router.Use(giggyMiddleware.Sentry)
 	s.Router.Use(middleware.Timeout(60 * time.Minute))
 
 	// Routes
