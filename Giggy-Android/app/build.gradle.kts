@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp")
     id("com.apollographql.apollo3") version "4.0.0-alpha.3"
+
+    id("io.sentry.android.gradle") version "4.10.0"
 }
 
 android {
@@ -27,16 +29,12 @@ android {
         val properties = Properties()
         properties.load(keystoreFile.inputStream())
 
-        val posthogApiKey = properties.getProperty("POSTHOG_PROJECT_API_KEY")
-        val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
         val localBaseApi = properties.getProperty("LOCAL_BASE_API")
         val prodBaseApi = properties.getProperty("PROD_BASE_API")
         val localWssApi = properties.getProperty("LOCAL_WSS_API")
         val prodWssAPi = properties.getProperty("PROD_WSS_API")
         val localEnv = properties.getProperty("ENV")
 
-        buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value=posthogApiKey)
-        buildConfigField(type="String", name="POSTHOG_API_HOST", value=posthogApiHost)
         buildConfigField(type="String", name="LOCAL_BASE_API", value=localBaseApi)
         buildConfigField(type="String", name="PROD_BASE_API", value=prodBaseApi)
         buildConfigField(type="String", name="LOCAL_WSS_API", value=localWssApi)
@@ -99,7 +97,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.posthog.android)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.apollo.normalized.cache.sqlite)
     testImplementation(libs.junit)
@@ -116,4 +113,13 @@ apollo {
         packageName.set("com.lomolo.giggy")
         generateOptionalOperationVariables.set(false)
     }
+}
+
+sentry {
+    org.set("uzi-3b")
+    projectName.set("lima-app")
+
+    // this will upload your source code to Sentry to show it as part of the stack traces
+    // disable if you don't want to expose your sources
+    includeSourceContext.set(true)
 }
