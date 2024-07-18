@@ -21,6 +21,7 @@ type configs struct {
 	Paystack     Paystack
 	Fees         Fees
 	Redis        Redis
+	Sentry       Sentry
 }
 
 func env() { godotenv.Load() }
@@ -38,6 +39,7 @@ func New() {
 	c.Paystack = paystackConfig()
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
+	c.Sentry = sentryConfig()
 
 	Configuration = &c
 }
@@ -140,6 +142,14 @@ func redisConfig() Redis {
 	var config Redis
 
 	config.Url = strings.TrimSpace(os.Getenv("REDIS_ENDPOINT"))
+
+	return config
+}
+
+func sentryConfig() Sentry {
+	var config Sentry
+
+	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
 
 	return config
 }

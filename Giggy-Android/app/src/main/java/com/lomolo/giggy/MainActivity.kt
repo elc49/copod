@@ -42,8 +42,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.lomolo.giggy.permissions.LocationPermission
 import com.lomolo.giggy.ui.theme.GiggyTheme
-import com.posthog.android.PostHogAndroid
-import com.posthog.android.PostHogAndroidConfig
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
@@ -53,20 +51,19 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels { GiggyViewModelProvider.Factory }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // PostHog product analytics setup
-        val posthogConfig = PostHogAndroidConfig(
-            apiKey = POSTHOG_API_KEY,
-            host = POSTHOG_HOST,
-        )
-        PostHogAndroid.setup(this, posthogConfig)
-
         enableEdgeToEdge()
         setContent {
             locationServices = LocationPermission
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             var shouldShowPermissionRationale by remember { mutableStateOf(false) }
             var shouldRedirectToUserLocationSettings by remember { mutableStateOf(false) }
-            var hasLocationPermission by remember { mutableStateOf(locationServices.checkSelfLocationPermission(this)) }
+            var hasLocationPermission by remember {
+                mutableStateOf(
+                    locationServices.checkSelfLocationPermission(
+                        this
+                    )
+                )
+            }
             val locationPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions(),
             ) { permissions ->
@@ -75,43 +72,49 @@ class MainActivity : ComponentActivity() {
                         hasLocationPermission = true
                         locationPriority = Priority.PRIORITY_HIGH_ACCURACY
                     }
+
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
                         hasLocationPermission = true
                         locationPriority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
                     }
+
                     else -> {
-                        shouldShowPermissionRationale = ActivityCompat
-                            .shouldShowRequestPermissionRationale(
-                                this,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        shouldShowPermissionRationale =
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                this, Manifest.permission.ACCESS_COARSE_LOCATION
                             )
                     }
                 }
                 if (hasLocationPermission) {
                     fusedLocationClient.getCurrentLocation(
-                        locationPriority,
-                        CancellationTokenSource().token
-                    )
-                        .addOnSuccessListener { location: Location? ->
-                            if (location != null) {
-                                mainViewModel.setDeviceGps(LatLng(
-                                    location.latitude,
-                                    location.longitude
-                                ))
-                            }
+                        locationPriority, CancellationTokenSource().token
+                    ).addOnSuccessListener { location: Location? ->
+                        if (location != null) {
+                            mainViewModel.setDeviceGps(
+                                LatLng(
+                                    location.latitude, location.longitude
+                                )
+                            )
                         }
+                    }
                 }
 
-                shouldRedirectToUserLocationSettings = !shouldShowPermissionRationale && !hasLocationPermission
+                shouldRedirectToUserLocationSettings =
+                    !shouldShowPermissionRationale && !hasLocationPermission
             }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(hasLocationPermission, lifecycleOwner) {
-                val locationRequest = LocationRequest.Builder(locationPriority, TimeUnit.SECONDS.toMillis(3)).build()
-                val locationCallback: LocationCallback = object: LocationCallback() {
+                val locationRequest =
+                    LocationRequest.Builder(locationPriority, TimeUnit.SECONDS.toMillis(3)).build()
+                val locationCallback: LocationCallback = object : LocationCallback() {
                     override fun onLocationResult(p0: LocationResult) {
                         for (location in p0.locations) {
-                            mainViewModel.setDeviceGps(LatLng(location.latitude, location.longitude))
+                            mainViewModel.setDeviceGps(
+                                LatLng(
+                                    location.latitude, location.longitude
+                                )
+                            )
                         }
                     }
                 }
@@ -120,9 +123,7 @@ class MainActivity : ComponentActivity() {
                         locationPermissionLauncher.launch(locationServices.permissions)
                     } else if (event == Lifecycle.Event.ON_START && hasLocationPermission) {
                         fusedLocationClient.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            Looper.getMainLooper()
+                            locationRequest, locationCallback, Looper.getMainLooper()
                         )
                     } else if (hasLocationPermission && event == Lifecycle.Event.ON_STOP) {
                         fusedLocationClient.removeLocationUpdates(locationCallback)
@@ -138,43 +139,37 @@ class MainActivity : ComponentActivity() {
             }
 
             GiggyTheme {
-                Scaffold {innerPadding ->
+                Scaffold { innerPadding ->
                     Surface(
-                        modifier = Modifier.fillMaxSize().padding(innerPadding)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     ) {
                         if (shouldShowPermissionRationale) {
-                            AlertDialog(
-                                onDismissRequest = { return@AlertDialog },
-                                confirmButton = {
-                                    Button(
-                                        onClick = {
-                                            shouldShowPermissionRationale = false
-                                            locationPermissionLauncher.launch(locationServices.permissions)
-                                        }
-                                    ) {
-                                        Text(
-                                            text = getString(R.string.approve),
-                                            style = MaterialTheme.typography.labelSmall
-                                        )
-                                    }
-
-                                },
-                                title = {
-                                    Text(getString(R.string.location_required))
-                                },
-                                text = {
+                            AlertDialog(onDismissRequest = { return@AlertDialog }, confirmButton = {
+                                Button(onClick = {
+                                    shouldShowPermissionRationale = false
+                                    locationPermissionLauncher.launch(locationServices.permissions)
+                                }) {
                                     Text(
-                                        text = getString(R.string.why_gps_perm),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                },
-                                icon = {
-                                    Icon(
-                                        Icons.TwoTone.Info,
-                                        contentDescription = getString(R.string.content_info)
+                                        text = getString(R.string.approve),
+                                        style = MaterialTheme.typography.labelSmall
                                     )
                                 }
-                            )
+
+                            }, title = {
+                                Text(getString(R.string.location_required))
+                            }, text = {
+                                Text(
+                                    text = getString(R.string.why_gps_perm),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }, icon = {
+                                Icon(
+                                    Icons.TwoTone.Info,
+                                    contentDescription = getString(R.string.content_info)
+                                )
+                            })
                         }
 
                         GiggyApplication(rememberNavController())
@@ -182,10 +177,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    companion object {
-        const val POSTHOG_API_KEY=BuildConfig.POSTHOG_PROJECT_API_KEY
-        const val POSTHOG_HOST=BuildConfig.POSTHOG_API_HOST
     }
 }

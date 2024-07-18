@@ -22,9 +22,11 @@ import (
 	giggyMiddleware "github.com/elc49/giggy-monorepo/Giggy-Server/middleware"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
+	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -35,20 +37,21 @@ type Server struct {
 func New() *Server {
 	s := &Server{}
 	s.Router = chi.NewRouter()
-	s.Config()
-	s.Db = s.Database(config.Configuration.Rdbms)
-	s.Services()
+	s.config()
+	s.Db = s.database(config.Configuration.Rdbms)
+	s.services()
+	s.sentrySetup()
 	return s
 }
 
-func (s *Server) Database(dbConfig config.Rdbms) *db.Queries {
+func (s *Server) database(dbConfig config.Rdbms) *db.Queries {
 	queries := postgres.Init(dbConfig)
 	return queries
 }
 
-func (s *Server) Config() { config.New() }
+func (s *Server) config() { config.New() }
 
-func (s *Server) Services() {
+func (s *Server) services() {
 	logger.New()
 	cache.New()
 	jwt.New(config.Jwt{
@@ -84,6 +87,7 @@ func (s *Server) MountHandlers() {
 	s.Router.Use(middleware.RealIP)
 	s.Router.Use(middleware.Recoverer)
 	s.Router.Use(middleware.Logger)
+	s.Router.Use(giggyMiddleware.Sentry)
 	s.Router.Use(middleware.Timeout(60 * time.Minute))
 
 	// Routes
@@ -101,4 +105,22 @@ func (s *Server) MountHandlers() {
 		})
 		r.Handle("/img/upload", handlers.ImageUploader())
 	})
+}
+
+func (s *Server) isProd() bool {
+	return config.Configuration.Server.Env == "production" ||
+		config.Configuration.Server.Env == "staging"
+}
+
+func (s *Server) sentrySetup() {
+	if s.isProd() {
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn:              config.Configuration.Sentry.Dsn,
+			EnableTracing:    true,
+			TracesSampleRate: 1.0,
+		})
+		if err != nil {
+			logrus.WithError(err).Errorf("server: sentry logging setup")
+		}
+	}
 }
