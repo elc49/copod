@@ -23,7 +23,7 @@ func (c *OrderController) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 	return c.r.GetOrdersBelongingToFarm(ctx, id)
 }
 
-func (c *OrderController) CreateOrder(ctx context.Context, args db.CreateOrderParams) (*model.Order, error) {
+func (c *OrderController) createOrder(ctx context.Context, args db.CreateOrderParams) (*model.Order, error) {
 	return c.r.CreateOrder(ctx, args)
 }
 
@@ -36,7 +36,7 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 		if supplyExists := c.r.MarketHasSupply(ctx, item.MarketID); !supplyExists {
 			continue
 		}
-		_, err := c.CreateOrder(ctx, db.CreateOrderParams{
+		_, err := c.createOrder(ctx, db.CreateOrderParams{
 			Volume:     int32(item.Volume),
 			ToBePaid:   int32(item.ToBePaid),
 			Currency:   item.Currency,
