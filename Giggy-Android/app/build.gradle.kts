@@ -29,14 +29,18 @@ android {
 
         val posthogApiKey = properties.getProperty("POSTHOG_PROJECT_API_KEY")
         val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
-        val baseApiHost = properties.getProperty("BASE_API_HOST")
-        val wssHost = properties.getProperty("WSS")
+        val localBaseApi = properties.getProperty("LOCAL_BASE_API")
+        val prodBaseApi = properties.getProperty("PROD_BASE_API")
+        val localWssApi = properties.getProperty("LOCAL_WSS_API")
+        val prodWssAPi = properties.getProperty("PROD_WSS_API")
         val localEnv = properties.getProperty("ENV")
 
         buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value=posthogApiKey)
         buildConfigField(type="String", name="POSTHOG_API_HOST", value=posthogApiHost)
-        buildConfigField(type="String", name="BASE_API_HOST", value=baseApiHost)
-        buildConfigField(type="String", name="WSS", value=wssHost)
+        buildConfigField(type="String", name="LOCAL_BASE_API", value=localBaseApi)
+        buildConfigField(type="String", name="PROD_BASE_API", value=prodBaseApi)
+        buildConfigField(type="String", name="LOCAL_WSS_API", value=localWssApi)
+        buildConfigField(type="String", name="PROD_WSS_API", value=prodWssAPi)
         buildConfigField(type="String", name="ENV" , value=localEnv)
     }
 
