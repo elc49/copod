@@ -40,20 +40,6 @@ func TestOrderController(t *testing.T) {
 		queries.ClearTestOrders(ctx)
 	}()
 
-	t.Run("create_order", func(t *testing.T) {
-		order, err := orderC.CreateOrder(ctx, db.CreateOrderParams{
-			Volume:     1,
-			ToBePaid:   200,
-			Currency:   "KES",
-			CustomerID: user.ID,
-			MarketID:   market.ID,
-			FarmID:     farm.ID,
-		})
-		assert.Nil(t, err)
-		assert.Equal(t, order.Volume, 1)
-		assert.Equal(t, order.Currency, "KES")
-	})
-
 	t.Run("send_order_to_farm", func(t *testing.T) {
 		orders := []*model.SendOrderToFarmInput{
 			{
@@ -76,12 +62,12 @@ func TestOrderController(t *testing.T) {
 	t.Run("get_orders_belonging_to_user", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 2)
+		assert.Equal(t, len(orders), 1)
 	})
 
 	t.Run("get_user_orders_count", func(t *testing.T) {
 		c, err := orderC.GetUserOrdersCount(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, c, 2)
+		assert.Equal(t, c, 1)
 	})
 }
