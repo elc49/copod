@@ -97,6 +97,10 @@ func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.
 			return nil, err
 		}
 
+		if int(item.Volume) == 0 {
+			continue
+		}
+
 		market := &model.Market{
 			ID:           item.ID,
 			Name:         item.Product,

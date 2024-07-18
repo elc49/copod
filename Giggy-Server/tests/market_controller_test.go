@@ -16,6 +16,8 @@ func TestMarketController(t *testing.T) {
 	user, _ := signinC.CreateUserByPhone(ctx, phone, avatar)
 	marketC := marketController()
 	farmC := farmController()
+	orderC := orderController()
+	cartC := cartController()
 	farm, _ := farmC.CreateFarm(ctx, db.CreateFarmParams{
 		Name:      "Agro-dealers",
 		Thumbnail: avatar,
@@ -40,6 +42,8 @@ func TestMarketController(t *testing.T) {
 		queries.ClearTestMarkets(ctx)
 		queries.ClearTestFarms(ctx)
 		queries.ClearTestUsers(ctx)
+		queries.ClearTestOrders(ctx)
+		queries.ClearTestCarts(ctx)
 	}()
 
 	t.Run("create_farm_market", func(t *testing.T) {
@@ -75,5 +79,38 @@ func TestMarketController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.True(t, len(mrkts) == 1)
 		assert.False(t, mrkts[0].CanOrder, false)
+	})
+
+	t.Run("get_nearby_markets_without_0_supply", func(t *testing.T) {
+		createMarket(ctx)
+
+		mrkts, _ := marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			Radius: 2000,
+		})
+		cart, _ := cartC.AddToCart(ctx, db.AddToCartParams{
+			Volume:   4,
+			UserID:   user.ID,
+			MarketID: mrkts[0].ID,
+			FarmID:   farm.ID,
+		})
+		order := []*model.SendOrderToFarmInput{
+			{
+				CartID:   cart.ID,
+				Volume:   120,
+				ToBePaid: 200,
+				Currency: "KES",
+				MarketID: mrkts[0].ID,
+				FarmID:   farm.ID,
+			},
+		}
+		// Place order and exhaust supply
+		orderC.SendOrderToFarm(ctx, user.ID, order)
+		// Get markets
+		mrkts, _ = marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			Radius: 2000,
+		})
+		assert.Equal(t, len(mrkts), 0)
 	})
 }
