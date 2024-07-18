@@ -73,6 +73,18 @@ func (q *Queries) CreateFarmMarket(ctx context.Context, arg CreateFarmMarketPara
 	return i, err
 }
 
+const getFarmOwnerID = `-- name: GetFarmOwnerID :one
+SELECT user_id FROM farms
+WHERE id = $1
+`
+
+func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, getFarmOwnerID, id)
+	var user_id uuid.UUID
+	err := row.Scan(&user_id)
+	return user_id, err
+}
+
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
 SELECT id, product, image, price_per_unit, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, $1::geography, $2)

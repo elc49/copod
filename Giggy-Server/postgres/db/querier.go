@@ -29,6 +29,7 @@ type Querier interface {
 	DeleteCartItem(ctx context.Context, id uuid.UUID) error
 	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
+	GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error)
 	GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error)
 	GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error)

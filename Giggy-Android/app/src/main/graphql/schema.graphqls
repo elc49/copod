@@ -73,6 +73,8 @@ type Market {
 
   farmId: UUID!
 
+  canOrder: Boolean!
+
   tag: String!
 
   pricePerUnit: Int!

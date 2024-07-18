@@ -23,5 +23,9 @@ UPDATE markets SET volume = $1
 WHERE id = $2
 RETURNING *;
 
+-- name: GetFarmOwnerID :one
+SELECT user_id FROM farms
+WHERE id = $1;
+
 -- name: ClearTestMarkets :exec
 DELETE FROM markets;

@@ -3,6 +3,7 @@ query GetLocalizedMarkets($radius: GpsInput!) {
         id
         name
         image
+        canOrder
         pricePerUnit
         farmId
         unit

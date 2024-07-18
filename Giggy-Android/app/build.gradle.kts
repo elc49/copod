@@ -31,11 +31,13 @@ android {
         val posthogApiHost = properties.getProperty("POSTHOG_API_HOST")
         val baseApiHost = properties.getProperty("BASE_API_HOST")
         val wssHost = properties.getProperty("WSS")
+        val localEnv = properties.getProperty("ENV")
 
         buildConfigField(type="String", name="POSTHOG_PROJECT_API_KEY", value=posthogApiKey)
         buildConfigField(type="String", name="POSTHOG_API_HOST", value=posthogApiHost)
         buildConfigField(type="String", name="BASE_API_HOST", value=baseApiHost)
         buildConfigField(type="String", name="WSS", value=wssHost)
+        buildConfigField(type="String", name="ENV" , value=localEnv)
     }
 
     buildTypes {
