@@ -94,7 +94,7 @@ func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.
 	for _, item := range m {
 		farmOwner, err := r.getFarmOwnerID(ctx, item.FarmID)
 		if err != nil {
-			break
+			return nil, err
 		}
 
 		market := &model.Market{
