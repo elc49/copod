@@ -68,11 +68,12 @@ func TestMarketController(t *testing.T) {
 	t.Run("get_nearby_markets", func(t *testing.T) {
 		createMarket(ctx)
 
-		mrkts, err := marketC.GetLocalizedMarkets(ctx, db.GetLocalizedMarketsParams{
+		mrkts, err := marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
 			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Radius: 2000,
 		})
 		assert.Nil(t, err)
 		assert.True(t, len(mrkts) == 1)
+		assert.False(t, mrkts[0].CanOrder, false)
 	})
 }

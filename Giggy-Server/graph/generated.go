@@ -87,6 +87,7 @@ type ComplexityRoot struct {
 	}
 
 	Market struct {
+		CanOrder     func(childComplexity int) int
 		CreatedAt    func(childComplexity int) int
 		FarmID       func(childComplexity int) int
 		ID           func(childComplexity int) int
@@ -386,6 +387,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Gps.Lng(childComplexity), true
+
+	case "Market.canOrder":
+		if e.complexity.Market.CanOrder == nil {
+			break
+		}
+
+		return e.complexity.Market.CanOrder(childComplexity), true
 
 	case "Market.created_at":
 		if e.complexity.Market.CreatedAt == nil {
@@ -1780,6 +1788,8 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_unit(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
 			case "tag":
 				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
@@ -2584,6 +2594,50 @@ func (ec *executionContext) fieldContext_Market_farmId(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Market_canOrder(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Market_canOrder(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CanOrder, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Market_canOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Market",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Market_tag(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_tag(ctx, field)
 	if err != nil {
@@ -2957,6 +3011,8 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_unit(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
 			case "tag":
 				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
@@ -3621,6 +3677,8 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_unit(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
 			case "tag":
 				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
@@ -5020,6 +5078,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.C
 				return ec.fieldContext_Market_unit(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
 			case "tag":
 				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
@@ -5168,6 +5228,8 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_unit(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
 			case "tag":
 				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
@@ -8594,6 +8656,11 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "farmId":
 			out.Values[i] = ec._Market_farmId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "canOrder":
+			out.Values[i] = ec._Market_canOrder(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

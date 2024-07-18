@@ -68,6 +68,7 @@ type Market {
   volume: Int!
   unit: String!
   farmId: UUID!
+  canOrder: Boolean!
   tag: String!
   pricePerUnit: Int!
   created_at: Time!

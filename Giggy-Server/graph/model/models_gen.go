@@ -56,6 +56,7 @@ type Market struct {
 	Volume       int       `json:"volume"`
 	Unit         string    `json:"unit"`
 	FarmID       uuid.UUID `json:"farmId"`
+	CanOrder     bool      `json:"canOrder"`
 	Tag          string    `json:"tag"`
 	PricePerUnit int       `json:"pricePerUnit"`
 	CreatedAt    time.Time `json:"created_at"`

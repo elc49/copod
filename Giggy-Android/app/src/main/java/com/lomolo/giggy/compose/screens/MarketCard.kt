@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.R
 import kotlinx.coroutines.launch
@@ -71,7 +72,7 @@ internal fun MarketCard(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    val onOpenCounter = { showBottomSheet = true }
+    val onOpenCounter = { if (data.canOrder || BuildConfig.ENV == "development") showBottomSheet = true }
     val onCloseBottomSheet = {
         scope.launch {
             sheetState.hide()
