@@ -55,8 +55,10 @@ class ApplicationContainer(
         .add(KotlinJsonAdapterFactory())
         .build()
 
+    val baseApi = if (BuildConfig.ENV == "development") BuildConfig.LOCAL_BASE_API else BuildConfig.PROD_BASE_API
+    val baseWssApi = if (BuildConfig.ENV == "development") BuildConfig.LOCAL_WSS_API else BuildConfig.PROD_WSS_API
     private val retrofit = Retrofit.Builder()
-        .baseUrl(BuildConfig.BASE_API_HOST)
+        .baseUrl(baseApi)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okhttpClient)
         .build()
@@ -75,8 +77,8 @@ class ApplicationContainer(
     private val sqlNormalizedCacheFactory = SqlNormalizedCacheFactory("apollo.db")
     override val apolloClient = ApolloClient.Builder()
         .okHttpClient(okhttpClient)
-        .httpServerUrl("${BuildConfig.BASE_API_HOST}/api/graphql")
-        .webSocketServerUrl("${BuildConfig.WSS}/api/subscription")
+        .httpServerUrl("${baseApi}/api/graphql")
+        .webSocketServerUrl("${baseWssApi}/api/subscription")
         .wsProtocol(GraphQLWsProtocol.Factory())
         .webSocketReopenWhen {_, attempt ->
             delay(attempt * 1000)
