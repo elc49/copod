@@ -114,12 +114,12 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 	}, nil
 }
 
-func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUID) bool {
+func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUID, volume int) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
 	m, _ := r.db.GetMarketByID(ctx, marketID)
-	return m.Volume != 0
+	return m.Volume != 0 && volume <= int(m.Volume)
 }
 
 func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uuid.UUID) bool {

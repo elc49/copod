@@ -33,7 +33,7 @@ func (c *OrderController) GetOrdersBelongingToUser(ctx context.Context, userID u
 
 func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID, orders []*model.SendOrderToFarmInput) (bool, error) {
 	for _, item := range orders {
-		if supplyExists := c.r.MarketHasSupply(ctx, item.MarketID); !supplyExists {
+		if supplyExists := c.r.MarketHasSupply(ctx, item.MarketID, item.Volume); !supplyExists {
 			continue
 		}
 		_, err := c.createOrder(ctx, db.CreateOrderParams{
