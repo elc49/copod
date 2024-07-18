@@ -59,6 +59,24 @@ func TestOrderController(t *testing.T) {
 		assert.NotEqual(t, market.Volume, m.Volume)
 	})
 
+	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
+		orders := []*model.SendOrderToFarmInput{
+			{
+				Volume:   120,
+				ToBePaid: 200,
+				Currency: "KES",
+				MarketID: market.ID,
+				FarmID:   farm.ID,
+			},
+		}
+		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
+		assert.Nil(t, err)
+
+		o, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, len(o), 1)
+	})
+
 	t.Run("get_orders_belonging_to_user", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
