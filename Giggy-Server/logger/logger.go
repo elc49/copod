@@ -14,7 +14,7 @@ var log *logrus.Logger
 func New() {
 	log = logrus.New()
 	isProd := func() bool {
-		return config.Configuration.Server.Env == "production"
+		return config.Configuration.Server.Env == "production" && config.Configuration != nil
 	}
 
 	if isProd() {

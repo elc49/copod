@@ -3,16 +3,18 @@ package util
 import (
 	"crypto/rand"
 	"encoding/json"
-	"log"
 	"math/big"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/nominatim"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 )
 
+var log = logger.GetLogger()
+
 func RandomStringByLength(length int) string {
+	log := logger.GetLogger()
 	b := ""
 	id, err := uuid.NewUUID()
 	if err != nil {
@@ -37,6 +39,7 @@ type point struct {
 }
 
 func ParsePostgisLocation(p interface{}) *model.Address {
+	log := logger.GetLogger()
 	var location *point
 
 	if p != nil {
@@ -46,7 +49,7 @@ func ParsePostgisLocation(p interface{}) *model.Address {
 		lng := &location.Coordinates[0]
 		address, err := nominatim.ReverseGeocode(model.Gps{Lat: *lat, Lng: *lng})
 		if err != nil {
-			logrus.WithError(err).Errorf("util: ReverseGeocode")
+			log.WithError(err).Errorf("util: ReverseGeocode")
 			return nil
 		}
 		return address
@@ -58,7 +61,7 @@ func ParsePostgisLocation(p interface{}) *model.Address {
 func StringToUUID(id string) uuid.UUID {
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		logrus.WithError(err).Error("util: StringToUUID()")
+		log.WithError(err).Error("util: StringToUUID()")
 	}
 
 	return uid
