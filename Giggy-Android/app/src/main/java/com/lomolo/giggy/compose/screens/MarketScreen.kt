@@ -62,7 +62,7 @@ fun MarketScreen(
         topBar = {
             TopAppBar(title = {
                 Text(
-                    "Available markets",
+                    stringResource(R.string.available_markets),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
@@ -156,7 +156,7 @@ fun MarketScreen(
                                 )
 
                                 else -> Text(
-                                    "Retry",
+                                    stringResource(R.string.retry),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
 

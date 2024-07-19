@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -102,11 +103,6 @@ fun FarmMarketScreen(
     deviceDetails: DeviceDetails,
     viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
-    val tabIcon = mapOf(
-        0 to R.drawable.product_box,
-        1 to R.drawable.orders,
-        2 to R.drawable.bank,
-    )
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
     var state by remember {
         mutableIntStateOf(0)
@@ -177,13 +173,13 @@ fun FarmMarketScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         TableHeader(
-                            "Product", .3f
+                            stringResource(R.string.product), .3f
                         )
                         TableHeader(
-                            "In-Stock", .3f
+                            stringResource(R.string.in_stock), .3f
                         )
                         TableHeader(
-                            "Price", .3f
+                            stringResource(R.string.price), .3f
                         )
                     }
                 }
@@ -221,7 +217,7 @@ fun FarmMarketScreen(
                                         horizontalArrangement = Arrangement.Center,
                                     ) {
                                         Text(
-                                            "No harvest for sale",
+                                            stringResource(R.string.no_harvest),
                                             style = MaterialTheme.typography.titleMedium,
                                         )
                                     }
@@ -238,7 +234,7 @@ fun FarmMarketScreen(
                                 horizontalArrangement = Arrangement.Center,
                             ) {
                                 Text(
-                                    "Something went wrong",
+                                    stringResource(R.string.something_went_wrong),
                                     style = MaterialTheme.typography.labelMedium,
                                 )
                             }
@@ -257,13 +253,13 @@ fun FarmMarketScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         TableHeader(
-                            "Product", .25f
+                            stringResource(id = R.string.product), .25f
                         )
                         TableHeader(
-                            "Volume", .25f
+                            stringResource(id = R.string.volume), .25f
                         )
                         TableHeader(
-                            "Cost", .25f
+                            stringResource(R.string.cost), .25f
                         )
                         TableHeader(text = "", weight = .25f)
                     }
@@ -331,7 +327,7 @@ fun FarmMarketScreen(
                                 horizontalArrangement = Arrangement.Center,
                             ) {
                                 Text(
-                                    "Something went wrong",
+                                    stringResource(id = R.string.something_went_wrong),
                                     style = MaterialTheme.typography.labelMedium,
                                 )
                             }
@@ -459,7 +455,9 @@ internal fun OrderActions(
         sheetState = sheetState,
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -473,7 +471,7 @@ internal fun OrderActions(
                         contentPadding = PaddingValues(8.dp),
                     ) {
                         Text(
-                            "Confirm",
+                            stringResource(R.string.confirm),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
@@ -486,7 +484,7 @@ internal fun OrderActions(
                         contentPadding = PaddingValues(8.dp),
                     ) {
                         Text(
-                            "Delivered",
+                            stringResource(R.string.delivered),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
@@ -499,7 +497,7 @@ internal fun OrderActions(
                         contentPadding = PaddingValues(8.dp),
                     ) {
                         Text(
-                            "Cancel order",
+                            stringResource(R.string.cancel_order),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.error,

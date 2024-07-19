@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -113,7 +114,7 @@ internal fun AccountCard(
         ) {
             Row {
                 Text(
-                    text = "Account details",
+                    text = stringResource(R.string.account_details),
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.displaySmall,
                 )
@@ -141,7 +142,7 @@ internal fun AccountCard(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            "Phone number",
+                            stringResource(id = R.string.phone_number),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -160,7 +161,7 @@ internal fun AccountCard(
         ) {
             TextButton(shape = MaterialTheme.shapes.extraSmall, onClick = { onSignOut() }) {
                 Text(
-                    text = "Sign out",
+                    text = stringResource(R.string.sign_out),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.error,
                     fontWeight = FontWeight.ExtraBold,

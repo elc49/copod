@@ -78,34 +78,34 @@ object DashboardDestination : Navigation {
 }
 
 sealed class Screen(
-    val name: String,
+    val name: Int,
     val defaultIcon: Int,
     val activeIcon: Int,
     val route: String,
 ) {
     data object Explore : Screen(
-        "Explore",
+        R.string.explore,
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
         "dashboard-home",
     )
 
     data object Soko : Screen(
-        "Markets",
+        R.string.markets,
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard-market",
     )
 
     data object Farm : Screen(
-        "Farm",
+        R.string.farm,
         R.drawable.farm_outlined,
         R.drawable.farm_filled,
         "dashboard-farm",
     )
 
     data object Account : Screen(
-        "You",
+        R.string.you,
         R.drawable.account_outlined,
         R.drawable.account_filled,
         "dashboard-account",
@@ -133,11 +133,11 @@ fun BottomNavBar(
                 Icon(
                     painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
                     modifier = Modifier.size(32.dp),
-                    contentDescription = item.name
+                    contentDescription = stringResource(item.name)
                 )
             }, label = {
                 Text(
-                    item.name,
+                    stringResource(item.name),
                     fontWeight = if (isNavItemActive) FontWeight.ExtraBold
                     else FontWeight.Normal,
                 )

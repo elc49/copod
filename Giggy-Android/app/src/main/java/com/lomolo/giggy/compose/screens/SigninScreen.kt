@@ -73,7 +73,7 @@ fun SignInScreen(
             OutlinedTextField(
                 label = {
                     Text(
-                        "Phone number",
+                        stringResource(id = R.string.phone_number),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },

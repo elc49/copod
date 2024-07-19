@@ -134,7 +134,7 @@ fun FarmsScreen(
                                 )
 
                                 else -> Text(
-                                    "Retry",
+                                    stringResource(id = R.string.retry),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                             }
