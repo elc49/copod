@@ -33,7 +33,7 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uu
 			Phone    string `json:"phone"`
 			Provider string `json:"provider"`
 		}{
-			Phone: "+" + input.Phone,
+			Phone: input.Phone,
 		},
 	}
 

@@ -115,7 +115,11 @@ func paystackConfig() Paystack {
 	config.SecretKey = strings.TrimSpace(os.Getenv("PAYSTACK_SECRET_KEY"))
 	config.Provider = strings.TrimSpace(os.Getenv("PAYSTACK_PAYMENT_PROVIDER"))
 	config.MobileTestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_MOBILE_TEST_ACCOUNT"))
-	config.Env = strings.TrimSpace(os.Getenv("PAYSTACK_ENV"))
+	if strings.Contains(config.SecretKey, "sk_test_") {
+		config.Env = "test"
+	} else if strings.Contains(config.SecretKey, "sk_live_") {
+		config.Env = "live"
+	}
 
 	return config
 }
@@ -152,4 +156,10 @@ func sentryConfig() Sentry {
 	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
 
 	return config
+}
+
+func IsAdmin(phone string) bool {
+	env()
+	p := strings.ReplaceAll(strings.TrimSpace(phone), " ", "")
+	return strings.Contains(strings.TrimSpace(os.Getenv("ADMINS")), p)
 }
