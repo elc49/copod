@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -92,7 +93,9 @@ fun MarketCartScreen(
     val cartItems by viewModel.cartContent.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }
 
-    Scaffold(topBar = {
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
         TopAppBar(title = {
             Text(
                 stringResource(id = MarketCartScreenDestination.title),

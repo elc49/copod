@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -74,7 +75,7 @@ fun FarmsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = bottomNav,
         topBar = {
-            TopAppBar(title = {
+            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(
                     stringResource(id = R.string.your_farms),
                     style = MaterialTheme.typography.titleLarge,
