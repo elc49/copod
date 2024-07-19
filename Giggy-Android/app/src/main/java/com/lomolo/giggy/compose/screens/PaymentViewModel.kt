@@ -45,7 +45,7 @@ class PaymentViewModel(
     }
 
     fun payWithMpesa(amount: Int, currency: String, deviceDetails: DeviceDetails) {
-        if ((payingWithMpesaState is PayingWithMpesa.Default || payingWithMpesaState !is PayingWithMpesa.Failed) && validatePayByMpesa(
+        if ((payingWithMpesaState is PayingWithMpesa.Default || payingWithMpesaState is PayingWithMpesa.Failed || payingWithMpesaState is PayingWithMpesa.Success) && validatePayByMpesa(
                 _paymentInput.value, deviceDetails
             )
         ) {
@@ -59,7 +59,7 @@ class PaymentViewModel(
                         PayWithMpesaInput(
                             amount = amount,
                             currency = currency,
-                            phone = phone.countryCode.toString() + phone.nationalNumber.toString(),
+                            phone = PhoneNumberUtility.formatPhone(phone),
                             reason = paymentReason,
                         )
                     ).dataOrThrow()
@@ -106,7 +106,7 @@ interface PayingWithMpesa {
     data object Loading : PayingWithMpesa
     data object Failed : PayingWithMpesa
     data object Refreshing : PayingWithMpesa
-    data object Success: PayingWithMpesa
+    data object Success : PayingWithMpesa
     data object PayingOffline : PayingWithMpesa
     data class Error(val msg: String?) : PayingWithMpesa
 }

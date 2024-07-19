@@ -50,7 +50,7 @@ class SigninViewModel(
                     val phone = PhoneNumberUtility.parseNumber(
                         _signinInput.value.phone, mainViewModel.deviceDetailsState.value.countryCode
                     )
-                    sessionRepository.signIn(phone.countryCode.toString() + phone.nationalNumber.toString())
+                    sessionRepository.signIn(PhoneNumberUtility.formatPhone(phone))
                     SigninState.Success.also {
                         cb()
                         resetSigninInput()

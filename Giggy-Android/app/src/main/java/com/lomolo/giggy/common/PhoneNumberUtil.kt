@@ -1,6 +1,7 @@
 package com.lomolo.giggy.common
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 
 object PhoneNumberUtility {
@@ -25,6 +26,15 @@ object PhoneNumberUtility {
             return phoneUtil.isValidNumber(parseNumber(phone, countryCode))
         } catch(e: Exception) {
             false
+        }
+    }
+
+    fun formatPhone(phone: PhoneNumber): String {
+        return try {
+            phoneUtil.format(phone, PhoneNumberFormat.INTERNATIONAL)
+        } catch(e: Exception) {
+            e.printStackTrace()
+            "+"+phone.countryCode.toString()+phone.nationalNumber.toString()
         }
     }
 }
