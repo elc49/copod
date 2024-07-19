@@ -49,10 +49,12 @@ func (s *Server) database(dbConfig config.Rdbms) *db.Queries {
 	return queries
 }
 
-func (s *Server) config() { config.New() }
+func (s *Server) config() {
+	config.New()
+	logger.New()
+}
 
 func (s *Server) services() {
-	logger.New()
 	cache.New()
 	jwt.New(config.Jwt{
 		Secret:  config.Configuration.Jwt.Secret,

@@ -13,6 +13,7 @@ import (
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/ipinfo/go/v2/ipinfo"
 	"github.com/ipinfo/go/v2/ipinfo/cache"
+	"github.com/sirupsen/logrus"
 )
 
 type Ipinfo interface {
@@ -25,6 +26,7 @@ var (
 
 type ipC struct {
 	client *ipinfo.Client
+	log    *logrus.Logger
 }
 
 func NewIpinfoClient() {
@@ -36,11 +38,10 @@ func NewIpinfoClient() {
 		config.Configuration.Ipinfo.ApiKey,
 	)
 
-	ipClient = &ipC{client}
+	ipClient = &ipC{client, logger.GetLogger()}
 }
 
 func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
-	log := logger.GetLogger()
 	ipinfo := &model.Ipinfo{}
 	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
 	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
@@ -49,32 +50,32 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://ipapi.co/%s/json/", ip), nil)
 	req.Header.Set("User-Agent", "ipapi.co/#go-v1.5")
 	if err != nil {
-		log.WithError(err).Error("ip: htttp.NewRequest")
+		ipc.log.WithError(err).Error("ip: htttp.NewRequest")
 		return nil, err
 	}
 
 	res, err := ipApiClient.Do(req)
 	if err != nil {
-		log.WithError(err).Error("ip: ipApiClient.Do")
+		ipc.log.WithError(err).Error("ip: ipApiClient.Do")
 		return nil, err
 	}
 
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.WithError(err).Error("ip: res.Body")
+		ipc.log.WithError(err).Error("ip: res.Body")
 		return nil, err
 	}
 
 	err = json.Unmarshal(body, &ipinfo)
 	if err != nil {
-		log.WithError(err).Error("ip: json.Unmarshal")
+		ipc.log.WithError(err).Error("ip: json.Unmarshal")
 		return nil, err
 	}
 
 	secondaryIpinfo, err := ipc.client.GetIPInfo(net.ParseIP(ip))
 	if err != nil {
-		log.WithError(err).Error("ip: ipc.GetIPInfo")
+		ipc.log.WithError(err).Error("ip: ipc.GetIPInfo")
 		return nil, err
 	}
 	ipinfo.CountryFlagURL = secondaryIpinfo.CountryFlagURL

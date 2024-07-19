@@ -64,6 +64,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 
 	req, err := http.NewRequest("POST", chargeApi, bytes.NewBuffer(payload))
 	if err != nil {
+		p.log.WithError(err).Errorf("paystack: http.NewRequest")
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
@@ -72,10 +73,12 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 	c := &http.Client{}
 	res, err := c.Do(req)
 	if err != nil {
+		p.log.WithError(err).Errorf("paystack: htt.Client{}")
 		return nil, err
 	}
 
 	if err := json.NewDecoder(res.Body).Decode(&chargeRes); err != nil {
+		p.log.WithError(err).Errorf("paystack: jwt.NewDecoder")
 		return nil, err
 	}
 
@@ -170,6 +173,7 @@ func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, reference
 
 	req, err := http.NewRequest("GET", verifyUrl, nil)
 	if err != nil {
+		p.log.WithError(err).Errorf("paystack: VerifyTransactionByReferenceID new request")
 		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+p.config.SecretKey)
@@ -177,11 +181,12 @@ func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, reference
 	c := &http.Client{}
 	res, err := c.Do(req)
 	if err != nil {
+		p.log.WithError(err).Error("paystack: http.Do VerifyTransactionByReferenceID")
 		return nil, err
 	}
 
 	if marshalErr := json.NewDecoder(res.Body).Decode(&verifyRes); marshalErr != nil {
-		p.log.WithError(marshalErr).Error("paystack: json VerifyTransactionByReferenceID res")
+		p.log.WithError(marshalErr).Error("paystack: json.NewDecoder VerifyTransactionByReferenceID")
 		return nil, marshalErr
 	}
 
