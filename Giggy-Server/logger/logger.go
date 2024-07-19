@@ -9,12 +9,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log *logrus.Logger
+var log = logrus.New()
 
 func New() {
-	log = logrus.New()
 	isProd := func() bool {
-		return config.Configuration.Server.Env == "production" && config.Configuration != nil
+		if config.Configuration == nil {
+			return false
+		} else if config.Configuration.Server.Env == "production" {
+			return true
+		} else {
+			return false
+		}
 	}
 
 	if isProd() {
