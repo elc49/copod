@@ -94,7 +94,7 @@ fun FarmsScreen(
                 }) {
                     Icon(
                         Icons.TwoTone.Add,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.add),
                     )
                 }
             })

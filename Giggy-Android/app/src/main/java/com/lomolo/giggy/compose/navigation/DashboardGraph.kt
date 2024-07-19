@@ -233,7 +233,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     }) {
                         Icon(
                             Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = null,
+                            contentDescription = stringResource(id = R.string.go_back),
                         )
                     }
                 }, actions = {
@@ -243,7 +243,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         )
                     }) {
                         Icon(
-                            Icons.TwoTone.Add, contentDescription = null
+                            Icons.TwoTone.Add, contentDescription = stringResource(id = R.string.go_back)
                         )
                     }
                 })
@@ -315,7 +315,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         Icon(
                             Icons.TwoTone.Close,
                             modifier = Modifier.size(28.dp),
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.close),
                         )
                     }
                 })
@@ -361,7 +361,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = null,
+                            contentDescription = stringResource(id = R.string.go_back),
                         )
                     }
                 })
@@ -391,7 +391,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = null,
+                            contentDescription = stringResource(id = R.string.go_back),
                         )
                     }
                 })
@@ -427,7 +427,9 @@ fun NavGraphBuilder.addDashboardGraph(
                 }, navigationIcon = {
                     IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null
+                            Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(
+                                R.string.go_back
+                            )
                         )
                     }
                 })
