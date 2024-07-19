@@ -222,7 +222,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         ) {
             Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-                TopAppBar(title = {
+                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = R.string.farm_store),
                         style = MaterialTheme.typography.titleLarge,
@@ -429,7 +429,7 @@ fun NavGraphBuilder.addDashboardGraph(
             Scaffold(
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 topBar = {
-                TopAppBar(title = {
+                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = MpesaPaymentScreenDestination.title),
                         style = MaterialTheme.typography.titleLarge,

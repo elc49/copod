@@ -61,7 +61,7 @@ fun UserOrdersScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection), topBar = {
-        LargeTopAppBar(title = {
+        LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
             Text(stringResource(UserOrdersScreenDestination.title))
         }, navigationIcon = {
             IconButton(onClick = onNavigateBack) {
