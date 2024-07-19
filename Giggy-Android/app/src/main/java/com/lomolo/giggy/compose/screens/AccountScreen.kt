@@ -147,7 +147,7 @@ internal fun AccountCard(
                         )
                         user?.phone?.let {
                             Text(
-                                "+${it}",
+                                it,
                                 style = MaterialTheme.typography.titleMedium,
                             )
                         }
