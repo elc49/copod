@@ -130,7 +130,7 @@ func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, 
 func (r *queryResolver) GetLocalizedPosters(ctx context.Context, radius model.GpsInput) ([]*model.Post, error) {
 	args := db.GetLocalizedPostersParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
-		Radius: 5000,
+		Radius: 20000,
 	}
 	return r.postController.GetLocalizedPosters(ctx, args)
 }
