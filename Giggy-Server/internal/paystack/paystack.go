@@ -52,7 +52,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 
 	chargeApi := p.config.BaseApi + "/charge"
 	input.Provider.Provider = p.config.Provider
-	if p.config.Env == "test" || config.IsAdmin(input.Provider.Phone) {
+	if p.config.Env == "test" {
 		input.Provider.Phone = p.config.MobileTestAccount
 	}
 
