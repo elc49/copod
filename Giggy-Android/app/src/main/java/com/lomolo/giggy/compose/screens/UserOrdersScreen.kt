@@ -88,7 +88,7 @@ fun UserOrdersScreen(
                                 ) {
                                     Text(
                                         "No orders",
-                                        style = MaterialTheme.typography.titleMedium,
+                                        style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
                             } else {

@@ -144,7 +144,7 @@ fun DashboardScreen(
                                 )
 
                                 else -> Text(
-                                    "Retry",
+                                    stringResource(id = R.string.retry),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
 
@@ -193,7 +193,7 @@ internal fun NoContent(
         Text(
             text = stringResource(R.string.no_posters),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }
