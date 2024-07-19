@@ -136,12 +136,14 @@ fun FarmMarketScreen(
 
             GetFarmState.Loading -> Row(
                 Modifier
-                    .height(280.dp)
+                    .height(68.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    Modifier.size(20.dp)
+                )
             }
         }
         PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
