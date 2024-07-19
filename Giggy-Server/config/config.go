@@ -157,9 +157,3 @@ func sentryConfig() Sentry {
 
 	return config
 }
-
-func IsAdmin(phone string) bool {
-	env()
-	p := strings.ReplaceAll(strings.TrimSpace(phone), " ", "")
-	return strings.Contains(strings.TrimSpace(os.Getenv("ADMINS")), p)
-}
