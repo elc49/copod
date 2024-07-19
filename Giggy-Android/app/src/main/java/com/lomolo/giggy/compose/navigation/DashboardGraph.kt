@@ -2,6 +2,7 @@ package com.lomolo.giggy.compose.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -121,7 +122,7 @@ fun BottomNavBar(
     val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Farm, Screen.Account)
 
     NavigationBar(
-        modifier = modifier,
+        modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         navItems.forEachIndexed { _, item ->
             val isNavItemActive =
@@ -220,7 +221,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 type = NavType.StringType
             })
         ) {
-            Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
                 TopAppBar(title = {
                     Text(
                         stringResource(id = R.string.farm_store),
@@ -243,7 +244,8 @@ fun NavGraphBuilder.addDashboardGraph(
                         )
                     }) {
                         Icon(
-                            Icons.TwoTone.Add, contentDescription = stringResource(id = R.string.go_back)
+                            Icons.TwoTone.Add,
+                            contentDescription = stringResource(id = R.string.go_back)
                         )
                     }
                 })
@@ -301,7 +303,9 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Scaffold(topBar = {
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                topBar = {
                 TopAppBar(title = {
                     Text(
                         stringResource(id = CreateFarmScreenDestination.title),
@@ -351,8 +355,10 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
-            Scaffold(topBar = {
-                LargeTopAppBar(title = {
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                topBar = {
+                LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = PosterSubscriptionScreenDestination.title),
                         style = MaterialTheme.typography.displaySmall,
@@ -381,8 +387,10 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(topBar = {
-                LargeTopAppBar(title = {
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                topBar = {
+                LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = FarmSubscriptionScreenDestination.title),
                         style = MaterialTheme.typography.displaySmall,
@@ -418,7 +426,9 @@ fun NavGraphBuilder.addDashboardGraph(
         ) {
             val reason = it.arguments?.getString("paymentReason")
 
-            Scaffold(topBar = {
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                topBar = {
                 TopAppBar(title = {
                     Text(
                         stringResource(id = MpesaPaymentScreenDestination.title),
@@ -427,7 +437,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 }, navigationIcon = {
                     IconButton(onClick = { navHostController.popBackStack() }) {
                         Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = stringResource(
                                 R.string.go_back
                             )
                         )
@@ -465,8 +476,9 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = UserOrdersScreenDestination.route) {
-            UserOrdersScreen(modifier = modifier,
-            onNavigateBack = { navHostController.popBackStack() },
+            UserOrdersScreen(
+                modifier = modifier,
+                onNavigateBack = { navHostController.popBackStack() },
             )
         }
     }

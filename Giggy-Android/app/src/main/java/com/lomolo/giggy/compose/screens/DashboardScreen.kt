@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -90,7 +91,7 @@ fun DashboardScreen(
                 contentDescription = stringResource(R.string.create_post),
             )
         }
-    }, bottomBar = {
+    }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
         BottomNavBar(
             modifier = modifier,
             onNavigateTo = onNavigateTo,

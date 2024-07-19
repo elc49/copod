@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -57,7 +58,9 @@ fun UserOrdersScreen(
     val orders by viewModel.userOrders.collectAsState()
     val barScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection), topBar = {
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection), topBar = {
         LargeTopAppBar(title = {
             Text(stringResource(UserOrdersScreenDestination.title))
         }, navigationIcon = {
