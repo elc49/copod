@@ -126,7 +126,7 @@ fun MarketCartScreen(
                     )
                     Text(
                         stringResource(R.string.no_items),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             } else {

@@ -215,7 +215,7 @@ fun MarketScreen(
                         Text(
                             stringResource(R.string.no_markets),
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                 }
