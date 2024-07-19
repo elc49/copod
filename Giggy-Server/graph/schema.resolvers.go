@@ -152,7 +152,7 @@ func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, radius model.Gp
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	args := db.GetLocalizedMarketsParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
-		Radius: 2000000,
+		Radius: 20000,
 	}
 	return r.marketController.GetLocalizedMarkets(ctx, userId, args)
 }
