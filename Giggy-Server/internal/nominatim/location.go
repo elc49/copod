@@ -7,11 +7,13 @@ import (
 	"strconv"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 )
 
 const nominatimApi = "https://nominatim.openstreetmap.org"
 
 func ReverseGeocode(coords model.Gps) (*model.Address, error) {
+	log := logger.GetLogger()
 	var result struct {
 		Name        string `json:"name"`
 		DisplayName string `json:"display_name"`
@@ -28,11 +30,13 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 	api := fmt.Sprintf("%s/reverse?format=jsonv2&lat=%f&lon=%f", nominatimApi, coords.Lat, coords.Lng)
 	res, err := http.Get(api)
 	if err != nil {
+		log.WithError(err).Errorf("nominatim: http.Get")
 		return nil, err
 	}
 	defer res.Body.Close()
 
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		log.WithError(err).Errorf("nominatim: jwt.NewDecoder")
 		return nil, err
 	}
 
@@ -44,11 +48,13 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 
 	lat, err := strconv.ParseFloat(result.Lat, 64)
 	if err != nil {
+		log.WithError(err).Error("nominatim: strconv.ParseFloat")
 		return nil, err
 	}
 
 	lng, err := strconv.ParseFloat(result.Lng, 64)
 	if err != nil {
+		log.WithError(err).Errorf("nominatim: strconv.ParseFloat")
 		return nil, err
 	}
 	address.Coords = &model.Gps{Lat: lat, Lng: lng}

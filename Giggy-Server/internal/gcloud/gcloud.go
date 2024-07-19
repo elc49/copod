@@ -10,7 +10,8 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/util"
-	log "github.com/sirupsen/logrus"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/api/option"
 )
 
@@ -27,9 +28,11 @@ type gcloudClient struct {
 	storage             *storage.Client
 	storageBucket       string
 	baseBucketObjectUri string
+	log                 *logrus.Logger
 }
 
 func New() {
+	log := logger.GetLogger()
 	credentials, err := base64.StdEncoding.DecodeString(config.Configuration.Gcloud.Adc)
 	if err != nil {
 		log.WithError(err).Fatalln("gcloud: New()")
@@ -44,6 +47,7 @@ func New() {
 		storage,
 		config.Configuration.Gcloud.StorageBucketName,
 		config.Configuration.Gcloud.BucketObjectBaseUri,
+		log,
 	}
 }
 
@@ -55,10 +59,12 @@ func (gC gcloudClient) UploadPostImage(ctx context.Context, file multipart.File,
 	storageWriter := gC.storage.Bucket(gC.storageBucket).Object(fileHeader.Filename).NewWriter(ctx)
 
 	if _, err := io.Copy(storageWriter, file); err != nil {
+		gC.log.WithError(err).Errorf("gcloud: copy storageWriter")
 		return "", err
 	}
 
 	if err := storageWriter.Close(); err != nil {
+		gC.log.WithError(err).Errorf("gcloud: close storageWriter")
 		return "", err
 	}
 
@@ -70,10 +76,12 @@ func (gC gcloudClient) ReadFromRemote(ctx context.Context, body io.Reader) (stri
 	storageW := gC.storage.Bucket(gC.storageBucket).Object(fileName).NewWriter(ctx)
 
 	if _, err := io.Copy(storageW, body); err != nil {
+		gC.log.WithError(err).Errorf("gcloud: copy storageW")
 		return "", err
 	}
 
 	if err := storageW.Close(); err != nil {
+		gC.log.WithError(err).Errorf("gcloud: close storageWriter")
 		return "", err
 	}
 

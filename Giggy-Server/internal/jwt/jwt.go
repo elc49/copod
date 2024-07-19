@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/config"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	jsonwebtoken "github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -22,10 +24,11 @@ type Jwt interface {
 type jwtService struct {
 	secret  string
 	expires time.Duration
+	log     *logrus.Logger
 }
 
 func New(opt config.Jwt) {
-	jwt = jwtService{opt.Secret, opt.Expires}
+	jwt = jwtService{opt.Secret, opt.Expires, logger.GetLogger()}
 }
 
 func GetJwtService() Jwt { return jwt }
@@ -37,6 +40,7 @@ func (j jwtService) GetExpiry() time.Duration { return j.expires }
 func (j jwtService) Sign(claims jsonwebtoken.Claims) (string, error) {
 	token, err := jsonwebtoken.NewWithClaims(jsonwebtoken.SigningMethodHS256, claims).SignedString(j.getSecret())
 	if err != nil {
+		j.log.WithError(err).Errorf("jwt: NewWithClaims")
 		return "", err
 	}
 
