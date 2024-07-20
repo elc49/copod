@@ -24,18 +24,19 @@ func (q *Queries) ClearTestPosters(ctx context.Context) error {
 
 const createPost = `-- name: CreatePost :one
 INSERT INTO posts (
-  text, image, tags, user_id, location
+  text, image, tags, user_id, address_string, location
 ) VALUES (
-  $1, $2, $3, $4, $5
-) RETURNING id, text, image, tags, location, user_id, created_at, updated_at
+  $1, $2, $3, $4, $5, $6
+) RETURNING id, text, image, tags, address_string, location, user_id, created_at, updated_at
 `
 
 type CreatePostParams struct {
-	Text     string      `json:"text"`
-	Image    string      `json:"image"`
-	Tags     []string    `json:"tags"`
-	UserID   uuid.UUID   `json:"user_id"`
-	Location interface{} `json:"location"`
+	Text          string      `json:"text"`
+	Image         string      `json:"image"`
+	Tags          []string    `json:"tags"`
+	UserID        uuid.UUID   `json:"user_id"`
+	AddressString string      `json:"address_string"`
+	Location      interface{} `json:"location"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -44,6 +45,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.Image,
 		pq.Array(arg.Tags),
 		arg.UserID,
+		arg.AddressString,
 		arg.Location,
 	)
 	var i Post
@@ -52,6 +54,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.Text,
 		&i.Image,
 		pq.Array(&i.Tags),
+		&i.AddressString,
 		&i.Location,
 		&i.UserID,
 		&i.CreatedAt,
@@ -61,7 +64,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 }
 
 const getLocalizedPosters = `-- name: GetLocalizedPosters :many
-SELECT id, text, image, tags, user_id, ST_AsGeoJSON(location) AS location, created_at, updated_at FROM posts
+SELECT id, text, image, tags, address_string, ST_AsGeoJSON(location) AS location, user_id, created_at, updated_at FROM posts
 WHERE ST_DWithin(location, $1::geography, $2)
 `
 
@@ -71,14 +74,15 @@ type GetLocalizedPostersParams struct {
 }
 
 type GetLocalizedPostersRow struct {
-	ID        uuid.UUID   `json:"id"`
-	Text      string      `json:"text"`
-	Image     string      `json:"image"`
-	Tags      []string    `json:"tags"`
-	UserID    uuid.UUID   `json:"user_id"`
-	Location  interface{} `json:"location"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	ID            uuid.UUID   `json:"id"`
+	Text          string      `json:"text"`
+	Image         string      `json:"image"`
+	Tags          []string    `json:"tags"`
+	AddressString string      `json:"address_string"`
+	Location      interface{} `json:"location"`
+	UserID        uuid.UUID   `json:"user_id"`
+	CreatedAt     time.Time   `json:"created_at"`
+	UpdatedAt     time.Time   `json:"updated_at"`
 }
 
 func (q *Queries) GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error) {
@@ -95,8 +99,9 @@ func (q *Queries) GetLocalizedPosters(ctx context.Context, arg GetLocalizedPoste
 			&i.Text,
 			&i.Image,
 			pq.Array(&i.Tags),
-			&i.UserID,
+			&i.AddressString,
 			&i.Location,
+			&i.UserID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

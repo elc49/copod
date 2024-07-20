@@ -6,7 +6,6 @@ import (
 	"math/big"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
-	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/nominatim"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
 	"github.com/google/uuid"
 )
@@ -39,7 +38,6 @@ type point struct {
 }
 
 func ParsePostgisLocation(p interface{}) *model.Address {
-	log := logger.GetLogger()
 	var location *point
 
 	if p != nil {
@@ -47,12 +45,7 @@ func ParsePostgisLocation(p interface{}) *model.Address {
 
 		lat := &location.Coordinates[1]
 		lng := &location.Coordinates[0]
-		address, err := nominatim.ReverseGeocode(model.Gps{Lat: *lat, Lng: *lng})
-		if err != nil {
-			log.WithError(err).Errorf("util: ReverseGeocode")
-			return nil
-		}
-		return address
+		return &model.Address{Coords: &model.Gps{Lat: *lat, Lng: *lng}}
 	} else {
 		return nil
 	}

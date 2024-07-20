@@ -28,9 +28,17 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 	}
 	address := new(model.Address)
 	api := fmt.Sprintf("%s/reverse?format=jsonv2&lat=%f&lon=%f", nominatimApi, coords.Lat, coords.Lng)
-	res, err := http.Get(api)
+	req, err := http.NewRequest("GET", api, nil)
 	if err != nil {
-		log.WithError(err).Errorf("nominatim: http.Get")
+		log.WithError(err).Errorf("nominatim: new http request")
+		return nil, err
+	}
+	req.Header.Add("User-Agent", "giggy-api@v1.0") // One todo to avoid being rate-limited by nominatim admins
+
+	c := &http.Client{}
+	res, err := c.Do(req)
+	if err != nil {
+		log.WithError(err).Errorf("nominatim: geocode client response")
 		return nil, err
 	}
 	defer res.Body.Close()

@@ -2,10 +2,13 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
+	"github.com/elc49/giggy-monorepo/Giggy-Server/internal/nominatim"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/postgres/db"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/repositories"
+	"github.com/google/uuid"
 )
 
 type PostController struct {
@@ -17,7 +20,21 @@ func (c *PostController) Init(queries *db.Queries) {
 	c.r.Init(queries)
 }
 
-func (c *PostController) CreatePost(ctx context.Context, args db.CreatePostParams) (*model.Post, error) {
+func (c *PostController) CreatePost(ctx context.Context, userId uuid.UUID, input model.NewPostInput) (*model.Post, error) {
+	address, err := nominatim.ReverseGeocode(model.Gps{Lat: input.Location.Lat, Lng: input.Location.Lng})
+	if err != nil {
+		return nil, err
+	}
+
+	args := db.CreatePostParams{
+		Text:          input.Text,
+		Image:         input.Image,
+		Tags:          input.Tags,
+		UserID:        userId,
+		AddressString: address.AddressString,
+		Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", address.Coords.Lng, address.Coords.Lat),
+	}
+
 	return c.r.CreatePost(ctx, args)
 }
 
