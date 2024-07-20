@@ -42,8 +42,9 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 		return nil, err
 	}
 
+	log.Infoln(string(body))
 	if err := json.Unmarshal(body, &result); err != nil {
-		log.WithError(err).Errorf("nominatim: jwt.NewDecoder")
+		log.WithError(err).Errorf("nominatim: json.Unmarshal")
 		return nil, err
 	}
 
