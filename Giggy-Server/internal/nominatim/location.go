@@ -3,6 +3,7 @@ package nominatim
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -35,7 +36,13 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 	}
 	defer res.Body.Close()
 
-	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.WithError(err).Errorf("nominatim: io.ReadAll(res.Body)")
+		return nil, err
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
 		log.WithError(err).Errorf("nominatim: jwt.NewDecoder")
 		return nil, err
 	}
