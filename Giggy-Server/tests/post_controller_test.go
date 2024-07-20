@@ -26,7 +26,7 @@ func TestPostController(t *testing.T) {
 			Text:     "Shiny evening here at the farm",
 			Image:    avatar,
 			Tags:     []string{"animal feed", "farm inputs"},
-			Location: &model.GpsInput{Lng: 36.1289, Lat: -1.2743},
+			Location: &model.GpsInput{Lng: 34.6052624, Lat: -0.0013192},
 		})
 		assert.Nil(t, err)
 		assert.NotNil(t, p)
@@ -35,7 +35,7 @@ func TestPostController(t *testing.T) {
 
 	t.Run("get_localized_posters", func(t *testing.T) {
 		p, err := postC.GetLocalizedPosters(ctx, db.GetLocalizedPostersParams{
-			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1289, -1.2743),
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 34.6052624, -0.0013192),
 			Radius: 500,
 		})
 		assert.Nil(t, err)
