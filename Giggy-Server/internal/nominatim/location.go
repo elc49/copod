@@ -3,7 +3,6 @@ package nominatim
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -29,22 +28,23 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 	}
 	address := new(model.Address)
 	api := fmt.Sprintf("%s/reverse?format=jsonv2&lat=%f&lon=%f", nominatimApi, coords.Lat, coords.Lng)
-	res, err := http.Get(api)
+	req, err := http.NewRequest("GET", api, nil)
+	if err != nil {
+		log.WithError(err).Errorf("nominatim: new http request")
+		return nil, err
+	}
+	req.Header.Add("User-Agent", "giggy-api@v1.0")
+
+	c := &http.Client{}
+	res, err := c.Do(req)
 	if err != nil {
 		log.WithError(err).Errorf("nominatim: http.Get")
 		return nil, err
 	}
 	defer res.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.WithError(err).Errorf("nominatim: io.ReadAll(res.Body)")
-		return nil, err
-	}
-
-	log.Infoln(string(body))
-	if err := json.Unmarshal(body, &result); err != nil {
-		log.WithError(err).Errorf("nominatim: json.Unmarshal")
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		log.WithError(err).Errorf("nominatim: jwt.NewDecoder")
 		return nil, err
 	}
 
