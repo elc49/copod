@@ -30,14 +30,7 @@ func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Mark
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
-	args := db.CreatePostParams{
-		Text:     input.Text,
-		Image:    input.Image,
-		Tags:     input.Tags,
-		UserID:   userId,
-		Location: fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
-	}
-	return r.postController.CreatePost(ctx, args)
+	return r.postController.CreatePost(ctx, userId, input)
 }
 
 // CreateFarm is the resolver for the createFarm field.

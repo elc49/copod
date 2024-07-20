@@ -76,14 +76,15 @@ type Payment struct {
 }
 
 type Post struct {
-	ID        uuid.UUID   `json:"id"`
-	Text      string      `json:"text"`
-	Image     string      `json:"image"`
-	Tags      []string    `json:"tags"`
-	Location  interface{} `json:"location"`
-	UserID    uuid.UUID   `json:"user_id"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	ID            uuid.UUID   `json:"id"`
+	Text          string      `json:"text"`
+	Image         string      `json:"image"`
+	Tags          []string    `json:"tags"`
+	AddressString string      `json:"address_string"`
+	Location      interface{} `json:"location"`
+	UserID        uuid.UUID   `json:"user_id"`
+	CreatedAt     time.Time   `json:"created_at"`
+	UpdatedAt     time.Time   `json:"updated_at"`
 }
 
 type User struct {
