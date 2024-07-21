@@ -31,7 +31,7 @@ object PhoneNumberUtility {
 
     fun formatPhone(phone: PhoneNumber): String {
         return try {
-            phoneUtil.format(phone, PhoneNumberFormat.INTERNATIONAL)
+            phoneUtil.format(phone, PhoneNumberFormat.E164)
         } catch(e: Exception) {
             e.printStackTrace()
             "+"+phone.countryCode.toString()+phone.nationalNumber.toString()
