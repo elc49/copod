@@ -148,6 +148,7 @@ internal fun MarketCard(
                 price = data.pricePerUnit,
                 onDismissRequest = { onCloseBottomSheet() },
                 sheetState = sheetState,
+                volume = data.volume,
                 order = orders[data.id.toString()],
                 increaseOrderVolume = { increaseOrderVolume(data.id.toString()) },
                 decreaseOrderVolume = { decreaseOrderVolume(data.id.toString()) },
@@ -167,6 +168,7 @@ private fun CounterAction(
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
     order: Order?,
+    volume: Int,
     increaseOrderVolume: () -> Unit,
     decreaseOrderVolume: () -> Unit,
     price: Int,
@@ -186,7 +188,7 @@ private fun CounterAction(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             OutlinedIconButton(
-                onClick = { increaseOrderVolume() },
+                onClick = { if (order?.volume!! < volume) increaseOrderVolume() },
                 shape = MaterialTheme.shapes.small,
             ) {
                 Icon(
