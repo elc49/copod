@@ -222,13 +222,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         ) {
             Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                    Text(
-                        stringResource(id = R.string.farm_store),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }, navigationIcon = {
+                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {}, navigationIcon = {
                     IconButton(onClick = {
                         navHostController.popBackStack()
                     }) {
