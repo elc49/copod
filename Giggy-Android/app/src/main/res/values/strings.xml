@@ -32,8 +32,8 @@
     <string name="farm_name">Farm name</string>
     <string name="your_farms">Your farms</string>
     <string name="add_farm_image">Add farm image</string>
-    <string name="volume_support_text">How much can you stock this? This can\'t be changed and be sure it\'s what you can deliver to clients</string>
-    <string name="volume">Volume</string>
+    <string name="volume_support_text">this is the total of the available unit(kg/grams/tray etc)</string>
+    <string name="volume">Available volume</string>
     <string name="price_support_text">Sell per unit. This won\'t change</string>
     <string name="price_label">Price per unit</string>
     <string name="unit_support_text">1 or 2 or pair or kg or grams or trays etc</string>
