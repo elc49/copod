@@ -42,6 +42,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
+import com.lomolo.giggy.model.DeviceDetails
 
 object MarketCartScreenDestination : Navigation {
     override val title = R.string.your_cart
@@ -83,7 +84,7 @@ fun RowScope.TableCell(
 fun MarketCartScreen(
     modifier: Modifier = Modifier,
     onCloseDialog: () -> Unit,
-    currencyLocale: String,
+    deviceDetails: DeviceDetails,
     viewModel: MarketCartViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val cartItems by viewModel.cartContent.collectAsState()
@@ -170,8 +171,9 @@ fun MarketCartScreen(
                                 )
                                 TableCell(
                                     currencyText(
-                                        currency = currencyLocale,
-                                        amount = item.volume.times(item.market.pricePerUnit)
+                                        currency = deviceDetails.currency,
+                                        amount = item.volume.times(item.market.pricePerUnit),
+                                        language = deviceDetails.languages,
                                     ), .25f
                                 )
                                 when (viewModel.deleteCartItemState) {
@@ -208,7 +210,7 @@ fun MarketCartScreen(
                                         SendOrderToFarm(
                                             it.id.toString(),
                                             it.volume,
-                                            currencyLocale,
+                                            deviceDetails.currency,
                                             it.market_id.toString(),
                                             it.farm_id.toString(),
                                             it.volume.times(it.market.pricePerUnit),
@@ -223,8 +225,9 @@ fun MarketCartScreen(
                                     SendToFarmState.Success -> Text(
                                         "Send to farm [${
                                             currencyText(
-                                                currency = currencyLocale,
-                                                amount = item.volume.times(item.market.pricePerUnit)
+                                                currency = deviceDetails.currency,
+                                                amount = item.volume.times(item.market.pricePerUnit),
+                                                language = deviceDetails.languages,
                                             )
                                         }]",
                                         style = MaterialTheme.typography.titleMedium,
@@ -237,8 +240,9 @@ fun MarketCartScreen(
                                     ) else Text(
                                         "Send to farm [${
                                             currencyText(
-                                                currency = currencyLocale,
-                                                amount = item.volume.times(item.market.pricePerUnit)
+                                                currency = deviceDetails.currency,
+                                                amount = item.volume.times(item.market.pricePerUnit),
+                                                language = deviceDetails.languages,
                                             )
                                         }]",
                                         style = MaterialTheme.typography.titleMedium,

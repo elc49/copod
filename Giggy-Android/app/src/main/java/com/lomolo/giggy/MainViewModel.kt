@@ -36,6 +36,7 @@ class MainViewModel(
                         ipGps = res.ipGps,
                         posterRightsFee = res.posterRightsFee,
                         farmingRightsFee = res.farmingRightsFee,
+                        languages = res.languages.split(",")[0],
                     )
                 }
                 settingDeviceDetailsState = SettingDeviceDetails.Success

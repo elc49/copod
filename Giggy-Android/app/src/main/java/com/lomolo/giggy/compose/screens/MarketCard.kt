@@ -57,6 +57,7 @@ internal fun MarketCard(
     modifier: Modifier = Modifier,
     data: GetLocalizedMarketsQuery.GetLocalizedMarket,
     currencyLocale: String,
+    language: String,
     addOrder: () -> Unit,
     removeOrder: () -> Unit,
     orders: Map<String, Order>,
@@ -130,7 +131,9 @@ internal fun MarketCard(
                 ) {
                     Text(
                         "${
-                            currencyText(currency = currencyLocale, amount = data.pricePerUnit)
+                            currencyText(
+                                currency = currencyLocale, amount = data.pricePerUnit, language
+                            )
                         } / ${data.unit}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -150,6 +153,7 @@ internal fun MarketCard(
                 decreaseOrderVolume = { decreaseOrderVolume(data.id.toString()) },
                 addToCart = { order: Order -> addToCart(order) { onCloseBottomSheet() } },
                 addingToCart = addingToCart,
+                language = language,
             )
         }
     }
@@ -167,6 +171,7 @@ private fun CounterAction(
     decreaseOrderVolume: () -> Unit,
     price: Int,
     currency: String,
+    language: String,
     addToCart: (Order) -> Unit,
     addingToCart: AddingToCartState,
 ) {
@@ -229,8 +234,9 @@ private fun CounterAction(
                             Text(
                                 "Add to Cart[${
                                     currencyText(
-                                        currency = currency,
-                                        amount = price.times(order?.volume ?: 0)
+                                        currency = currency, amount = price.times(
+                                            order?.volume ?: 0
+                                        ), language = language
                                     )
                                 }]",
                                 style = MaterialTheme.typography.titleMedium,

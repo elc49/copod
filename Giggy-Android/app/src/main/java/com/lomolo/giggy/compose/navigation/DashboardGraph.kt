@@ -471,13 +471,14 @@ fun NavGraphBuilder.addDashboardGraph(
             route = MarketCartScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            MarketCartScreen(currencyLocale = deviceDetails.currency, onCloseDialog = {
+            MarketCartScreen(deviceDetails = deviceDetails, onCloseDialog = {
                 navHostController.popBackStack()
             })
         }
         composable(route = UserOrdersScreenDestination.route) {
             UserOrdersScreen(
                 modifier = modifier,
+                deviceDetails = deviceDetails,
                 onNavigateBack = { navHostController.popBackStack() },
             )
         }

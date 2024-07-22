@@ -91,7 +91,7 @@ fun PosterSubscriptionScreen(
             ) {
                 Text(
                     currencyText(
-                        currency = deviceDetails.currency, amount = deviceDetails.posterRightsFee
+                        currency = deviceDetails.currency, amount = deviceDetails.posterRightsFee, deviceDetails.languages
                     ),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,

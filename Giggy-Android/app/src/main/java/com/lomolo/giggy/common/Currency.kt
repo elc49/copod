@@ -10,8 +10,10 @@ import java.util.Locale
 fun currencyText(
     currency: String,
     amount: Int,
+    language: String,
 ): String {
-    val numberFormat = NumberFormat.getCurrencyInstance(Locale("en", "KE"))
+    val languageCode = language.split("-")
+    val numberFormat = NumberFormat.getCurrencyInstance(Locale(languageCode[0], languageCode[1]))
     numberFormat.maximumFractionDigits = 2
     numberFormat.currency = java.util.Currency.getInstance(currency)
 
