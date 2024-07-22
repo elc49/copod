@@ -201,7 +201,8 @@ fun FarmMarketScreen(
                                     TableCell(
                                         currencyText(
                                             currency = deviceDetails.currency,
-                                            amount = it.pricePerUnit
+                                            amount = it.pricePerUnit,
+                                            language = deviceDetails.languages
                                         ), .3f
                                     )
                                 }
@@ -294,7 +295,7 @@ fun FarmMarketScreen(
                                     )
                                     TableCell(
                                         currencyText(
-                                            currency = it.currency, amount = it.toBePaid
+                                            currency = it.currency, amount = it.toBePaid, language = deviceDetails.languages
                                         ), .25f
                                     )
                                     TableCell(text = it.status.toString(), weight = .25f)

@@ -197,6 +197,7 @@ fun MarketScreen(
                                     ) { cb() }
                                 },
                                 addingToCart = viewModel.addingToCart,
+                                language = deviceDetails.languages,
                             )
                         }
                     }

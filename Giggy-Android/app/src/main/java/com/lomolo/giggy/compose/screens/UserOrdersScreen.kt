@@ -37,6 +37,7 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
+import com.lomolo.giggy.model.DeviceDetails
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
@@ -49,6 +50,7 @@ object UserOrdersScreenDestination : Navigation {
 fun UserOrdersScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
+    deviceDetails: DeviceDetails,
     viewModel: UserOrdersViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
 ) {
     val orders by viewModel.userOrders.collectAsState()
@@ -115,7 +117,7 @@ fun UserOrdersScreen(
                                 TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
                                 TableCell(
                                     text = currencyText(
-                                        currency = item.currency, amount = item.toBePaid
+                                        currency = item.currency, amount = item.toBePaid, language = deviceDetails.languages
                                     ), weight = .2f
                                 )
                                 TableCell(text = item.status.toString(), weight = .2f)
