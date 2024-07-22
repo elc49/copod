@@ -63,7 +63,7 @@ fun MarketScreen(
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(
-                    stringResource(R.string.available_markets),
+                    stringResource(R.string.open_markets),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
