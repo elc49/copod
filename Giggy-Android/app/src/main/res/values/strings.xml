@@ -50,10 +50,10 @@
     <string name="no_items">No items</string>
     <string name="your_orders">Your orders</string>
     <string name="complete_from_m_pesa">Complete from M-pesa</string>
-    <string name="confirming_payment">Confirming payment...</string>
+    <string name="confirming_payment">Confirming payment…</string>
     <string name="account_details">Account details</string>
     <string name="sign_out">Sign out</string>
-    <string name="available_markets">Available markets</string>
+    <string name="open_markets">Open markets</string>
     <string name="retry">Retry</string>
     <string name="product">Product</string>
     <string name="in_stock">In-Stock</string>
