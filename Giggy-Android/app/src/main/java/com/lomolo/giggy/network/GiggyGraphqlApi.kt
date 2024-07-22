@@ -61,7 +61,7 @@ interface IGiggyGraphqlApi {
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
-    suspend fun getUserOrdersCount(): ApolloResponse<GetUserOrdersCountQuery.Data>
+    suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
 }
 
@@ -181,8 +181,7 @@ class GiggyGraphqlApi(
     override suspend fun getUserOrdersCount() = apolloClient
 
         .query(GetUserOrdersCountQuery())
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+        .watch()
 
     override suspend fun updateOrderStatus(input: UpdateOrderStatus) = apolloClient
         .mutation(UpdateOrderStatusMutation(
