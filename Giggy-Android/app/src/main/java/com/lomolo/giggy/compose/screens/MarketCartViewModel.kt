@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
+import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.giggy.GetUserCartItemsQuery
+import com.lomolo.giggy.GetUserOrdersCountQuery
 import com.lomolo.giggy.repository.IMarkets
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -77,7 +79,15 @@ class MarketCartViewModel(
                                 GetUserCartItemsQuery(),
                                 GetUserCartItemsQuery.Data(updatedCacheData)
                             )
-                        } catch(e: IOException) {
+                            val updatedOrderCacheData = apolloStore.readOperation(
+                                GetUserOrdersCountQuery()
+                            ).getUserOrdersCount
+                            updatedOrderCacheData.plus(1)
+                            apolloStore.writeOperation(
+                                GetUserOrdersCountQuery(),
+                                GetUserOrdersCountQuery.Data(updatedOrderCacheData)
+                            )
+                        } catch(e: ApolloException) {
                             e.printStackTrace()
                         }
                     }

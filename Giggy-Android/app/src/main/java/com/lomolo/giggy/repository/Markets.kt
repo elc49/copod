@@ -21,7 +21,7 @@ interface IMarkets {
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
     suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
-    suspend fun getUserOrdersCount(): ApolloResponse<GetUserOrdersCountQuery.Data>
+    suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
 }
 
 class MarketsRepository(

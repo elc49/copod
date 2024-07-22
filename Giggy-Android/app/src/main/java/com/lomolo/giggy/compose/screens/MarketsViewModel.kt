@@ -210,12 +210,12 @@ class MarketsViewModel(
 
     private fun getUserOrdersCount() {
         viewModelScope.launch {
-            ordersCount = try {
-                val res = marketsRepository.getUserOrdersCount().dataOrThrow()
-                res.getUserOrdersCount
+            try {
+                marketsRepository.getUserOrdersCount().collect {
+                    ordersCount = it.data?.getUserOrdersCount ?: 0
+                }
             } catch (e: ApolloException) {
                 e.printStackTrace()
-                0
             }
         }
     }
