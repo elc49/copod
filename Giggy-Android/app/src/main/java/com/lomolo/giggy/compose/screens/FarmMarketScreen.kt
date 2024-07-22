@@ -1,9 +1,5 @@
 package com.lomolo.giggy.compose.screens
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -53,11 +49,11 @@ import com.lomolo.giggy.GetFarmByIdQuery
 import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
+import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.type.OrderStatus
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 object FarmMarketScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -203,10 +199,10 @@ fun FarmMarketScreen(
                                         "${it.volume}", .3f
                                     )
                                     TableCell(
-                                        NumberFormatter.with().notation(Notation.simple())
-                                            .unit(Currency.getInstance(deviceDetails.currency))
-                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(it.pricePerUnit).toString(), .3f
+                                        currencyText(
+                                            currency = deviceDetails.currency,
+                                            amount = it.pricePerUnit
+                                        ), .3f
                                     )
                                 }
                             }
@@ -297,12 +293,9 @@ fun FarmMarketScreen(
                                         "${it.volume} ${it.market.unit}", .25f
                                     )
                                     TableCell(
-                                        "${
-                                            NumberFormatter.with().notation(Notation.simple())
-                                                .unit(Currency.getInstance(it.currency))
-                                                .precision(Precision.maxFraction(2))
-                                                .locale(Locale.US).format(it.toBePaid)
-                                        }", .25f
+                                        currencyText(
+                                            currency = it.currency, amount = it.toBePaid
+                                        ), .25f
                                     )
                                     TableCell(text = it.status.toString(), weight = .25f)
                                 }
@@ -312,7 +305,9 @@ fun FarmMarketScreen(
                                         onDismiss = { onCloseBottomSheet() },
                                         order = it,
                                         updateOrderStatus = { id: String, status: OrderStatus ->
-                                            viewModel.updateOrderStatus(id, status) { onCloseBottomSheet() }
+                                            viewModel.updateOrderStatus(
+                                                id, status
+                                            ) { onCloseBottomSheet() }
                                         },
                                         updatingOrderState = viewModel.updatingOrderState,
                                     )

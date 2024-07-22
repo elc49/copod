@@ -1,9 +1,5 @@
 package com.lomolo.giggy.compose.screens
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -51,8 +47,8 @@ import coil.request.ImageRequest
 import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.GetLocalizedMarketsQuery
 import com.lomolo.giggy.R
+import com.lomolo.giggy.common.currencyText
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.R)
@@ -72,7 +68,8 @@ internal fun MarketCard(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    val onOpenCounter = { if (data.canOrder || BuildConfig.ENV == "development") showBottomSheet = true }
+    val onOpenCounter =
+        { if (data.canOrder || BuildConfig.ENV == "development") showBottomSheet = true }
     val onCloseBottomSheet = {
         scope.launch {
             sheetState.hide()
@@ -133,10 +130,7 @@ internal fun MarketCard(
                 ) {
                     Text(
                         "${
-                            NumberFormatter.with().notation(Notation.simple())
-                                .unit(Currency.getInstance(currencyLocale))
-                                .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                .format(data.pricePerUnit)
+                            currencyText(currency = currencyLocale, amount = data.pricePerUnit)
                         } / ${data.unit}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -226,7 +220,7 @@ private fun CounterAction(
                 contentPadding = PaddingValues(14.dp),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 32.dp),
                 shape = MaterialTheme.shapes.extraSmall,
             ) {
                 when (addingToCart) {
@@ -234,10 +228,10 @@ private fun CounterAction(
                         if (order?.volume != 0) {
                             Text(
                                 "Add to Cart[${
-                                    NumberFormatter.with().notation(Notation.simple())
-                                        .unit(Currency.getInstance(currency))
-                                        .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                        .format(price.times(order?.volume ?: 0))
+                                    currencyText(
+                                        currency = currency,
+                                        amount = price.times(order?.volume ?: 0)
+                                    )
                                 }]",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,

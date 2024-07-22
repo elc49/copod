@@ -12,4 +12,5 @@ type Ipinfo struct {
 	CountryFlagURL     string `json:"country_flag_url"`
 	Currency           string `json:"currency"`
 	CurrencyName       string `json:"currency_name"`
+	Languages          string `json:"languages"`
 }

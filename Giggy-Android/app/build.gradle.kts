@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.lomolo.giggy"
-        minSdk = 21
+        minSdk = 28
         targetSdk = 34
         versionCode = 6
         versionName = "1.0.4"
@@ -44,7 +44,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

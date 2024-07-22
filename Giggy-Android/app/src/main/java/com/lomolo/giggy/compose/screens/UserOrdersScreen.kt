@@ -1,9 +1,5 @@
 package com.lomolo.giggy.compose.screens
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
+import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
-import java.util.Locale
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
@@ -58,17 +54,17 @@ fun UserOrdersScreen(
     val orders by viewModel.userOrders.collectAsState()
     val barScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection), topBar = {
-        LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-            Text(stringResource(UserOrdersScreenDestination.title))
-        }, navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null)
-            }
-        }, scrollBehavior = barScrollBehavior)
-    }) { innerPadding ->
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.nestedScroll(barScrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+                Text(stringResource(UserOrdersScreenDestination.title))
+            }, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null)
+                }
+            }, scrollBehavior = barScrollBehavior)
+        }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -118,12 +114,9 @@ fun UserOrdersScreen(
                                 TableCell(text = item.market.name, weight = .2f)
                                 TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
                                 TableCell(
-                                    text = "${
-                                        NumberFormatter.with().notation(Notation.simple())
-                                            .unit(Currency.getInstance(item.currency))
-                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(item.volume.times(item.toBePaid))
-                                    }", weight = .2f
+                                    text = currencyText(
+                                        currency = item.currency, amount = item.toBePaid
+                                    ), weight = .2f
                                 )
                                 TableCell(text = item.status.toString(), weight = .2f)
                             }

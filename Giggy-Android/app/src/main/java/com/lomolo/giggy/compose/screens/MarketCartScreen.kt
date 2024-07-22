@@ -1,9 +1,5 @@
 package com.lomolo.giggy.compose.screens
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.util.Currency
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -44,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
+import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
-import java.util.Locale
 
 object MarketCartScreenDestination : Navigation {
     override val title = R.string.your_cart
@@ -93,9 +89,7 @@ fun MarketCartScreen(
     val cartItems by viewModel.cartContent.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
         TopAppBar(title = {
             Text(
                 stringResource(id = MarketCartScreenDestination.title),
@@ -175,12 +169,10 @@ fun MarketCartScreen(
                                     "${item.volume} ${item.market.unit}", .25f
                                 )
                                 TableCell(
-                                    "${
-                                        NumberFormatter.with().notation(Notation.simple())
-                                            .unit(Currency.getInstance(currencyLocale))
-                                            .precision(Precision.maxFraction(2)).locale(Locale.US)
-                                            .format(item.volume.times(item.market.pricePerUnit))
-                                    }", .25f
+                                    currencyText(
+                                        currency = currencyLocale,
+                                        amount = item.volume.times(item.market.pricePerUnit)
+                                    ), .25f
                                 )
                                 when (viewModel.deleteCartItemState) {
                                     DeleteCartItemState.Success -> {
@@ -212,18 +204,16 @@ fun MarketCartScreen(
                             }
                             Button(
                                 onClick = {
-                                    viewModel.sendOrderToFarm(
-                                        key, value.map {
-                                            SendOrderToFarm(
-                                                it.id.toString(),
-                                                it.volume,
-                                                currencyLocale,
-                                                it.market_id.toString(),
-                                                it.farm_id.toString(),
-                                                it.volume.times(it.market.pricePerUnit),
-                                            )
-                                        }
-                                    )
+                                    viewModel.sendOrderToFarm(key, value.map {
+                                        SendOrderToFarm(
+                                            it.id.toString(),
+                                            it.volume,
+                                            currencyLocale,
+                                            it.market_id.toString(),
+                                            it.farm_id.toString(),
+                                            it.volume.times(it.market.pricePerUnit),
+                                        )
+                                    })
                                 },
                                 Modifier.fillMaxWidth(),
                                 shape = MaterialTheme.shapes.small,
@@ -232,11 +222,10 @@ fun MarketCartScreen(
                                 when (viewModel.sendToFarmState) {
                                     SendToFarmState.Success -> Text(
                                         "Send to farm [${
-                                            NumberFormatter.with().notation(Notation.simple())
-                                                .unit(Currency.getInstance(currencyLocale))
-                                                .precision(Precision.maxFraction(2))
-                                                .locale(Locale.US)
-                                                .format(item.volume.times(item.market.pricePerUnit))
+                                            currencyText(
+                                                currency = currencyLocale,
+                                                amount = item.volume.times(item.market.pricePerUnit)
+                                            )
                                         }]",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
@@ -247,11 +236,10 @@ fun MarketCartScreen(
                                         modifier = Modifier.size(20.dp)
                                     ) else Text(
                                         "Send to farm [${
-                                            NumberFormatter.with().notation(Notation.simple())
-                                                .unit(Currency.getInstance(currencyLocale))
-                                                .precision(Precision.maxFraction(2))
-                                                .locale(Locale.US)
-                                                .format(item.volume.times(item.market.pricePerUnit))
+                                            currencyText(
+                                                currency = currencyLocale,
+                                                amount = item.volume.times(item.market.pricePerUnit)
+                                            )
                                         }]",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,

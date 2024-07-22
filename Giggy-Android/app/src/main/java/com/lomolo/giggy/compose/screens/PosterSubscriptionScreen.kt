@@ -1,11 +1,5 @@
 package com.lomolo.giggy.compose.screens
 
-import android.icu.number.Notation
-import android.icu.number.NumberFormatter
-import android.icu.number.Precision
-import android.icu.util.Currency
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lomolo.giggy.R
+import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.model.DeviceDetails
-import java.util.Locale
 
 object PosterSubscriptionScreenDestination : Navigation {
     override val title = R.string.buy_poster_rights
@@ -46,7 +40,6 @@ private val points = listOf(
     R.string.advertise,
 )
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun PosterSubscriptionScreen(
     modifier: Modifier = Modifier,
@@ -97,10 +90,9 @@ fun PosterSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    NumberFormatter.with().notation(Notation.simple())
-                        .unit(Currency.getInstance(deviceDetails.currency))
-                        .precision(Precision.maxFraction(2)).locale(Locale.US).format(deviceDetails.posterRightsFee)
-                        .toString(),
+                    currencyText(
+                        currency = deviceDetails.currency, amount = deviceDetails.posterRightsFee
+                    ),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )
