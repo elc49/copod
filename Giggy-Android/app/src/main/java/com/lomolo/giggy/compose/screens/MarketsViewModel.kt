@@ -88,10 +88,10 @@ class MarketsViewModel(
         }
     }
 
-    fun increaseOrderVolume(marketId: String) {
+    fun increaseOrderVolume(marketId: String, existingVolume: Int) {
         _orderData.update {
             val m = it.toMutableMap()
-            m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
+            if (m[marketId]!!.volume < existingVolume) m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
             m.toImmutableMap()
         }
     }

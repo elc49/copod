@@ -183,7 +183,7 @@ fun MarketScreen(
                                 orders = orders,
                                 increaseOrderVolume = { marketId ->
                                     viewModel.increaseOrderVolume(
-                                        marketId
+                                        marketId, market.volume
                                     )
                                 },
                                 decreaseOrderVolume = { marketId ->
