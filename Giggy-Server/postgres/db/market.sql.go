@@ -87,7 +87,7 @@ func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
 SELECT id, product, image, price_per_unit, volume, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, $1::geography, $2)
+WHERE ST_DWithin(location, $1::geography, $2) AND volume > 0
 `
 
 type GetLocalizedMarketsParams struct {
