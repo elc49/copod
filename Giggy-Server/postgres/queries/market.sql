@@ -16,7 +16,7 @@ RETURNING *;
 
 -- name: GetLocalizedMarkets :many
 SELECT id, product, image, price_per_unit, volume, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius));
+WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND volume > 0;
 
 -- name: UpdateMarketVolume :one
 UPDATE markets SET volume = $1
