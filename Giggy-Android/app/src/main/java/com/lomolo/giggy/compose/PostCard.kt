@@ -1,7 +1,5 @@
 package com.lomolo.giggy.compose
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +40,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostCard(
@@ -177,7 +174,6 @@ fun PostCard(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TimeSince(date: String) {
     val formatter = DateTimeFormatter.ISO_DATE_TIME

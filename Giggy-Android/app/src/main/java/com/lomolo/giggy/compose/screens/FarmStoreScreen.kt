@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -333,106 +335,6 @@ fun FarmMarketScreen(
                     }
                 }
             }
-
-            /*
-            2 -> LazyColumn(
-                Modifier.padding(8.dp)
-            ) {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Text(
-                            "Customer",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Paid",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            "Status",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                when (payments) {
-                    is GetFarmPaymentsState.Success -> {
-                        if (payments.success != null) {
-                            item {
-                                if (payments.success.isEmpty()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            "No payments",
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
-                                    }
-                                }
-                            }
-                            items(payments.success) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        it.customer,
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1,
-                                        modifier = Modifier.width(100.dp),
-                                    )
-                                    Text(
-                                        "${it.amount}",
-                                        textAlign = TextAlign.Center,
-                                    )
-                                    SuggestionChip(
-                                        onClick = { /*TODO*/ },
-                                        colors = SuggestionChipDefaults.suggestionChipColors(
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            labelColor = MaterialTheme.colorScheme.background,
-                                        ),
-                                        label = {
-                                            Text(
-                                                it.status.toString(),
-                                                fontWeight = FontWeight.ExtraBold
-                                            )
-                                        },
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    is GetFarmPaymentsState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    "Something went wrong",
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                            }
-                        }
-                    }
-
-                }
-            }
-             */
         }
     }
 }
@@ -509,6 +411,65 @@ internal fun OrderActions(
 
                 is UpdateOrderState.Error -> ErrorComposable()
             }
+        }
+    }
+}
+
+@Composable
+private fun MarketCard(
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .height(120.dp),
+        shape = MaterialTheme.shapes.small,
+    ) {
+       Row(
+           Modifier.fillMaxSize()
+       ) {
+           Box(
+               Modifier.fillMaxSize().weight(1f),
+               contentAlignment = Alignment.Center,
+           ) {
+               Text("Image")
+           }
+           Box(
+               Modifier.fillMaxSize().weight(1f),
+               contentAlignment = Alignment.Center,
+           ) {
+               Box(
+                   Modifier.align(Alignment.TopEnd)
+               ) {
+                   Text("stock")
+               }
+               Text(
+                   "product details",
+                   textAlign = TextAlign.Center,
+               )
+           }
+       }
+    }
+}
+
+@Composable
+private fun OrderCard(
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.height(60.dp),
+        shape = MaterialTheme.shapes.small,
+    ) {
+        Row(
+            Modifier.fillMaxSize().padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Box {
+                Text("Image")
+            }
+            Text("Product")
+            Text("Call")
+            Text("State")
         }
     }
 }
