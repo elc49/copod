@@ -12,8 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.MoreVert
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +31,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -58,6 +67,7 @@ fun MarketScreen(
     val markets by viewModel.markets.collectAsState()
     val orders by viewModel.orders.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -71,31 +81,62 @@ fun MarketScreen(
                 if (markets.isNotEmpty()) {
                     when (viewModel.gettingCartItems) {
                         GettingCartItemsState.Success -> {
-                            IconButton(onClick = onNavigateToMarketCart) {
+                            IconButton(onClick = { expanded = true }) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.cart_outlined),
-                                    modifier = Modifier.size(32.dp),
-                                    contentDescription = null
+                                    Icons.TwoTone.MoreVert,
+                                    contentDescription = stringResource(R.string.menu),
                                 )
                             }
-                            // TODO show counter if cart content > 0
-                            Text(
-                                "[${cartItems.size}]",
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                            IconButton(onClick = onNavigateToUserOrders) {
-                                Icon(
-                                    painterResource(
-                                        id = R.drawable.product_box
-                                    ),
-                                    modifier = Modifier.size(32.dp),
-                                    contentDescription = null,
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.orders)) },
+                                    onClick = {
+                                        onNavigateToUserOrders()
+                                        expanded = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(id = R.drawable.product_box),
+                                            modifier = Modifier.size(20.dp),
+                                            contentDescription = stringResource(
+                                                id = R.string.product
+                                            )
+                                        )
+                                    },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.cart)) },
+                                    onClick = {
+                                        onNavigateToMarketCart()
+                                        expanded = false
+                                    },
+                                    leadingIcon = {
+                                        if (cartItems.isNotEmpty()) {
+                                            BadgedBox(badge = {
+                                                Badge()
+                                            }) {
+                                                Icon(
+                                                    painterResource(id = R.drawable.cart_outlined),
+                                                    modifier = Modifier.size(20.dp),
+                                                    contentDescription = stringResource(
+                                                        id = R.string.your_cart
+                                                    )
+                                                )
+                                            }
+                                        } else {
+                                            Icon(
+                                                painterResource(id = R.drawable.cart_outlined),
+                                                modifier = Modifier.size(20.dp),
+                                                contentDescription = stringResource(
+                                                    id = R.string.your_cart
+                                                )
+                                            )
+                                        }
+                                    },
                                 )
                             }
-                            Text(
-                                "[${viewModel.ordersCount}]",
-                                style = MaterialTheme.typography.titleLarge,
-                            )
                         }
 
                         is GettingCartItemsState.Error -> {
