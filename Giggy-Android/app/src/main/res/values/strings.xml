@@ -76,4 +76,7 @@
     <string name="call">call</string>
     <string name="tel">tel:</string>
     <string name="no_orders">No orders</string>
+    <string name="orders">Orders</string>
+    <string name="cart">Cart</string>
+    <string name="menu">menu</string>
 </resources>
