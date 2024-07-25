@@ -430,7 +430,7 @@ fun FarmMarketScreen(
                                         .padding(8.dp)
                                 ) {
                                     Text(
-                                        "No orders",
+                                        stringResource(R.string.no_orders),
                                         style = MaterialTheme.typography.titleMedium,
                                     )
                                 }
