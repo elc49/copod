@@ -249,9 +249,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmMarketScreen(
-                        deviceDetails = deviceDetails,
-                    )
+                    FarmMarketScreen()
                 }
             }
         }

@@ -1,8 +1,6 @@
 package com.lomolo.giggy.compose.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Call
+import androidx.compose.material.icons.twotone.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
@@ -48,12 +54,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.giggy.GetFarmByIdQuery
+import com.lomolo.giggy.GetFarmMarketsQuery
 import com.lomolo.giggy.GetFarmOrdersQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
-import com.lomolo.giggy.common.currencyText
 import com.lomolo.giggy.compose.navigation.Navigation
-import com.lomolo.giggy.model.DeviceDetails
 import com.lomolo.giggy.type.OrderStatus
 import kotlinx.coroutines.launch
 
@@ -65,7 +70,7 @@ object FarmMarketScreenDestination : Navigation {
 }
 
 @Composable
-internal fun FarmHeader(
+private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
 ) {
     Row(
@@ -93,255 +98,9 @@ internal fun FarmHeader(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.R)
-@ExperimentalMaterial3Api
-@Composable
-fun FarmMarketScreen(
-    modifier: Modifier = Modifier,
-    deviceDetails: DeviceDetails,
-    viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-) {
-    val titles = listOf("Market", "Orders"/*, "Payments"*/)
-    var state by remember {
-        mutableIntStateOf(0)
-    }
-    val farm = viewModel.gettingFarmState
-    val markets = viewModel.gettingFarmMarketsState
-    val orders = viewModel.gettingFarmOrdersState
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    val scope = rememberCoroutineScope()
-    val openOrderCounter = { showBottomSheet = true }
-    val onCloseBottomSheet = {
-        scope.launch {
-            sheetState.hide()
-        }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
-                showBottomSheet = false
-            }
-        }
-    }
-
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        when (farm) {
-            is GetFarmState.Success -> FarmHeader(
-                farm = farm.success
-            )
-
-            GetFarmState.Loading -> Row(
-                Modifier
-                    .height(68.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                CircularProgressIndicator(
-                    Modifier.size(20.dp)
-                )
-            }
-        }
-        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
-            titles.forEachIndexed { index, title ->
-                Tab(
-                    selected = state == index,
-                    onClick = { state = index },
-                    modifier = Modifier.fillMaxWidth(),
-                    text = {
-                        Text(
-                            title,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    },
-                )
-            }
-        }
-        when (state) {
-            0 -> LazyColumn(
-                Modifier.padding(8.dp)
-            ) {
-                item {
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        TableHeader(
-                            stringResource(R.string.product), .3f
-                        )
-                        TableHeader(
-                            stringResource(R.string.in_stock), .3f
-                        )
-                        TableHeader(
-                            stringResource(R.string.price), .3f
-                        )
-                    }
-                }
-                when (markets) {
-                    is GetFarmMarketsState.Success -> {
-                        if (markets.success != null) {
-                            items(markets.success) {
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    TableCell(
-                                        it.name, .3f
-                                    )
-                                    TableCell(
-                                        "${it.volume}", .3f
-                                    )
-                                    TableCell(
-                                        currencyText(
-                                            currency = deviceDetails.currency,
-                                            amount = it.pricePerUnit,
-                                            language = deviceDetails.languages
-                                        ), .3f
-                                    )
-                                }
-                            }
-                            item {
-                                if (markets.success.isEmpty()) {
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.no_harvest),
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    is GetFarmMarketsState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            1 -> LazyColumn(
-                Modifier.padding(8.dp)
-            ) {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        TableHeader(
-                            stringResource(id = R.string.product), .25f
-                        )
-                        TableHeader(
-                            stringResource(id = R.string.volume), .25f
-                        )
-                        TableHeader(
-                            stringResource(R.string.cost), .25f
-                        )
-                        TableHeader(text = "", weight = .25f)
-                    }
-                }
-                when (orders) {
-                    is GetFarmOrdersState.Success -> {
-                        if (orders.success != null) {
-                            item {
-                                if (orders.success.isEmpty()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp)
-                                    ) {
-                                        Text(
-                                            "No orders",
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
-                                    }
-                                }
-                            }
-                            items(orders.success) {
-                                Row(verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                        .clickable { openOrderCounter() }) {
-                                    TableCell(text = it.market.name, weight = .25f)
-                                    TableCell(
-                                        "${it.volume} ${it.market.unit}", .25f
-                                    )
-                                    TableCell(
-                                        currencyText(
-                                            currency = it.currency, amount = it.toBePaid, language = deviceDetails.languages
-                                        ), .25f
-                                    )
-                                    TableCell(text = it.status.toString(), weight = .25f)
-                                }
-                                if (showBottomSheet) {
-                                    OrderActions(
-                                        sheetState = sheetState,
-                                        onDismiss = { onCloseBottomSheet() },
-                                        order = it,
-                                        updateOrderStatus = { id: String, status: OrderStatus ->
-                                            viewModel.updateOrderStatus(
-                                                id, status
-                                            ) { onCloseBottomSheet() }
-                                        },
-                                        updatingOrderState = viewModel.updatingOrderState,
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    is GetFarmOrdersState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun OrderActions(
+private fun OrderActions(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismiss: () -> Unit,
@@ -418,58 +177,289 @@ internal fun OrderActions(
 @Composable
 private fun MarketCard(
     modifier: Modifier = Modifier,
+    market: GetFarmMarketsQuery.GetFarmMarket,
 ) {
     Card(
-        modifier = modifier
-            .height(120.dp),
+        modifier = modifier.height(120.dp),
         shape = MaterialTheme.shapes.small,
     ) {
-       Row(
-           Modifier.fillMaxSize()
-       ) {
-           Box(
-               Modifier.fillMaxSize().weight(1f),
-               contentAlignment = Alignment.Center,
-           ) {
-               Text("Image")
-           }
-           Box(
-               Modifier.fillMaxSize().weight(1f),
-               contentAlignment = Alignment.Center,
-           ) {
-               Box(
-                   Modifier.align(Alignment.TopEnd)
-               ) {
-                   Text("stock")
-               }
-               Text(
-                   "product details",
-                   textAlign = TextAlign.Center,
-               )
-           }
-       }
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(market.image)
+                    .crossfade(true).build(),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.clip(MaterialTheme.shapes.small),
+                contentDescription = stringResource(
+                    id = R.string.product
+                )
+            )
+            if (market.volume > 0) {
+                Box(
+                    Modifier
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small
+                        )
+                        .align(Alignment.TopEnd)
+                ) {
+                    Text(
+                        "In-stock",
+                        modifier = Modifier.padding(2.dp),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            }
+            Box(
+                Modifier.background(
+                    MaterialTheme.colorScheme.background, MaterialTheme.shapes.small
+                )
+            ) {
+                Text(
+                    market.name,
+                    modifier = Modifier.padding(2.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun OrderCard(
     modifier: Modifier = Modifier,
+    order: GetFarmOrdersQuery.GetFarmOrder,
+    index: Int,
+    openOrderCounter: () -> Unit,
 ) {
     Card(
         modifier = modifier.height(60.dp),
         shape = MaterialTheme.shapes.small,
     ) {
         Row(
-            Modifier.fillMaxSize().padding(8.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Box {
-                Text("Image")
+            Text(
+                "#${index.plus(1)}",
+                fontWeight = FontWeight.ExtraBold,
+            )
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
+                    .crossfade(true).build(),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(MaterialTheme.shapes.small),
+                contentScale = ContentScale.Crop,
+                contentDescription = stringResource(
+                    id = R.string.product
+                )
+            )
+            Text(
+                "${order.volume} ${order.market.unit}",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+            )
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    Icons.TwoTone.Call,
+                    contentDescription = "call",
+                )
             }
-            Text("Product")
-            Text("Call")
-            Text("State")
+            TextButton(onClick = openOrderCounter) {
+                Text(
+                    order.status.toString(),
+                    fontWeight = FontWeight.ExtraBold,
+                )
+                Icon(
+                    Icons.TwoTone.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.down_arrow),
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun FarmMarketScreen(
+    modifier: Modifier = Modifier,
+    viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+) {
+    val titles = listOf("Market", "Orders"/*, "Payments"*/)
+    var state by remember {
+        mutableIntStateOf(0)
+    }
+    val farm = viewModel.gettingFarmState
+    val markets = viewModel.gettingFarmMarketsState
+    val orders = viewModel.gettingFarmOrdersState
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+    val openOrderCounter = { showBottomSheet = true }
+    val onCloseBottomSheet = {
+        scope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                showBottomSheet = false
+            }
+        }
+    }
+
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        when (farm) {
+            is GetFarmState.Success -> FarmHeader(
+                farm = farm.success
+            )
+
+            GetFarmState.Loading -> Row(
+                Modifier
+                    .height(68.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator(
+                    Modifier.size(20.dp)
+                )
+            }
+        }
+        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
+            titles.forEachIndexed { index, title ->
+                Tab(
+                    selected = state == index,
+                    onClick = { state = index },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = {
+                        Text(
+                            title,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
+                )
+            }
+        }
+        when (state) {
+            0 -> LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (markets) {
+                    is GetFarmMarketsState.Success -> {
+                        if (markets.success != null) {
+                            items(markets.success) {
+                                MarketCard(market = it)
+                            }
+                            item {
+                                if (markets.success.isEmpty()) {
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.no_harvest),
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    is GetFarmMarketsState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            1 -> LazyColumn(
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (orders) {
+                    is GetFarmOrdersState.Success -> {
+                        if (orders.success != null) {
+                            item {
+                                if (orders.success.isEmpty()) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Text(
+                                            "No orders",
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                }
+                            }
+                            itemsIndexed(orders.success) { index, item ->
+                                OrderCard(order = item, index = index, openOrderCounter = openOrderCounter)
+                                if (showBottomSheet) {
+                                    OrderActions(
+                                        sheetState = sheetState,
+                                        onDismiss = { onCloseBottomSheet() },
+                                        order = item,
+                                        updateOrderStatus = { id: String, status: OrderStatus ->
+                                            viewModel.updateOrderStatus(
+                                                id, status
+                                            ) { onCloseBottomSheet() }
+                                        },
+                                        updatingOrderState = viewModel.updatingOrderState,
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    is GetFarmOrdersState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
