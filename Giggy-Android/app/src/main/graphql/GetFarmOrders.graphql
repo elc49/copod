@@ -7,6 +7,7 @@ query GetFarmOrders($id: UUID!) {
         market {
             id
             name
+            image
             unit
         }
         customer {
