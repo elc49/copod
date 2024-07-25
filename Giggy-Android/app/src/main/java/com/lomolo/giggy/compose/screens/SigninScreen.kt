@@ -127,8 +127,7 @@ fun SignInScreen(
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(14.dp),
-                shape = MaterialTheme.shapes.extraSmall,
+                contentPadding = PaddingValues(12.dp),
                 onClick = {
                     keyboardController?.hide()
                     if (viewModel.signInUiState !is SigninState.Loading && signinDetails.phone.isNotBlank()) {

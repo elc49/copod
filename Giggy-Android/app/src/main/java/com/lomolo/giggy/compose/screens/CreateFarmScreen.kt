@@ -168,14 +168,13 @@ fun CreateFarmScreen(
                     viewModel.discardFarmInput()
                 }
             },
-            shape = MaterialTheme.shapes.extraSmall,
-            contentPadding = PaddingValues(14.dp),
+            contentPadding = PaddingValues(12.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
            when(viewModel.createFarmState) {
                CreateFarmState.Success -> Text(
                    stringResource(R.string.create),
-                   style = MaterialTheme.typography.bodyMedium,
+                   style = MaterialTheme.typography.titleMedium,
                    fontWeight = FontWeight.Bold,
                )
                CreateFarmState.Loading -> CircularProgressIndicator(

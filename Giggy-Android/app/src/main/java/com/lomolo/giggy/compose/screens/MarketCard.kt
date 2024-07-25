@@ -222,11 +222,10 @@ private fun CounterAction(
                         addToCart(order)
                     }
                 },
-                contentPadding = PaddingValues(14.dp),
+                contentPadding = PaddingValues(12.dp),
                 modifier = Modifier
                     .weight(1f)
                     .padding(bottom = 32.dp),
-                shape = MaterialTheme.shapes.extraSmall,
             ) {
                 when (addingToCart) {
                     AddingToCartState.Success -> {

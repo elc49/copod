@@ -334,9 +334,8 @@ fun CreateFarmMarketScreen(
                                 showToast()
                             }
                         },
-                        shape = MaterialTheme.shapes.extraSmall,
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(14.dp),
+                        contentPadding = PaddingValues(12.dp),
                     ) {
                         when (viewModel.addingFarmMarketState) {
                             AddFarmMarketState.Success -> Text(

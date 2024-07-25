@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -256,7 +257,7 @@ fun CreatePostScreen(
                                 showToast()
                             }
                         },
-                        shape = MaterialTheme.shapes.extraSmall
+                        contentPadding = PaddingValues(12.dp),
                     ) {
                         when (viewModel.submittingPostState) {
                             SubmittingPost.Success -> Text(

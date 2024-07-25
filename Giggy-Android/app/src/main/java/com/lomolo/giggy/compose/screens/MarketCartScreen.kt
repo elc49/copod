@@ -218,8 +218,7 @@ fun MarketCartScreen(
                                     })
                                 },
                                 Modifier.fillMaxWidth(),
-                                shape = MaterialTheme.shapes.small,
-                                contentPadding = PaddingValues(14.dp),
+                                contentPadding = PaddingValues(12.dp),
                             ) {
                                 when (viewModel.sendToFarmState) {
                                     SendToFarmState.Success -> Text(
