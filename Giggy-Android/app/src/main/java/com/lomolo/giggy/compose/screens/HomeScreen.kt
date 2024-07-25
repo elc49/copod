@@ -44,7 +44,7 @@ fun HomeScreen(
             Text(
                 text = stringResource(R.string.we_farm),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.SemiBold,
             )
         }
@@ -66,9 +66,8 @@ fun HomeScreen(
         Row {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(12.dp),
                 onClick = { onNavigateTo(AuthDestination.route) },
-                shape = MaterialTheme.shapes.extraSmall
             ) {
                 Text(
                     text = "Get Started",
