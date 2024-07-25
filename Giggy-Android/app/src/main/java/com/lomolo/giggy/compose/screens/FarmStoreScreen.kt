@@ -1,5 +1,7 @@
 package com.lomolo.giggy.compose.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -236,6 +239,8 @@ private fun OrderCard(
     index: Int,
     openOrderCounter: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = modifier.height(60.dp),
         shape = MaterialTheme.shapes.small,
@@ -267,10 +272,18 @@ private fun OrderCard(
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                val u = Uri.parse(context.getString(R.string.tel) + order.customer.phone)
+                val intent = Intent(Intent.ACTION_DIAL, u)
+                try {
+                    context.startActivity(intent)
+                } catch(e: Exception) {
+                    e.printStackTrace()
+                }
+            }) {
                 Icon(
                     Icons.TwoTone.Call,
-                    contentDescription = "call",
+                    contentDescription = stringResource(R.string.call),
                 )
             }
             TextButton(onClick = openOrderCounter) {
@@ -297,9 +310,9 @@ fun FarmMarketScreen(
     var state by remember {
         mutableIntStateOf(0)
     }
-    val farm = viewModel.gettingFarmState
-    val markets = viewModel.gettingFarmMarketsState
-    val orders = viewModel.gettingFarmOrdersState
+    val farm by viewModel.farm.collectAsState()
+    val markets by viewModel.farmMarkets.collectAsState()
+    val orders by viewModel.farmOrders.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -319,9 +332,9 @@ fun FarmMarketScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        when (farm) {
-            is GetFarmState.Success -> FarmHeader(
-                farm = farm.success
+        when (viewModel.gettingFarmState) {
+            GetFarmState.Success -> FarmHeader(
+                farm = farm
             )
 
             GetFarmState.Loading -> Row(
@@ -361,26 +374,25 @@ fun FarmMarketScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                when (markets) {
-                    is GetFarmMarketsState.Success -> {
-                        if (markets.success != null) {
-                            items(markets.success) {
-                                MarketCard(market = it)
-                            }
+                when (viewModel.gettingFarmMarketsState) {
+                    GetFarmMarketsState.Success -> {
+                        if (markets.isEmpty()) {
                             item {
-                                if (markets.success.isEmpty()) {
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.no_harvest),
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
-                                    }
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                ) {
+                                    Text(
+                                        stringResource(R.string.no_harvest),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
                                 }
+                            }
+                        } else {
+                            items(markets) {
+                                MarketCard(market = it)
                             }
                         }
                     }
@@ -406,27 +418,28 @@ fun FarmMarketScreen(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                when (orders) {
-                    is GetFarmOrdersState.Success -> {
-                        if (orders.success != null) {
+                when (viewModel.gettingFarmOrdersState) {
+                    GetFarmOrdersState.Success -> {
+                        if (orders.isEmpty()) {
                             item {
-                                if (orders.success.isEmpty()) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp)
-                                    ) {
-                                        Text(
-                                            "No orders",
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
-                                    }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Text(
+                                        "No orders",
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
                                 }
                             }
-                            itemsIndexed(orders.success) { index, item ->
-                                OrderCard(order = item, index = index, openOrderCounter = openOrderCounter)
+                        } else {
+                            itemsIndexed(orders) { index, item ->
+                                OrderCard(
+                                    order = item, index = index, openOrderCounter = openOrderCounter
+                                )
                                 if (showBottomSheet) {
                                     OrderActions(
                                         sheetState = sheetState,

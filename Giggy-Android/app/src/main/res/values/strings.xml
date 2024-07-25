@@ -73,4 +73,6 @@
     <string name="add">add</string>
     <string name="market">market</string>
     <string name="down_arrow">down_arrow</string>
+    <string name="call">call</string>
+    <string name="tel">tel:</string>
 </resources>

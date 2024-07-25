@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.giggy.BuildConfig
 import com.lomolo.giggy.GetFarmsBelongingToUserQuery
 import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
@@ -82,21 +83,23 @@ fun FarmsScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }, actions = {
-                IconButton(onClick = {
-                    if (session.hasFarmingRights) {
-                        navHostController.navigate(CreateFarmScreenDestination.route) {
-                            launchSingleTop = true
+                if (!viewModel.hasFarm || BuildConfig.ENV == "development") {
+                    IconButton(onClick = {
+                        if (session.hasFarmingRights) {
+                            navHostController.navigate(CreateFarmScreenDestination.route) {
+                                launchSingleTop = true
+                            }
+                        } else {
+                            navHostController.navigate(FarmSubscriptionScreenDestination.route) {
+                                launchSingleTop = true
+                            }
                         }
-                    } else {
-                        navHostController.navigate(FarmSubscriptionScreenDestination.route) {
-                            launchSingleTop = true
-                        }
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Add,
+                            contentDescription = stringResource(R.string.add),
+                        )
                     }
-                }) {
-                    Icon(
-                        Icons.TwoTone.Add,
-                        contentDescription = stringResource(R.string.add),
-                    )
                 }
             })
         },
