@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/elc49/giggy-monorepo/Giggy-Server/graph/model"
 	"github.com/elc49/giggy-monorepo/Giggy-Server/logger"
@@ -15,15 +16,13 @@ const nominatimApi = "https://nominatim.openstreetmap.org"
 func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 	log := logger.GetLogger()
 	var result struct {
-		Name        string `json:"name"`
-		DisplayName string `json:"display_name"`
-		Lat         string `json:"lat"`
-		Lng         string `json:"lon"`
-		Address     struct {
-			Village string `json:"village,omitempty"`
-			County  string `json:"state,omitempty"`
-			Country string `json:"country,omitempty"`
-			Region  string `json:"region,omitempty"`
+		Lat     string `json:"lat"`
+		Lng     string `json:"lon"`
+		Address struct {
+			Town        string `json:"town"`
+			County      string `json:"county,omitempty"`
+			State       string `json:"state"`
+			CountryCode string `json:"country_code"`
 		} `json:"address"`
 	}
 	address := new(model.Address)
@@ -48,11 +47,7 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 		return nil, err
 	}
 
-	if result.Name == "" {
-		address.AddressString = result.DisplayName
-	} else {
-		address.AddressString = result.Name
-	}
+	address.AddressString = fmt.Sprintf("%s, %s, %s", result.Address.County, result.Address.State, strings.ToUpper(result.Address.CountryCode))
 
 	lat, err := strconv.ParseFloat(result.Lat, 64)
 	if err != nil {
