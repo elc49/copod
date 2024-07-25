@@ -19,9 +19,9 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 		Lat     string `json:"lat"`
 		Lng     string `json:"lon"`
 		Address struct {
-			Town        string `json:"town"`
-			County      string `json:"county,omitempty"`
 			State       string `json:"state"`
+			County      string `json:"county"`
+			City        string `json:"city"`
 			CountryCode string `json:"country_code"`
 		} `json:"address"`
 	}
@@ -47,7 +47,17 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 		return nil, err
 	}
 
-	address.AddressString = fmt.Sprintf("%s, %s, %s", result.Address.County, result.Address.State, strings.ToUpper(result.Address.CountryCode))
+	address.AddressString = ""
+	if result.Address.City != "" {
+		address.AddressString += fmt.Sprintf("%s, ", result.Address.City)
+	} else if result.Address.State != "" {
+		address.AddressString += fmt.Sprintf("%s, ", result.Address.State)
+	} else if result.Address.County != "" {
+		if result.Address.State == "" {
+			address.AddressString += fmt.Sprintf("%s, ", result.Address.County)
+		}
+	}
+	address.AddressString += fmt.Sprintf("%s", strings.ToUpper(result.Address.CountryCode))
 
 	lat, err := strconv.ParseFloat(result.Lat, 64)
 	if err != nil {
