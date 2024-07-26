@@ -174,7 +174,7 @@ fun CreateFarmScreen(
                     OutlinedIconButton(
                         onClick = {
                             selectImage()
-                        }, modifier = Modifier.size(120.dp)
+                        }, shape = MaterialTheme.shapes.extraSmall, modifier = Modifier.size(120.dp)
                     ) {
                         Icon(
                             painterResource(image),
@@ -191,7 +191,7 @@ fun CreateFarmScreen(
                         error = painterResource(id = R.drawable.ic_broken_image),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .clip(MaterialTheme.shapes.small)
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .size(120.dp)
                             .clickable {
                                 selectImage()

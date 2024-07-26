@@ -109,17 +109,17 @@ class AddFarmMarketViewModel(
                         val updatedCachedData = apolloStore.readOperation(
                             GetFarmMarketsQuery(_marketInput.value.storeId)
                         ).getFarmMarkets.toMutableList().apply {
-                                add(
-                                    GetFarmMarketsQuery.GetFarmMarket(
-                                        res.createFarmMarket.id,
-                                        res.createFarmMarket.name,
-                                        res.createFarmMarket.image,
-                                        res.createFarmMarket.farmId,
-                                        res.createFarmMarket.volume,
-                                        res.createFarmMarket.pricePerUnit,
-                                    )
+                            add(
+                                GetFarmMarketsQuery.GetFarmMarket(
+                                    res.createFarmMarket.id,
+                                    res.createFarmMarket.name,
+                                    res.createFarmMarket.image,
+                                    res.createFarmMarket.farmId,
+                                    res.createFarmMarket.volume,
+                                    res.createFarmMarket.pricePerUnit,
                                 )
-                            }.toImmutableList()
+                            )
+                        }.toImmutableList()
                         apolloStore.writeOperation(
                             GetFarmMarketsQuery(_marketInput.value.storeId),
                             GetFarmMarketsQuery.Data(updatedCachedData),
@@ -142,13 +142,13 @@ class AddFarmMarketViewModel(
         _marketInput.value = Market()
     }
 
-    val tags = Data.tags
+    val category = Data.category
 
     fun tagAlreadyExists(tag: String): Boolean {
         return _marketInput.value.tag == tag
     }
 
-    fun addMarketTag(tag: String) {
+    fun addMarketCategory(tag: String) {
         _marketInput.update {
             it.copy(tag = tag)
         }
@@ -156,7 +156,10 @@ class AddFarmMarketViewModel(
 
     init {
         _marketInput.update {
-            it.copy(storeId = farmMarketViewModel.getFarmId())
+            it.copy(
+                storeId = farmMarketViewModel.getFarmId(),
+                tag = category[0],
+            )
         }
     }
 }

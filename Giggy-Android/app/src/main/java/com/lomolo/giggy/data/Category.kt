@@ -1,7 +1,7 @@
 package com.lomolo.giggy.data
 
 object Data {
-    val tags = listOf(
+    val category = listOf(
         "livestock",
         "animal feeds",
         "poultry",

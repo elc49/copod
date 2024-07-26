@@ -32,13 +32,12 @@
     <string name="farm_name">Farm name</string>
     <string name="your_farms">Your farms</string>
     <string name="add_farm_image">Add farm image</string>
-    <string name="volume_support_text">this is the total of the available unit(kg/grams/tray etc)</string>
-    <string name="volume">Available volume</string>
-    <string name="price_support_text">Sell per unit. This won\'t change</string>
-    <string name="price_label">Price per unit</string>
-    <string name="unit_support_text">1 or 2 or pair or kg or grams or trays etc</string>
+    <string name="total_supply">Total supply</string>
+    <string name="price_support_text">per unit</string>
+    <string name="price_label">Price</string>
+    <string name="unit_support_text">1/pair/kg/grams/trays etc</string>
     <string name="unit">Unit</string>
-    <string name="image">Image</string>
+    <string name="product_image">Product image</string>
     <string name="market_name">Product name</string>
     <string name="add_market">Create market</string>
     <string name="market_for">You are creating a market for?</string>
@@ -80,4 +79,7 @@
     <string name="cart">Cart</string>
     <string name="menu">menu</string>
     <string name="upload">upload</string>
+    <string name="category">Category</string>
+    <string name="what_are_you_selling">What are you selling?</string>
+    <string name="check_mark">check_mark</string>
 </resources>
