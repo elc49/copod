@@ -131,7 +131,7 @@ class CreatePostViewModel(
         _postInput.value = Posting()
     }
 
-    val tags = Data.tags
+    val tags = Data.category
 }
 
 data class Posting(
