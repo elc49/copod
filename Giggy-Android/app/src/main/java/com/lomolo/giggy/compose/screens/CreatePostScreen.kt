@@ -88,17 +88,28 @@ fun CreatePostScreen(
             }
         }
     }
+    val selectImage = {
+        if (viewModel.postImageUploadState !is PostImageUploadState.Loading) {
+            scope.launch {
+                pickMedia.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
+        }
+    }
     val image = when (viewModel.postImageUploadState) {
         is PostImageUploadState.Loading -> {
             R.drawable.loading_img
         }
 
         is PostImageUploadState.Error -> {
-            R.drawable.ic_broken_image
+            R.drawable.error
         }
 
         else -> {
-            R.drawable.upload
+            R.drawable.camera
         }
     }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -210,15 +221,7 @@ fun CreatePostScreen(
                                         .size(48.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            if (viewModel.postImageUploadState !is PostImageUploadState.Loading) {
-                                                scope.launch {
-                                                    pickMedia.launch(
-                                                        PickVisualMediaRequest(
-                                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                        )
-                                                    )
-                                                }
-                                            }
+                                            selectImage()
                                         },
                                     contentDescription = null
                                 )
@@ -234,15 +237,7 @@ fun CreatePostScreen(
                                         .size(48.dp)
                                         .clip(CircleShape)
                                         .clickable {
-                                            if (viewModel.postImageUploadState !is PostImageUploadState.Loading) {
-                                                scope.launch {
-                                                    pickMedia.launch(
-                                                        PickVisualMediaRequest(
-                                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                        )
-                                                    )
-                                                }
-                                            }
+                                            selectImage()
                                         },
                                     contentDescription = null
                                 )

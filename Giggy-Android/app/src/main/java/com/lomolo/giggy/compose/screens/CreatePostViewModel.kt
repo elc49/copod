@@ -72,24 +72,26 @@ class CreatePostViewModel(
     }
 
     fun uploadImage(stream: InputStream) {
-        _postInput.update { it.copy(image = "") }
-        postImageUploadState = PostImageUploadState.Loading
-        val request = stream.readBytes().toRequestBody()
-        val filePart = MultipartBody.Part.createFormData(
-            "file",
-            "post_image_${System.currentTimeMillis()}.jpg",
-            request,
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val res = giggyRestApi.imageUpload(filePart)
-                _postInput.update {
-                    it.copy(image = res.imageUri)
+        if (postImageUploadState !is PostImageUploadState.Loading) {
+            _postInput.update { it.copy(image = "") }
+            postImageUploadState = PostImageUploadState.Loading
+            val request = stream.readBytes().toRequestBody()
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                "post_image_${System.currentTimeMillis()}.jpg",
+                request,
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val res = giggyRestApi.imageUpload(filePart)
+                    _postInput.update {
+                        it.copy(image = res.imageUri)
+                    }
+                    postImageUploadState = PostImageUploadState.Success
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    postImageUploadState = PostImageUploadState.Error(e.localizedMessage)
                 }
-                postImageUploadState = PostImageUploadState.Success
-            } catch(e: IOException) {
-                e.printStackTrace()
-                postImageUploadState = PostImageUploadState.Error(e.localizedMessage)
             }
         }
     }

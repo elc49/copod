@@ -95,24 +95,26 @@ class CreateFarmViewModel(
     }
 
     fun uploadImage(stream: InputStream) {
-        _farmInput.update { it.copy(image = "") }
-        farmImageUploadState = FarmImageUploadState.Loading
-        val request = stream.readBytes().toRequestBody()
-        val file = MultipartBody.Part.createFormData(
-            "file",
-            "farm_image_${System.currentTimeMillis()}.jpg",
-            request,
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            farmImageUploadState = try {
-                val res = giggyRestApi.imageUpload(file)
-                _farmInput.update {
-                    it.copy(image = res.imageUri)
+        if (farmImageUploadState !is FarmImageUploadState.Loading) {
+            _farmInput.update { it.copy(image = "") }
+            farmImageUploadState = FarmImageUploadState.Loading
+            val request = stream.readBytes().toRequestBody()
+            val file = MultipartBody.Part.createFormData(
+                "file",
+                "farm_image_${System.currentTimeMillis()}.jpg",
+                request,
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                farmImageUploadState = try {
+                    val res = giggyRestApi.imageUpload(file)
+                    _farmInput.update {
+                        it.copy(image = res.imageUri)
+                    }
+                    FarmImageUploadState.Success
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    FarmImageUploadState.Error(e.localizedMessage)
                 }
-                FarmImageUploadState.Success
-            } catch(e: IOException) {
-                e.printStackTrace()
-                FarmImageUploadState.Error(e.localizedMessage)
             }
         }
     }

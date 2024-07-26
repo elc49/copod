@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Add
-import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -221,29 +220,34 @@ fun NavGraphBuilder.addDashboardGraph(
                 type = NavType.StringType
             })
         ) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {}, navigationIcon = {
-                    IconButton(onClick = {
-                        navHostController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
-                    }
-                }, actions = {
-                    IconButton(onClick = {
-                        navHostController.navigate(
-                            CreateFarmMarketDestination.route
-                        )
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Add,
-                            contentDescription = stringResource(id = R.string.go_back)
-                        )
-                    }
-                })
-            }) {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                topBar = {
+                    TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
+                        title = {},
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                navHostController.popBackStack()
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                                    contentDescription = stringResource(id = R.string.go_back),
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                navHostController.navigate(
+                                    CreateFarmMarketDestination.route
+                                )
+                            }) {
+                                Icon(
+                                    Icons.TwoTone.Add,
+                                    contentDescription = stringResource(id = R.string.go_back)
+                                )
+                            }
+                        })
+                }) {
                 Surface(
                     modifier = modifier
                         .fillMaxSize()
@@ -295,44 +299,16 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Scaffold(
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                topBar = {
-                TopAppBar(title = {
-                    Text(
-                        stringResource(id = CreateFarmScreenDestination.title),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = {
-                        navHostController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Close,
-                            modifier = Modifier.size(28.dp),
-                            contentDescription = stringResource(R.string.close),
+            CreateFarmScreen(
+                onNavigateBack = {
+                    navHostController.popBackStack()
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            "Farm created.", withDismissAction = true
                         )
                     }
-                })
-            }) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    CreateFarmScreen(
-                        onNavigateBack = {
-                            navHostController.popBackStack()
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    "Farm created.", withDismissAction = true
-                                )
-                            }
-                        },
-                    )
-                }
-            }
+                },
+            )
         }
         dialog(
             route = CreateFarmMarketDestination.route,
@@ -347,9 +323,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
-            Scaffold(
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = PosterSubscriptionScreenDestination.title),
@@ -379,9 +353,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = FarmSubscriptionScreenDestination.title),
@@ -418,9 +390,7 @@ fun NavGraphBuilder.addDashboardGraph(
         ) {
             val reason = it.arguments?.getString("paymentReason")
 
-            Scaffold(
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = MpesaPaymentScreenDestination.title),

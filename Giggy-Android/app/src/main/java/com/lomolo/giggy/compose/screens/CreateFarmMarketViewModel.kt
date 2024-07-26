@@ -42,24 +42,26 @@ class AddFarmMarketViewModel(
         private set
 
     fun uploadImage(stream: InputStream) {
-        _marketInput.update { it.copy(image = "") }
-        uploadingMarketImageState = UploadMarketImageState.Loading
-        val request = stream.readBytes().toRequestBody()
-        val file = MultipartBody.Part.createFormData(
-            "file",
-            "market_image_${System.currentTimeMillis()}.jpg",
-            request,
-        )
-        viewModelScope.launch(Dispatchers.IO) {
-            uploadingMarketImageState = try {
-                val res = giggyRestApi.imageUpload(file)
-                _marketInput.update {
-                    it.copy(image = res.imageUri)
+        if (uploadingMarketImageState !is UploadMarketImageState.Loading) {
+            _marketInput.update { it.copy(image = "") }
+            uploadingMarketImageState = UploadMarketImageState.Loading
+            val request = stream.readBytes().toRequestBody()
+            val file = MultipartBody.Part.createFormData(
+                "file",
+                "market_image_${System.currentTimeMillis()}.jpg",
+                request,
+            )
+            viewModelScope.launch(Dispatchers.IO) {
+                uploadingMarketImageState = try {
+                    val res = giggyRestApi.imageUpload(file)
+                    _marketInput.update {
+                        it.copy(image = res.imageUri)
+                    }
+                    UploadMarketImageState.Success
+                } catch (e: java.io.IOException) {
+                    e.printStackTrace()
+                    UploadMarketImageState.Error(e.localizedMessage)
                 }
-                UploadMarketImageState.Success
-            } catch (e: java.io.IOException) {
-                e.printStackTrace()
-                UploadMarketImageState.Error(e.localizedMessage)
             }
         }
     }
