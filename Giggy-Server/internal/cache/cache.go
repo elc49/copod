@@ -24,14 +24,13 @@ type cacheClient struct {
 
 func New() {
 	log := logger.GetLogger()
-	ctx := context.Background()
 	opt, err := redis.ParseURL(config.Configuration.Redis.Url)
 	if err != nil {
 		log.WithError(err).Fatalln("new cache client")
 	}
 
 	rdb := redis.NewClient(opt)
-	if err := rdb.Ping(ctx).Err(); err != nil {
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
 		log.WithError(err).Fatalln("ping: redis conn")
 	}
 
