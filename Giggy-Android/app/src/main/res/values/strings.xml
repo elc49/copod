@@ -27,7 +27,7 @@
     <string name="approve">Approve</string>
     <string name="content_info">content info</string>
     <string name="create">Create</string>
-    <string name="farm_headline">Sell you farm harvests, update inventory and markets, and fulfill orders.</string>
+    <string name="farm_headline">First step to start selling harvests, and fulfill orders.</string>
     <string name="create_farm">Create farm</string>
     <string name="farm_name">Farm name</string>
     <string name="your_farms">Your farms</string>
@@ -70,7 +70,7 @@
     <string name="you">You</string>
     <string name="go_back">go back</string>
     <string name="close">close</string>
-    <string name="add">add</string>
+    <string name="add">Add</string>
     <string name="market">market</string>
     <string name="down_arrow">down_arrow</string>
     <string name="call">call</string>
@@ -79,4 +79,5 @@
     <string name="orders">Orders</string>
     <string name="cart">Cart</string>
     <string name="menu">menu</string>
+    <string name="upload">upload</string>
 </resources>

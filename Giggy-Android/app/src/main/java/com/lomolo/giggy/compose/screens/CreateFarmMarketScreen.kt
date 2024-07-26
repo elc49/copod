@@ -76,6 +76,7 @@ fun CreateFarmMarketScreen(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
     val pickMedia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) {
@@ -86,6 +87,17 @@ fun CreateFarmMarketScreen(
             }
         }
     }
+    val selectImage = {
+        if (viewModel.uploadingMarketImageState !is UploadMarketImageState.Loading) {
+            scope.launch {
+                pickMedia.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
+        }
+    }
     val market by viewModel.marketUiState.collectAsState()
     val image = when (viewModel.uploadingMarketImageState) {
         UploadMarketImageState.Loading -> {
@@ -93,18 +105,15 @@ fun CreateFarmMarketScreen(
         }
 
         is UploadMarketImageState.Error -> {
-            R.drawable.ic_broken_image
+            R.drawable.error
         }
 
         else -> {
-            R.drawable.upload
+            R.drawable.camera
         }
     }
-    val scope = rememberCoroutineScope()
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
         TopAppBar(title = {
             Text(
                 stringResource(R.string.add_market),
@@ -206,13 +215,7 @@ fun CreateFarmMarketScreen(
                                     .size(40.dp)
                                     .clip(CircleShape)
                                     .clickable {
-                                        scope.launch {
-                                            pickMedia.launch(
-                                                PickVisualMediaRequest(
-                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                )
-                                            )
-                                        }
+                                        selectImage()
                                     })
                         } else if (market.image.isNotBlank()) {
                             AsyncImage(model = ImageRequest.Builder(context).data(market.image)
@@ -225,13 +228,7 @@ fun CreateFarmMarketScreen(
                                     .size(40.dp)
                                     .clip(CircleShape)
                                     .clickable {
-                                        scope.launch {
-                                            pickMedia.launch(
-                                                PickVisualMediaRequest(
-                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                )
-                                            )
-                                        }
+                                        selectImage()
                                     })
                         }
                     }
@@ -339,7 +336,7 @@ fun CreateFarmMarketScreen(
                     ) {
                         when (viewModel.addingFarmMarketState) {
                             AddFarmMarketState.Success -> Text(
-                                "Add",
+                                stringResource(R.string.add),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
