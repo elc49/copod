@@ -82,4 +82,10 @@
     <string name="category">Category</string>
     <string name="what_are_you_selling">What are you selling?</string>
     <string name="check_mark">check_mark</string>
+    <string name="delete">delete</string>
+    <string name="dot">dot</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="cancel">Cancel</string>
+    <string name="deliver">Deliver</string>
 </resources>

@@ -78,54 +78,42 @@ fun MarketScreen(
                     fontWeight = FontWeight.Bold,
                 )
             }, actions = {
-                if (markets.isNotEmpty()) {
-                    when (viewModel.gettingCartItems) {
-                        GettingCartItemsState.Success -> {
-                            IconButton(onClick = { expanded = true }) {
-                                Icon(
-                                    Icons.TwoTone.MoreVert,
-                                    contentDescription = stringResource(R.string.menu),
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.orders)) },
-                                    onClick = {
-                                        onNavigateToUserOrders()
-                                        expanded = false
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            painterResource(id = R.drawable.product_box),
-                                            modifier = Modifier.size(20.dp),
-                                            contentDescription = stringResource(
-                                                id = R.string.product
-                                            )
+                when (viewModel.gettingCartItems) {
+                    GettingCartItemsState.Success -> {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(
+                                Icons.TwoTone.MoreVert,
+                                contentDescription = stringResource(R.string.menu),
+                            )
+                        }
+                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.orders)) },
+                                onClick = {
+                                    onNavigateToUserOrders()
+                                    expanded = false
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        painterResource(id = R.drawable.product_box),
+                                        modifier = Modifier.size(20.dp),
+                                        contentDescription = stringResource(
+                                            id = R.string.product
                                         )
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.cart)) },
-                                    onClick = {
-                                        onNavigateToMarketCart()
-                                        expanded = false
-                                    },
-                                    leadingIcon = {
-                                        if (cartItems.isNotEmpty()) {
-                                            BadgedBox(badge = {
-                                                Badge()
-                                            }) {
-                                                Icon(
-                                                    painterResource(id = R.drawable.cart_outlined),
-                                                    modifier = Modifier.size(20.dp),
-                                                    contentDescription = stringResource(
-                                                        id = R.string.your_cart
-                                                    )
-                                                )
-                                            }
-                                        } else {
+                                    )
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.cart)) },
+                                onClick = {
+                                    onNavigateToMarketCart()
+                                    expanded = false
+                                },
+                                leadingIcon = {
+                                    if (cartItems.isNotEmpty()) {
+                                        BadgedBox(badge = {
+                                            Badge()
+                                        }) {
                                             Icon(
                                                 painterResource(id = R.drawable.cart_outlined),
                                                 modifier = Modifier.size(20.dp),
@@ -134,31 +122,25 @@ fun MarketScreen(
                                                 )
                                             )
                                         }
-                                    },
-                                )
-                            }
-                        }
-
-                        is GettingCartItemsState.Error -> {
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    painterResource(
-                                        id = R.drawable.product_box
-                                    ),
-                                    modifier = Modifier.size(32.dp),
-                                    contentDescription = null,
-                                )
-                            }
-                            Text(
-                                "[${0}]",
-                                style = MaterialTheme.typography.titleLarge,
+                                    } else {
+                                        Icon(
+                                            painterResource(id = R.drawable.cart_outlined),
+                                            modifier = Modifier.size(20.dp),
+                                            contentDescription = stringResource(
+                                                id = R.string.your_cart
+                                            )
+                                        )
+                                    }
+                                },
                             )
                         }
-
-                        GettingCartItemsState.Loading -> CircularProgressIndicator(
-                            Modifier.size(20.dp)
-                        )
                     }
+
+                    is GettingCartItemsState.Error -> {}
+
+                    GettingCartItemsState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp)
+                    )
                 }
             })
         },
@@ -201,8 +183,6 @@ fun MarketScreen(
                                     stringResource(R.string.retry),
                                     style = MaterialTheme.typography.titleMedium,
                                 )
-
-
                             }
                         }
                     }

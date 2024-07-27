@@ -114,9 +114,12 @@ class FarmMarketViewModel(
 
     var updatingOrderState: UpdateOrderState by mutableStateOf(UpdateOrderState.Success)
         private set
+    var updatingOrderId: String by mutableStateOf("")
+        private set
 
-    fun updateOrderStatus(id: String, status: OrderStatus, cb: () -> Unit = {}) {
+    fun updateOrderStatus(id: String, status: OrderStatus) {
         if (updatingOrderState !is UpdateOrderState.Loading) {
+            updatingOrderId = id
             updatingOrderState = UpdateOrderState.Loading
             viewModelScope.launch {
                 updatingOrderState = try {
@@ -144,10 +147,12 @@ class FarmMarketViewModel(
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    UpdateOrderState.Success.also { cb() }
+                    UpdateOrderState.Success
                 } catch (e: ApolloException) {
                     e.printStackTrace()
                     UpdateOrderState.Error(e.localizedMessage)
+                } finally {
+                    updatingOrderId = ""
                 }
             }
         }
