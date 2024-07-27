@@ -28,7 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -277,7 +277,7 @@ private fun OrderCard(
                 val intent = Intent(Intent.ACTION_DIAL, u)
                 try {
                     context.startActivity(intent)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }) {
@@ -349,7 +349,7 @@ fun FarmMarketScreen(
                 )
             }
         }
-        PrimaryTabRow(modifier = Modifier.fillMaxWidth(), selectedTabIndex = state) {
+        ScrollableTabRow(divider = {}, edgePadding = 4.dp, selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
                 Tab(
                     selected = state == index,
@@ -378,17 +378,10 @@ fun FarmMarketScreen(
                     GetFarmMarketsState.Success -> {
                         if (markets.isEmpty()) {
                             item {
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                ) {
-                                    Text(
-                                        stringResource(R.string.no_harvest),
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                }
+                                Text(
+                                    stringResource(R.string.no_harvest),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
                             }
                         } else {
                             items(markets) {
@@ -422,18 +415,10 @@ fun FarmMarketScreen(
                     GetFarmOrdersState.Success -> {
                         if (orders.isEmpty()) {
                             item {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
-                                    Text(
-                                        stringResource(R.string.no_orders),
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
-                                }
+                                Text(
+                                    stringResource(R.string.no_orders),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
                             }
                         } else {
                             itemsIndexed(orders) { index, item ->
