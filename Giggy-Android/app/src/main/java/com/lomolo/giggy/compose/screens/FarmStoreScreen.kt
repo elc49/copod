@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material.icons.twotone.KeyboardArrowDown
@@ -119,7 +119,7 @@ private fun OrderActions(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -168,7 +168,7 @@ private fun OrderActions(
                 }
 
                 UpdateOrderState.Loading -> CircularProgressIndicator(
-                    Modifier.size(20.dp),
+                    Modifier.size(16.dp),
                 )
 
                 is UpdateOrderState.Error -> ErrorComposable()
@@ -411,50 +411,30 @@ fun FarmMarketScreen(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                when (viewModel.gettingFarmOrdersState) {
-                    GetFarmOrdersState.Success -> {
-                        if (orders.isEmpty()) {
-                            item {
-                                Text(
-                                    stringResource(R.string.no_orders),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                            }
-                        } else {
-                            itemsIndexed(orders) { index, item ->
-                                OrderCard(
-                                    order = item, index = index, openOrderCounter = openOrderCounter
-                                )
-                                if (showBottomSheet) {
-                                    OrderActions(
-                                        sheetState = sheetState,
-                                        onDismiss = { onCloseBottomSheet() },
-                                        order = item,
-                                        updateOrderStatus = { id: String, status: OrderStatus ->
-                                            viewModel.updateOrderStatus(
-                                                id, status
-                                            ) { onCloseBottomSheet() }
-                                        },
-                                        updatingOrderState = viewModel.updatingOrderState,
-                                    )
-                                }
-                            }
-                        }
+                item {
+                    if (orders.isEmpty()) {
+                        Text(
+                            stringResource(R.string.no_orders),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
                     }
-
-                    is GetFarmOrdersState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(id = R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                            }
-                        }
+                }
+                items(orders) {
+                    OrderCard(
+                        order = it, index = 0, openOrderCounter = openOrderCounter
+                    )
+                    if (showBottomSheet) {
+                        OrderActions(
+                            sheetState = sheetState,
+                            onDismiss = { onCloseBottomSheet() },
+                            order = it,
+                            updateOrderStatus = { id: String, status: OrderStatus ->
+                                viewModel.updateOrderStatus(
+                                    id, status
+                                ) { onCloseBottomSheet() }
+                            },
+                            updatingOrderState = viewModel.updatingOrderState,
+                        )
                     }
                 }
             }
