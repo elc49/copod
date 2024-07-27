@@ -78,7 +78,7 @@ private fun FarmHeader(
                 .build(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(68.dp)
+                .size(120.dp)
                 .padding(8.dp)
                 .clip(MaterialTheme.shapes.extraSmall),
             placeholder = painterResource(id = R.drawable.loading_img),
