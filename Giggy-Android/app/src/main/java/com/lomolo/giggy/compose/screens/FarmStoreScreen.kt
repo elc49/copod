@@ -17,30 +17,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material.icons.twotone.KeyboardArrowDown
+import androidx.compose.material.icons.twotone.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,7 +58,6 @@ import com.lomolo.giggy.GiggyViewModelProvider
 import com.lomolo.giggy.R
 import com.lomolo.giggy.compose.navigation.Navigation
 import com.lomolo.giggy.type.OrderStatus
-import kotlinx.coroutines.launch
 
 object FarmMarketScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -97,82 +91,6 @@ private fun FarmHeader(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun OrderActions(
-    modifier: Modifier = Modifier,
-    sheetState: SheetState,
-    onDismiss: () -> Unit,
-    order: GetFarmOrdersQuery.GetFarmOrder,
-    updateOrderStatus: (String, OrderStatus) -> Unit,
-    updatingOrderState: UpdateOrderState,
-) {
-    ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            when (updatingOrderState) {
-                UpdateOrderState.Success -> {
-                    TextButton(
-                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.CONFIRMED) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        contentPadding = PaddingValues(8.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.confirm),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    TextButton(
-                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.DELIVERED) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        contentPadding = PaddingValues(8.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.delivered),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    TextButton(
-                        onClick = { updateOrderStatus(order.id.toString(), OrderStatus.CANCELLED) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        contentPadding = PaddingValues(8.dp),
-                    ) {
-                        Text(
-                            stringResource(R.string.cancel_order),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-
-                UpdateOrderState.Loading -> CircularProgressIndicator(
-                    Modifier.size(16.dp),
-                )
-
-                is UpdateOrderState.Error -> ErrorComposable()
-            }
         }
     }
 }
@@ -237,64 +155,130 @@ private fun OrderCard(
     modifier: Modifier = Modifier,
     order: GetFarmOrdersQuery.GetFarmOrder,
     index: Int,
-    openOrderCounter: () -> Unit,
+    orderStatus: UpdateOrderState,
+    changingOrderId: String,
+    updateOrderStatus: (String, OrderStatus) -> Unit,
 ) {
     val context = LocalContext.current
+    val states = listOf(
+        OrderStatus.CONFIRMED,
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+    )
 
-    Card(
-        modifier = modifier.height(60.dp),
-        shape = MaterialTheme.shapes.small,
-    ) {
-        Row(
-            Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+    Box {
+        Column(
+            modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                "#${index.plus(1)}",
-                fontWeight = FontWeight.ExtraBold,
-            )
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
-                    .crossfade(true).build(),
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(MaterialTheme.shapes.small),
-                contentScale = ContentScale.Crop,
-                contentDescription = stringResource(
-                    id = R.string.product
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
+                        .crossfade(true).build(),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(MaterialTheme.shapes.small),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = stringResource(
+                        id = R.string.product
+                    )
                 )
-            )
-            Text(
-                "${order.volume} ${order.market.unit}",
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold,
-            )
-            IconButton(onClick = {
-                val u = Uri.parse(context.getString(R.string.tel) + order.customer.phone)
-                val intent = Intent(Intent.ACTION_DIAL, u)
-                try {
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }) {
-                Icon(
-                    Icons.TwoTone.Call,
-                    contentDescription = stringResource(R.string.call),
-                )
-            }
-            TextButton(onClick = openOrderCounter) {
                 Text(
-                    order.status.toString(),
+                    "#${index.plus(1)} - ${order.market.name}",
                     fontWeight = FontWeight.ExtraBold,
                 )
+            }
+            // TODO time created
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Icon(
-                    Icons.TwoTone.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.down_arrow),
+                    painterResource(id = R.drawable.dot),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(32.dp),
+                    contentDescription = stringResource(R.string.dot),
                 )
+                Text(
+                    "${order.volume} ${order.market.unit}",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                if (orderStatus is UpdateOrderState.Loading && changingOrderId == order.id.toString()) {
+                    CircularProgressIndicator(
+                        Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Row {
+                        states.forEach { state ->
+                            TextButton(
+                                onClick = { updateOrderStatus(order.id.toString(), state) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = if (state.toString() == order.status.toString()) MaterialTheme.colorScheme.primaryContainer else ButtonDefaults.textButtonColors().containerColor,
+                                    contentColor = if (state.toString() == order.status.toString()) MaterialTheme.colorScheme.onPrimaryContainer else ButtonDefaults.textButtonColors().contentColor,
+                                ),
+                            ) {
+                                when (state) {
+                                    OrderStatus.CONFIRMED -> Text(
+                                        stringResource(R.string.confirm),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+
+                                    OrderStatus.DELIVERED -> Text(
+                                        stringResource(R.string.deliver),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+
+                                    OrderStatus.CANCELLED -> Text(
+                                        stringResource(id = R.string.cancel),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+
+                                    else -> {}
+                                }
+                            }
+                        }
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    TextButton(onClick = {
+                        val u = Uri.parse(context.getString(R.string.tel) + order.customer.phone)
+                        val intent = Intent(Intent.ACTION_DIAL, u)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }) {
+                        Icon(
+                            Icons.TwoTone.Call,
+                            contentDescription = stringResource(id = R.string.call),
+                        )
+                    }
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            Icons.TwoTone.Delete,
+                            contentDescription = stringResource(R.string.delete)
+                        )
+                    }
+                }
             }
         }
     }
@@ -313,21 +297,6 @@ fun FarmMarketScreen(
     val farm by viewModel.farm.collectAsState()
     val markets by viewModel.farmMarkets.collectAsState()
     val orders by viewModel.farmOrders.collectAsState()
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    val scope = rememberCoroutineScope()
-    val openOrderCounter = { showBottomSheet = true }
-    val onCloseBottomSheet = {
-        scope.launch {
-            sheetState.hide()
-        }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
-                showBottomSheet = false
-            }
-        }
-    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -419,23 +388,14 @@ fun FarmMarketScreen(
                         )
                     }
                 }
-                items(orders) {
+                itemsIndexed(orders) { index, item ->
                     OrderCard(
-                        order = it, index = 0, openOrderCounter = openOrderCounter
+                        order = item,
+                        index = index,
+                        orderStatus = viewModel.updatingOrderState,
+                        changingOrderId = viewModel.updatingOrderId,
+                        updateOrderStatus = {id: String, status: OrderStatus -> viewModel.updateOrderStatus(id, status) },
                     )
-                    if (showBottomSheet) {
-                        OrderActions(
-                            sheetState = sheetState,
-                            onDismiss = { onCloseBottomSheet() },
-                            order = it,
-                            updateOrderStatus = { id: String, status: OrderStatus ->
-                                viewModel.updateOrderStatus(
-                                    id, status
-                                ) { onCloseBottomSheet() }
-                            },
-                            updatingOrderState = viewModel.updatingOrderState,
-                        )
-                    }
                 }
             }
         }
