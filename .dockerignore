@@ -1,6 +1,6 @@
 # flyctl launch added from .gitignore
-**/Giggy-Server/.env
-**/Giggy-Server/.vscode
-**/Giggy-Server/.github/
-**/Giggy-Android/
+**/Server/.env
+**/Server/.vscode
+**/Server/.github/
+**/Android/
 fly.toml

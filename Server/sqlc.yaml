@@ -1,0 +1,16 @@
+version: "2"
+cloud:
+  project: "01HJ4923EXZHAJMEXH5CWTMQW3"
+sql:
+  - engine: "postgresql"
+    queries: "src/postgres/queries"
+    schema: "src/postgres/migrations"
+    gen:
+      go:
+        out: "src/postgres/db"
+        emit_json_tags: true
+        emit_interface: true
+        emit_empty_slices: true
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
