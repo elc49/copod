@@ -104,6 +104,18 @@ func (r *mutationResolver) UpdateOrderStatus(ctx context.Context, input model.Up
 	return r.orderController.UpdateOrderStatus(ctx, args)
 }
 
+// DeleteFarmOrder is the resolver for the deleteFarmOrder field.
+func (r *mutationResolver) DeleteFarmOrder(ctx context.Context, input model.DeleteFarmOrderInput) (bool, error) {
+	err := r.orderController.DeleteFarmOrder(ctx, db.DeleteFarmOrderParams{
+		ID:     input.ID,
+		FarmID: input.FarmID,
+	})
+	if err != nil {
+		return false, nil
+	}
+	return true, nil
+}
+
 // Market is the resolver for the market field.
 func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)

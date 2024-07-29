@@ -88,4 +88,23 @@ func TestOrderController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, c, 1)
 	})
+
+	t.Run("get_farm_orders", func(t *testing.T) {
+		orders, err := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, len(orders), 1)
+	})
+
+	t.Run("delete_farm_order(s)", func(t *testing.T) {
+		orders, _ := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
+		assert.Equal(t, len(orders), 1)
+
+		err := orderC.DeleteFarmOrder(ctx, db.DeleteFarmOrderParams{
+			ID:     orders[0].ID,
+			FarmID: farm.ID,
+		})
+		assert.Nil(t, err)
+		orders, _ = orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
+		assert.Equal(t, len(orders), 0)
+	})
 }

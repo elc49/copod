@@ -34,6 +34,11 @@ type Cart struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type DeleteFarmOrderInput struct {
+	ID     uuid.UUID `json:"id"`
+	FarmID uuid.UUID `json:"farmId"`
+}
+
 type Farm struct {
 	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`

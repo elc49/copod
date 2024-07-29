@@ -26,7 +26,7 @@ INSERT INTO orders (
 ) VALUES (
   $1, $2, $3, $4, $5, $6
 )
-RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at
+RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at
 `
 
 type CreateOrderParams struct {
@@ -59,13 +59,29 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		&i.FarmID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
+const deleteFarmOrder = `-- name: DeleteFarmOrder :exec
+UPDATE orders SET deleted_at = NOW()
+WHERE id = $1 AND farm_id = $2 AND deleted_at IS NULL
+`
+
+type DeleteFarmOrderParams struct {
+	ID     uuid.UUID `json:"id"`
+	FarmID uuid.UUID `json:"farm_id"`
+}
+
+func (q *Queries) DeleteFarmOrder(ctx context.Context, arg DeleteFarmOrderParams) error {
+	_, err := q.db.ExecContext(ctx, deleteFarmOrder, arg.ID, arg.FarmID)
+	return err
+}
+
 const getOrderById = `-- name: GetOrderById :one
-SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
-WHERE id = $1
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at FROM orders
+WHERE id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error) {
@@ -82,13 +98,14 @@ func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 		&i.FarmID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getOrdersBelongingToFarm = `-- name: GetOrdersBelongingToFarm :many
-SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
-WHERE farm_id = $1
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at FROM orders
+WHERE farm_id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error) {
@@ -111,6 +128,7 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -126,8 +144,8 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 }
 
 const getOrdersBelongingToUser = `-- name: GetOrdersBelongingToUser :many
-SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at FROM orders
-WHERE customer_id = $1
+SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at FROM orders
+WHERE customer_id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.UUID) ([]Order, error) {
@@ -150,6 +168,7 @@ func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.
 			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -166,7 +185,7 @@ func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.
 
 const getUserOrdersCount = `-- name: GetUserOrdersCount :one
 SELECT count(*) FROM orders
-WHERE customer_id = $1 AND status = 'PENDING'
+WHERE customer_id = $1 AND status = 'PENDING' AND deleted_at IS NULL
 `
 
 func (q *Queries) GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) (int64, error) {
@@ -178,8 +197,8 @@ func (q *Queries) GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) 
 
 const updateOrderStatus = `-- name: UpdateOrderStatus :one
 UPDATE orders SET status = $1
-WHERE id = $2
-RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at
+WHERE id = $2 AND deleted_at IS NULL
+RETURNING id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at
 `
 
 type UpdateOrderStatusParams struct {
@@ -201,6 +220,7 @@ func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusPa
 		&i.FarmID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }

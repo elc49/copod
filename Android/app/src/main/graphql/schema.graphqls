@@ -32,6 +32,12 @@ type Cart {
   updated_at: Time!
 }
 
+input DeleteFarmOrderInput {
+  id: UUID!
+
+  farmId: UUID!
+}
+
 type Farm {
   id: UUID!
 
@@ -100,6 +106,8 @@ type Mutation {
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
 
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
+
+  deleteFarmOrder(input: DeleteFarmOrderInput!): Boolean!
 }
 
 input NewFarmInput {

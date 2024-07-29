@@ -158,6 +158,9 @@ private fun OrderCard(
     orderStatus: UpdateOrderState,
     changingOrderId: String,
     updateOrderStatus: (String, OrderStatus) -> Unit,
+    deleteFarmOrder: (String, String) -> Unit,
+    deleteOrderState: DeleteFarmOrderState,
+    farmId: String,
 ) {
     val context = LocalContext.current
     val states = listOf(
@@ -272,11 +275,27 @@ private fun OrderCard(
                             contentDescription = stringResource(id = R.string.call),
                         )
                     }
-                    TextButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            Icons.TwoTone.Delete,
-                            contentDescription = stringResource(R.string.delete)
-                        )
+                    TextButton(onClick = { deleteFarmOrder(order.id.toString(), farmId) }) {
+                        when(deleteOrderState) {
+                            DeleteFarmOrderState.Success -> Icon(
+                                Icons.TwoTone.Delete,
+                                contentDescription = stringResource(R.string.delete)
+                            )
+                            DeleteFarmOrderState.Loading -> {
+                                if (changingOrderId == order.id.toString()) {
+                                    CircularProgressIndicator(
+                                        Modifier.size(16.dp),
+                                        strokeWidth = 2.dp,
+                                    )
+                                } else {
+                                    Icon(
+                                        Icons.TwoTone.Delete,
+                                        contentDescription = stringResource(R.string.delete)
+                                    )
+                                }
+                            }
+                            is DeleteFarmOrderState.Error -> {}
+                        }
                     }
                 }
             }
@@ -395,6 +414,9 @@ fun FarmMarketScreen(
                         orderStatus = viewModel.updatingOrderState,
                         changingOrderId = viewModel.updatingOrderId,
                         updateOrderStatus = {id: String, status: OrderStatus -> viewModel.updateOrderStatus(id, status) },
+                        deleteOrderState = viewModel.deleteFarmOrderState,
+                        deleteFarmOrder = {orderId: String, farmId: String -> viewModel.deleteFarmOrder(orderId, farmId) },
+                        farmId = viewModel.getFarmId(),
                     )
                 }
             }
