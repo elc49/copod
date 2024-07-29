@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lomolo.giggy"
+    namespace = "com.lomolo.vuno"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lomolo.giggy"
+        applicationId = "com.lomolo.vuno"
         minSdk = 28
         targetSdk = 34
         versionCode = 9
@@ -109,8 +109,8 @@ dependencies {
 }
 
 apollo {
-    service("giggy") {
-        packageName.set("com.lomolo.giggy")
+    service("vuno") {
+        packageName.set("com.lomolo.vuno")
         generateOptionalOperationVariables.set(false)
     }
 }
