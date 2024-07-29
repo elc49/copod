@@ -1,0 +1,3 @@
+mutation DeleteFarmOrder($input: DeleteFarmOrderInput!) {
+    deleteFarmOrder(input: $input)
+}

@@ -68,3 +68,7 @@ func (c *OrderController) GetUserOrdersCount(ctx context.Context, userID uuid.UU
 func (c *OrderController) UpdateOrderStatus(ctx context.Context, args db.UpdateOrderStatusParams) (*model.Order, error) {
 	return c.r.UpdateOrderStatus(ctx, args)
 }
+
+func (c *OrderController) DeleteFarmOrder(ctx context.Context, args db.DeleteFarmOrderParams) error {
+	return c.r.DeleteFarmOrder(ctx, args)
+}

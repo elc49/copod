@@ -1,10 +1,10 @@
 -- name: GetOrdersBelongingToFarm :many
 SELECT * FROM orders
-WHERE farm_id = $1;
+WHERE farm_id = $1 AND deleted_at IS NULL;
 
 -- name: GetOrderById :one
 SELECT * FROM orders
-WHERE id = $1;
+WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: CreateOrder :one
 INSERT INTO orders (
@@ -16,16 +16,20 @@ RETURNING *;
 
 -- name: GetOrdersBelongingToUser :many
 SELECT * FROM orders
-WHERE customer_id = $1;
+WHERE customer_id = $1 AND deleted_at IS NULL;
 
 -- name: GetUserOrdersCount :one
 SELECT count(*) FROM orders
-WHERE customer_id = $1 AND status = 'PENDING';
+WHERE customer_id = $1 AND status = 'PENDING' AND deleted_at IS NULL;
 
 -- name: UpdateOrderStatus :one
 UPDATE orders SET status = $1
-WHERE id = $2
+WHERE id = $2 AND deleted_at IS NULL
 RETURNING *;
+
+-- name: DeleteFarmOrder :exec
+UPDATE orders SET deleted_at = NOW()
+WHERE id = $1 AND farm_id = $2 AND deleted_at IS NULL;
 
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

@@ -152,3 +152,11 @@ func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateO
 		UpdatedAt: o.UpdatedAt,
 	}, nil
 }
+
+func (r *OrderRepository) DeleteFarmOrder(ctx context.Context, args db.DeleteFarmOrderParams) error {
+	if err := r.db.DeleteFarmOrder(ctx, args); err != nil {
+		return err
+	}
+
+	return nil
+}
