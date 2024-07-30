@@ -19,7 +19,7 @@ import com.lomolo.vuno.compose.screens.PaymentViewModel
 import com.lomolo.vuno.compose.screens.SigninViewModel
 import com.lomolo.vuno.compose.screens.UserOrdersViewModel
 
-object GiggyViewModelProvider {
+object VunoViewModelProvider {
     val Factory = viewModelFactory {
         lateinit var mainViewModel: MainViewModel
         lateinit var sessionViewModel: SessionViewModel
@@ -153,5 +153,5 @@ object GiggyViewModelProvider {
     }
 }
 
-/* Instance of Giggy App */
-fun CreationExtras.giggyApplication(): GiggyApp = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as GiggyApp)
+/* Instance of Vuno App */
+fun CreationExtras.giggyApplication(): VunoApp = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as VunoApp)

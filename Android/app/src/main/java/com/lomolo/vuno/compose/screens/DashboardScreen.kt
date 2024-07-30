@@ -37,7 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import com.lomolo.vuno.GetLocalizedPostersQuery
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.compose.PostCard
@@ -58,7 +58,7 @@ fun DashboardScreen(
     onNavigateTo: (String) -> Unit,
     currentDestination: NavDestination,
     sessionViewModel: SessionViewModel,
-    viewModel: DashboardViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: DashboardViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     LaunchedEffect(Unit) {
         viewModel.getLocalizedPosters()

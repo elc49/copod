@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 
 @Composable
 fun GenesisScreen(
@@ -27,7 +27,7 @@ fun GenesisScreen(
 @Preview
 @Composable
 fun GenesisScreenPreview() {
-    GiggyTheme {
+    VunoTheme {
         GenesisScreen()
     }
 }

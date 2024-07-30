@@ -42,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
@@ -62,7 +62,7 @@ fun MarketScreen(
     deviceDetails: DeviceDetails,
     onNavigateToMarketCart: () -> Unit,
     onNavigateToUserOrders: () -> Unit,
-    viewModel: MarketsViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: MarketsViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
     val orders by viewModel.orders.collectAsState()

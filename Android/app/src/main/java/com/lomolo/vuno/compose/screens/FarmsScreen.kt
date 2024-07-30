@@ -48,9 +48,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.BuildConfig
 import com.lomolo.vuno.GetFarmsBelongingToUserQuery
-import com.lomolo.vuno.GiggyViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.SessionViewModel
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.ui.theme.inverseOnSurfaceLight
 
@@ -67,7 +67,7 @@ fun FarmsScreen(
     bottomNav: @Composable () -> Unit = {},
     sessionViewModel: SessionViewModel,
     navHostController: NavHostController,
-    viewModel: FarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: FarmViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val session by sessionViewModel.sessionUiState.collectAsState()
     val farms by viewModel.farms.collectAsState()

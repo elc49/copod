@@ -60,10 +60,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 import kotlinx.coroutines.launch
 
 object CreateFarmMarketDestination : Navigation {
@@ -76,7 +76,7 @@ object CreateFarmMarketDestination : Navigation {
 fun CreateFarmMarketScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit = {},
-    viewModel: AddFarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: AddFarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
     showToast: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -357,7 +357,7 @@ fun CreateFarmMarketScreen(
 @Preview
 @Composable
 fun CreateFarmMarketScreenPreview() {
-    GiggyTheme {
+    VunoTheme {
         CreateFarmMarketScreen()
     }
 }

@@ -54,7 +54,7 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
 import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.type.OrderStatus
@@ -307,7 +307,7 @@ private fun OrderCard(
 @Composable
 fun FarmMarketScreen(
     modifier: Modifier = Modifier,
-    viewModel: FarmMarketViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
     var state by remember {

@@ -2,6 +2,7 @@ package com.lomolo.vuno
 
 import android.Manifest
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import androidx.activity.ComponentActivity
@@ -10,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -41,14 +43,15 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.lomolo.vuno.permissions.LocationPermission
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationServices: LocationPermission
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationPriority: Int = Priority.PRIORITY_HIGH_ACCURACY
-    private val mainViewModel: MainViewModel by viewModels { GiggyViewModelProvider.Factory }
+    private val mainViewModel: MainViewModel by viewModels { VunoViewModelProvider.Factory }
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -138,7 +141,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            GiggyTheme {
+            VunoTheme {
                 Scaffold { innerPadding ->
                     Surface(
                         modifier = Modifier
@@ -172,7 +175,7 @@ class MainActivity : ComponentActivity() {
                             })
                         }
 
-                        GiggyApplication(rememberNavController())
+                        VunoApplication(rememberNavController())
                     }
                 }
             }

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.AuthDestination
 import com.lomolo.vuno.compose.navigation.Navigation
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 
 object HomeScreenDestination: Navigation {
     override val route = "landing-home"
@@ -82,7 +82,7 @@ fun HomeScreen(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    GiggyTheme {
+    VunoTheme {
         HomeScreen()
     }
 }

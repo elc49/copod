@@ -54,11 +54,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.Session
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 import kotlinx.coroutines.launch
 
 object CreatePostScreenDestination : Navigation {
@@ -70,7 +70,7 @@ object CreatePostScreenDestination : Navigation {
 @Composable
 fun CreatePostScreen(
     modifier: Modifier = Modifier,
-    viewModel: CreatePostViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: CreatePostViewModel = viewModel(factory = VunoViewModelProvider.Factory),
     onCloseDialog: () -> Unit = {},
     showToast: () -> Unit = {},
     session: Session = Session(),
@@ -277,7 +277,7 @@ fun CreatePostScreen(
 @Preview
 @Composable
 fun CreatePostScreenPreview() {
-    GiggyTheme {
+    VunoTheme {
         CreatePostScreen()
     }
 }

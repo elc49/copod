@@ -33,7 +33,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
@@ -51,7 +51,7 @@ fun UserOrdersScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     deviceDetails: DeviceDetails,
-    viewModel: UserOrdersViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: UserOrdersViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val orders by viewModel.userOrders.collectAsState()
     val barScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())

@@ -32,7 +32,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetUserQuery
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 
@@ -46,7 +46,7 @@ fun AccountScreen(
     modifier: Modifier = Modifier,
     onSignOut: () -> Unit = {},
     bottomNav: @Composable () -> Unit = {},
-    viewModel: AccountViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: AccountViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

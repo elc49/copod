@@ -4,7 +4,7 @@ import android.app.Application
 import com.lomolo.vuno.container.ApplicationContainer
 import com.lomolo.vuno.container.IApplicationContainer
 
-class GiggyApp: Application() {
+class VunoApp: Application() {
     lateinit var container: IApplicationContainer
 
     override fun onCreate() {

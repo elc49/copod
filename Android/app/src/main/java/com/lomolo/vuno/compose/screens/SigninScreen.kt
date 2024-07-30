@@ -34,11 +34,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.DashboardDestination
 import com.lomolo.vuno.compose.navigation.Navigation
-import com.lomolo.vuno.ui.theme.GiggyTheme
+import com.lomolo.vuno.ui.theme.VunoTheme
 
 object SignInScreenDestination: Navigation {
     override val title = null
@@ -51,7 +51,7 @@ fun SignInScreen(
     onNavigateTo: (String) -> Unit = {},
     deviceCallingCode: String = "",
     deviceFlag: String = "",
-    viewModel: SigninViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: SigninViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val signinDetails by viewModel.signinInput.collectAsState()
@@ -156,7 +156,7 @@ fun SignInScreen(
 @Preview
 @Composable
 fun SignInPreview() {
-    GiggyTheme {
+    VunoTheme {
         SignInScreen()
     }
 }

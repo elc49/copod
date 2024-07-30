@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import kotlinx.coroutines.launch
@@ -63,7 +63,7 @@ object CreateFarmScreenDestination : Navigation {
 fun CreateFarmScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
-    viewModel: CreateFarmViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: CreateFarmViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val farm by viewModel.farmUiState.collectAsState()
     val context = LocalContext.current

@@ -38,7 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
@@ -85,7 +85,7 @@ fun MarketCartScreen(
     modifier: Modifier = Modifier,
     onCloseDialog: () -> Unit,
     deviceDetails: DeviceDetails,
-    viewModel: MarketCartViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: MarketCartViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val cartItems by viewModel.cartContent.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }

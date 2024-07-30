@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.MainViewModel
 import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.SettingDeviceDetails
@@ -39,11 +39,11 @@ interface Navigation {
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-fun GiggyNavigationHost(
+fun VunoNavigationHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    mainViewModel: MainViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
-    sessionViewModel: SessionViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    mainViewModel: MainViewModel = viewModel(factory = VunoViewModelProvider.Factory),
+    sessionViewModel: SessionViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val initializing = mainViewModel.settingDeviceDetailsState
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()

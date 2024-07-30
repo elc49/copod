@@ -33,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.lomolo.vuno.GiggyViewModelProvider
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
@@ -50,7 +50,7 @@ fun MpesaPaymentScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     onNavigateTo: () -> Unit = {},
-    viewModel: PaymentViewModel = viewModel(factory = GiggyViewModelProvider.Factory),
+    viewModel: PaymentViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val paymentData by viewModel.paymentUiState.collectAsState()
     val validInput = viewModel.validatePayByMpesa(paymentData, deviceDetails)
