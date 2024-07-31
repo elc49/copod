@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,8 +53,8 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
 import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.type.OrderStatus
 
@@ -276,11 +275,13 @@ private fun OrderCard(
                         )
                     }
                     TextButton(onClick = { deleteFarmOrder(order.id.toString(), farmId) }) {
-                        when(deleteOrderState) {
+                        when (deleteOrderState) {
                             DeleteFarmOrderState.Success -> Icon(
-                                Icons.TwoTone.Delete,
+                                painterResource(id = R.drawable.bin),
+                                modifier = Modifier.size(24.dp),
                                 contentDescription = stringResource(R.string.delete)
                             )
+
                             DeleteFarmOrderState.Loading -> {
                                 if (changingOrderId == order.id.toString()) {
                                     CircularProgressIndicator(
@@ -289,11 +290,13 @@ private fun OrderCard(
                                     )
                                 } else {
                                     Icon(
-                                        Icons.TwoTone.Delete,
+                                        painterResource(id = R.drawable.bin),
+                                        modifier = Modifier.size(24.dp),
                                         contentDescription = stringResource(R.string.delete)
                                     )
                                 }
                             }
+
                             is DeleteFarmOrderState.Error -> {}
                         }
                     }
@@ -413,9 +416,19 @@ fun FarmMarketScreen(
                         index = index,
                         orderStatus = viewModel.updatingOrderState,
                         changingOrderId = viewModel.updatingOrderId,
-                        updateOrderStatus = {id: String, status: OrderStatus -> viewModel.updateOrderStatus(id, status) },
+                        updateOrderStatus = { id: String, status: OrderStatus ->
+                            viewModel.updateOrderStatus(
+                                id,
+                                status
+                            )
+                        },
                         deleteOrderState = viewModel.deleteFarmOrderState,
-                        deleteFarmOrder = {orderId: String, farmId: String -> viewModel.deleteFarmOrder(orderId, farmId) },
+                        deleteFarmOrder = { orderId: String, farmId: String ->
+                            viewModel.deleteFarmOrder(
+                                orderId,
+                                farmId
+                            )
+                        },
                         farmId = viewModel.getFarmId(),
                     )
                 }
