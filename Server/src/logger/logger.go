@@ -12,16 +12,6 @@ import (
 var log = logrus.New()
 
 func New() {
-	isProd := func() bool {
-		if config.Configuration == nil {
-			return false
-		} else if config.Configuration.Server.Env == "production" {
-			return true
-		} else {
-			return false
-		}
-	}
-
 	if isProd() {
 		// Error levels to report
 		levels := []logrus.Level{
@@ -41,6 +31,16 @@ func New() {
 
 		defer hook.Flush(5 * time.Second)
 		logrus.RegisterExitHandler(func() { hook.Flush(5 * time.Second) })
+	}
+}
+
+func isProd() bool {
+	if config.Configuration == nil {
+		return false
+	} else if config.Configuration.Server.Env == "production" {
+		return true
+	} else {
+		return false
 	}
 }
 
