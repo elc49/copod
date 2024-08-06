@@ -275,29 +275,17 @@ private fun OrderCard(
                         )
                     }
                     TextButton(onClick = { deleteFarmOrder(order.id.toString(), farmId) }) {
-                        when (deleteOrderState) {
-                            DeleteFarmOrderState.Success -> Icon(
+                        if (deleteOrderState is DeleteFarmOrderState.Loading && changingOrderId == order.id.toString()) {
+                            CircularProgressIndicator(
+                                Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Icon(
                                 painterResource(id = R.drawable.bin),
                                 modifier = Modifier.size(24.dp),
                                 contentDescription = stringResource(R.string.delete)
                             )
-
-                            DeleteFarmOrderState.Loading -> {
-                                if (changingOrderId == order.id.toString()) {
-                                    CircularProgressIndicator(
-                                        Modifier.size(16.dp),
-                                        strokeWidth = 2.dp,
-                                    )
-                                } else {
-                                    Icon(
-                                        painterResource(id = R.drawable.bin),
-                                        modifier = Modifier.size(24.dp),
-                                        contentDescription = stringResource(R.string.delete)
-                                    )
-                                }
-                            }
-
-                            is DeleteFarmOrderState.Error -> {}
                         }
                     }
                 }

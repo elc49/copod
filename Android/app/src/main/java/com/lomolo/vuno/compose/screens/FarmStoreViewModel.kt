@@ -66,7 +66,7 @@ class FarmMarketViewModel(
             listOf()
         )
     val farmOrders: StateFlow<List<GetFarmOrdersQuery.GetFarmOrder>> = _farmOrders.asStateFlow()
-    var gettingFarmOrdersState: GetFarmOrdersState by mutableStateOf(
+    private var gettingFarmOrdersState: GetFarmOrdersState by mutableStateOf(
         GetFarmOrdersState.Success
     )
         private set
