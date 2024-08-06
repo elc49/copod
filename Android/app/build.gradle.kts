@@ -17,8 +17,8 @@ android {
         applicationId = "com.lomolo.vuno"
         minSdk = 28
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.6"
+        versionCode = 5
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
