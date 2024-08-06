@@ -12,7 +12,6 @@ import com.lomolo.vuno.GetFarmByIdQuery
 import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.network.IVunoGraphqlApi
-import com.lomolo.vuno.type.DeleteFarmOrderInput
 import com.lomolo.vuno.type.OrderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -159,44 +158,6 @@ class FarmMarketViewModel(
         }
     }
 
-    var deleteFarmOrderState: DeleteFarmOrderState by mutableStateOf(DeleteFarmOrderState.Success)
-        private set
-
-    fun deleteFarmOrder(id: String, farmId: String) {
-        if (deleteFarmOrderState !is DeleteFarmOrderState.Loading) {
-            updatingOrderId = id
-            deleteFarmOrderState = DeleteFarmOrderState.Loading
-            viewModelScope.launch {
-                deleteFarmOrderState = try {
-                    giggyGraphqlApi.deleteFarmOrder(
-                        DeleteFarmOrderInput(id, farmId)
-                    )
-                    try {
-                        val updatedCacheData = apolloStore.readOperation(
-                            GetFarmOrdersQuery(storeId)
-                        ).getFarmOrders.toMutableList()
-                        updatedCacheData.apply {
-                            val where = updatedCacheData.indexOfFirst { it.id.toString() == id }
-                            updatedCacheData.removeAt(where)
-                        }.toImmutableList()
-                        apolloStore.writeOperation(
-                            GetFarmOrdersQuery(storeId),
-                            GetFarmOrdersQuery.Data(updatedCacheData)
-                        )
-                    } catch (e: ApolloException) {
-                        e.printStackTrace()
-                    }
-                    DeleteFarmOrderState.Success
-                } catch (e: ApolloException) {
-                    e.printStackTrace()
-                    DeleteFarmOrderState.Error(e.localizedMessage)
-                } finally {
-                    updatingOrderId = ""
-                }
-            }
-        }
-    }
-
     init {
         getFarm()
         getFarmMarkets()
@@ -208,12 +169,6 @@ data class UpdateOrderStatus(
     val id: String = "",
     val status: OrderStatus = OrderStatus.PENDING,
 )
-
-interface DeleteFarmOrderState {
-    data object Success: DeleteFarmOrderState
-    data object Loading: DeleteFarmOrderState
-    data class Error(val msg: String?): DeleteFarmOrderState
-}
 
 interface UpdateOrderState {
     data object Loading : UpdateOrderState

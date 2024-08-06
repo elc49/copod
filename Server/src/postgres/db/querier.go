@@ -27,7 +27,6 @@ type Querier interface {
 	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	DeleteCartItem(ctx context.Context, id uuid.UUID) error
-	DeleteFarmOrder(ctx context.Context, arg DeleteFarmOrderParams) error
 	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
 	GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)

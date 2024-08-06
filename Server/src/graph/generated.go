@@ -106,7 +106,6 @@ type ComplexityRoot struct {
 		CreateFarmMarket  func(childComplexity int, input model.NewFarmMarketInput) int
 		CreatePost        func(childComplexity int, input model.NewPostInput) int
 		DeleteCartItem    func(childComplexity int, id uuid.UUID) int
-		DeleteFarmOrder   func(childComplexity int, input model.DeleteFarmOrderInput) int
 		PayWithMpesa      func(childComplexity int, input model.PayWithMpesaInput) int
 		SendOrderToFarm   func(childComplexity int, input []*model.SendOrderToFarmInput) int
 		UpdateOrderStatus func(childComplexity int, input model.UpdateOrderStatusInput) int
@@ -203,7 +202,6 @@ type MutationResolver interface {
 	DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error)
 	SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error)
 	UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error)
-	DeleteFarmOrder(ctx context.Context, input model.DeleteFarmOrderInput) (bool, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -526,18 +524,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCartItem(childComplexity, args["id"].(uuid.UUID)), true
-
-	case "Mutation.deleteFarmOrder":
-		if e.complexity.Mutation.DeleteFarmOrder == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_deleteFarmOrder_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeleteFarmOrder(childComplexity, args["input"].(model.DeleteFarmOrderInput)), true
 
 	case "Mutation.payWithMpesa":
 		if e.complexity.Mutation.PayWithMpesa == nil {
@@ -988,7 +974,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAddToCartInput,
-		ec.unmarshalInputDeleteFarmOrderInput,
 		ec.unmarshalInputGpsInput,
 		ec.unmarshalInputNewFarmInput,
 		ec.unmarshalInputNewFarmMarketInput,
@@ -1201,21 +1186,6 @@ func (ec *executionContext) field_Mutation_deleteCartItem_args(ctx context.Conte
 		}
 	}
 	args["id"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_deleteFarmOrder_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.DeleteFarmOrderInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteFarmOrderInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐDeleteFarmOrderInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
 	return args, nil
 }
 
@@ -3386,61 +3356,6 @@ func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateOrderStatus_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_deleteFarmOrder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deleteFarmOrder(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteFarmOrder(rctx, fc.Args["input"].(model.DeleteFarmOrderInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_deleteFarmOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deleteFarmOrder_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8057,40 +7972,6 @@ func (ec *executionContext) unmarshalInputAddToCartInput(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputDeleteFarmOrderInput(ctx context.Context, obj interface{}) (model.DeleteFarmOrderInput, error) {
-	var it model.DeleteFarmOrderInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"id", "farmId"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "id":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ID = data
-		case "farmId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("farmId"))
-			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.FarmID = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputGpsInput(ctx context.Context, obj interface{}) (model.GpsInput, error) {
 	var it model.GpsInput
 	asMap := map[string]interface{}{}
@@ -8897,13 +8778,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateOrderStatus":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateOrderStatus(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "deleteFarmOrder":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteFarmOrder(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -10166,11 +10040,6 @@ func (ec *executionContext) marshalNCart2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServer
 		return graphql.Null
 	}
 	return ec._Cart(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNDeleteFarmOrderInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐDeleteFarmOrderInput(ctx context.Context, v interface{}) (model.DeleteFarmOrderInput, error) {
-	res, err := ec.unmarshalInputDeleteFarmOrderInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNFarm2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx context.Context, sel ast.SelectionSet, v model.Farm) graphql.Marshaler {

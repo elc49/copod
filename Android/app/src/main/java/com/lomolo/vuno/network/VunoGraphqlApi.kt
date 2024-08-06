@@ -11,7 +11,6 @@ import com.lomolo.vuno.CreateFarmMarketMutation
 import com.lomolo.vuno.CreateFarmMutation
 import com.lomolo.vuno.CreatePostMutation
 import com.lomolo.vuno.DeleteCartItemMutation
-import com.lomolo.vuno.DeleteFarmOrderMutation
 import com.lomolo.vuno.GetFarmByIdQuery
 import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
@@ -33,7 +32,6 @@ import com.lomolo.vuno.compose.screens.Market
 import com.lomolo.vuno.compose.screens.SendOrderToFarm
 import com.lomolo.vuno.compose.screens.UpdateOrderStatus
 import com.lomolo.vuno.type.AddToCartInput
-import com.lomolo.vuno.type.DeleteFarmOrderInput
 import com.lomolo.vuno.type.GpsInput
 import com.lomolo.vuno.type.NewFarmInput
 import com.lomolo.vuno.type.NewFarmMarketInput
@@ -65,7 +63,6 @@ interface IVunoGraphqlApi {
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
     suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
-    suspend fun deleteFarmOrder(input: DeleteFarmOrderInput): ApolloResponse<DeleteFarmOrderMutation.Data>
 }
 
 class VunoGraphqlApi(
@@ -193,9 +190,5 @@ class VunoGraphqlApi(
                 input.status,
             )
         ))
-        .execute()
-
-    override suspend fun deleteFarmOrder(input: DeleteFarmOrderInput) = apolloClient
-        .mutation(DeleteFarmOrderMutation(input))
         .execute()
 }
