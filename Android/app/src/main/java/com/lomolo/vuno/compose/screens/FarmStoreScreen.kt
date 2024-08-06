@@ -24,6 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
@@ -157,9 +158,6 @@ private fun OrderCard(
     orderStatus: UpdateOrderState,
     changingOrderId: String,
     updateOrderStatus: (String, OrderStatus) -> Unit,
-    deleteFarmOrder: (String, String) -> Unit,
-    deleteOrderState: DeleteFarmOrderState,
-    farmId: String,
 ) {
     val context = LocalContext.current
     val states = listOf(
@@ -274,22 +272,11 @@ private fun OrderCard(
                             contentDescription = stringResource(id = R.string.call),
                         )
                     }
-                    TextButton(onClick = { deleteFarmOrder(order.id.toString(), farmId) }) {
-                        if (deleteOrderState is DeleteFarmOrderState.Loading && changingOrderId == order.id.toString()) {
-                            CircularProgressIndicator(
-                                Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Icon(
-                                painterResource(id = R.drawable.bin),
-                                modifier = Modifier.size(24.dp),
-                                contentDescription = stringResource(R.string.delete)
-                            )
-                        }
-                    }
                 }
             }
+            HorizontalDivider(
+                Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -410,14 +397,6 @@ fun FarmMarketScreen(
                                 status
                             )
                         },
-                        deleteOrderState = viewModel.deleteFarmOrderState,
-                        deleteFarmOrder = { orderId: String, farmId: String ->
-                            viewModel.deleteFarmOrder(
-                                orderId,
-                                farmId
-                            )
-                        },
-                        farmId = viewModel.getFarmId(),
                     )
                 }
             }

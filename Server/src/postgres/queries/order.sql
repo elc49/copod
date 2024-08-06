@@ -27,9 +27,5 @@ UPDATE orders SET status = $1
 WHERE id = $2 AND deleted_at IS NULL
 RETURNING *;
 
--- name: DeleteFarmOrder :exec
-UPDATE orders SET deleted_at = NOW()
-WHERE id = $1 AND farm_id = $2 AND deleted_at IS NULL;
-
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

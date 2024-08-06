@@ -64,21 +64,6 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 	return i, err
 }
 
-const deleteFarmOrder = `-- name: DeleteFarmOrder :exec
-UPDATE orders SET deleted_at = NOW()
-WHERE id = $1 AND farm_id = $2 AND deleted_at IS NULL
-`
-
-type DeleteFarmOrderParams struct {
-	ID     uuid.UUID `json:"id"`
-	FarmID uuid.UUID `json:"farm_id"`
-}
-
-func (q *Queries) DeleteFarmOrder(ctx context.Context, arg DeleteFarmOrderParams) error {
-	_, err := q.db.ExecContext(ctx, deleteFarmOrder, arg.ID, arg.FarmID)
-	return err
-}
-
 const getOrderById = `-- name: GetOrderById :one
 SELECT id, volume, status, to_be_paid, currency, customer_id, market_id, farm_id, created_at, updated_at, deleted_at FROM orders
 WHERE id = $1 AND deleted_at IS NULL
