@@ -1,6 +1,0 @@
-# flyctl launch added from .gitignore
-**/Server/.env
-**/Server/.vscode
-**/Server/.github/
-**/Android/
-fly.toml
