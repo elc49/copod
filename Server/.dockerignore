@@ -2,4 +2,5 @@
 **/Server/.env
 **/Server/.vscode
 **/Server/.github/
-fly.toml
+fly-live.toml
+fly-staging.toml
