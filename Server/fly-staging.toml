@@ -4,7 +4,7 @@
 #
 
 app = 'vuno-api-staging'
-primary_region = 'lhr'
+primary_region = 'jnb'
 
 [build]
 
