@@ -65,22 +65,33 @@ func New() {
 	logrus.Infoln("Configurations...OK")
 }
 
+func getEnv() string {
+	env := strings.TrimSpace(os.Getenv("ENV"))
+	if env == "" {
+		return "dev"
+	}
+
+	return env
+}
+
+func getInfisicalProjectId() string {
+	return strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID"))
+}
+
 func serverConfig() Server {
 	var config Server
-	projectId := strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID"))
-	serverEnv := strings.TrimSpace(os.Getenv("ENV"))
 
 	port, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "PORT",
-		ProjectID:   projectId,
-		Environment: serverEnv,
+		ProjectID:   getInfisicalProjectId(),
+		Environment: getEnv(),
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	config.Port = port.SecretValue
-	config.Env = serverEnv
+	config.Env = getEnv()
 
 	return config
 }
@@ -91,8 +102,8 @@ func ipinfoConfig() Ipinfo {
 	config.ApiKey = strings.TrimSpace(os.Getenv("IPINFO_SERVICE_API_KEY"))
 	apiKey, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "IPINFO_SERVICE_API_KEY",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -108,8 +119,8 @@ func rdbmsConfig() Rdbms {
 
 	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "POSTGRES_DATABASE_DRIVER",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -117,8 +128,8 @@ func rdbmsConfig() Rdbms {
 
 	uri, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "POSTGRES_DATABASE_URI",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -126,8 +137,8 @@ func rdbmsConfig() Rdbms {
 
 	migrationFile, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "POSTGRES_MIGRATION_FILE",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -135,8 +146,8 @@ func rdbmsConfig() Rdbms {
 
 	migrateDb, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "MIGRATE_POSTGRES_DATABASE",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -160,8 +171,8 @@ func jwtConfig() Jwt {
 
 	expires, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "JWT_EXPIRES",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -174,8 +185,8 @@ func jwtConfig() Jwt {
 
 	secret, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "JWT_SECRET",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -192,8 +203,8 @@ func gcloudConfig() Gcloud {
 
 	googleAdc, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "GOOGLE_ADC",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -201,8 +212,8 @@ func gcloudConfig() Gcloud {
 
 	baseUri, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "GOOGLE_CLOUD_BASE_OBJECT_URI",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -210,8 +221,8 @@ func gcloudConfig() Gcloud {
 
 	bucketName, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "GOOGLE_CLOUD_STORAGE_BUCKET",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -227,8 +238,8 @@ func gcloudConfig() Gcloud {
 func remoteAvatarConfig() string {
 	url, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "BASE_REMOTE_AVATAR_URL",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -242,8 +253,8 @@ func paystackConfig() Paystack {
 
 	baseApi, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "PAYSTACK_BASE_API",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -251,8 +262,8 @@ func paystackConfig() Paystack {
 
 	secretKey, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "PAYSTACK_SECRET_KEY",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -260,8 +271,8 @@ func paystackConfig() Paystack {
 
 	paymentProvider, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "PAYSTACK_PAYMENT_PROVIDER",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -269,8 +280,8 @@ func paystackConfig() Paystack {
 
 	testAccount, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "PAYSTACK_MOBILE_TEST_ACCOUNT",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -291,12 +302,13 @@ func paystackConfig() Paystack {
 
 func feesConfig() Fees {
 	var config Fees
+	opts := infisical.RetrieveSecretOptions{
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	}
 
-	posterFeesValue, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTER_RIGHTS_FEE",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
-	})
+	opts.SecretKey = "POSTER_RIGHTS_FEE"
+	posterFeesValue, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
 	}
@@ -306,11 +318,8 @@ func feesConfig() Fees {
 		panic(posterErr)
 	}
 
-	farmingFeesValue, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "FARMING_RIGHTS_FEE",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
-	})
+	opts.SecretKey = "FARMING_RIGHTS_FEE"
+	farmingFeesValue, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
 	}
@@ -331,8 +340,8 @@ func redisConfig() Redis {
 
 	url, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "REDIS_ENDPOINT",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -348,8 +357,8 @@ func sentryConfig() Sentry {
 
 	dsn, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
 		SecretKey:   "SENTRY_DSN",
-		Environment: strings.TrimSpace(os.Getenv("ENV")),
-		ProjectID:   strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID")),
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
 	})
 	if err != nil {
 		panic(err)
@@ -362,32 +371,25 @@ func sentryConfig() Sentry {
 
 func infisicalConfig() Infisical {
 	var config Infisical
-	infisicalProjectId := strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID"))
-	env := strings.TrimSpace(os.Getenv("ENV"))
+	opts := infisical.RetrieveSecretOptions{
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	}
 
-	clientId, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "INFISICAL_CLIENT_ID",
-		Environment: env,
-		ProjectID:   infisicalProjectId,
-	})
+	opts.SecretKey = "INFISICAL_CLIENT_ID"
+	clientId, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
 	}
 
-	clientSecret, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "INFISICAL_CLIENT_SECRET",
-		Environment: env,
-		ProjectID:   infisicalProjectId,
-	})
+	opts.SecretKey = "INFISICAL_CLIENT_SECRET"
+	clientSecret, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
 	}
 
-	projectId, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "INFISICAL_PROJECT_ID",
-		Environment: env,
-		ProjectID:   infisicalProjectId,
-	})
+	opts.SecretKey = "INFISICAL_PROJECT_ID"
+	projectId, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
 	}
