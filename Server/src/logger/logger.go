@@ -37,11 +37,10 @@ func New() {
 func isProd() bool {
 	if config.Configuration == nil {
 		return false
-	} else if config.Configuration.Server.Env == "production" {
-		return true
-	} else {
-		return false
 	}
+
+	return config.Configuration.Server.Env == "prod" ||
+		config.Configuration.Server.Env == "staging"
 }
 
 func GetLogger() *logrus.Logger {

@@ -110,7 +110,11 @@ func (s *Server) MountHandlers() {
 }
 
 func (s *Server) isProd() bool {
-	return config.Configuration.Server.Env == "production" ||
+	if config.Configuration == nil {
+		return false
+	}
+
+	return config.Configuration.Server.Env == "prod" ||
 		config.Configuration.Server.Env == "staging"
 }
 
