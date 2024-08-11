@@ -8,10 +8,10 @@ import (
 
 func RandomAvatar(w, h int) image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, w, h))
-	for x := 0; x < w; x += 10 {
-		for y := 0; y < h; y += 10 {
+	for x := 0; x < w; x += 25 {
+		for y := 0; y < h; y += 25 {
 			r, g, b := randomColor()
-			drawRectangleImage(img, x, y, x+10, y+10, color.RGBA{r, g, b, 255})
+			drawRectangleImage(img, x, y, x+25, y+25, color.RGBA{r, g, b, 255})
 		}
 	}
 
