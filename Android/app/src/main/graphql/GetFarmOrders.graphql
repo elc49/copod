@@ -15,5 +15,6 @@ query GetFarmOrders($id: UUID!) {
             phone
         }
         status
+        created_at
     }
 }
