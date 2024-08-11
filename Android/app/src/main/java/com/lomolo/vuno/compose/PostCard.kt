@@ -36,9 +36,6 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetLocalizedPostersQuery
 import com.lomolo.vuno.R
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -62,10 +59,8 @@ fun PostCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(poster.user.avatar)
-                        .decoderFactory(SvgDecoder.Factory())
-                        .build(),
+                    model = ImageRequest.Builder(LocalContext.current).data(poster.user.avatar)
+                        .decoderFactory(SvgDecoder.Factory()).build(),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(id = R.drawable.loading_img),
                     error = painterResource(id = R.drawable.ic_broken_image),
@@ -109,29 +104,24 @@ fun PostCard(
                         .padding(top = 4.dp)
                 ) {
                     AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(poster.image)
-                            .crossfade(true)
+                        model = ImageRequest.Builder(context).data(poster.image).crossfade(true)
                             .build(),
                         placeholder = painterResource(id = R.drawable.loading_img),
                         error = painterResource(id = R.drawable.ic_broken_image),
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentDescription = null
                     )
                 }
             }
         }
         Box(
-            modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp)
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp)
         ) {
             // TODO trim extra lengthy tags
             FlowRow {
                 poster.tags.forEach {
-                    ElevatedSuggestionChip(
-                        shape = MaterialTheme.shapes.extraSmall,
+                    ElevatedSuggestionChip(shape = MaterialTheme.shapes.extraSmall,
                         onClick = { /*TODO*/ },
                         modifier = Modifier
                             .padding(top = 4.dp, bottom = 4.dp, end = 4.dp)
@@ -147,15 +137,13 @@ fun PostCard(
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
-                        }
-                    )
+                        })
                 }
             }
         }
         // TODO post location
         Row(
-            modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -169,43 +157,6 @@ fun PostCard(
                 poster.farmAddress.addressString,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.inversePrimary
-            )
-        }
-    }
-}
-
-@Composable
-private fun TimeSince(date: String) {
-    val formatter = DateTimeFormatter.ISO_DATE_TIME
-    val dateTime = LocalDateTime.parse(date, formatter)
-    val now = LocalDateTime.now()
-    val duration = Duration.between(dateTime, now)
-    when (val timeSinceInSeconds = duration.seconds) {
-        in 0..60 -> {
-            Text(
-                "${timeSinceInSeconds}s",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        in 61..3601 -> {
-            Text(
-                "${timeSinceInSeconds}m",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        in 3601..86399 -> {
-            val hours = timeSinceInSeconds / 3600
-            Text(
-                "${hours}h",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
             )
         }
     }

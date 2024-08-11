@@ -138,6 +138,7 @@ class FarmMarketViewModel(
                             updatedCacheData[where].market,
                             updatedCacheData[where].customer,
                             res.updateOrderStatus.status,
+                            updatedCacheData[where].created_at,
                         )
                         updatedCacheData.toImmutableList()
                         apolloStore.writeOperation(

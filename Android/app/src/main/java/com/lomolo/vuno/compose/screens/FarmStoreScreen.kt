@@ -58,6 +58,7 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.type.OrderStatus
+import kotlinx.datetime.*
 
 object FarmMarketScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -151,6 +152,25 @@ private fun MarketCard(
 }
 
 @Composable
+private fun OrderDate(
+    modifier: Modifier = Modifier,
+    date: String,
+) {
+    val dateTime = LocalDateTime.Formats.ISO.parse(date)
+
+    Row(
+        modifier = modifier
+    ) {
+        Text(
+            "${dateTime.monthNumber}"
+        )
+        Text(
+            "${dateTime.month}"
+        )
+    }
+}
+
+@Composable
 private fun OrderCard(
     modifier: Modifier = Modifier,
     order: GetFarmOrdersQuery.GetFarmOrder,
@@ -196,6 +216,7 @@ private fun OrderCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                OrderDate(date = order.created_at.toString())
                 Icon(
                     painterResource(id = R.drawable.dot),
                     modifier = Modifier
