@@ -29,11 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetUserQuery
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 
 object AccountScreenDestination : Navigation {
@@ -49,8 +48,7 @@ fun AccountScreen(
     viewModel: AccountViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = bottomNav
+        contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = bottomNav
     ) { innerPadding ->
         Surface(
             modifier = modifier
@@ -101,7 +99,7 @@ fun AccountScreen(
 }
 
 @Composable
-internal fun AccountCard(
+private fun AccountCard(
     modifier: Modifier = Modifier,
     onSignOut: () -> Unit,
     user: GetUserQuery.GetUser? = null,
@@ -123,8 +121,7 @@ internal fun AccountCard(
             }
             Row {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(user?.avatar)
-                        .decoderFactory(SvgDecoder.Factory()).crossfade(true).build(),
+                    model = ImageRequest.Builder(LocalContext.current).data(user?.avatar).build(),
                     contentScale = ContentScale.Crop,
                     error = painterResource(id = R.drawable.ic_broken_image),
                     placeholder = painterResource(id = R.drawable.loading_img),
