@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/elc49/vuno/Server/src/config"
@@ -11,6 +10,7 @@ import (
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/jwt"
 	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/vuno/Server/src/util"
 )
 
 func MobileSignin(signinController controllers.SigninController) http.Handler {
@@ -32,19 +32,7 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		}
 
 		if config.Configuration != nil {
-			avatarRes, err := http.Get(fmt.Sprintf("%savatar_%s", config.Configuration.RemoteAvatar, phone))
-			if err != nil {
-				log.WithError(err).Error("handlers: http.Get avatarRes")
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			defer avatarRes.Body.Close()
-
-			if avatarRes.StatusCode != http.StatusOK {
-				log.WithError(err).Error("handlers: avatarRes not http.StatusOK")
-			}
-
-			avatarUrl, err = gcs.ReadFromRemote(r.Context(), avatarRes.Body)
+			avatarUrl, err = gcs.GenerateRandomAvatar(r.Context(), util.RandomStringByLength(5))
 			if err != nil {
 				log.WithError(err).Error("handler: ReadFromRemote()")
 				http.Error(w, err.Error(), http.StatusBadRequest)
