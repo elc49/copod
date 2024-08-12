@@ -57,8 +57,14 @@ import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
+import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.type.OrderStatus
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import java.time.format.TextStyle
+import java.util.Locale
 
 object FarmMarketScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -155,19 +161,30 @@ private fun MarketCard(
 private fun OrderDate(
     modifier: Modifier = Modifier,
     date: String,
+    language: String,
+    country: String,
 ) {
-    val dateTime = LocalDateTime.Formats.ISO.parse(date)
-
-    Row(
-        modifier = modifier
-    ) {
-        Text(
-            "${dateTime.monthNumber}"
-        )
-        Text(
-            "${dateTime.month}"
-        )
+    val cYear = Clock.System.now().toLocalDateTime(TimeZone.UTC).year
+    val instant = Instant.parse(date)
+    val dateTime = instant.toLocalDateTime(TimeZone.UTC)
+    val displayDate = if (cYear > dateTime.year) {
+        "${dateTime.dayOfMonth} ${
+            dateTime.month.getDisplayName(
+                TextStyle.SHORT, Locale(language, country)
+            )
+        } ${dateTime.year}"
+    } else {
+        "${dateTime.dayOfMonth} ${
+            dateTime.month.getDisplayName(
+                TextStyle.SHORT, Locale(language, country)
+            )
+        }"
     }
+
+    Text(
+        displayDate,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -178,6 +195,8 @@ private fun OrderCard(
     orderStatus: UpdateOrderState,
     changingOrderId: String,
     updateOrderStatus: (String, OrderStatus) -> Unit,
+    language: String,
+    country: String,
 ) {
     val context = LocalContext.current
     val states = listOf(
@@ -209,14 +228,18 @@ private fun OrderCard(
                 )
                 Text(
                     "#${index.plus(1)} - ${order.market.name}",
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                 )
             }
             // TODO time created
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OrderDate(date = order.created_at.toString())
+                OrderDate(
+                    date = order.created_at.toString(),
+                    language = language,
+                    country = country,
+                )
                 Icon(
                     painterResource(id = R.drawable.dot),
                     modifier = Modifier
@@ -227,11 +250,10 @@ private fun OrderCard(
                 Text(
                     "${order.volume} ${order.market.unit}",
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.SemiBold,
                 )
             }
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -306,6 +328,7 @@ private fun OrderCard(
 @Composable
 fun FarmMarketScreen(
     modifier: Modifier = Modifier,
+    deviceDetails: DeviceDetails,
     viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
@@ -412,10 +435,11 @@ fun FarmMarketScreen(
                         index = index,
                         orderStatus = viewModel.updatingOrderState,
                         changingOrderId = viewModel.updatingOrderId,
+                        language = deviceDetails.languages,
+                        country = deviceDetails.countryCode,
                         updateOrderStatus = { id: String, status: OrderStatus ->
                             viewModel.updateOrderStatus(
-                                id,
-                                status
+                                id, status
                             )
                         },
                     )

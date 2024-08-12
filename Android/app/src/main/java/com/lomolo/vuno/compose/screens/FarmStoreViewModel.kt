@@ -98,16 +98,18 @@ class FarmMarketViewModel(
         private set
 
     private fun getFarmMarkets() {
-        viewModelScope.launch {
-            gettingFarmMarketsState = GetFarmMarketsState.Loading
-            try {
-                giggyGraphqlApi.getFarmMarkets(storeId).collect { res ->
-                    _farmMarkets.update { res.data?.getFarmMarkets ?: listOf() }
+        if (gettingFarmMarketsState !is GetFarmMarketsState.Loading) {
+            viewModelScope.launch {
+                gettingFarmMarketsState = GetFarmMarketsState.Loading
+                try {
+                    giggyGraphqlApi.getFarmMarkets(storeId).collect { res ->
+                        _farmMarkets.update { res.data?.getFarmMarkets ?: listOf() }
+                        gettingFarmMarketsState = GetFarmMarketsState.Success
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
                     gettingFarmMarketsState = GetFarmMarketsState.Success
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                gettingFarmMarketsState = GetFarmMarketsState.Success
             }
         }
     }

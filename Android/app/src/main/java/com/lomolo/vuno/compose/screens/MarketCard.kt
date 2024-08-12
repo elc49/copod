@@ -70,7 +70,7 @@ internal fun MarketCard(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val onOpenCounter =
-        { if (data.canOrder || BuildConfig.ENV == "development") showBottomSheet = true }
+        { if (data.canOrder || BuildConfig.ENV == "dev") showBottomSheet = true }
     val onCloseBottomSheet = {
         scope.launch {
             sheetState.hide()
