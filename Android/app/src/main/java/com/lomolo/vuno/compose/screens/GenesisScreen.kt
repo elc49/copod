@@ -7,8 +7,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.lomolo.vuno.ui.theme.VunoTheme
 
 @Composable
 fun GenesisScreen(
@@ -21,13 +19,5 @@ fun GenesisScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         LinearProgressIndicator()
-    }
-}
-
-@Preview
-@Composable
-fun GenesisScreenPreview() {
-    VunoTheme {
-        GenesisScreen()
     }
 }
