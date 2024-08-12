@@ -8,9 +8,9 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.GraphQLWsProtocol
 import com.lomolo.vuno.BuildConfig
 import com.lomolo.vuno.apollo.interceptors.AuthInterceptor
-import com.lomolo.vuno.network.VunoGraphqlApi
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.network.IVunoRestApi
+import com.lomolo.vuno.network.VunoGraphqlApi
 import com.lomolo.vuno.repository.FarmRepository
 import com.lomolo.vuno.repository.IFarm
 import com.lomolo.vuno.repository.IMarkets
@@ -55,8 +55,8 @@ class ApplicationContainer(
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    val baseApi = if (BuildConfig.ENV == "development") BuildConfig.LOCAL_BASE_API else BuildConfig.PROD_BASE_API
-    val baseWssApi = if (BuildConfig.ENV == "development") BuildConfig.LOCAL_WSS_API else BuildConfig.PROD_WSS_API
+    val baseApi = if (BuildConfig.ENV == "dev") BuildConfig.LOCAL_BASE_API else BuildConfig.PROD_BASE_API
+    val baseWssApi = if (BuildConfig.ENV == "dev") BuildConfig.LOCAL_WSS_API else BuildConfig.PROD_WSS_API
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseApi)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
