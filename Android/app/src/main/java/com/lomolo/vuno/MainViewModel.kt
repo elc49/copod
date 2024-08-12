@@ -23,26 +23,28 @@ class MainViewModel(
         private set
 
     fun getDeviceDetails() {
-        viewModelScope.launch {
-            settingDeviceDetailsState = SettingDeviceDetails.Loading
-            try {
-                val res = giggyRestApiService.ip()
-                _deviceDetails.update {
-                    it.copy(
-                        countryCode = res.countryCode,
-                        countryFlag = res.countryFlag,
-                        currency = res.currency,
-                        callingCode = res.callingCode,
-                        ipGps = res.ipGps,
-                        posterRightsFee = res.posterRightsFee,
-                        farmingRightsFee = res.farmingRightsFee,
-                        languages = res.languages.split(",")[0],
-                    )
+        if (settingDeviceDetailsState !is SettingDeviceDetails.Loading) {
+            viewModelScope.launch {
+                settingDeviceDetailsState = SettingDeviceDetails.Loading
+                try {
+                    val res = giggyRestApiService.ip()
+                    _deviceDetails.update {
+                        it.copy(
+                            countryCode = res.countryCode,
+                            countryFlag = res.countryFlag,
+                            currency = res.currency,
+                            callingCode = res.callingCode,
+                            ipGps = res.ipGps,
+                            posterRightsFee = res.posterRightsFee,
+                            farmingRightsFee = res.farmingRightsFee,
+                            languages = res.languages.split(",")[0],
+                        )
+                    }
+                    settingDeviceDetailsState = SettingDeviceDetails.Success
+                } catch (e: IOException) {
+                    settingDeviceDetailsState = SettingDeviceDetails.Error(e.localizedMessage)
+                    e.printStackTrace()
                 }
-                settingDeviceDetailsState = SettingDeviceDetails.Success
-            } catch(e: IOException) {
-                settingDeviceDetailsState = SettingDeviceDetails.Error(e.localizedMessage)
-                e.printStackTrace()
             }
         }
     }
