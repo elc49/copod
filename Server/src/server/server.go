@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/elc49/vuno/Server/src/aws"
 	"github.com/elc49/vuno/Server/src/cache"
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/controllers"
@@ -63,6 +64,7 @@ func (s *Server) services() {
 	ip.NewIpinfoClient()
 	gcloud.New()
 	paystack.New(s.Db)
+	aws.New()
 }
 
 func (s *Server) MountHandlers() {
