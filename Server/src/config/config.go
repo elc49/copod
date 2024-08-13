@@ -29,6 +29,7 @@ type configs struct {
 	Redis        Redis
 	Sentry       Sentry
 	Infisical    Infisical
+	Aws          Aws
 }
 
 func env() { godotenv.Load() }
@@ -60,6 +61,7 @@ func New() {
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
 	c.Sentry = sentryConfig()
+	c.Aws = awsConfig()
 
 	Configuration = &c
 	logrus.Infoln("Configurations...OK")
@@ -397,6 +399,45 @@ func infisicalConfig() Infisical {
 	config.ClientID = clientId.SecretValue
 	config.ClientSecret = clientSecret.SecretValue
 	config.ProjectID = projectId.SecretValue
+
+	return config
+}
+
+func awsConfig() Aws {
+	var config Aws
+	opts := infisical.RetrieveSecretOptions{
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	}
+
+	opts.SecretKey = "AWS_ACCESS_KEY"
+	accessKey, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "AWS_SECRET_ACCESS_KEY"
+	secretAccessKey, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "AWS_REGION"
+	awsRegion, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "PROD_DATABASE_SECRET_NAME"
+	secretName, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	config.AccessKey = accessKey.SecretValue
+	config.SecretAccessKey = secretAccessKey.SecretValue
+	config.Region = awsRegion.SecretValue
+	config.ProdDatabaseSecretName = secretName.SecretValue
 
 	return config
 }
