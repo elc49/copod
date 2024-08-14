@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/repositories"
 	"github.com/google/uuid"
@@ -13,9 +14,9 @@ type FarmController struct {
 	r *repositories.FarmRepository
 }
 
-func (r *FarmController) Init(queries *db.Queries) {
+func (r *FarmController) Init(store postgres.Store) {
 	r.r = &repositories.FarmRepository{}
-	r.r.Init(queries)
+	r.r.Init(store)
 }
 
 func (r *FarmController) CreateFarm(ctx context.Context, args db.CreateFarmParams) (*model.Farm, error) {

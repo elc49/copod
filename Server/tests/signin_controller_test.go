@@ -14,7 +14,7 @@ func TestSigninController(t *testing.T) {
 	signinC := signinController()
 
 	defer func() {
-		queries.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
 	}()
 
 	t.Run("create_user_by_phone", func(t *testing.T) {

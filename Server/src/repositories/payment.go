@@ -4,21 +4,21 @@ import (
 	"context"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/google/uuid"
 )
 
 type PaymentRepository struct {
-	queries *db.Queries
+	store postgres.Store
 }
 
-func (r *PaymentRepository) Init(queries *db.Queries) {
-	r.queries = queries
+func (r *PaymentRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *PaymentRepository) GetPaymentsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Payment, error) {
 	var payments []*model.Payment
-	ps, err := r.queries.GetPaymentsBelongingToFarm(ctx, uuid.NullUUID{UUID: id, Valid: true})
+	ps, err := r.store.StoreReader.GetPaymentsBelongingToFarm(ctx, uuid.NullUUID{UUID: id, Valid: true})
 	if err != nil {
 		return nil, err
 	}

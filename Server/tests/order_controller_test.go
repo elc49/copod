@@ -34,10 +34,10 @@ func TestOrderController(t *testing.T) {
 	})
 
 	defer func() {
-		queries.ClearTestUsers(ctx)
-		queries.ClearTestFarms(ctx)
-		queries.ClearTestMarkets(ctx)
-		queries.ClearTestOrders(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestOrders(ctx)
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {

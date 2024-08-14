@@ -25,7 +25,7 @@ func TestMarketController(t *testing.T) {
 	})
 
 	createMarket := func(ctx context.Context) (*model.Market, error) {
-		queries.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
 		return marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
 			Product:      "Guavas",
 			Image:        avatar,
@@ -39,11 +39,11 @@ func TestMarketController(t *testing.T) {
 	}
 
 	defer func() {
-		queries.ClearTestMarkets(ctx)
-		queries.ClearTestFarms(ctx)
-		queries.ClearTestUsers(ctx)
-		queries.ClearTestOrders(ctx)
-		queries.ClearTestCarts(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestOrders(ctx)
+		store.StoreWriter.ClearTestCarts(ctx)
 	}()
 
 	t.Run("create_farm_market", func(t *testing.T) {

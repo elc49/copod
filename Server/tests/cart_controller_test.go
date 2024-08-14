@@ -28,14 +28,14 @@ func TestCartController(t *testing.T) {
 	cartC := cartController()
 
 	defer func() {
-		queries.ClearTestFarms(ctx)
-		queries.ClearTestUsers(ctx)
-		queries.ClearTestCarts(ctx)
-		queries.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestCarts(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
 	}()
 
 	createMarket := func(ctx context.Context) (*model.Market, error) {
-		queries.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
 		return marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
 			Product:      "Guavas",
 			Image:        avatar,

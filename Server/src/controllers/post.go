@@ -6,6 +6,7 @@ import (
 
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/nominatim"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/repositories"
 	"github.com/google/uuid"
@@ -15,9 +16,9 @@ type PostController struct {
 	r *repositories.PostRepository
 }
 
-func (c *PostController) Init(queries *db.Queries) {
+func (c *PostController) Init(store postgres.Store) {
 	c.r = &repositories.PostRepository{}
-	c.r.Init(queries)
+	c.r.Init(store)
 }
 
 func (c *PostController) CreatePost(ctx context.Context, userId uuid.UUID, input model.NewPostInput) (*model.Post, error) {

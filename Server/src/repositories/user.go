@@ -3,19 +3,19 @@ package repositories
 import (
 	"context"
 
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/vuno/Server/src/postgres"
 )
 
 type UserRepository struct {
-	queries *db.Queries
+	store postgres.Store
 }
 
-func (r *UserRepository) Init(queries *db.Queries) {
-	r.queries = queries
+func (r *UserRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *UserRepository) CountUsers(ctx context.Context) (int, error) {
-	count, err := r.queries.CountUsers(ctx)
+	count, err := r.store.StoreReader.CountUsers(ctx)
 	if err != nil {
 		return 0, err
 	}

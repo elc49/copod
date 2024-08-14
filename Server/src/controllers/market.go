@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/repositories"
 	"github.com/google/uuid"
@@ -13,9 +14,9 @@ type MarketController struct {
 	r *repositories.MarketRepository
 }
 
-func (c *MarketController) Init(queries *db.Queries) {
+func (c *MarketController) Init(store postgres.Store) {
 	c.r = &repositories.MarketRepository{}
-	c.r.Init(queries)
+	c.r.Init(store)
 }
 
 func (c *MarketController) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {

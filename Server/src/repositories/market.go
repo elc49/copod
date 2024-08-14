@@ -5,21 +5,22 @@ import (
 	"database/sql"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/google/uuid"
 )
 
 type MarketRepository struct {
-	db *db.Queries
+	store postgres.Store
 }
 
-func (r *MarketRepository) Init(db *db.Queries) {
-	r.db = db
+func (r *MarketRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
 	var markets []*model.Market
-	ps, err := r.db.GetMarketsBelongingToFarm(ctx, id)
+	ps, err := r.store.StoreReader.GetMarketsBelongingToFarm(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 }
 
 func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*model.Market, error) {
-	p, err := r.db.GetMarketByID(ctx, id)
+	p, err := r.store.StoreReader.GetMarketByID(ctx, id)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
@@ -65,7 +66,7 @@ func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 }
 
 func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateFarmMarketParams) (*model.Market, error) {
-	market, err := r.db.CreateFarmMarket(ctx, args)
+	market, err := r.store.StoreWriter.CreateFarmMarket(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 
 func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedMarketsParams) ([]*model.Market, error) {
 	var markets []*model.Market
-	m, err := r.db.GetLocalizedMarkets(ctx, args)
+	m, err := r.store.StoreReader.GetLocalizedMarkets(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +121,7 @@ func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.
 }
 
 func (r *MarketRepository) getFarmOwnerID(ctx context.Context, farmID uuid.UUID) (string, error) {
-	owner, err := r.db.GetFarmOwnerID(ctx, farmID)
+	owner, err := r.store.StoreReader.GetFarmOwnerID(ctx, farmID)
 	if err != nil {
 		return "", err
 	}

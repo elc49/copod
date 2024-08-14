@@ -4,20 +4,21 @@ import (
 	"context"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/util"
 )
 
 type PostRepository struct {
-	queries *db.Queries
+	store postgres.Store
 }
 
-func (r *PostRepository) Init(queries *db.Queries) {
-	r.queries = queries
+func (r *PostRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *PostRepository) CreatePost(ctx context.Context, args db.CreatePostParams) (*model.Post, error) {
-	newPost, err := r.queries.CreatePost(ctx, args)
+	newPost, err := r.store.StoreWriter.CreatePost(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +33,7 @@ func (r *PostRepository) CreatePost(ctx context.Context, args db.CreatePostParam
 
 func (r *PostRepository) GetLocalizedPosters(ctx context.Context, args db.GetLocalizedPostersParams) ([]*model.Post, error) {
 	var posts []*model.Post
-	p, err := r.queries.GetLocalizedPosters(ctx, args)
+	p, err := r.store.StoreReader.GetLocalizedPosters(ctx, args)
 	if err != nil {
 		return nil, err
 	}

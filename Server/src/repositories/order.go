@@ -5,23 +5,24 @@ import (
 	"sync"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/google/uuid"
 )
 
 type OrderRepository struct {
-	db *db.Queries
-	mu sync.Mutex
+	store postgres.Store
+	mu    sync.Mutex
 }
 
-func (r *OrderRepository) Init(db *db.Queries) {
-	r.db = db
+func (r *OrderRepository) Init(db postgres.Store) {
+	r.store = db
 	r.mu = sync.Mutex{}
 }
 
 func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
 	var orders []*model.Order
-	os, err := r.db.GetOrdersBelongingToFarm(ctx, id)
+	os, err := r.store.StoreReader.GetOrdersBelongingToFarm(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +47,7 @@ func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 }
 
 func (r *OrderRepository) CreateOrder(ctx context.Context, args db.CreateOrderParams) (*model.Order, error) {
-	order, err := r.db.CreateOrder(ctx, args)
+	order, err := r.store.StoreWriter.CreateOrder(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, args db.CreateOrderPa
 
 func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID uuid.UUID) ([]*model.Order, error) {
 	var orders []*model.Order
-	o, err := r.db.GetOrdersBelongingToUser(ctx, userID)
+	o, err := r.store.StoreReader.GetOrdersBelongingToUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +95,13 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	market, err := r.db.GetMarketByID(ctx, args.ID)
+	market, err := r.store.StoreReader.GetMarketByID(ctx, args.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	args.Volume = market.Volume - args.Volume
-	m, err := r.db.UpdateMarketVolume(ctx, args)
+	m, err := r.store.StoreWriter.UpdateMarketVolume(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -118,12 +119,12 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	m, _ := r.db.GetMarketByID(ctx, marketID)
+	m, _ := r.store.StoreReader.GetMarketByID(ctx, marketID)
 	return m.Volume != 0 && volume <= int(m.Volume)
 }
 
 func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uuid.UUID) bool {
-	if err := r.db.DeleteCartItem(ctx, cartID); err != nil {
+	if err := r.store.StoreWriter.DeleteCartItem(ctx, cartID); err != nil {
 		return false
 	}
 
@@ -131,7 +132,7 @@ func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uu
 }
 
 func (r *OrderRepository) GetUserOrdersCount(ctx context.Context, userID uuid.UUID) (int, error) {
-	c, err := r.db.GetUserOrdersCount(ctx, userID)
+	c, err := r.store.StoreReader.GetUserOrdersCount(ctx, userID)
 	if err != nil {
 		return 0, nil
 	}
@@ -140,7 +141,7 @@ func (r *OrderRepository) GetUserOrdersCount(ctx context.Context, userID uuid.UU
 }
 
 func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateOrderStatusParams) (*model.Order, error) {
-	o, err := r.db.UpdateOrderStatus(ctx, args)
+	o, err := r.store.StoreWriter.UpdateOrderStatus(ctx, args)
 	if err != nil {
 		return nil, err
 	}

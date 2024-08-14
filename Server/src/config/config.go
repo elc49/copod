@@ -29,6 +29,7 @@ type configs struct {
 	Redis        Redis
 	Sentry       Sentry
 	Infisical    Infisical
+	Aws          Aws
 }
 
 func env() { godotenv.Load() }
@@ -60,6 +61,7 @@ func New() {
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
 	c.Sentry = sentryConfig()
+	c.Aws = awsConfig()
 
 	Configuration = &c
 	logrus.Infoln("Configurations...OK")
@@ -114,11 +116,11 @@ func ipinfoConfig() Ipinfo {
 	return config
 }
 
-func rdbmsConfig() Rdbms {
-	var config Rdbms
+func postgresConfig() Postgres {
+	var config Postgres
 
-	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_DATABASE_DRIVER",
+	dbName, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_NAME",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -126,8 +128,20 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	uri, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_DATABASE_URI",
+	pass := infisical.Secret{}
+	if getEnv() != "prod" {
+		pass, err = infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+			SecretKey:   "POSTGRES_PASSWORD",
+			Environment: getEnv(),
+			ProjectID:   getInfisicalProjectId(),
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	user, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_USER",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -135,17 +149,26 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	migrationFile, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_MIGRATION_FILE",
-		Environment: getEnv(),
+	postgresWriter, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_WRITER",
 		ProjectID:   getInfisicalProjectId(),
+		Environment: getEnv(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	postgresReader, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_READER",
+		ProjectID:   getInfisicalProjectId(),
+		Environment: getEnv(),
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	migrateDb, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "MIGRATE_POSTGRES_DATABASE",
+		SecretKey:   "POSTGRES_MIGRATE",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -158,10 +181,50 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	config.Driver = driver.SecretValue
-	config.Uri = uri.SecretValue
-	config.MigrationFile = migrationFile.SecretValue
+	migration, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_MIGRATION",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_DRIVER",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	port, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_PORT",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	config.DbName = dbName.SecretValue
+	config.DbUser = user.SecretValue
+	config.WriterHost = postgresWriter.SecretValue
+	config.ReaderHost = postgresReader.SecretValue
+	config.DbPass = pass.SecretValue
 	config.Migrate = forceMigrate
+	config.Migration = migration.SecretValue
+	config.Driver = driver.SecretValue
+	config.Port = port.SecretValue
+
+	return config
+}
+
+func rdbmsConfig() Rdbms {
+	var config Rdbms
+
+	config.Postgres = postgresConfig()
 
 	return config
 }
@@ -397,6 +460,45 @@ func infisicalConfig() Infisical {
 	config.ClientID = clientId.SecretValue
 	config.ClientSecret = clientSecret.SecretValue
 	config.ProjectID = projectId.SecretValue
+
+	return config
+}
+
+func awsConfig() Aws {
+	var config Aws
+	opts := infisical.RetrieveSecretOptions{
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	}
+
+	opts.SecretKey = "AWS_ACCESS_KEY"
+	accessKey, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "AWS_SECRET_ACCESS_KEY"
+	secretAccessKey, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "AWS_REGION"
+	awsRegion, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	opts.SecretKey = "POSTGRES_SECRET_NAME"
+	secretName, err := infisicalClient.Secrets().Retrieve(opts)
+	if err != nil {
+		panic(err)
+	}
+
+	config.AccessKey = accessKey.SecretValue
+	config.SecretAccessKey = secretAccessKey.SecretValue
+	config.Region = awsRegion.SecretValue
+	config.PostgresSecretName = secretName.SecretValue
 
 	return config
 }

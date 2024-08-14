@@ -4,7 +4,7 @@ import (
 	"github.com/elc49/vuno/Server/src/cache"
 	"github.com/elc49/vuno/Server/src/controllers"
 	"github.com/elc49/vuno/Server/src/logger"
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -21,26 +21,26 @@ type Resolver struct {
 	marketController       controllers.MarketController
 	orderController        controllers.OrderController
 	paymentController      controllers.PaymentController
-	subscriptionController controllers.SubscriptionController
+	subscriptionController controllers.PaystackController
 	cartController         controllers.CartController
 	redis                  *redis.Client
 }
 
-func New(db *db.Queries, signinController controllers.SigninController) Config {
+func New(store postgres.Store, signinController controllers.SigninController) Config {
 	postController := controllers.PostController{}
-	postController.Init(db)
+	postController.Init(store)
 	farmController := controllers.FarmController{}
-	farmController.Init(db)
+	farmController.Init(store)
 	marketController := controllers.MarketController{}
-	marketController.Init(db)
+	marketController.Init(store)
 	orderController := controllers.OrderController{}
-	orderController.Init(db)
+	orderController.Init(store)
 	paymentController := controllers.PaymentController{}
-	paymentController.Init(db)
-	subscriptionController := controllers.SubscriptionController{}
-	subscriptionController.Init(db)
+	paymentController.Init(store)
+	subscriptionController := controllers.PaystackController{}
+	subscriptionController.Init(store)
 	cartController := controllers.CartController{}
-	cartController.Init(db)
+	cartController.Init(store)
 
 	resolver := &Resolver{
 		postController,

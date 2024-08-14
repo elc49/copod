@@ -5,20 +5,21 @@ import (
 	"database/sql"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/google/uuid"
 )
 
 type FarmRepository struct {
-	queries *db.Queries
+	store postgres.Store
 }
 
-func (r *FarmRepository) Init(queries *db.Queries) {
-	r.queries = queries
+func (r *FarmRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParams) (*model.Farm, error) {
-	farm, err := r.queries.CreateFarm(ctx, args)
+	farm, err := r.store.StoreWriter.CreateFarm(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +33,7 @@ func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParam
 
 func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UUID) ([]*model.Farm, error) {
 	var farms []*model.Farm
-	s, err := r.queries.GetFarmsBelongingToUser(ctx, id)
+	s, err := r.store.StoreReader.GetFarmsBelongingToUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,7 @@ func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UU
 }
 
 func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
-	farm, err := r.queries.GetFarmByID(ctx, id)
+	farm, err := r.store.StoreReader.GetFarmByID(ctx, id)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {

@@ -17,8 +17,8 @@ func TestFarmController(t *testing.T) {
 	assert.NotNil(t, user)
 
 	defer func() {
-		queries.ClearTestFarms(ctx)
-		queries.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
 	}()
 
 	t.Run("create_farm", func(t *testing.T) {
@@ -38,7 +38,7 @@ func TestFarmController(t *testing.T) {
 	})
 
 	t.Run("get_farm_by_its_id", func(t *testing.T) {
-		queries.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
 		f, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
 			Name:      "Agro-dealers",
 			Thumbnail: avatar,

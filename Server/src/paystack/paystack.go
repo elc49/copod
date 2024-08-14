@@ -13,6 +13,7 @@ import (
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/subscription"
 	"github.com/redis/go-redis/v9"
@@ -25,7 +26,7 @@ type paystack struct {
 	config config.Paystack
 	log    *logrus.Logger
 	pubsub *redis.Client
-	db     *db.Queries
+	store  postgres.Store
 	mu     sync.Mutex
 }
 
@@ -35,12 +36,12 @@ type Paystack interface {
 	VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.MpesaTransactionVerification, error)
 }
 
-func New(db *db.Queries) {
+func New(store postgres.Store) {
 	PayStack = &paystack{
 		config.Configuration.Paystack,
 		logger.GetLogger(),
 		cache.GetCache().GetRedis(),
-		db,
+		store,
 		sync.Mutex{},
 	}
 }
@@ -82,7 +83,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 		return nil, err
 	}
 
-	user, err := p.db.GetUserByID(ctx, input.UserID)
+	user, err := p.store.StoreReader.GetUserByID(ctx, input.UserID)
 	if err != nil {
 		p.log.WithError(err).Error("paystack: db.GetUserByID")
 		return nil, err
@@ -97,7 +98,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 		UserID:      input.UserID,
 		ReferenceID: sql.NullString{String: chargeRes.Data.Reference, Valid: true},
 	}
-	_, buyErr := p.db.BuyRights(ctx, args)
+	_, buyErr := p.store.StoreWriter.BuyRights(ctx, args)
 	if buyErr != nil {
 		p.log.WithError(buyErr).Errorf("paystack: goroutine: db.BuyRights")
 		return nil, buyErr
@@ -110,7 +111,7 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	payment, err := p.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: input.Data.Reference, Valid: true})
+	payment, err := p.store.StoreReader.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: input.Data.Reference, Valid: true})
 	if err != nil && err != sql.ErrNoRows {
 		p.log.WithError(err).Error("paystack: GetRightsPurchageByReferenceID")
 		return err
@@ -127,13 +128,13 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 			ID:              payment.UserID,
 			HasPosterRights: true,
 		}
-		p.db.SetUserPosterRights(ctx, args)
+		p.store.StoreWriter.SetUserPosterRights(ctx, args)
 	case "farming_rights":
 		args := db.SetUserFarmingRightsParams{
 			ID:               payment.UserID,
 			HasFarmingRights: true,
 		}
-		p.db.SetUserFarmingRights(ctx, args)
+		p.store.StoreWriter.SetUserFarmingRights(ctx, args)
 	default:
 	}
 
@@ -152,7 +153,7 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 		ReferenceID: sql.NullString{String: input.Data.Reference, Valid: true},
 		Status:      input.Data.Status,
 	}
-	_, uErr := p.db.UpdatePaystackPaymentStatus(ctx, updateArgs)
+	_, uErr := p.store.StoreWriter.UpdatePaystackPaymentStatus(ctx, updateArgs)
 	if uErr != nil {
 		p.log.WithError(uErr).Error("paystack: UpdatePaystackPaymentStatus")
 		return uErr
