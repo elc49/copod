@@ -17,8 +17,8 @@ func TestPostController(t *testing.T) {
 	user, _ := signinC.CreateUserByPhone(ctx, phone, avatar)
 
 	defer func() {
-		queries.ClearTestUsers(ctx)
-		queries.ClearTestPosters(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestPosters(ctx)
 	}()
 
 	t.Run("create_post", func(t *testing.T) {

@@ -9,9 +9,9 @@ func TestPaymentController(t *testing.T) {
 	ctx := context.Background()
 
 	defer func() {
-		queries.ClearTestUsers(ctx)
-		queries.ClearTestFarms(ctx)
-		queries.ClearTestMarkets(ctx)
-		queries.ClearTestOrders(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestFarms(ctx)
+		store.StoreWriter.ClearTestMarkets(ctx)
+		store.StoreWriter.ClearTestOrders(ctx)
 	}()
 }

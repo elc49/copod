@@ -16,7 +16,7 @@ func TestUserController(t *testing.T) {
 	assert.NotNil(t, user)
 
 	defer func() {
-		queries.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
 	}()
 
 	t.Run("get_user_by_id", func(t *testing.T) {

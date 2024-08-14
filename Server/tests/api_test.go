@@ -15,7 +15,7 @@ import (
 func Test_API(t *testing.T) {
 	ctx := context.Background()
 	defer func() {
-		queries.ClearTestUsers(ctx)
+		store.StoreWriter.ClearTestUsers(ctx)
 	}()
 
 	t.Run("mobile_signin_handler", func(t *testing.T) {
