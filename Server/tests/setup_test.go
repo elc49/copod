@@ -18,12 +18,12 @@ var (
 func init() {
 	dbOption := config.Rdbms{
 		Postgres: config.Postgres{
-			User:       "postgres",
+			DbUser:     "postgres",
 			Driver:     "postgres",
 			Port:       "5432",
 			WriterHost: "localhost",
 			ReaderHost: "localhost",
-			Pass:       "demo1234",
+			DbPass:     "demo1234",
 			DbName:     "test",
 			Migrate:    true,
 			Migration:  "file://../src/postgres/migrations",
