@@ -23,9 +23,9 @@ type Store struct {
 
 func InitWriter(option config.Rdbms) *db.Queries {
 	log := logger.GetLogger()
-	awS := awsService.GetAwsService()
-	dbPass := ""
+	dbPass := new(awsService.PostgresSecret)
 	if isProd() {
+		awS := awsService.GetAwsService()
 		pass, err := awS.SecretValueFromSecretManager(context.Background(), &secretsmanager.GetSecretValueInput{
 			SecretId: aws.String(config.Configuration.Aws.PostgresSecretName),
 		})
@@ -36,12 +36,15 @@ func InitWriter(option config.Rdbms) *db.Queries {
 
 		dbPass = pass
 	} else {
-		dbPass = option.Postgres.Pass
+		dbPass = &awsService.PostgresSecret{
+			Password: option.Postgres.DbPass,
+			Username: "postgres",
+		}
 	}
 
-	uri := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", option.Postgres.User, dbPass, option.Postgres.WriterHost, option.Postgres.Port, option.Postgres.DbName)
+	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", dbPass.Username, dbPass.Password, option.Postgres.WriterHost, option.Postgres.DbName)
 	if !isProd() {
-		uri += "?sslmode=disable"
+		uri += " sslmode=disable"
 	}
 
 	dbConn, err := sql.Open(option.Postgres.Driver, uri)
@@ -51,10 +54,10 @@ func InitWriter(option config.Rdbms) *db.Queries {
 	}
 
 	if err := dbConn.Ping(); err != nil {
-		log.WithError(err).Fatalln("postgres: dbConn.Ping")
+		log.WithError(err).Fatalln("postgres: ping InitWriter")
 		return nil
 	} else if err == nil {
-		log.Infoln("Postgres connection...OK")
+		log.Infoln("Store writer connection...OK")
 	}
 
 	dbConn.Exec(fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %q;", "uuid-ossp"))
@@ -66,7 +69,7 @@ func InitWriter(option config.Rdbms) *db.Queries {
 	if err := runMigration(option.Postgres.Migration, option.Postgres.Migrate, dbConn); err != nil {
 		log.WithError(err).Fatalln("postgres: runMigration")
 	} else if err == nil {
-		log.Infoln("Postgres tables schema...OK")
+		log.Infoln("Store writer tables schema...OK")
 	}
 
 	dB := db.New(dbConn)
@@ -76,9 +79,9 @@ func InitWriter(option config.Rdbms) *db.Queries {
 
 func InitReader(option config.Rdbms) *db.Queries {
 	log := logger.GetLogger()
-	awS := awsService.GetAwsService()
-	dbPass := ""
+	dbPass := new(awsService.PostgresSecret)
 	if isProd() {
+		awS := awsService.GetAwsService()
 		pass, err := awS.SecretValueFromSecretManager(context.Background(), &secretsmanager.GetSecretValueInput{
 			SecretId: aws.String(config.Configuration.Aws.PostgresSecretName),
 		})
@@ -89,12 +92,15 @@ func InitReader(option config.Rdbms) *db.Queries {
 
 		dbPass = pass
 	} else {
-		dbPass = option.Postgres.Pass
+		dbPass = &awsService.PostgresSecret{
+			Password: option.Postgres.DbPass,
+			Username: "postgres",
+		}
 	}
 
-	uri := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", option.Postgres.User, dbPass, option.Postgres.ReaderHost, option.Postgres.Port, option.Postgres.DbName)
+	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", dbPass.Username, dbPass.Password, option.Postgres.ReaderHost, option.Postgres.DbName)
 	if !isProd() {
-		uri += "?sslmode=disable"
+		uri += " sslmode=disable"
 	}
 
 	dbConn, err := sql.Open(option.Postgres.Driver, uri)
@@ -104,10 +110,10 @@ func InitReader(option config.Rdbms) *db.Queries {
 	}
 
 	if err := dbConn.Ping(); err != nil {
-		log.WithError(err).Fatalln("postgres: dbConn.Ping")
+		log.WithError(err).Fatalln("postgres: ping InitReader")
 		return nil
 	} else if err == nil {
-		log.Infoln("Postgres connection...OK")
+		log.Infoln("Store reader connection...OK")
 	}
 
 	dbConn.Exec(fmt.Sprintf("CREATE EXTENSION IF NOT EXISTS %q;", "uuid-ossp"))

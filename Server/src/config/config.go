@@ -209,10 +209,10 @@ func postgresConfig() Postgres {
 	}
 
 	config.DbName = dbName.SecretValue
-	config.User = user.SecretValue
+	config.DbUser = user.SecretValue
 	config.WriterHost = postgresWriter.SecretValue
 	config.ReaderHost = postgresReader.SecretValue
-	config.Pass = pass.SecretValue
+	config.DbPass = pass.SecretValue
 	config.Migrate = forceMigrate
 	config.Migration = migration.SecretValue
 	config.Driver = driver.SecretValue

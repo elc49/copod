@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -11,10 +12,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var aws Aws
+var (
+	aws Aws
+)
+
+type PostgresSecret struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 type Aws interface {
-	SecretValueFromSecretManager(context.Context, *secretsmanager.GetSecretValueInput) (string, error)
+	SecretValueFromSecretManager(context.Context, *secretsmanager.GetSecretValueInput) (*PostgresSecret, error)
 }
 
 type awsClient struct {
@@ -33,23 +41,29 @@ func New() {
 		),
 	)
 	if err != nil {
-		log.WithError(err).Error("aws: setup New instance")
+		log.WithError(err).Fatalln("aws: setup New instance")
 	}
 
 	svc := secretsmanager.NewFromConfig(cfg)
 
-	aws = &awsClient{log, svc}
+	aws = awsClient{log, svc}
 }
 
-func (a *awsClient) SecretValueFromSecretManager(ctx context.Context, input *secretsmanager.GetSecretValueInput) (string, error) {
-	result, err := a.client.GetSecretValue(context.TODO(), input)
+func (aws awsClient) SecretValueFromSecretManager(ctx context.Context, input *secretsmanager.GetSecretValueInput) (*PostgresSecret, error) {
+	var res *PostgresSecret
+	result, err := aws.client.GetSecretValue(context.TODO(), input)
 	if err != nil {
-		a.log.WithError(err).Error("aws: SecretValueFromSecretManager")
-		return "", err
+		aws.log.WithError(err).Error("aws: SecretValueFromSecretManager")
+		return nil, err
 	}
 
 	var secretString string = *result.SecretString
-	return secretString, nil
+	if err := json.Unmarshal([]byte(secretString), &res); err != nil {
+		aws.log.WithError(err).Errorf("aws: json.Unmarshal secret res")
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func GetAwsService() Aws {

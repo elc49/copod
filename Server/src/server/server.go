@@ -45,7 +45,7 @@ func New() *Server {
 }
 
 func (s *Server) database(option config.Rdbms) postgres.Store {
-
+	aws.New()
 	queries := postgres.Store{
 		StoreReader: postgres.InitReader(option),
 		StoreWriter: postgres.InitWriter(option),
@@ -68,7 +68,6 @@ func (s *Server) services() {
 	ip.NewIpinfoClient()
 	gcloud.New()
 	paystack.New(s.Store)
-	aws.New()
 }
 
 func (s *Server) MountHandlers() {
