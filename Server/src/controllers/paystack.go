@@ -8,22 +8,22 @@ import (
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/paystack"
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/util"
 	"github.com/google/uuid"
 )
 
-type SubscriptionController struct {
+type PaystackController struct {
 	paystack paystack.Paystack
-	db       *db.Queries
+	store    postgres.Store
 }
 
-func (c *SubscriptionController) Init(db *db.Queries) {
+func (c *PaystackController) Init(store postgres.Store) {
 	c.paystack = paystack.GetPaystackService()
-	c.db = db
+	c.store = store
 }
 
-func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uuid.UUID, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
+func (c *PaystackController) ChargeMpesaPhone(ctx context.Context, userId uuid.UUID, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
 	args := model.ChargeMpesaPhoneInput{
 		Currency: input.Currency,
 		Email:    fmt.Sprintf("%s@giggy.app", util.RandomStringByLength(5)),
@@ -48,8 +48,8 @@ func (c *SubscriptionController) ChargeMpesaPhone(ctx context.Context, userId uu
 	return c.paystack.ChargeMpesaPhone(ctx, args)
 }
 
-func (c *SubscriptionController) VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackPaymentUpdate, error) {
-	payment, err := c.db.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: referenceId, Valid: true})
+func (c *PaystackController) VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackPaymentUpdate, error) {
+	payment, err := c.store.StoreReader.GetRightPurchasePaymentByReferenceID(ctx, sql.NullString{String: referenceId, Valid: true})
 	if err != nil {
 		return nil, err
 	}

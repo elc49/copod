@@ -5,17 +5,18 @@ import (
 	"database/sql"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/util"
 	"github.com/google/uuid"
 )
 
 type SigninRepository struct {
-	db *db.Queries
+	store postgres.Store
 }
 
-func (mbs *SigninRepository) Init(queries *db.Queries) {
-	mbs.db = queries
+func (mbs *SigninRepository) Init(store postgres.Store) {
+	mbs.store = store
 }
 
 func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone, avatar string) (*model.User, error) {
@@ -24,7 +25,7 @@ func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone, avata
 		Username: sql.NullString{String: util.RandomStringByLength(5), Valid: true},
 		Avatar:   avatar,
 	}
-	newUser, err := mbs.db.CreateUserByPhone(ctx, args)
+	newUser, err := mbs.store.StoreWriter.CreateUserByPhone(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +39,7 @@ func (mbs *SigninRepository) CreateUserByPhone(ctx context.Context, phone, avata
 }
 
 func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (*model.User, error) {
-	user, err := mbs.db.GetUserByPhone(ctx, phone)
+	user, err := mbs.store.StoreReader.GetUserByPhone(ctx, phone)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
@@ -54,7 +55,7 @@ func (mbs *SigninRepository) GetUserByPhone(ctx context.Context, phone string) (
 }
 
 func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*model.User, error) {
-	user, err := mbs.db.GetUserByID(ctx, ID)
+	user, err := mbs.store.StoreReader.GetUserByID(ctx, ID)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {

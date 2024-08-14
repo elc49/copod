@@ -5,16 +5,17 @@ import (
 	"database/sql"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/google/uuid"
 )
 
 type CartRepository struct {
-	db *db.Queries
+	store postgres.Store
 }
 
-func (r *CartRepository) Init(db *db.Queries) {
-	r.db = db
+func (r *CartRepository) Init(store postgres.Store) {
+	r.store = store
 }
 
 func (r *CartRepository) AddToCart(ctx context.Context, args db.AddToCartParams) (*model.Cart, error) {
@@ -26,7 +27,7 @@ func (r *CartRepository) AddToCart(ctx context.Context, args db.AddToCartParams)
 	existing, err := r.GetCartItem(ctx, existingArgs)
 	if err != nil && err == sql.ErrNoRows {
 		// Not in cart
-		cart, err := r.db.AddToCart(ctx, args)
+		cart, err := r.store.StoreWriter.AddToCart(ctx, args)
 		if err != nil {
 			return nil, err
 		}
@@ -56,7 +57,7 @@ func (r *CartRepository) AddToCart(ctx context.Context, args db.AddToCartParams)
 }
 
 func (r *CartRepository) GetCartItem(ctx context.Context, args db.GetCartItemParams) (*model.Cart, error) {
-	cart, err := r.db.GetCartItem(ctx, args)
+	cart, err := r.store.StoreReader.GetCartItem(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ func (r *CartRepository) GetCartItem(ctx context.Context, args db.GetCartItemPar
 }
 
 func (r *CartRepository) UpdateCartVolume(ctx context.Context, args db.UpdateCartVolumeParams) (*model.Cart, error) {
-	cart, err := r.db.UpdateCartVolume(ctx, args)
+	cart, err := r.store.StoreWriter.UpdateCartVolume(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +92,7 @@ func (r *CartRepository) UpdateCartVolume(ctx context.Context, args db.UpdateCar
 
 func (r *CartRepository) GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]*model.Cart, error) {
 	var carts []*model.Cart
-	c, err := r.db.GetUserCartItems(ctx, userID)
+	c, err := r.store.StoreReader.GetUserCartItems(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +115,7 @@ func (r *CartRepository) GetUserCartItems(ctx context.Context, userID uuid.UUID)
 }
 
 func (r *CartRepository) DeleteCartItem(ctx context.Context, cartID uuid.UUID) (bool, error) {
-	err := r.db.DeleteCartItem(ctx, cartID)
+	err := r.store.StoreWriter.DeleteCartItem(ctx, cartID)
 	if err != nil {
 		return false, err
 	}

@@ -14,7 +14,7 @@ import (
 var aws Aws
 
 type Aws interface {
-	SecretValueFromSecretManager(context.Context, secretsmanager.GetSecretValueInput) (string, error)
+	SecretValueFromSecretManager(context.Context, *secretsmanager.GetSecretValueInput) (string, error)
 }
 
 type awsClient struct {
@@ -33,7 +33,7 @@ func New() {
 		),
 	)
 	if err != nil {
-		log.WithError(err).Error("aws: setup NeW instance")
+		log.WithError(err).Error("aws: setup New instance")
 	}
 
 	svc := secretsmanager.NewFromConfig(cfg)
@@ -41,10 +41,11 @@ func New() {
 	aws = &awsClient{log, svc}
 }
 
-func (a *awsClient) SecretValueFromSecretManager(ctx context.Context, input secretsmanager.GetSecretValueInput) (string, error) {
-	result, err := a.client.GetSecretValue(context.TODO(), &input)
+func (a *awsClient) SecretValueFromSecretManager(ctx context.Context, input *secretsmanager.GetSecretValueInput) (string, error) {
+	result, err := a.client.GetSecretValue(context.TODO(), input)
 	if err != nil {
 		a.log.WithError(err).Error("aws: SecretValueFromSecretManager")
+		return "", err
 	}
 
 	var secretString string = *result.SecretString

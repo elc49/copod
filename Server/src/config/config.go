@@ -116,11 +116,11 @@ func ipinfoConfig() Ipinfo {
 	return config
 }
 
-func rdbmsConfig() Rdbms {
-	var config Rdbms
+func postgresConfig() Postgres {
+	var config Postgres
 
-	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_DATABASE_DRIVER",
+	dbName, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_NAME",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -128,8 +128,20 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	uri, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_DATABASE_URI",
+	pass := infisical.Secret{}
+	if getEnv() != "prod" {
+		pass, err = infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+			SecretKey:   "POSTGRES_PASSWORD",
+			Environment: getEnv(),
+			ProjectID:   getInfisicalProjectId(),
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	user, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_USER",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -137,17 +149,26 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	migrationFile, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_MIGRATION_FILE",
-		Environment: getEnv(),
+	postgresWriter, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_WRITER",
 		ProjectID:   getInfisicalProjectId(),
+		Environment: getEnv(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	postgresReader, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_READER",
+		ProjectID:   getInfisicalProjectId(),
+		Environment: getEnv(),
 	})
 	if err != nil {
 		panic(err)
 	}
 
 	migrateDb, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "MIGRATE_POSTGRES_DATABASE",
+		SecretKey:   "POSTGRES_MIGRATE",
 		Environment: getEnv(),
 		ProjectID:   getInfisicalProjectId(),
 	})
@@ -160,10 +181,50 @@ func rdbmsConfig() Rdbms {
 		panic(err)
 	}
 
-	config.Driver = driver.SecretValue
-	config.Uri = uri.SecretValue
-	config.MigrationFile = migrationFile.SecretValue
+	migration, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_MIGRATION",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_DRIVER",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	port, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
+		SecretKey:   "POSTGRES_PORT",
+		Environment: getEnv(),
+		ProjectID:   getInfisicalProjectId(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	config.DbName = dbName.SecretValue
+	config.User = user.SecretValue
+	config.WriterHost = postgresWriter.SecretValue
+	config.ReaderHost = postgresReader.SecretValue
+	config.Pass = pass.SecretValue
 	config.Migrate = forceMigrate
+	config.Migration = migration.SecretValue
+	config.Driver = driver.SecretValue
+	config.Port = port.SecretValue
+
+	return config
+}
+
+func rdbmsConfig() Rdbms {
+	var config Rdbms
+
+	config.Postgres = postgresConfig()
 
 	return config
 }
@@ -428,7 +489,7 @@ func awsConfig() Aws {
 		panic(err)
 	}
 
-	opts.SecretKey = "PROD_DATABASE_SECRET_NAME"
+	opts.SecretKey = "POSTGRES_SECRET_NAME"
 	secretName, err := infisicalClient.Secrets().Retrieve(opts)
 	if err != nil {
 		panic(err)
@@ -437,7 +498,7 @@ func awsConfig() Aws {
 	config.AccessKey = accessKey.SecretValue
 	config.SecretAccessKey = secretAccessKey.SecretValue
 	config.Region = awsRegion.SecretValue
-	config.ProdDatabaseSecretName = secretName.SecretValue
+	config.PostgresSecretName = secretName.SecretValue
 
 	return config
 }

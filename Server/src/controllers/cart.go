@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/vuno/Server/src/postgres"
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/elc49/vuno/Server/src/repositories"
 	"github.com/google/uuid"
@@ -13,9 +14,9 @@ type CartController struct {
 	r *repositories.CartRepository
 }
 
-func (c *CartController) Init(db *db.Queries) {
+func (c *CartController) Init(store postgres.Store) {
 	c.r = &repositories.CartRepository{}
-	c.r.Init(db)
+	c.r.Init(store)
 }
 
 func (c *CartController) AddToCart(ctx context.Context, args db.AddToCartParams) (*model.Cart, error) {

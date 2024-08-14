@@ -22,7 +22,6 @@ import (
 	giggyMiddleware "github.com/elc49/vuno/Server/src/middleware"
 	"github.com/elc49/vuno/Server/src/paystack"
 	"github.com/elc49/vuno/Server/src/postgres"
-	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -32,21 +31,26 @@ import (
 
 type Server struct {
 	Router *chi.Mux
-	Db     *db.Queries
+	Store  postgres.Store
 }
 
 func New() *Server {
 	s := &Server{}
 	s.Router = chi.NewRouter()
 	s.config()
-	s.Db = s.database(config.Configuration.Rdbms)
+	s.Store = s.database(config.Configuration.Rdbms)
 	s.services()
 	s.sentrySetup()
 	return s
 }
 
-func (s *Server) database(dbConfig config.Rdbms) *db.Queries {
-	queries := postgres.Init(dbConfig)
+func (s *Server) database(option config.Rdbms) postgres.Store {
+
+	queries := postgres.Store{
+		StoreReader: postgres.InitReader(option),
+		StoreWriter: postgres.InitWriter(option),
+	}
+
 	return queries
 }
 
@@ -63,17 +67,17 @@ func (s *Server) services() {
 	})
 	ip.NewIpinfoClient()
 	gcloud.New()
-	paystack.New(s.Db)
+	paystack.New(s.Store)
 	aws.New()
 }
 
 func (s *Server) MountHandlers() {
 	// Data controllers
 	signinController := controllers.SigninController{}
-	signinController.Init(s.Db)
+	signinController.Init(s.Store)
 
 	// GraphQL handler
-	graphqlHandler := handler.New(graph.NewExecutableSchema(graph.New(s.Db, signinController)))
+	graphqlHandler := handler.New(graph.NewExecutableSchema(graph.New(s.Store, signinController)))
 	graphqlHandler.AddTransport(&transport.POST{})
 	graphqlHandler.AddTransport(&transport.Websocket{
 		KeepAlivePingInterval: 10 * time.Second,
