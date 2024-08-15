@@ -131,3 +131,15 @@ func (r *MarketRepository) getFarmOwnerID(ctx context.Context, farmID uuid.UUID)
 
 	return owner.String(), nil
 }
+
+func (r *MarketRepository) SetMarketStatus(ctx context.Context, args db.SetMarketStatusParams) (*model.Market, error) {
+	m, err := r.store.StoreWriter.SetMarketStatus(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Market{
+		ID:     m.ID,
+		Status: model.MarketStatus(m.Status),
+	}, nil
+}

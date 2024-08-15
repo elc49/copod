@@ -35,3 +35,7 @@ func (c *MarketController) CreateFarmMarket(ctx context.Context, args db.CreateF
 func (c *MarketController) GetLocalizedMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedMarketsParams) ([]*model.Market, error) {
 	return c.r.GetLocalizedMarkets(ctx, userID, args)
 }
+
+func (c *MarketController) SetMarketStatus(ctx context.Context, args db.SetMarketStatusParams) (*model.Market, error) {
+	return c.r.SetMarketStatus(ctx, args)
+}

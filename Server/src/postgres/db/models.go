@@ -37,6 +37,7 @@ type Market struct {
 	Image         string       `json:"image"`
 	Volume        int32        `json:"volume"`
 	RunningVolume int32        `json:"running_volume"`
+	Status        string       `json:"status"`
 	Unit          string       `json:"unit"`
 	PricePerUnit  int32        `json:"price_per_unit"`
 	Location      interface{}  `json:"location"`

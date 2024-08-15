@@ -50,18 +50,19 @@ type GpsInput struct {
 }
 
 type Market struct {
-	ID            uuid.UUID `json:"id"`
-	Name          string    `json:"name"`
-	Image         string    `json:"image"`
-	Volume        int       `json:"volume"`
-	RunningVolume int       `json:"running_volume"`
-	Unit          string    `json:"unit"`
-	FarmID        uuid.UUID `json:"farmId"`
-	CanOrder      bool      `json:"canOrder"`
-	Tag           string    `json:"tag"`
-	PricePerUnit  int       `json:"pricePerUnit"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID            uuid.UUID    `json:"id"`
+	Name          string       `json:"name"`
+	Image         string       `json:"image"`
+	Volume        int          `json:"volume"`
+	RunningVolume int          `json:"running_volume"`
+	Unit          string       `json:"unit"`
+	Status        MarketStatus `json:"status"`
+	FarmID        uuid.UUID    `json:"farmId"`
+	CanOrder      bool         `json:"canOrder"`
+	Tag           string       `json:"tag"`
+	PricePerUnit  int          `json:"pricePerUnit"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
 type Mutation struct {
@@ -157,12 +158,58 @@ type SendOrderToFarmInput struct {
 	FarmID   uuid.UUID `json:"farmId"`
 }
 
+type SetMarketStatusInput struct {
+	ID     uuid.UUID    `json:"id"`
+	Status MarketStatus `json:"status"`
+}
+
 type Subscription struct {
 }
 
 type UpdateOrderStatusInput struct {
 	ID     uuid.UUID   `json:"id"`
 	Status OrderStatus `json:"status"`
+}
+
+type MarketStatus string
+
+const (
+	MarketStatusOpen   MarketStatus = "OPEN"
+	MarketStatusClosed MarketStatus = "CLOSED"
+)
+
+var AllMarketStatus = []MarketStatus{
+	MarketStatusOpen,
+	MarketStatusClosed,
+}
+
+func (e MarketStatus) IsValid() bool {
+	switch e {
+	case MarketStatusOpen, MarketStatusClosed:
+		return true
+	}
+	return false
+}
+
+func (e MarketStatus) String() string {
+	return string(e)
+}
+
+func (e *MarketStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MarketStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MarketStatus", str)
+	}
+	return nil
+}
+
+func (e MarketStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type OrderStatus string
