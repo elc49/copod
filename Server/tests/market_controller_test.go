@@ -49,7 +49,7 @@ func TestMarketController(t *testing.T) {
 	t.Run("create_farm_market", func(t *testing.T) {
 		m, err := createMarket(ctx)
 		assert.Nil(t, err)
-		assert.Equal(t, m.Name, "Guavas")
+		assert.Equal(t, m.Volume, m.RunningVolume)
 	})
 
 	t.Run("get_farm_market_by_its_id", func(t *testing.T) {
