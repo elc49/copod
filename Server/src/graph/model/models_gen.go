@@ -50,17 +50,18 @@ type GpsInput struct {
 }
 
 type Market struct {
-	ID           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Image        string    `json:"image"`
-	Volume       int       `json:"volume"`
-	Unit         string    `json:"unit"`
-	FarmID       uuid.UUID `json:"farmId"`
-	CanOrder     bool      `json:"canOrder"`
-	Tag          string    `json:"tag"`
-	PricePerUnit int       `json:"pricePerUnit"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	Image         string    `json:"image"`
+	Volume        int       `json:"volume"`
+	RunningVolume int       `json:"running_volume"`
+	Unit          string    `json:"unit"`
+	FarmID        uuid.UUID `json:"farmId"`
+	CanOrder      bool      `json:"canOrder"`
+	Tag           string    `json:"tag"`
+	PricePerUnit  int       `json:"pricePerUnit"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type Mutation struct {

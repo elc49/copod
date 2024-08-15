@@ -100,18 +100,18 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 		return nil, err
 	}
 
-	args.Volume = market.Volume - args.Volume
+	args.RunningVolume = market.Volume - args.RunningVolume
 	m, err := r.store.StoreWriter.UpdateMarketVolume(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.Market{
-		ID:        m.ID,
-		Volume:    int(m.Volume),
-		FarmID:    m.FarmID,
-		CreatedAt: m.CreatedAt,
-		UpdatedAt: m.UpdatedAt,
+		ID:            m.ID,
+		RunningVolume: int(m.RunningVolume),
+		FarmID:        m.FarmID,
+		CreatedAt:     m.CreatedAt,
+		UpdatedAt:     m.UpdatedAt,
 	}, nil
 }
 
@@ -120,7 +120,7 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 	defer r.mu.Unlock()
 
 	m, _ := r.store.StoreReader.GetMarketByID(ctx, marketID)
-	return m.Volume != 0 && volume <= int(m.Volume)
+	return m.RunningVolume != 0 && volume <= int(m.RunningVolume)
 }
 
 func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uuid.UUID) bool {

@@ -28,6 +28,7 @@ func (c *MarketController) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 }
 
 func (c *MarketController) CreateFarmMarket(ctx context.Context, args db.CreateFarmMarketParams) (*model.Market, error) {
+	args.RunningVolume = args.Volume
 	return c.r.CreateFarmMarket(ctx, args)
 }
 

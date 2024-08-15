@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS markets(
   product TEXT NOT NULL,
   image TEXT NOT NULL,
   volume INTEGER NOT NULL,
+  running_volume INTEGER NOT NULL,
   unit TEXT NOT NULL,
   price_per_unit INTEGER NOT NULL,
   location GEOGRAPHY NOT NULL,
