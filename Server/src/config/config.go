@@ -17,19 +17,17 @@ var (
 )
 
 type configs struct {
-	Environment  string
-	Server       Server
-	Ipinfo       Ipinfo
-	Rdbms        Rdbms
-	Jwt          Jwt
-	Gcloud       Gcloud
-	RemoteAvatar string
-	Paystack     Paystack
-	Fees         Fees
-	Redis        Redis
-	Sentry       Sentry
-	Infisical    Infisical
-	Aws          Aws
+	Environment string
+	Server      Server
+	Ipinfo      Ipinfo
+	Rdbms       Rdbms
+	Jwt         Jwt
+	Gcloud      Gcloud
+	Paystack    Paystack
+	Fees        Fees
+	Redis       Redis
+	Sentry      Sentry
+	Aws         Aws
 }
 
 func env() { godotenv.Load() }
@@ -37,26 +35,14 @@ func env() { godotenv.Load() }
 func New() {
 	logrus.Infoln("Collecting configurations...")
 	env()
-	clientId := strings.TrimSpace(os.Getenv("INFISICAL_CLIENT_ID"))
-	clientSecret := strings.TrimSpace(os.Getenv("INFISICAL_CLIENT_SECRET"))
-
 	c := configs{}
-	c.Environment = strings.TrimSpace(os.Getenv("ENV"))
+	c.Environment = getEnv()
 
-	infisicalClient = infisical.NewInfisicalClient(infisical.Config{})
-	_, err := infisicalClient.Auth().UniversalAuthLogin(clientId, clientSecret)
-	if err != nil {
-		logrus.Errorf("Infisical auth failed: %v", err)
-		panic(err)
-	}
-
-	c.Infisical = infisicalConfig()
 	c.Server = serverConfig()
 	c.Ipinfo = ipinfoConfig()
 	c.Rdbms = rdbmsConfig()
 	c.Jwt = jwtConfig()
 	c.Gcloud = gcloudConfig()
-	c.RemoteAvatar = remoteAvatarConfig()
 	c.Paystack = paystackConfig()
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
@@ -76,24 +62,11 @@ func getEnv() string {
 	return env
 }
 
-func getInfisicalProjectId() string {
-	return strings.TrimSpace(os.Getenv("INFISICAL_PROJECT_ID"))
-}
-
 func serverConfig() Server {
 	var config Server
 
-	port, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "PORT",
-		ProjectID:   getInfisicalProjectId(),
-		Environment: getEnv(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.Port = port.SecretValue
-	config.Env = getEnv()
+	config.Env = strings.TrimSpace(os.Getenv("ENV"))
+	config.Port = strings.TrimSpace(os.Getenv("PORT"))
 
 	return config
 }
@@ -102,16 +75,6 @@ func ipinfoConfig() Ipinfo {
 	var config Ipinfo
 
 	config.ApiKey = strings.TrimSpace(os.Getenv("IPINFO_SERVICE_API_KEY"))
-	apiKey, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "IPINFO_SERVICE_API_KEY",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.ApiKey = apiKey.SecretValue
 
 	return config
 }
@@ -119,104 +82,19 @@ func ipinfoConfig() Ipinfo {
 func postgresConfig() Postgres {
 	var config Postgres
 
-	dbName, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_NAME",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
+	config.DbName = strings.TrimSpace(os.Getenv("POSTGRES_NAME"))
+	config.DbUser = strings.TrimSpace(os.Getenv("POSTGRES_USER"))
+	config.Driver = strings.TrimSpace(os.Getenv("POSTGRES_DRIVER"))
+	config.WriterHost = strings.TrimSpace(os.Getenv("POSTGRES_WRITER"))
+	config.ReaderHost = strings.TrimSpace(os.Getenv("POSTGRES_READER"))
+	migrate := strings.TrimSpace(os.Getenv("POSTGRES_MIGRATE"))
+	forceMigrate, err := strconv.ParseBool(migrate)
 	if err != nil {
 		panic(err)
 	}
-
-	pass := infisical.Secret{}
-	if getEnv() != "prod" {
-		pass, err = infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-			SecretKey:   "POSTGRES_PASSWORD",
-			Environment: getEnv(),
-			ProjectID:   getInfisicalProjectId(),
-		})
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	user, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_USER",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	postgresWriter, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_WRITER",
-		ProjectID:   getInfisicalProjectId(),
-		Environment: getEnv(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	postgresReader, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_READER",
-		ProjectID:   getInfisicalProjectId(),
-		Environment: getEnv(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	migrateDb, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_MIGRATE",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	forceMigrate, err := strconv.ParseBool(migrateDb.SecretValue)
-	if err != nil {
-		panic(err)
-	}
-
-	migration, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_MIGRATION",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	driver, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_DRIVER",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	port, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "POSTGRES_PORT",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.DbName = dbName.SecretValue
-	config.DbUser = user.SecretValue
-	config.WriterHost = postgresWriter.SecretValue
-	config.ReaderHost = postgresReader.SecretValue
-	config.DbPass = pass.SecretValue
 	config.Migrate = forceMigrate
-	config.Migration = migration.SecretValue
-	config.Driver = driver.SecretValue
-	config.Port = port.SecretValue
+	config.Migration = strings.TrimSpace(os.Getenv("POSTGRES_MIGRATION"))
+	config.DbPass = strings.TrimSpace(os.Getenv("POSTGRES_PASSWORD"))
 
 	return config
 }
@@ -232,31 +110,12 @@ func rdbmsConfig() Rdbms {
 func jwtConfig() Jwt {
 	var config Jwt
 
-	expires, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "JWT_EXPIRES",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
+	expire, err := time.ParseDuration(strings.TrimSpace(os.Getenv("JWT_EXPIRES")))
 	if err != nil {
 		panic(err)
 	}
-
-	expire, err := time.ParseDuration(expires.SecretValue)
-	if err != nil {
-		panic(err)
-	}
-
-	secret, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "JWT_SECRET",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
 	config.Expires = expire
-	config.Secret = secret.SecretValue
+	config.Secret = strings.TrimSpace(os.Getenv("JWT_SECRET"))
 
 	return config
 }
@@ -264,96 +123,20 @@ func jwtConfig() Jwt {
 func gcloudConfig() Gcloud {
 	var config Gcloud
 
-	googleAdc, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "GOOGLE_ADC",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	baseUri, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "GOOGLE_CLOUD_BASE_OBJECT_URI",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	bucketName, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "GOOGLE_CLOUD_STORAGE_BUCKET",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.BucketObjectBaseUri = baseUri.SecretValue
-	config.StorageBucketName = bucketName.SecretValue
-	config.Adc = googleAdc.SecretValue
+	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_ADC"))
+	config.BucketObjectBaseUri = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_BASE_OBJECT_URI"))
+	config.StorageBucketName = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
 
 	return config
-}
-
-func remoteAvatarConfig() string {
-	url, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "BASE_REMOTE_AVATAR_URL",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	return url.SecretValue
 }
 
 func paystackConfig() Paystack {
 	var config Paystack
 
-	baseApi, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "PAYSTACK_BASE_API",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	secretKey, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "PAYSTACK_SECRET_KEY",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	paymentProvider, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "PAYSTACK_PAYMENT_PROVIDER",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	testAccount, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "PAYSTACK_MOBILE_TEST_ACCOUNT",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.BaseApi = baseApi.SecretValue
-	config.SecretKey = secretKey.SecretValue
-	config.Provider = paymentProvider.SecretValue
-	config.MobileTestAccount = testAccount.SecretValue
+	config.BaseApi = strings.TrimSpace(os.Getenv("PAYSTACK_BASE_API"))
+	config.SecretKey = strings.TrimSpace(os.Getenv("PAYSTACK_SECRET_KEY"))
+	config.Provider = strings.TrimSpace(os.Getenv("PAYSTACK_PAYMENT_PROVIDER"))
+	config.MobileTestAccount = strings.TrimSpace(os.Getenv("PAYSTACK_MOBILE_TEST_ACCOUNT"))
 	if strings.Contains(config.SecretKey, "sk_test_") {
 		config.Env = "test"
 	} else if strings.Contains(config.SecretKey, "sk_live_") {
@@ -365,29 +148,12 @@ func paystackConfig() Paystack {
 
 func feesConfig() Fees {
 	var config Fees
-	opts := infisical.RetrieveSecretOptions{
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	}
 
-	opts.SecretKey = "POSTER_RIGHTS_FEE"
-	posterFeesValue, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	posterFees, posterErr := strconv.Atoi(posterFeesValue.SecretValue)
+	posterFees, posterErr := strconv.Atoi(strings.TrimSpace(os.Getenv("POSTER_RIGHTS_FEE")))
 	if posterErr != nil {
 		panic(posterErr)
 	}
-
-	opts.SecretKey = "FARMING_RIGHTS_FEE"
-	farmingFeesValue, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	farmingFees, farmingErr := strconv.Atoi(farmingFeesValue.SecretValue)
+	farmingFees, farmingErr := strconv.Atoi(strings.TrimSpace(os.Getenv("FARMING_RIGHTS_FEE")))
 	if farmingErr != nil {
 		panic(farmingErr)
 	}
@@ -401,16 +167,7 @@ func feesConfig() Fees {
 func redisConfig() Redis {
 	var config Redis
 
-	url, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "REDIS_ENDPOINT",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.Url = url.SecretValue
+	config.Url = strings.TrimSpace(os.Getenv("REDIS_ENDPOINT"))
 
 	return config
 }
@@ -418,87 +175,18 @@ func redisConfig() Redis {
 func sentryConfig() Sentry {
 	var config Sentry
 
-	dsn, err := infisicalClient.Secrets().Retrieve(infisical.RetrieveSecretOptions{
-		SecretKey:   "SENTRY_DSN",
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	config.Dsn = dsn.SecretValue
-
-	return config
-}
-
-func infisicalConfig() Infisical {
-	var config Infisical
-	opts := infisical.RetrieveSecretOptions{
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	}
-
-	opts.SecretKey = "INFISICAL_CLIENT_ID"
-	clientId, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	opts.SecretKey = "INFISICAL_CLIENT_SECRET"
-	clientSecret, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	opts.SecretKey = "INFISICAL_PROJECT_ID"
-	projectId, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	config.ClientID = clientId.SecretValue
-	config.ClientSecret = clientSecret.SecretValue
-	config.ProjectID = projectId.SecretValue
+	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
 
 	return config
 }
 
 func awsConfig() Aws {
 	var config Aws
-	opts := infisical.RetrieveSecretOptions{
-		Environment: getEnv(),
-		ProjectID:   getInfisicalProjectId(),
-	}
 
-	opts.SecretKey = "AWS_ACCESS_KEY"
-	accessKey, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	opts.SecretKey = "AWS_SECRET_ACCESS_KEY"
-	secretAccessKey, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	opts.SecretKey = "AWS_REGION"
-	awsRegion, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	opts.SecretKey = "POSTGRES_SECRET_NAME"
-	secretName, err := infisicalClient.Secrets().Retrieve(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	config.AccessKey = accessKey.SecretValue
-	config.SecretAccessKey = secretAccessKey.SecretValue
-	config.Region = awsRegion.SecretValue
-	config.PostgresSecretName = secretName.SecretValue
+	config.AccessKey = strings.TrimSpace(os.Getenv("AWS_ACCESS_KEY"))
+	config.SecretAccessKey = strings.TrimSpace(os.Getenv("AWS_SECRET_ACCESS_KEY"))
+	config.Region = strings.TrimSpace(os.Getenv("AWS_REGION"))
+	config.PostgresSecretName = strings.TrimSpace(os.Getenv("POSTGRES_SECRET_NAME"))
 
 	return config
 }
