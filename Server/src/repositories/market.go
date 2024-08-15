@@ -53,15 +53,16 @@ func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 	}
 
 	return &model.Market{
-		ID:           p.ID,
-		Name:         p.Product,
-		Image:        p.Image,
-		Unit:         p.Unit,
-		FarmID:       p.FarmID,
-		Volume:       int(p.Volume),
-		PricePerUnit: int(p.PricePerUnit),
-		CreatedAt:    p.CreatedAt,
-		UpdatedAt:    p.UpdatedAt,
+		ID:            p.ID,
+		Name:          p.Product,
+		Image:         p.Image,
+		Unit:          p.Unit,
+		FarmID:        p.FarmID,
+		Volume:        int(p.Volume),
+		RunningVolume: int(p.RunningVolume),
+		PricePerUnit:  int(p.PricePerUnit),
+		CreatedAt:     p.CreatedAt,
+		UpdatedAt:     p.UpdatedAt,
 	}, nil
 }
 
@@ -72,16 +73,17 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 	}
 
 	return &model.Market{
-		ID:           market.ID,
-		Name:         market.Product,
-		Image:        market.Image,
-		Unit:         market.Unit,
-		Tag:          market.Tag,
-		FarmID:       market.FarmID,
-		Volume:       int(market.Volume),
-		PricePerUnit: int(market.PricePerUnit),
-		CreatedAt:    market.CreatedAt,
-		UpdatedAt:    market.UpdatedAt,
+		ID:            market.ID,
+		Name:          market.Product,
+		Image:         market.Image,
+		Unit:          market.Unit,
+		Tag:           market.Tag,
+		FarmID:        market.FarmID,
+		Volume:        int(market.Volume),
+		RunningVolume: int(market.RunningVolume),
+		PricePerUnit:  int(market.PricePerUnit),
+		CreatedAt:     market.CreatedAt,
+		UpdatedAt:     market.UpdatedAt,
 	}, nil
 }
 
@@ -103,16 +105,17 @@ func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.
 		}
 
 		market := &model.Market{
-			ID:           item.ID,
-			Name:         item.Product,
-			Image:        item.Image,
-			Unit:         item.Unit,
-			Volume:       int(item.Volume),
-			CanOrder:     farmOwner != userID.String(),
-			FarmID:       item.FarmID,
-			PricePerUnit: int(item.PricePerUnit),
-			CreatedAt:    item.CreatedAt,
-			UpdatedAt:    item.UpdatedAt,
+			ID:            item.ID,
+			Name:          item.Product,
+			Image:         item.Image,
+			Unit:          item.Unit,
+			Volume:        int(item.Volume),
+			RunningVolume: int(item.RunningVolume),
+			CanOrder:      farmOwner != userID.String(),
+			FarmID:        item.FarmID,
+			PricePerUnit:  int(item.PricePerUnit),
+			CreatedAt:     item.CreatedAt,
+			UpdatedAt:     item.UpdatedAt,
 		}
 		markets = append(markets, market)
 	}

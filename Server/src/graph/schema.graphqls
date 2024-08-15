@@ -66,6 +66,7 @@ type Market {
   name: String!
   image: String!
   volume: Int!
+  running_volume: Int!
   unit: String!
   farmId: UUID!
   canOrder: Boolean!

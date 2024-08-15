@@ -49,8 +49,8 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 			return false, err
 		}
 		if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
-			ID:     item.MarketID,
-			Volume: int32(item.Volume),
+			ID:            item.MarketID,
+			RunningVolume: int32(item.Volume),
 		}); err != nil {
 			return false, err
 		}

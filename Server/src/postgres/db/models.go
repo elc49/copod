@@ -32,18 +32,19 @@ type Farm struct {
 }
 
 type Market struct {
-	ID           uuid.UUID    `json:"id"`
-	Product      string       `json:"product"`
-	Image        string       `json:"image"`
-	Volume       int32        `json:"volume"`
-	Unit         string       `json:"unit"`
-	PricePerUnit int32        `json:"price_per_unit"`
-	Location     interface{}  `json:"location"`
-	HarvestDate  sql.NullTime `json:"harvest_date"`
-	Tag          string       `json:"tag"`
-	FarmID       uuid.UUID    `json:"farm_id"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
+	ID            uuid.UUID    `json:"id"`
+	Product       string       `json:"product"`
+	Image         string       `json:"image"`
+	Volume        int32        `json:"volume"`
+	RunningVolume int32        `json:"running_volume"`
+	Unit          string       `json:"unit"`
+	PricePerUnit  int32        `json:"price_per_unit"`
+	Location      interface{}  `json:"location"`
+	HarvestDate   sql.NullTime `json:"harvest_date"`
+	Tag           string       `json:"tag"`
+	FarmID        uuid.UUID    `json:"farm_id"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
 type Order struct {

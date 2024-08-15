@@ -56,7 +56,7 @@ func TestOrderController(t *testing.T) {
 		assert.True(t, b)
 
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
-		assert.NotEqual(t, market.Volume, m.Volume)
+		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
 	})
 
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
