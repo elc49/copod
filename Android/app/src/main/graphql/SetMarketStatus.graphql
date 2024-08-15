@@ -1,0 +1,6 @@
+mutation SetMarketStatus($input: SetMarketStatusInput!) {
+    setMarketStatus(input: $input) {
+        id
+        status
+    }
+}
