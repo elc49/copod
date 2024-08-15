@@ -124,21 +124,19 @@ private fun MarketCard(
                     id = R.string.product
                 )
             )
-            if (market.volume > 0) {
-                Box(
-                    Modifier
-                        .background(
-                            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small
-                        )
-                        .align(Alignment.TopEnd)
-                ) {
-                    Text(
-                        "In-stock",
-                        modifier = Modifier.padding(2.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.SemiBold,
+            Box(
+                Modifier
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small
                     )
-                }
+                    .align(Alignment.TopEnd)
+            ) {
+                Text(
+                    market.status.toString().lowercase(),
+                    modifier = Modifier.padding(2.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
             Box(
                 Modifier.background(
@@ -253,7 +251,9 @@ private fun OrderCard(
                 )
             }
             Row(
-                Modifier.fillMaxWidth().padding(top = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
