@@ -20,7 +20,6 @@ func init() {
 		Postgres: config.Postgres{
 			DbUser:     "postgres",
 			Driver:     "postgres",
-			Port:       "5432",
 			WriterHost: "localhost",
 			ReaderHost: "localhost",
 			DbPass:     "demo1234",
@@ -35,7 +34,7 @@ func init() {
 	}
 	jwt.New(
 		config.Jwt{
-			Secret:  "raaF5qddWsCz3h1WruzgUtz1MmjgSCQI",
+			Secret:  "LHE44aRVr3Fa5zlJmwZvcpyJCjtP75z2i7dvr5ASVzLUBNksecmtUYt4HQuKI2YxcNanu3oyNUMfM2oVS7Ke6iw0eNG48qvGui0MWaLEWUOKQfs7gRDEHgALpngfUbOqPv8KusLoPqhetlF5uhSHk8EUQH7vAYiJRTBkoasDDRePeKxbFWAMiaMKIc6dLiFxgkqCKJBL9FgDYHmXYobhMnoH9ti0rmseKbt3Ikq09C296K5rTs9GpWlphBq4qbWG",
 			Expires: time.Duration(time.Minute),
 		},
 	)
