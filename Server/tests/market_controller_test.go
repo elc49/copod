@@ -113,4 +113,24 @@ func TestMarketController(t *testing.T) {
 		})
 		assert.Equal(t, len(mrkts), 0)
 	})
+
+	t.Run("close_market", func(t *testing.T) {
+		m, _ := createMarket(ctx)
+		r, err := marketC.SetMarketStatus(ctx, db.SetMarketStatusParams{
+			ID:     m.ID,
+			Status: model.MarketStatusClosed.String(),
+		})
+		assert.Nil(t, err)
+		assert.Equal(t, r.Status, model.MarketStatusClosed)
+	})
+
+	t.Run("open_market", func(t *testing.T) {
+		m, _ := createMarket(ctx)
+		r, err := marketC.SetMarketStatus(ctx, db.SetMarketStatusParams{
+			ID:     m.ID,
+			Status: model.MarketStatusOpen.String(),
+		})
+		assert.Nil(t, err)
+		assert.Equal(t, r.Status, model.MarketStatusOpen)
+	})
 }
