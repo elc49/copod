@@ -2,13 +2,16 @@ package com.lomolo.vuno.compose.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -29,15 +32,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import com.lomolo.vuno.type.OrderStatus
+import com.lomolo.vuno.ui.theme.errorContainerLight
+import com.lomolo.vuno.ui.theme.primaryContainerLight
+import com.lomolo.vuno.ui.theme.secondaryContainerLight
+import com.lomolo.vuno.ui.theme.surfaceContainerLight
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
@@ -107,6 +117,13 @@ fun UserOrdersScreen(
                             }
                         }
                         itemsIndexed(orders) { index, item ->
+                            val statusColor: Color = when(item.status) {
+                                OrderStatus.PENDING -> surfaceContainerLight
+                                OrderStatus.DELIVERED -> primaryContainerLight
+                                OrderStatus.CANCELLED -> errorContainerLight
+                                OrderStatus.CONFIRMED -> secondaryContainerLight
+                                else -> MaterialTheme.colorScheme.primaryContainer
+                            }
                             Row(
                                 Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -120,7 +137,22 @@ fun UserOrdersScreen(
                                         currency = item.currency, amount = item.toBePaid, language = deviceDetails.languages
                                     ), weight = .2f
                                 )
-                                TableCell(text = item.status.toString(), weight = .2f)
+                                Box(
+                                    Modifier
+                                        .weight(.2f)
+                                        .background(
+                                            statusColor,
+                                            MaterialTheme.shapes.small,
+                                        )
+                                        .padding(4.dp)
+                                        .wrapContentSize(Alignment.Center),
+                                ) {
+                                    Text(
+                                        item.status.toString(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                }
                             }
                         }
                     }
