@@ -65,6 +65,7 @@ import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.type.MarketStatus
 import com.lomolo.vuno.type.OrderStatus
+import com.lomolo.vuno.type.SetMarketStatusInput
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -417,25 +418,49 @@ fun FarmMarketScreen(
                             }
                         } else {
                             items(markets) {
-                                MarketCard(market = it, onShowBottomSheet = { showBottomSheet = true })
+                                MarketCard(
+                                    market = it,
+                                    onShowBottomSheet = { showBottomSheet = true })
                                 if (showBottomSheet) {
-                                    ModalBottomSheet(modifier = modifier, onDismissRequest = { onCloseBottomSheet() }) {
+                                    ModalBottomSheet(modifier = modifier,
+                                        onDismissRequest = { onCloseBottomSheet() }) {
                                         Column(
                                             modifier = Modifier.padding(8.dp),
                                             verticalArrangement = Arrangement.spacedBy(8.dp),
                                         ) {
-                                            Text(
-                                                "You're going to change market status"
+                                            if (it.status == MarketStatus.CLOSED) Text(
+                                                stringResource(R.string.opening_market),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                            ) else Text(
+                                                stringResource(R.string.closing_market),
+                                                style = MaterialTheme.typography.bodyLarge,
                                             )
                                             Button(
-                                                onClick = { /*TODO*/ },
+                                                onClick = {
+                                                    if (it.status == MarketStatus.OPEN) viewModel.setMarketStatus(
+                                                        SetMarketStatusInput(
+                                                            it.id, MarketStatus.CLOSED
+                                                        )
+                                                    ) { onCloseBottomSheet() } else viewModel.setMarketStatus(
+                                                        SetMarketStatusInput(
+                                                            it.id, MarketStatus.OPEN
+                                                        )
+                                                    ) { onCloseBottomSheet() }
+                                                },
                                                 modifier = Modifier.fillMaxWidth(),
                                             ) {
-                                                Text(
-                                                    if (it.status == MarketStatus.OPEN) "Open" else "Close",
-                                                    fontWeight = FontWeight.Bold,
-                                                    style = MaterialTheme.typography.titleMedium,
-                                                )
+                                                when (viewModel.settingMarketStatus) {
+                                                    SettingMarketStatus.Success -> Text(
+                                                        if (it.status == MarketStatus.OPEN) "Close" else "Open",
+                                                        fontWeight = FontWeight.Bold,
+                                                        style = MaterialTheme.typography.titleMedium,
+                                                    )
+
+                                                    SettingMarketStatus.Loading -> CircularProgressIndicator(
+                                                        Modifier.size(20.dp),
+                                                        MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
                                             }
                                         }
                                     }

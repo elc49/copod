@@ -13,6 +13,7 @@ import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.type.OrderStatus
+import com.lomolo.vuno.type.SetMarketStatusInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -161,6 +162,51 @@ class FarmMarketViewModel(
         }
     }
 
+    var settingMarketStatus: SettingMarketStatus by mutableStateOf(SettingMarketStatus.Success)
+        private set
+    var updatingMarketId: String by mutableStateOf("")
+        private set
+
+    fun setMarketStatus(input: SetMarketStatusInput, cb: () -> Unit) {
+        if (settingMarketStatus !is SettingMarketStatus.Loading) {
+            updatingMarketId = input.id.toString()
+            settingMarketStatus = SettingMarketStatus.Loading
+            viewModelScope.launch {
+                settingMarketStatus = try {
+                    val res = giggyGraphqlApi.setMarketStatus(input).dataOrThrow()
+                    try {
+                        val updateCachedData = apolloStore.readOperation(
+                            GetFarmMarketsQuery(storeId)
+                        ).getFarmMarkets.toMutableList()
+                        val where = updateCachedData.indexOfFirst { it.id.toString() == input.id }
+                        updateCachedData[where] = GetFarmMarketsQuery.GetFarmMarket(
+                            res.setMarketStatus.id,
+                            updateCachedData[where].name,
+                            updateCachedData[where].image,
+                            updateCachedData[where].farmId,
+                            res.setMarketStatus.status,
+                            updateCachedData[where].volume,
+                            updateCachedData[where].pricePerUnit,
+                        )
+                        updateCachedData.toImmutableList()
+                        apolloStore.writeOperation(
+                            GetFarmMarketsQuery(storeId),
+                            GetFarmMarketsQuery.Data(updateCachedData)
+                        )
+                    } catch (e: ApolloException) {
+                        e.printStackTrace()
+                    }
+                    SettingMarketStatus.Success.also { cb() }
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    SettingMarketStatus.Error(e.localizedMessage)
+                } finally {
+                    updatingOrderId = ""
+                }
+            }
+        }
+    }
+
     init {
         getFarm()
         getFarmMarkets()
@@ -195,4 +241,10 @@ interface GetFarmOrdersState {
     data object Loading : GetFarmOrdersState
     data object Success : GetFarmOrdersState
     data class Error(val msg: String?) : GetFarmOrdersState
+}
+
+interface SettingMarketStatus {
+    data object Success : SettingMarketStatus
+    data object Loading : SettingMarketStatus
+    data class Error(val msg: String?) : SettingMarketStatus
 }
