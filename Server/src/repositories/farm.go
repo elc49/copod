@@ -25,9 +25,11 @@ func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParam
 	}
 
 	return &model.Farm{
-		ID:        farm.ID,
-		Name:      farm.Name,
-		Thumbnail: farm.Thumbnail,
+		ID:          farm.ID,
+		Name:        farm.Name,
+		About:       farm.About,
+		DateStarted: farm.DateStarted,
+		Thumbnail:   farm.Thumbnail,
 	}, nil
 }
 
@@ -59,8 +61,23 @@ func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.
 	}
 
 	return &model.Farm{
-		ID:        farm.ID,
-		Name:      farm.Name,
-		Thumbnail: farm.Thumbnail,
+		ID:          farm.ID,
+		Name:        farm.Name,
+		About:       farm.About,
+		DateStarted: farm.DateStarted,
+		Thumbnail:   farm.Thumbnail,
+	}, nil
+}
+
+func (r *FarmRepository) UpdateFarmDetails(ctx context.Context, args db.UpdateFarmDetailsParams) (*model.Farm, error) {
+	f, err := r.store.StoreWriter.UpdateFarmDetails(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Farm{
+		ID:        f.ID,
+		About:     f.About,
+		Thumbnail: f.Thumbnail,
 	}, nil
 }

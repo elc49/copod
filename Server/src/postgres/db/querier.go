@@ -48,6 +48,7 @@ type Querier interface {
 	SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error)
 	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
 	UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error)
+	UpdateFarmDetails(ctx context.Context, arg UpdateFarmDetailsParams) (Farm, error)
 	UpdateMarketVolume(ctx context.Context, arg UpdateMarketVolumeParams) (Market, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (Order, error)
 	UpdatePaystackPaymentStatus(ctx context.Context, arg UpdatePaystackPaymentStatusParams) (Payment, error)

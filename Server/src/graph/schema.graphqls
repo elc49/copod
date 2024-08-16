@@ -60,6 +60,8 @@ type Farm {
   id: UUID!
   name: String!
   thumbnail: String!
+  about: String!
+  dateStarted: Time!
   userId: UUID!
   created_at: Time!
   updated_at: Time!
@@ -150,6 +152,7 @@ input NewPostInput {
 
 input NewFarmInput {
   name: String!
+  dateStarted: Time!
   thumbnail: String!
 }
 
