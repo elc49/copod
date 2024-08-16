@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,6 +68,10 @@ import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.type.MarketStatus
 import com.lomolo.vuno.type.OrderStatus
 import com.lomolo.vuno.type.SetMarketStatusInput
+import com.lomolo.vuno.ui.theme.errorContainerLight
+import com.lomolo.vuno.ui.theme.primaryContainerLight
+import com.lomolo.vuno.ui.theme.secondaryContainerLight
+import com.lomolo.vuno.ui.theme.surfaceContainerLight
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -224,6 +230,14 @@ private fun OrderCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                val statusColor: Color = when(order.status) {
+                    OrderStatus.PENDING -> surfaceContainerLight
+                    OrderStatus.DELIVERED -> primaryContainerLight
+                    OrderStatus.CANCELLED -> errorContainerLight
+                    OrderStatus.CONFIRMED -> secondaryContainerLight
+                    else -> MaterialTheme.colorScheme.primaryContainer
+                }
+
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
                         .crossfade(true).build(),
@@ -239,6 +253,21 @@ private fun OrderCard(
                     "#${index.plus(1)} - ${order.market.name}",
                     fontWeight = FontWeight.Bold,
                 )
+                Box(
+                    Modifier
+                        .background(
+                            statusColor,
+                            MaterialTheme.shapes.small,
+                        )
+                        .padding(4.dp)
+                        .wrapContentSize(Alignment.Center),
+                ) {
+                    Text(
+                        order.status.toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
             // TODO time created
             Row(

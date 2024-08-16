@@ -59,8 +59,8 @@ fun RowScope.TableHeader(
         Modifier
             .weight(weight)
             .padding(8.dp),
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleSmall,
     )
 }
 
@@ -74,7 +74,7 @@ fun RowScope.TableCell(
         Modifier
             .weight(weight)
             .padding(8.dp),
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.bodyMedium,
     )
 }
 
