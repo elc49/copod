@@ -95,6 +95,7 @@ type ComplexityRoot struct {
 		Name          func(childComplexity int) int
 		PricePerUnit  func(childComplexity int) int
 		RunningVolume func(childComplexity int) int
+		Status        func(childComplexity int) int
 		Tag           func(childComplexity int) int
 		Unit          func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
@@ -109,6 +110,7 @@ type ComplexityRoot struct {
 		DeleteCartItem    func(childComplexity int, id uuid.UUID) int
 		PayWithMpesa      func(childComplexity int, input model.PayWithMpesaInput) int
 		SendOrderToFarm   func(childComplexity int, input []*model.SendOrderToFarmInput) int
+		SetMarketStatus   func(childComplexity int, input model.SetMarketStatusInput) int
 		UpdateOrderStatus func(childComplexity int, input model.UpdateOrderStatusInput) int
 	}
 
@@ -203,6 +205,7 @@ type MutationResolver interface {
 	DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error)
 	SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error)
 	UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error)
+	SetMarketStatus(ctx context.Context, input model.SetMarketStatusInput) (*model.Market, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -445,6 +448,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Market.RunningVolume(childComplexity), true
 
+	case "Market.status":
+		if e.complexity.Market.Status == nil {
+			break
+		}
+
+		return e.complexity.Market.Status(childComplexity), true
+
 	case "Market.tag":
 		if e.complexity.Market.Tag == nil {
 			break
@@ -556,6 +566,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.SendOrderToFarm(childComplexity, args["input"].([]*model.SendOrderToFarmInput)), true
+
+	case "Mutation.setMarketStatus":
+		if e.complexity.Mutation.SetMarketStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setMarketStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetMarketStatus(childComplexity, args["input"].(model.SetMarketStatusInput)), true
 
 	case "Mutation.updateOrderStatus":
 		if e.complexity.Mutation.UpdateOrderStatus == nil {
@@ -988,6 +1010,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewPostInput,
 		ec.unmarshalInputPayWithMpesaInput,
 		ec.unmarshalInputSendOrderToFarmInput,
+		ec.unmarshalInputSetMarketStatusInput,
 		ec.unmarshalInputUpdateOrderStatusInput,
 	)
 	first := true
@@ -1219,6 +1242,21 @@ func (ec *executionContext) field_Mutation_sendOrderToFarm_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setMarketStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SetMarketStatusInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1796,6 +1834,8 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -2604,6 +2644,50 @@ func (ec *executionContext) fieldContext_Market_unit(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Market_status(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Market_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.MarketStatus)
+	fc.Result = res
+	return ec.marshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Market_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Market",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MarketStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Market_farmId(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_farmId(ctx, field)
 	if err != nil {
@@ -3065,6 +3149,8 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -3418,6 +3504,89 @@ func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_setMarketStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_setMarketStatus(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetMarketStatus(rctx, fc.Args["input"].(model.SetMarketStatusInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Market)
+	fc.Result = res
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Market_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Market_name(ctx, field)
+			case "image":
+				return ec.fieldContext_Market_image(ctx, field)
+			case "volume":
+				return ec.fieldContext_Market_volume(ctx, field)
+			case "running_volume":
+				return ec.fieldContext_Market_running_volume(ctx, field)
+			case "unit":
+				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
+			case "tag":
+				return ec.fieldContext_Market_tag(ctx, field)
+			case "pricePerUnit":
+				return ec.fieldContext_Market_pricePerUnit(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Market_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Market_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Market", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_setMarketStatus_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Order_id(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Order_id(ctx, field)
 	if err != nil {
@@ -3733,6 +3902,8 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -5136,6 +5307,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.C
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -5288,6 +5461,8 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -8343,6 +8518,40 @@ func (ec *executionContext) unmarshalInputSendOrderToFarmInput(ctx context.Conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSetMarketStatusInput(ctx context.Context, obj interface{}) (model.SetMarketStatusInput, error) {
+	var it model.SetMarketStatusInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "status"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateOrderStatusInput(ctx context.Context, obj interface{}) (model.UpdateOrderStatusInput, error) {
 	var it model.UpdateOrderStatusInput
 	asMap := map[string]interface{}{}
@@ -8721,6 +8930,11 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "status":
+			out.Values[i] = ec._Market_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "farmId":
 			out.Values[i] = ec._Market_farmId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -8845,6 +9059,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateOrderStatus":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateOrderStatus(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "setMarketStatus":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_setMarketStatus(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -10275,6 +10496,16 @@ func (ec *executionContext) marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServ
 	return ec._Market(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, v interface{}) (model.MarketStatus, error) {
+	var res model.MarketStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, sel ast.SelectionSet, v model.MarketStatus) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNNewFarmInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmInput(ctx context.Context, v interface{}) (model.NewFarmInput, error) {
 	res, err := ec.unmarshalInputNewFarmInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -10523,6 +10754,11 @@ func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋ
 func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (*model.SendOrderToFarmInput, error) {
 	res, err := ec.unmarshalInputSendOrderToFarmInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx context.Context, v interface{}) (model.SetMarketStatusInput, error) {
+	res, err := ec.unmarshalInputSetMarketStatusInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS markets(
   image TEXT NOT NULL,
   volume INTEGER NOT NULL,
   running_volume INTEGER NOT NULL,
+  status VARCHAR(6) NOT NULL DEFAULT 'OPEN',
   unit TEXT NOT NULL,
   price_per_unit INTEGER NOT NULL,
   location GEOGRAPHY NOT NULL,

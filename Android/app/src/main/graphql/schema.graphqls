@@ -32,12 +32,6 @@ type Cart {
   updated_at: Time!
 }
 
-input DeleteFarmOrderInput {
-  id: UUID!
-
-  farmId: UUID!
-}
-
 type Farm {
   id: UUID!
 
@@ -75,7 +69,11 @@ type Market {
 
   volume: Int!
 
+  running_volume: Int!
+
   unit: String!
+
+  status: MarketStatus!
 
   farmId: UUID!
 
@@ -88,6 +86,12 @@ type Market {
   created_at: Time!
 
   updated_at: Time!
+}
+
+enum MarketStatus {
+  OPEN
+
+  CLOSED
 }
 
 type Mutation {
@@ -107,7 +111,7 @@ type Mutation {
 
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 
-  deleteFarmOrder(input: DeleteFarmOrderInput!): Boolean!
+  setMarketStatus(input: SetMarketStatusInput!): Market!
 }
 
 input NewFarmInput {
@@ -278,6 +282,12 @@ input SendOrderToFarmInput {
   marketId: UUID!
 
   farmId: UUID!
+}
+
+input SetMarketStatusInput {
+  id: UUID!
+
+  status: MarketStatus!
 }
 
 type Subscription {

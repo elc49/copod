@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,15 +28,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +63,10 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import com.lomolo.vuno.type.MarketStatus
 import com.lomolo.vuno.type.OrderStatus
+import com.lomolo.vuno.type.SetMarketStatusInput
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -106,8 +114,11 @@ private fun FarmHeader(
 private fun MarketCard(
     modifier: Modifier = Modifier,
     market: GetFarmMarketsQuery.GetFarmMarket,
+    onShowBottomSheet: () -> Unit = {},
 ) {
+
     Card(
+        onClick = onShowBottomSheet,
         modifier = modifier.height(120.dp),
         shape = MaterialTheme.shapes.small,
     ) {
@@ -124,21 +135,19 @@ private fun MarketCard(
                     id = R.string.product
                 )
             )
-            if (market.volume > 0) {
-                Box(
-                    Modifier
-                        .background(
-                            MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small
-                        )
-                        .align(Alignment.TopEnd)
-                ) {
-                    Text(
-                        "In-stock",
-                        modifier = Modifier.padding(2.dp),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        fontWeight = FontWeight.SemiBold,
+            Box(
+                Modifier
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small
                     )
-                }
+                    .align(Alignment.TopEnd)
+            ) {
+                Text(
+                    market.status.toString().lowercase(),
+                    modifier = Modifier.padding(2.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
             Box(
                 Modifier.background(
@@ -253,7 +262,9 @@ private fun OrderCard(
                 )
             }
             Row(
-                Modifier.fillMaxWidth().padding(top = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -338,6 +349,18 @@ fun FarmMarketScreen(
     val farm by viewModel.farm.collectAsState()
     val markets by viewModel.farmMarkets.collectAsState()
     val orders by viewModel.farmOrders.collectAsState()
+    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val onCloseBottomSheet = {
+        scope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                showBottomSheet = false
+            }
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -395,7 +418,53 @@ fun FarmMarketScreen(
                             }
                         } else {
                             items(markets) {
-                                MarketCard(market = it)
+                                MarketCard(
+                                    market = it,
+                                    onShowBottomSheet = { showBottomSheet = true })
+                                if (showBottomSheet) {
+                                    ModalBottomSheet(modifier = modifier,
+                                        onDismissRequest = { onCloseBottomSheet() }) {
+                                        Column(
+                                            modifier = Modifier.padding(8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        ) {
+                                            if (it.status == MarketStatus.CLOSED) Text(
+                                                stringResource(R.string.opening_market),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                            ) else Text(
+                                                stringResource(R.string.closing_market),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                            )
+                                            Button(
+                                                onClick = {
+                                                    if (it.status == MarketStatus.OPEN) viewModel.setMarketStatus(
+                                                        SetMarketStatusInput(
+                                                            it.id, MarketStatus.CLOSED
+                                                        )
+                                                    ) { onCloseBottomSheet() } else viewModel.setMarketStatus(
+                                                        SetMarketStatusInput(
+                                                            it.id, MarketStatus.OPEN
+                                                        )
+                                                    ) { onCloseBottomSheet() }
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                            ) {
+                                                when (viewModel.settingMarketStatus) {
+                                                    SettingMarketStatus.Success -> Text(
+                                                        if (it.status == MarketStatus.OPEN) "Close" else "Open",
+                                                        fontWeight = FontWeight.Bold,
+                                                        style = MaterialTheme.typography.titleMedium,
+                                                    )
+
+                                                    SettingMarketStatus.Loading -> CircularProgressIndicator(
+                                                        Modifier.size(20.dp),
+                                                        MaterialTheme.colorScheme.onPrimary,
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

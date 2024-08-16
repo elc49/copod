@@ -13,6 +13,12 @@ enum OrderStatus {
   CANCELLED
 }
 
+# MarketStatus
+enum MarketStatus {
+  OPEN
+  CLOSED
+}
+
 # Address
 type Address {
   addressString: String!
@@ -68,6 +74,7 @@ type Market {
   volume: Int!
   running_volume: Int!
   unit: String!
+  status: MarketStatus!
   farmId: UUID!
   canOrder: Boolean!
   tag: String!
@@ -184,6 +191,11 @@ input UpdateOrderStatusInput {
   status: OrderStatus!
 }
 
+input SetMarketStatusInput {
+  id: UUID!
+  status: MarketStatus!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -208,6 +220,7 @@ type Mutation {
   deleteCartItem(id: UUID!): Boolean!
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
+  setMarketStatus(input: SetMarketStatusInput!): Market!
 }
 
 type Subscription {

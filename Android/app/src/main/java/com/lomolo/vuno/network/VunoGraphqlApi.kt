@@ -26,6 +26,7 @@ import com.lomolo.vuno.GetUserQuery
 import com.lomolo.vuno.PayWithMpesaMutation
 import com.lomolo.vuno.PaymentUpdateSubscription
 import com.lomolo.vuno.SendOrderToFarmMutation
+import com.lomolo.vuno.SetMarketStatusMutation
 import com.lomolo.vuno.UpdateOrderStatusMutation
 import com.lomolo.vuno.compose.screens.Farm
 import com.lomolo.vuno.compose.screens.Market
@@ -38,6 +39,7 @@ import com.lomolo.vuno.type.NewFarmMarketInput
 import com.lomolo.vuno.type.NewPostInput
 import com.lomolo.vuno.type.PayWithMpesaInput
 import com.lomolo.vuno.type.SendOrderToFarmInput
+import com.lomolo.vuno.type.SetMarketStatusInput
 import com.lomolo.vuno.type.UpdateOrderStatusInput
 import kotlinx.coroutines.flow.Flow
 
@@ -63,6 +65,7 @@ interface IVunoGraphqlApi {
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
     suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
+    suspend fun setMarketStatus(input: SetMarketStatusInput): ApolloResponse<SetMarketStatusMutation.Data>
 }
 
 class VunoGraphqlApi(
@@ -190,5 +193,9 @@ class VunoGraphqlApi(
                 input.status,
             )
         ))
+        .execute()
+
+    override suspend fun setMarketStatus(input: SetMarketStatusInput) = apolloClient
+        .mutation(SetMarketStatusMutation(input))
         .execute()
 }

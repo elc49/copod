@@ -4,6 +4,7 @@ mutation CreateFarmMarket($input: NewFarmMarketInput!) {
         name
         image
         unit
+        status
         pricePerUnit
         volume
         farmId

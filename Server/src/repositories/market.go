@@ -31,6 +31,7 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 			Name:         item.Product,
 			Image:        item.Image,
 			FarmID:       item.FarmID,
+			Status:       model.MarketStatus(item.Status),
 			Unit:         item.Unit,
 			Volume:       int(item.Volume),
 			PricePerUnit: int(item.PricePerUnit),
@@ -79,6 +80,7 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 		Unit:          market.Unit,
 		Tag:           market.Tag,
 		FarmID:        market.FarmID,
+		Status:        model.MarketStatus(market.Status),
 		Volume:        int(market.Volume),
 		RunningVolume: int(market.RunningVolume),
 		PricePerUnit:  int(market.PricePerUnit),
@@ -130,4 +132,16 @@ func (r *MarketRepository) getFarmOwnerID(ctx context.Context, farmID uuid.UUID)
 	}
 
 	return owner.String(), nil
+}
+
+func (r *MarketRepository) SetMarketStatus(ctx context.Context, args db.SetMarketStatusParams) (*model.Market, error) {
+	m, err := r.store.StoreWriter.SetMarketStatus(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Market{
+		ID:     m.ID,
+		Status: model.MarketStatus(m.Status),
+	}, nil
 }

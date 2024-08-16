@@ -56,7 +56,7 @@ func InitWriter(option config.Rdbms) *db.Queries {
 	if err := dbConn.Ping(); err != nil {
 		log.WithError(err).Fatalln("postgres: ping InitWriter")
 		return nil
-	} else if err == nil {
+	} else {
 		log.Infoln("Store writer connection...OK")
 	}
 
@@ -68,7 +68,7 @@ func InitWriter(option config.Rdbms) *db.Queries {
 	// Setup postgres tables schema
 	if err := runMigration(option.Postgres.Migration, option.Postgres.Migrate, dbConn); err != nil {
 		log.WithError(err).Fatalln("postgres: runMigration")
-	} else if err == nil {
+	} else {
 		log.Infoln("Store writer tables schema...OK")
 	}
 
@@ -112,7 +112,7 @@ func InitReader(option config.Rdbms) *db.Queries {
 	if err := dbConn.Ping(); err != nil {
 		log.WithError(err).Fatalln("postgres: ping InitReader")
 		return nil
-	} else if err == nil {
+	} else {
 		log.Infoln("Store reader connection...OK")
 	}
 

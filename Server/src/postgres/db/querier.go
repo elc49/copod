@@ -44,6 +44,7 @@ type Querier interface {
 	GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error)
 	GetUserCartItems(ctx context.Context, userID uuid.UUID) ([]Cart, error)
 	GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) (int64, error)
+	SetMarketStatus(ctx context.Context, arg SetMarketStatusParams) (Market, error)
 	SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error)
 	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
 	UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error)

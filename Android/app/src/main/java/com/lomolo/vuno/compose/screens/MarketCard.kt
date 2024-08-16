@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-internal fun MarketCard(
+fun MarketCard(
     modifier: Modifier = Modifier,
     data: GetLocalizedMarketsQuery.GetLocalizedMarket,
     currencyLocale: String,
