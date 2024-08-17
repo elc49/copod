@@ -12,6 +12,7 @@ import com.lomolo.vuno.compose.screens.CreateFarmViewModel
 import com.lomolo.vuno.compose.screens.CreatePostViewModel
 import com.lomolo.vuno.compose.screens.DashboardViewModel
 import com.lomolo.vuno.compose.screens.FarmMarketViewModel
+import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
 import com.lomolo.vuno.compose.screens.MarketCartViewModel
 import com.lomolo.vuno.compose.screens.MarketsViewModel
@@ -35,6 +36,7 @@ object VunoViewModelProvider {
         lateinit var paymentViewModel: PaymentViewModel
         lateinit var marketCartViewModel: MarketCartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
+        lateinit var farmSettingsViewModel: FarmSettingsViewModel
 
         initializer {
             mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
@@ -149,6 +151,13 @@ object VunoViewModelProvider {
                 giggyApplication().container.marketsRepository,
             )
             userOrdersViewModel
+        }
+
+        initializer {
+            farmSettingsViewModel = FarmSettingsViewModel(
+                this.createSavedStateHandle(),
+            )
+            farmSettingsViewModel
         }
     }
 }

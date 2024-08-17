@@ -29,9 +29,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
@@ -82,7 +83,7 @@ import kotlinx.datetime.toLocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
-object FarmMarketScreenDestination : Navigation {
+object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
     override val route = "dashboard-market"
     const val farmIdArg = "farmId"
@@ -92,6 +93,7 @@ object FarmMarketScreenDestination : Navigation {
 @Composable
 private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
+    onNavigateToSettings: (String) -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -119,7 +121,11 @@ private fun FarmHeader(
                     fontWeight = FontWeight.ExtraBold
                 )
             }
-            OutlinedIconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                if (farm != null) {
+                    onNavigateToSettings(farm.id.toString())
+                }
+            }) {
                Icon(
                    Icons.TwoTone.Settings,
                    contentDescription = stringResource(R.string.settings),
@@ -379,9 +385,10 @@ private fun OrderCard(
 
 @ExperimentalMaterial3Api
 @Composable
-fun FarmMarketScreen(
+fun FarmStoreScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    navHostController: NavHostController,
     viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
@@ -409,7 +416,10 @@ fun FarmMarketScreen(
     ) {
         when (viewModel.gettingFarmState) {
             GetFarmState.Success -> FarmHeader(
-                farm = farm
+                farm = farm,
+                onNavigateToSettings = {
+                    navHostController.navigate("${FarmSettingsScreenDestination.route}/$it")
+                }
             )
 
             GetFarmState.Loading -> Row(

@@ -51,9 +51,11 @@ import com.lomolo.vuno.compose.screens.CreatePostScreen
 import com.lomolo.vuno.compose.screens.CreatePostScreenDestination
 import com.lomolo.vuno.compose.screens.DashboardScreen
 import com.lomolo.vuno.compose.screens.DashboardScreenDestination
-import com.lomolo.vuno.compose.screens.FarmMarketScreen
-import com.lomolo.vuno.compose.screens.FarmMarketScreenDestination
 import com.lomolo.vuno.compose.screens.FarmScreenDestination
+import com.lomolo.vuno.compose.screens.FarmSettingsScreen
+import com.lomolo.vuno.compose.screens.FarmSettingsScreenDestination
+import com.lomolo.vuno.compose.screens.FarmStoreScreen
+import com.lomolo.vuno.compose.screens.FarmStoreScreenDestination
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreen
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.vuno.compose.screens.FarmsScreen
@@ -215,8 +217,8 @@ fun NavGraphBuilder.addDashboardGraph(
                 })
         }
         composable(
-            route = FarmMarketScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmMarketScreenDestination.farmIdArg) {
+            route = FarmStoreScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmStoreScreenDestination.farmIdArg) {
                 type = NavType.StringType
             })
         ) {
@@ -224,7 +226,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-                        title = {},
+                        title = { Text(stringResource(FarmStoreScreenDestination.title)) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 navHostController.popBackStack()
@@ -253,8 +255,9 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    FarmMarketScreen(
+                    FarmStoreScreen(
                         deviceDetails = deviceDetails,
+                        navHostController = navHostController,
                     )
                 }
             }
@@ -443,6 +446,18 @@ fun NavGraphBuilder.addDashboardGraph(
                 modifier = modifier,
                 deviceDetails = deviceDetails,
                 onNavigateBack = { navHostController.popBackStack() },
+            )
+        }
+        composable(
+            route = FarmSettingsScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmSettingsScreenDestination.farmIdArg) {
+                type = NavType.StringType
+            })
+        ) {
+            FarmSettingsScreen(
+                onNavigateBack = {
+                    navHostController.popBackStack()
+                }
             )
         }
     }
