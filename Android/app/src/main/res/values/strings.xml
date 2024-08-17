@@ -94,4 +94,9 @@
     <string name="date_started">Date started</string>
     <string name="ok">OK</string>
     <string name="settings">Settings</string>
+    <string name="save">Save</string>
+    <string name="when_start_farming">When you started farming</string>
+    <string name="started">Started</string>
+    <string name="what_about_farm">Briefly describe what you do or are doing in this farm</string>
+    <string name="farm_name_support_text">People will refer to your farm by this name</string>
 </resources>

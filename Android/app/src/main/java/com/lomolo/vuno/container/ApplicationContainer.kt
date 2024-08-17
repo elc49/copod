@@ -31,10 +31,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 interface IApplicationContainer{
-    val giggyRestApiService: IVunoRestApi
+    val vunoRestApiService: IVunoRestApi
     val sessionRepository: ISession
     val apolloClient: ApolloClient
-    val giggyGraphqlApiService: IVunoGraphqlApi
+    val vunoGraphqlApiService: IVunoGraphqlApi
     val farmRepository: IFarm
     val marketsRepository: IMarkets
     val postersRepository: IPosters
@@ -63,14 +63,14 @@ class ApplicationContainer(
         .client(okhttpClient)
         .build()
 
-    override val giggyRestApiService: IVunoRestApi by lazy {
+    override val vunoRestApiService: IVunoRestApi by lazy {
         retrofit.create(IVunoRestApi::class.java)
     }
 
     override val sessionRepository: ISession by lazy {
         SessionRepository(
             Store.getStore(context).sessionDao(),
-            giggyRestApiService,
+            vunoRestApiService,
         )
     }
 
@@ -93,23 +93,23 @@ class ApplicationContainer(
         .normalizedCache(sqlNormalizedCacheFactory)
         .build()
 
-    override val giggyGraphqlApiService: IVunoGraphqlApi by lazy {
+    override val vunoGraphqlApiService: IVunoGraphqlApi by lazy {
         VunoGraphqlApi(apolloClient)
     }
 
     override val farmRepository: IFarm by lazy {
-        FarmRepository(giggyGraphqlApiService)
+        FarmRepository(vunoGraphqlApiService)
     }
 
     override val marketsRepository: IMarkets by lazy {
-        MarketsRepository(giggyGraphqlApiService)
+        MarketsRepository(vunoGraphqlApiService)
     }
 
     override val postersRepository: IPosters by lazy {
-        PostersRepository(giggyGraphqlApiService)
+        PostersRepository(vunoGraphqlApiService)
     }
 
     override val paymentRepository: IPayment by lazy {
-        PaymentRepository(giggyGraphqlApiService)
+        PaymentRepository(vunoGraphqlApiService)
     }
 }

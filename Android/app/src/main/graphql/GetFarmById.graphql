@@ -2,6 +2,8 @@ query GetFarmById($id: UUID!) {
     getFarmById(id: $id) {
         id
         name
+        about
+        dateStarted
         thumbnail
     }
 }

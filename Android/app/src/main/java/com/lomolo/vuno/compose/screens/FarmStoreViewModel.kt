@@ -24,7 +24,7 @@ import okio.IOException
 
 class FarmMarketViewModel(
     savedStateHandle: SavedStateHandle,
-    private val giggyGraphqlApi: IVunoGraphqlApi,
+    private val vunoGraphqlApi: IVunoGraphqlApi,
     private val apolloStore: ApolloStore,
 ) : ViewModel() {
     private val storeId: String =
@@ -39,6 +39,8 @@ class FarmMarketViewModel(
             "",
             "",
             "",
+            "",
+            "",
         )
     )
     val farm: StateFlow<GetFarmByIdQuery.GetFarmById> = _farmData.asStateFlow()
@@ -50,7 +52,7 @@ class FarmMarketViewModel(
             gettingFarmState = GetFarmState.Loading
             viewModelScope.launch {
                 gettingFarmState = try {
-                    val res = giggyGraphqlApi.getFarm(storeId).dataOrThrow()
+                    val res = vunoGraphqlApi.getFarm(storeId).dataOrThrow()
                     _farmData.update { res.getFarmById }
                     GetFarmState.Success
                 } catch (e: IOException) {
@@ -76,7 +78,7 @@ class FarmMarketViewModel(
             gettingFarmOrdersState = GetFarmOrdersState.Loading
             viewModelScope.launch {
                 try {
-                    giggyGraphqlApi.getFarmOrders(storeId).collect { res ->
+                    vunoGraphqlApi.getFarmOrders(storeId).collect { res ->
                         _farmOrders.update { res.data?.getFarmOrders ?: listOf() }
                         gettingFarmOrdersState = GetFarmOrdersState.Success
                     }
@@ -103,7 +105,7 @@ class FarmMarketViewModel(
             viewModelScope.launch {
                 gettingFarmMarketsState = GetFarmMarketsState.Loading
                 try {
-                    giggyGraphqlApi.getFarmMarkets(storeId).collect { res ->
+                    vunoGraphqlApi.getFarmMarkets(storeId).collect { res ->
                         _farmMarkets.update { res.data?.getFarmMarkets ?: listOf() }
                         gettingFarmMarketsState = GetFarmMarketsState.Success
                     }
@@ -126,7 +128,7 @@ class FarmMarketViewModel(
             updatingOrderState = UpdateOrderState.Loading
             viewModelScope.launch {
                 updatingOrderState = try {
-                    val res = giggyGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status))
+                    val res = vunoGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status))
                         .dataOrThrow()
                     try {
                         val updatedCacheData = apolloStore.readOperation(
@@ -173,7 +175,7 @@ class FarmMarketViewModel(
             settingMarketStatus = SettingMarketStatus.Loading
             viewModelScope.launch {
                 settingMarketStatus = try {
-                    val res = giggyGraphqlApi.setMarketStatus(input).dataOrThrow()
+                    val res = vunoGraphqlApi.setMarketStatus(input).dataOrThrow()
                     try {
                         val updateCachedData = apolloStore.readOperation(
                             GetFarmMarketsQuery(storeId)

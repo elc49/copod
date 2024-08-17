@@ -39,14 +39,14 @@ object VunoViewModelProvider {
         lateinit var farmSettingsViewModel: FarmSettingsViewModel
 
         initializer {
-            mainViewModel = MainViewModel(giggyApplication().container.giggyRestApiService)
+            mainViewModel = MainViewModel(vunoApplication().container.vunoRestApiService)
             mainViewModel
         }
 
         initializer {
             sessionViewModel = SessionViewModel(
-                giggyApplication().container.sessionRepository,
-                giggyApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.sessionRepository,
+                vunoApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel
         }
@@ -54,15 +54,15 @@ object VunoViewModelProvider {
         initializer {
             createPostViewModel = CreatePostViewModel(
                 mainViewModel,
-                giggyApplication().container.giggyRestApiService,
-                giggyApplication().container.giggyGraphqlApiService,
+                vunoApplication().container.vunoRestApiService,
+                vunoApplication().container.vunoGraphqlApiService,
             )
             createPostViewModel
         }
 
         initializer {
             storeViewModel = FarmViewModel(
-                giggyApplication().container.farmRepository,
+                vunoApplication().container.farmRepository,
             )
             storeViewModel
         }
@@ -70,18 +70,18 @@ object VunoViewModelProvider {
         initializer {
             farmMarketViewModel = FarmMarketViewModel(
                 this.createSavedStateHandle(),
-                giggyApplication().container.giggyGraphqlApiService,
-                giggyApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.vunoGraphqlApiService,
+                vunoApplication().container.apolloClient.apolloStore,
             )
             farmMarketViewModel
         }
 
         initializer {
             addFarmMarketViewModel = AddFarmMarketViewModel(
-                giggyApplication().container.giggyRestApiService,
+                vunoApplication().container.vunoRestApiService,
                 farmMarketViewModel,
-                giggyApplication().container.giggyGraphqlApiService,
-                giggyApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.vunoGraphqlApiService,
+                vunoApplication().container.apolloClient.apolloStore,
                 mainViewModel,
             )
             addFarmMarketViewModel
@@ -89,23 +89,23 @@ object VunoViewModelProvider {
 
         initializer {
             createFarmViewModel = CreateFarmViewModel(
-                giggyApplication().container.apolloClient.apolloStore,
-                giggyApplication().container.giggyRestApiService,
-                giggyApplication().container.farmRepository,
+                vunoApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.vunoRestApiService,
+                vunoApplication().container.farmRepository,
             )
             createFarmViewModel
         }
 
         initializer {
             accountViewModel = AccountViewModel(
-                giggyApplication().container.giggyGraphqlApiService,
+                vunoApplication().container.vunoGraphqlApiService,
             )
             accountViewModel
         }
 
         initializer {
             signinViewModel = SigninViewModel(
-                giggyApplication().container.sessionRepository,
+                vunoApplication().container.sessionRepository,
                 mainViewModel
             )
             signinViewModel
@@ -113,16 +113,16 @@ object VunoViewModelProvider {
 
         initializer {
             marketsViewModel = MarketsViewModel(
-                giggyApplication().container.marketsRepository,
+                vunoApplication().container.marketsRepository,
                 mainViewModel,
-                giggyApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.apolloClient.apolloStore,
             )
             marketsViewModel
         }
 
         initializer {
             dashboardViewModel = DashboardViewModel(
-                giggyApplication().container.postersRepository,
+                vunoApplication().container.postersRepository,
                 mainViewModel,
             )
             dashboardViewModel
@@ -130,7 +130,7 @@ object VunoViewModelProvider {
 
         initializer {
             paymentViewModel = PaymentViewModel(
-                giggyApplication().container.paymentRepository,
+                vunoApplication().container.paymentRepository,
                 sessionViewModel = sessionViewModel,
                 this.createSavedStateHandle(),
             )
@@ -139,8 +139,8 @@ object VunoViewModelProvider {
 
         initializer {
             marketCartViewModel = MarketCartViewModel(
-                giggyApplication().container.marketsRepository,
-                giggyApplication().container.apolloClient.apolloStore,
+                vunoApplication().container.marketsRepository,
+                vunoApplication().container.apolloClient.apolloStore,
                 marketsViewModel,
             )
             marketCartViewModel
@@ -148,13 +148,14 @@ object VunoViewModelProvider {
 
         initializer {
             userOrdersViewModel = UserOrdersViewModel(
-                giggyApplication().container.marketsRepository,
+                vunoApplication().container.marketsRepository,
             )
             userOrdersViewModel
         }
 
         initializer {
             farmSettingsViewModel = FarmSettingsViewModel(
+                vunoApplication().container.vunoGraphqlApiService,
                 this.createSavedStateHandle(),
             )
             farmSettingsViewModel
@@ -163,4 +164,4 @@ object VunoViewModelProvider {
 }
 
 /* Instance of Vuno App */
-fun CreationExtras.giggyApplication(): VunoApp = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as VunoApp)
+fun CreationExtras.vunoApplication(): VunoApp = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as VunoApp)
