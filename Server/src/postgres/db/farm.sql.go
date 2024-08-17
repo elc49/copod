@@ -89,16 +89,18 @@ func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow
 }
 
 const getFarmsBelongingToUser = `-- name: GetFarmsBelongingToUser :many
-SELECT id, name, thumbnail, created_at, updated_at FROM farms
+SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE user_id = $1 AND deleted_at IS NULL
 `
 
 type GetFarmsBelongingToUserRow struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Thumbnail string    `json:"thumbnail"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	About       string    `json:"about"`
+	DateStarted time.Time `json:"date_started"`
+	Thumbnail   string    `json:"thumbnail"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error) {
@@ -113,6 +115,8 @@ func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID)
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.About,
+			&i.DateStarted,
 			&i.Thumbnail,
 			&i.CreatedAt,
 			&i.UpdatedAt,

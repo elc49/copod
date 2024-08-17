@@ -39,6 +39,10 @@ type Farm {
 
   thumbnail: String!
 
+  about: String!
+
+  dateStarted: Time!
+
   userId: UUID!
 
   created_at: Time!
@@ -112,10 +116,14 @@ type Mutation {
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 
   setMarketStatus(input: SetMarketStatusInput!): Market!
+
+  updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
 }
 
 input NewFarmInput {
   name: String!
+
+  dateStarted: String!
 
   thumbnail: String!
 }
@@ -297,6 +305,14 @@ type Subscription {
 scalar Time
 
 scalar UUID
+
+input UpdateFarmDetailsInput {
+  id: UUID!
+
+  about: String!
+
+  thumbnail: String!
+}
 
 input UpdateOrderStatusInput {
   id: UUID!

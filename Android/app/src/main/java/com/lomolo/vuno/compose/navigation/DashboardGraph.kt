@@ -254,7 +254,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         .padding(it)
                 ) {
                     FarmMarketScreen(
-                       deviceDetails = deviceDetails,
+                        deviceDetails = deviceDetails,
                     )
                 }
             }
@@ -301,16 +301,15 @@ fun NavGraphBuilder.addDashboardGraph(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            CreateFarmScreen(
-                onNavigateBack = {
-                    navHostController.popBackStack()
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            "Farm created.", withDismissAction = true
-                        )
-                    }
-                },
-            )
+            CreateFarmScreen(onNavigateBack = {
+                navHostController.popBackStack()
+            }, deviceDetails = deviceDetails, showToast = {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        "Farm created.", withDismissAction = true
+                    )
+                }
+            })
         }
         dialog(
             route = CreateFarmMarketDestination.route,

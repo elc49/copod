@@ -42,9 +42,11 @@ func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UU
 
 	for _, item := range s {
 		farm := &model.Farm{
-			ID:        item.ID,
-			Name:      item.Name,
-			Thumbnail: item.Thumbnail,
+			ID:          item.ID,
+			Name:        item.Name,
+			About:       item.About,
+			DateStarted: item.DateStarted,
+			Thumbnail:   item.Thumbnail,
 		}
 		farms = append(farms, farm)
 	}

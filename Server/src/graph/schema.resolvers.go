@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/postgres/db"
@@ -36,10 +37,16 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostIn
 // CreateFarm is the resolver for the createFarm field.
 func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
+	d, err := time.Parse(time.RFC3339, input.DateStarted)
+	if err != nil {
+		return nil, err
+	}
+
 	args := db.CreateFarmParams{
-		Name:      input.Name,
-		Thumbnail: input.Thumbnail,
-		UserID:    userId,
+		Name:        input.Name,
+		DateStarted: d,
+		Thumbnail:   input.Thumbnail,
+		UserID:      userId,
 	}
 
 	return r.farmController.CreateFarm(ctx, args)
@@ -110,6 +117,11 @@ func (r *mutationResolver) SetMarketStatus(ctx context.Context, input model.SetM
 		ID:     input.ID,
 		Status: input.Status.String(),
 	})
+}
+
+// UpdateFarmDetails is the resolver for the updateFarmDetails field.
+func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.UpdateFarmDetailsInput) (*model.Farm, error) {
+	panic(fmt.Errorf("not implemented: UpdateFarmDetails - updateFarmDetails"))
 }
 
 // Market is the resolver for the market field.

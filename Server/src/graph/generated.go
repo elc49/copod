@@ -113,6 +113,7 @@ type ComplexityRoot struct {
 		PayWithMpesa      func(childComplexity int, input model.PayWithMpesaInput) int
 		SendOrderToFarm   func(childComplexity int, input []*model.SendOrderToFarmInput) int
 		SetMarketStatus   func(childComplexity int, input model.SetMarketStatusInput) int
+		UpdateFarmDetails func(childComplexity int, input model.UpdateFarmDetailsInput) int
 		UpdateOrderStatus func(childComplexity int, input model.UpdateOrderStatusInput) int
 	}
 
@@ -208,6 +209,7 @@ type MutationResolver interface {
 	SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error)
 	UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error)
 	SetMarketStatus(ctx context.Context, input model.SetMarketStatusInput) (*model.Market, error)
+	UpdateFarmDetails(ctx context.Context, input model.UpdateFarmDetailsInput) (*model.Farm, error)
 }
 type OrderResolver interface {
 	Market(ctx context.Context, obj *model.Order) (*model.Market, error)
@@ -594,6 +596,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.SetMarketStatus(childComplexity, args["input"].(model.SetMarketStatusInput)), true
+
+	case "Mutation.updateFarmDetails":
+		if e.complexity.Mutation.UpdateFarmDetails == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateFarmDetails_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateFarmDetails(childComplexity, args["input"].(model.UpdateFarmDetailsInput)), true
 
 	case "Mutation.updateOrderStatus":
 		if e.complexity.Mutation.UpdateOrderStatus == nil {
@@ -1027,6 +1041,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputPayWithMpesaInput,
 		ec.unmarshalInputSendOrderToFarmInput,
 		ec.unmarshalInputSetMarketStatusInput,
+		ec.unmarshalInputUpdateFarmDetailsInput,
 		ec.unmarshalInputUpdateOrderStatusInput,
 	)
 	first := true
@@ -1273,6 +1288,21 @@ func (ec *executionContext) field_Mutation_setMarketStatus_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateFarmDetails_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateFarmDetailsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3693,6 +3723,81 @@ func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_setMarketStatus_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateFarmDetails(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateFarmDetails(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateFarmDetails(rctx, fc.Args["input"].(model.UpdateFarmDetailsInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Farm)
+	fc.Result = res
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateFarmDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Farm_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Farm_name(ctx, field)
+			case "thumbnail":
+				return ec.fieldContext_Farm_thumbnail(ctx, field)
+			case "about":
+				return ec.fieldContext_Farm_about(ctx, field)
+			case "dateStarted":
+				return ec.fieldContext_Farm_dateStarted(ctx, field)
+			case "userId":
+				return ec.fieldContext_Farm_userId(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Farm_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Farm_updated_at(ctx, field)
+			case "deleted_at":
+				return ec.fieldContext_Farm_deleted_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Farm", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateFarmDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8386,7 +8491,7 @@ func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj 
 			it.Name = data
 		case "dateStarted":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateStarted"))
-			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8673,6 +8778,47 @@ func (ec *executionContext) unmarshalInputSetMarketStatusInput(ctx context.Conte
 				return it, err
 			}
 			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateFarmDetailsInput(ctx context.Context, obj interface{}) (model.UpdateFarmDetailsInput, error) {
+	var it model.UpdateFarmDetailsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "about", "thumbnail"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "about":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("about"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.About = data
+		case "thumbnail":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("thumbnail"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Thumbnail = data
 		}
 	}
 
@@ -9203,6 +9349,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "setMarketStatus":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_setMarketStatus(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateFarmDetails":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateFarmDetails(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -10973,6 +11126,11 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx context.Context, v interface{}) (model.UpdateFarmDetailsInput, error) {
+	res, err := ec.unmarshalInputUpdateFarmDetailsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateOrderStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateOrderStatusInput(ctx context.Context, v interface{}) (model.UpdateOrderStatusInput, error) {

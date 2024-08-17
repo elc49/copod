@@ -2,6 +2,8 @@ mutation CreateFarm($input: NewFarmInput!) {
     createFarm(input: $input) {
         id
         name
+        about
+        dateStarted
         thumbnail
     }
 }

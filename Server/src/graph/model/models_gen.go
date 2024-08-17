@@ -71,9 +71,9 @@ type Mutation struct {
 }
 
 type NewFarmInput struct {
-	Name        string    `json:"name"`
-	DateStarted time.Time `json:"dateStarted"`
-	Thumbnail   string    `json:"thumbnail"`
+	Name        string `json:"name"`
+	DateStarted string `json:"dateStarted"`
+	Thumbnail   string `json:"thumbnail"`
 }
 
 type NewFarmMarketInput struct {
@@ -167,6 +167,12 @@ type SetMarketStatusInput struct {
 }
 
 type Subscription struct {
+}
+
+type UpdateFarmDetailsInput struct {
+	ID        uuid.UUID `json:"id"`
+	About     string    `json:"about"`
+	Thumbnail string    `json:"thumbnail"`
 }
 
 type UpdateOrderStatusInput struct {

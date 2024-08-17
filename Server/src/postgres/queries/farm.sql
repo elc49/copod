@@ -6,7 +6,7 @@ INSERT INTO farms (
 ) RETURNING *;
 
 -- name: GetFarmsBelongingToUser :many
-SELECT id, name, thumbnail, created_at, updated_at FROM farms
+SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE user_id = $1 AND deleted_at IS NULL;
 
 -- name: GetFarmByID :one

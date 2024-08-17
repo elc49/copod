@@ -28,7 +28,7 @@
     <string name="content_info">content info</string>
     <string name="create">Create</string>
     <string name="farm_headline">First step to start selling harvests, and fulfill orders.</string>
-    <string name="create_farm">Create farm</string>
+    <string name="add_farm">Add farm</string>
     <string name="farm_name">Farm name</string>
     <string name="your_farms">Your farms</string>
     <string name="add_farm_image">Add farm image</string>
@@ -90,4 +90,7 @@
     <string name="deliver">Deliver</string>
     <string name="closing_market">Closing market will just silence incoming orders notification. People will see you\'re closed but still able to send orders.</string>
     <string name="opening_market">Show people you\'re open to receiving orders</string>
+    <string name="date">Date</string>
+    <string name="date_started">Date started</string>
+    <string name="ok">OK</string>
 </resources>
