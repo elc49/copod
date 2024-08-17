@@ -93,4 +93,5 @@
     <string name="date">Date</string>
     <string name="date_started">Date started</string>
     <string name="ok">OK</string>
+    <string name="settings">Settings</string>
 </resources>

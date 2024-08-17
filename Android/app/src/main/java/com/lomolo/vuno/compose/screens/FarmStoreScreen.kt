@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
+import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,6 +31,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -92,7 +94,8 @@ private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
 ) {
     Row(
-        Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
@@ -105,13 +108,23 @@ private fun FarmHeader(
             placeholder = painterResource(id = R.drawable.loading_img),
             contentDescription = null
         )
-        farm?.name?.let {
-            Text(
-                text = it,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            farm?.name?.let {
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+            OutlinedIconButton(onClick = { /*TODO*/ }) {
+               Icon(
+                   Icons.TwoTone.Settings,
+                   contentDescription = stringResource(R.string.settings),
+               )
+            }
         }
     }
 }
