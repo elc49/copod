@@ -438,7 +438,7 @@ fun NavGraphBuilder.addDashboardGraph(
             route = MarketCartScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            MarketCartScreen(deviceDetails = deviceDetails, onCloseDialog = {
+            MarketCartScreen(snackbarHostState = snackbarHostState, deviceDetails = deviceDetails, onCloseDialog = {
                 navHostController.popBackStack()
             })
         }

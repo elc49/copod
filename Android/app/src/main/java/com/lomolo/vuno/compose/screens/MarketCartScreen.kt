@@ -25,12 +25,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,6 +46,7 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import kotlinx.coroutines.launch
 
 object MarketCartScreenDestination : Navigation {
     override val title = R.string.your_cart
@@ -85,28 +89,37 @@ fun MarketCartScreen(
     modifier: Modifier = Modifier,
     onCloseDialog: () -> Unit,
     deviceDetails: DeviceDetails,
+    snackbarHostState: SnackbarHostState,
     viewModel: MarketCartViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val cartItems by viewModel.cartContent.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }
+    val scope = rememberCoroutineScope()
+    val showToast = { it: String ->
+        scope.launch {
+            snackbarHostState.showSnackbar(it, withDismissAction = true)
+        }
+    }
 
-    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-        TopAppBar(title = {
-            Text(
-                stringResource(id = MarketCartScreenDestination.title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
-        }, navigationIcon = {
-            IconButton(onClick = onCloseDialog) {
-                Icon(
-                    Icons.TwoTone.Close,
-                    modifier = Modifier.size(28.dp),
-                    contentDescription = null,
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(title = {
+                Text(
+                    stringResource(id = MarketCartScreenDestination.title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
                 )
-            }
-        })
-    }) { innerPadding ->
+            }, navigationIcon = {
+                IconButton(onClick = onCloseDialog) {
+                    Icon(
+                        Icons.TwoTone.Close,
+                        modifier = Modifier.size(28.dp),
+                        contentDescription = null,
+                    )
+                }
+            })
+        }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -215,7 +228,7 @@ fun MarketCartScreen(
                                             it.farm_id.toString(),
                                             it.volume.times(it.market.pricePerUnit),
                                         )
-                                    })
+                                    }) { showToast("Sent. Waiting confirmation.") }
                                 },
                                 Modifier.fillMaxWidth(),
                                 contentPadding = PaddingValues(12.dp),
