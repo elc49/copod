@@ -156,7 +156,9 @@ object VunoViewModelProvider {
         initializer {
             farmSettingsViewModel = FarmSettingsViewModel(
                 vunoApplication().container.vunoGraphqlApiService,
+                vunoApplication().container.vunoRestApiService,
                 this.createSavedStateHandle(),
+                vunoApplication().container.apolloClient.apolloStore,
             )
             farmSettingsViewModel
         }

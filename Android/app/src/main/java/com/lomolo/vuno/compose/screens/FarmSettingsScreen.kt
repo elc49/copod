@@ -1,5 +1,9 @@
 package com.lomolo.vuno.compose.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +31,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +45,9 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
+import kotlinx.coroutines.launch
 
-object FarmSettingsScreenDestination: Navigation {
+object FarmSettingsScreenDestination : Navigation {
     override val title = R.string.settings
     override val route = "dashboard-farm-settings"
     const val farmIdArg = "farmId"
@@ -58,24 +64,49 @@ fun FarmSettingsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val farmDetails by viewModel.farmDetails.collectAsState()
-
-    Scaffold(
-        topBar = {
-            LargeTopAppBar(
-                windowInsets = WindowInsets(0, 0, 0, 0),
-                title = { Text(stringResource(FarmSettingsScreenDestination.title)) },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                       Icon(
-                           Icons.AutoMirrored.TwoTone.ArrowBack,
-                           contentDescription = stringResource(id = R.string.go_back),
-                       )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
+    val scope = rememberCoroutineScope()
+    val pickMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) {
+        if (it != null) {
+            val stream = context.contentResolver.openInputStream(it)
+            if (stream != null) {
+                viewModel.uploadImage(stream)
+            }
         }
-    ) { innerPadding ->
+    }
+    val selectImage = {
+        if (viewModel.farmImageUploadState !is FarmImageUploadState.Loading) {
+            scope.launch {
+                pickMedia.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
+        }
+    }
+    val img = when(viewModel.farmImageUploadState) {
+        FarmImageUploadState.Loading -> R.drawable.loading_img
+        FarmImageUploadState.Success -> farmDetails.thumbnail
+        else -> R.drawable.ic_broken_image
+    }
+
+    Scaffold(topBar = {
+        LargeTopAppBar(
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            title = { Text(stringResource(FarmSettingsScreenDestination.title)) },
+            navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = stringResource(id = R.string.go_back),
+                    )
+                }
+            },
+            scrollBehavior = scrollBehavior,
+        )
+    }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -89,18 +120,19 @@ fun FarmSettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                when(viewModel.gettingFarmDetails) {
+                when (viewModel.gettingFarmDetails) {
                     GettingFarmDetails.Loading -> CircularProgressIndicator()
                     GettingFarmDetails.Success -> {
                         AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(farmDetails.thumbnail)
-                                .crossfade(true)
-                                .build(),
+                            model = ImageRequest.Builder(context).data(img)
+                                .crossfade(true).build(),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(60.dp)
-                                .clip(MaterialTheme.shapes.extraSmall),
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .clickable {
+                                    selectImage()
+                                },
                             contentDescription = null
                         )
                         OutlinedTextField(
@@ -123,8 +155,9 @@ fun FarmSettingsScreen(
                             supportingText = {
                                 Text(stringResource(R.string.what_about_farm))
                             },
-                            onValueChange = {},
-                            readOnly = true,
+                            onValueChange = {
+                                viewModel.setAbout(it)
+                            },
                         )
                         OutlinedTextField(
                             value = farmDetails.dateStarted.toString(),
@@ -139,14 +172,26 @@ fun FarmSettingsScreen(
                             readOnly = true,
                         )
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = { viewModel.saveFarmDetails() },
                             contentPadding = PaddingValues(12.dp),
                         ) {
-                           Text(
-                               stringResource(R.string.save)
-                           )
+                            when (viewModel.savingFarmDetails) {
+                                SaveFarmDetailsState.Success -> Text(
+                                    stringResource(R.string.save)
+                                )
+
+                                SaveFarmDetailsState.Loading -> CircularProgressIndicator(
+                                    Modifier.size(20.dp),
+                                    MaterialTheme.colorScheme.onPrimary,
+                                )
+
+                                else -> Text(
+                                    stringResource(R.string.save)
+                                )
+                            }
                         }
                     }
+
                     is GettingFarmDetails.Error -> {
                         Text(
                             stringResource(R.string.something_went_wrong),

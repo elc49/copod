@@ -121,7 +121,11 @@ func (r *mutationResolver) SetMarketStatus(ctx context.Context, input model.SetM
 
 // UpdateFarmDetails is the resolver for the updateFarmDetails field.
 func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.UpdateFarmDetailsInput) (*model.Farm, error) {
-	panic(fmt.Errorf("not implemented: UpdateFarmDetails - updateFarmDetails"))
+	return r.farmController.UpdateFarmDetails(ctx, db.UpdateFarmDetailsParams{
+		ID:        input.ID,
+		About:     input.About,
+		Thumbnail: input.Thumbnail,
+	})
 }
 
 // Market is the resolver for the market field.
