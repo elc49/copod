@@ -2,6 +2,8 @@ query GetFarmsBelongingToUser {
     getFarmsBelongingToUser {
         id
         name
+        about
+        dateStarted
         thumbnail
     }
 }

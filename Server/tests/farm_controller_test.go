@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/elc49/vuno/Server/src/postgres/db"
 	"github.com/stretchr/testify/assert"
@@ -23,9 +24,10 @@ func TestFarmController(t *testing.T) {
 
 	t.Run("create_farm", func(t *testing.T) {
 		farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-			Name:      "Agro-dealers",
-			Thumbnail: avatar,
-			UserID:    user.ID,
+			Name:        "Agro-dealers",
+			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:   avatar,
+			UserID:      user.ID,
 		})
 		assert.Nil(t, err)
 		assert.NotNil(t, farm)
@@ -40,9 +42,10 @@ func TestFarmController(t *testing.T) {
 	t.Run("get_farm_by_its_id", func(t *testing.T) {
 		store.StoreWriter.ClearTestFarms(ctx)
 		f, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-			Name:      "Agro-dealers",
-			Thumbnail: avatar,
-			UserID:    user.ID,
+			Name:        "Agro-dealers",
+			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:   avatar,
+			UserID:      user.ID,
 		})
 		assert.Nil(t, err)
 
@@ -50,5 +53,24 @@ func TestFarmController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, farm)
 		assert.Equal(t, farm.Name, "Agro-dealers")
+	})
+
+	t.Run("update_farm_details", func(t *testing.T) {
+		farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
+			Name:        "Agro-dealers",
+			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:   avatar,
+			UserID:      user.ID,
+		})
+		assert.Nil(t, err)
+
+		u, err := farmC.UpdateFarmDetails(ctx, db.UpdateFarmDetailsParams{
+			ID:        farm.ID,
+			About:     "We deal in organic products",
+			Thumbnail: "http://organic.png",
+		})
+		assert.Nil(t, err)
+		assert.NotEqual(t, farm.About, u.About)
+		assert.NotEqual(t, farm.Thumbnail, u.Thumbnail)
 	})
 }

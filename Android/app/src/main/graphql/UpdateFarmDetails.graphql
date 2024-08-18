@@ -1,0 +1,7 @@
+mutation UpdateFarmDetails($input: UpdateFarmDetailsInput!) {
+    updateFarmDetails(input: $input) {
+        id
+        about
+        thumbnail
+    }
+}

@@ -41,9 +41,15 @@ class CreateFarmViewModel(
         }
     }
 
+    fun setDateStarted(date: String) {
+        _farmInput.update {
+            it.copy(dateStarted = date)
+        }
+    }
+
     private fun validFarmInput(uiState: Farm): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && dateStarted.isNotBlank()
         }
     }
 
@@ -71,6 +77,8 @@ class CreateFarmViewModel(
                                     GetFarmsBelongingToUserQuery.GetFarmsBelongingToUser(
                                         res.createFarm.id,
                                         res.createFarm.name,
+                                        res.createFarm.about,
+                                        res.createFarm.dateStarted,
                                         res.createFarm.thumbnail,
                                     )
                                 )
@@ -123,6 +131,7 @@ class CreateFarmViewModel(
 data class Farm(
     val name: String = "",
     val image: String = "",
+    val dateStarted: String = ""
 )
 
 interface FarmImageUploadState {

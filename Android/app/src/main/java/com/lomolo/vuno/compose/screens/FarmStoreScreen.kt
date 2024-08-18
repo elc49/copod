@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
+import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -28,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
@@ -80,7 +83,7 @@ import kotlinx.datetime.toLocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
-object FarmMarketScreenDestination : Navigation {
+object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
     override val route = "dashboard-market"
     const val farmIdArg = "farmId"
@@ -90,9 +93,11 @@ object FarmMarketScreenDestination : Navigation {
 @Composable
 private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
+    onNavigateToSettings: (String) -> Unit,
 ) {
     Row(
-        Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
@@ -105,13 +110,27 @@ private fun FarmHeader(
             placeholder = painterResource(id = R.drawable.loading_img),
             contentDescription = null
         )
-        farm?.name?.let {
-            Text(
-                text = it,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            farm?.name?.let {
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+            IconButton(onClick = {
+                if (farm != null) {
+                    onNavigateToSettings(farm.id.toString())
+                }
+            }) {
+               Icon(
+                   Icons.TwoTone.Settings,
+                   contentDescription = stringResource(R.string.settings),
+               )
+            }
         }
     }
 }
@@ -366,9 +385,10 @@ private fun OrderCard(
 
 @ExperimentalMaterial3Api
 @Composable
-fun FarmMarketScreen(
+fun FarmStoreScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    navHostController: NavHostController,
     viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
@@ -396,7 +416,10 @@ fun FarmMarketScreen(
     ) {
         when (viewModel.gettingFarmState) {
             GetFarmState.Success -> FarmHeader(
-                farm = farm
+                farm = farm,
+                onNavigateToSettings = {
+                    navHostController.navigate("${FarmSettingsScreenDestination.route}/$it")
+                }
             )
 
             GetFarmState.Loading -> Row(

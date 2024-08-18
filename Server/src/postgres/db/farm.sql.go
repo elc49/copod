@@ -23,25 +23,33 @@ func (q *Queries) ClearTestFarms(ctx context.Context) error {
 
 const createFarm = `-- name: CreateFarm :one
 INSERT INTO farms (
-  name, thumbnail, user_id
+  name, date_started, thumbnail, user_id
 ) VALUES (
-  $1, $2, $3
-) RETURNING id, name, thumbnail, user_id, created_at, updated_at, deleted_at
+  $1, $2, $3, $4
+) RETURNING id, name, thumbnail, about, date_started, user_id, created_at, updated_at, deleted_at
 `
 
 type CreateFarmParams struct {
-	Name      string    `json:"name"`
-	Thumbnail string    `json:"thumbnail"`
-	UserID    uuid.UUID `json:"user_id"`
+	Name        string    `json:"name"`
+	DateStarted time.Time `json:"date_started"`
+	Thumbnail   string    `json:"thumbnail"`
+	UserID      uuid.UUID `json:"user_id"`
 }
 
 func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error) {
-	row := q.db.QueryRowContext(ctx, createFarm, arg.Name, arg.Thumbnail, arg.UserID)
+	row := q.db.QueryRowContext(ctx, createFarm,
+		arg.Name,
+		arg.DateStarted,
+		arg.Thumbnail,
+		arg.UserID,
+	)
 	var i Farm
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Thumbnail,
+		&i.About,
+		&i.DateStarted,
 		&i.UserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -51,16 +59,18 @@ func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, e
 }
 
 const getFarmByID = `-- name: GetFarmByID :one
-SELECT id, name, thumbnail, created_at, updated_at FROM farms
+SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetFarmByIDRow struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Thumbnail string    `json:"thumbnail"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	About       string    `json:"about"`
+	DateStarted time.Time `json:"date_started"`
+	Thumbnail   string    `json:"thumbnail"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error) {
@@ -69,6 +79,8 @@ func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.About,
+		&i.DateStarted,
 		&i.Thumbnail,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -77,16 +89,18 @@ func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow
 }
 
 const getFarmsBelongingToUser = `-- name: GetFarmsBelongingToUser :many
-SELECT id, name, thumbnail, created_at, updated_at FROM farms
+SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE user_id = $1 AND deleted_at IS NULL
 `
 
 type GetFarmsBelongingToUserRow struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Thumbnail string    `json:"thumbnail"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	About       string    `json:"about"`
+	DateStarted time.Time `json:"date_started"`
+	Thumbnail   string    `json:"thumbnail"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error) {
@@ -101,6 +115,8 @@ func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID)
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.About,
+			&i.DateStarted,
 			&i.Thumbnail,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -116,4 +132,33 @@ func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID)
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateFarmDetails = `-- name: UpdateFarmDetails :one
+UPDATE farms SET about = $1, thumbnail = $2
+WHERE id = $3
+RETURNING id, name, thumbnail, about, date_started, user_id, created_at, updated_at, deleted_at
+`
+
+type UpdateFarmDetailsParams struct {
+	About     string    `json:"about"`
+	Thumbnail string    `json:"thumbnail"`
+	ID        uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UpdateFarmDetails(ctx context.Context, arg UpdateFarmDetailsParams) (Farm, error) {
+	row := q.db.QueryRowContext(ctx, updateFarmDetails, arg.About, arg.Thumbnail, arg.ID)
+	var i Farm
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Thumbnail,
+		&i.About,
+		&i.DateStarted,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }

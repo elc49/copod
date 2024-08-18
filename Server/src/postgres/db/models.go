@@ -22,13 +22,15 @@ type Cart struct {
 }
 
 type Farm struct {
-	ID        uuid.UUID    `json:"id"`
-	Name      string       `json:"name"`
-	Thumbnail string       `json:"thumbnail"`
-	UserID    uuid.UUID    `json:"user_id"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID          uuid.UUID    `json:"id"`
+	Name        string       `json:"name"`
+	Thumbnail   string       `json:"thumbnail"`
+	About       string       `json:"about"`
+	DateStarted time.Time    `json:"date_started"`
+	UserID      uuid.UUID    `json:"user_id"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+	DeletedAt   sql.NullTime `json:"deleted_at"`
 }
 
 type Market struct {

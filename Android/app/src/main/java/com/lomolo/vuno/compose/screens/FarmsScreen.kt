@@ -149,7 +149,7 @@ fun FarmsScreen(
                 is GetFarmsBelongingToUserState.Success -> {
                     Farms(
                         modifier = modifier, onNavigateTo = { farmId ->
-                            navHostController.navigate("${FarmMarketScreenDestination.route}/${farmId}")
+                            navHostController.navigate("${FarmStoreScreenDestination.route}/${farmId}")
                         }, farms = farms
                     )
                 }

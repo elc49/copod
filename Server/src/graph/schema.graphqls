@@ -60,6 +60,8 @@ type Farm {
   id: UUID!
   name: String!
   thumbnail: String!
+  about: String!
+  dateStarted: Time!
   userId: UUID!
   created_at: Time!
   updated_at: Time!
@@ -150,6 +152,7 @@ input NewPostInput {
 
 input NewFarmInput {
   name: String!
+  dateStarted: String!
   thumbnail: String!
 }
 
@@ -196,6 +199,12 @@ input SetMarketStatusInput {
   status: MarketStatus!
 }
 
+input UpdateFarmDetailsInput {
+  id: UUID!
+  about: String!
+  thumbnail: String!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -221,6 +230,7 @@ type Mutation {
   sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   setMarketStatus(input: SetMarketStatusInput!): Market!
+  updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
 }
 
 type Subscription {

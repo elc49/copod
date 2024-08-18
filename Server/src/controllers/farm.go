@@ -30,3 +30,7 @@ func (r *FarmController) GetFarmsBelongingToUser(ctx context.Context, id uuid.UU
 func (r *FarmController) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error) {
 	return r.r.GetFarmByID(ctx, id)
 }
+
+func (r *FarmController) UpdateFarmDetails(ctx context.Context, args db.UpdateFarmDetailsParams) (*model.Farm, error) {
+	return r.r.UpdateFarmDetails(ctx, args)
+}
