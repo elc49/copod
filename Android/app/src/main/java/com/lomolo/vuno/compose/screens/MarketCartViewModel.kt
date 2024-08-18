@@ -61,7 +61,7 @@ class MarketCartViewModel(
     var sendToFarmState: SendToFarmState by mutableStateOf(SendToFarmState.Success)
         private set
 
-    fun sendOrderToFarm(key: String, order: List<SendOrderToFarm>) {
+    fun sendOrderToFarm(key: String, order: List<SendOrderToFarm>, cb: () -> Unit) {
         if (sendToFarmState !is SendToFarmState.Loading) {
             sendingKey = key
             sendToFarmState = SendToFarmState.Loading
@@ -91,7 +91,7 @@ class MarketCartViewModel(
                             e.printStackTrace()
                         }
                     }
-                    SendToFarmState.Success
+                    SendToFarmState.Success.also { cb() }
                 } catch(e: IOException) {
                     e.printStackTrace()
                     SendToFarmState.Error(e.localizedMessage)
