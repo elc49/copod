@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
@@ -37,7 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -91,6 +97,7 @@ fun FarmSettingsScreen(
         FarmImageUploadState.Success -> farmDetails.thumbnail
         else -> R.drawable.ic_broken_image
     }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(topBar = {
         LargeTopAppBar(
@@ -137,6 +144,7 @@ fun FarmSettingsScreen(
                         )
                         OutlinedTextField(
                             value = farmDetails.name,
+                            modifier = Modifier.width(300.dp),
                             label = {
                                 Text(stringResource(R.string.farm_name))
                             },
@@ -149,6 +157,7 @@ fun FarmSettingsScreen(
                         )
                         OutlinedTextField(
                             value = farmDetails.about,
+                            modifier = Modifier.width(300.dp),
                             label = {
                                 Text("Describe your farm")
                             },
@@ -158,9 +167,20 @@ fun FarmSettingsScreen(
                             onValueChange = {
                                 viewModel.setAbout(it)
                             },
+                            minLines = 3,
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboardController?.hide()
+                                    viewModel.saveFarmDetails()
+                                }
+                            )
                         )
                         OutlinedTextField(
                             value = farmDetails.dateStarted.toString(),
+                            modifier = Modifier.width(300.dp),
                             label = {
                                 Text(stringResource(R.string.started))
                             },
@@ -172,12 +192,17 @@ fun FarmSettingsScreen(
                             readOnly = true,
                         )
                         Button(
-                            onClick = { viewModel.saveFarmDetails() },
+                            onClick = {
+                                keyboardController?.hide()
+                                viewModel.saveFarmDetails()
+                            },
                             contentPadding = PaddingValues(12.dp),
                         ) {
                             when (viewModel.savingFarmDetails) {
                                 SaveFarmDetailsState.Success -> Text(
-                                    stringResource(R.string.save)
+                                    stringResource(R.string.save),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
                                 )
 
                                 SaveFarmDetailsState.Loading -> CircularProgressIndicator(
@@ -186,7 +211,9 @@ fun FarmSettingsScreen(
                                 )
 
                                 else -> Text(
-                                    stringResource(R.string.save)
+                                    stringResource(R.string.save),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }

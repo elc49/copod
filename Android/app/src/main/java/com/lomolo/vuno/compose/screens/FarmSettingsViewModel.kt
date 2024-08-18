@@ -85,16 +85,24 @@ class FarmSettingsViewModel(
         private set
 
     fun saveFarmDetails() {
-        if (savingFarmDetails !is SaveFarmDetailsState.Loading) {
+        if (savingFarmDetails !is SaveFarmDetailsState.Loading && farmImageUploadState !is FarmImageUploadState.Loading) {
             savingFarmDetails = SaveFarmDetailsState.Loading
             viewModelScope.launch {
                 savingFarmDetails = try {
-                    vunoGraphqlApi.updateFarmDetails(
+                    val res = vunoGraphqlApi.updateFarmDetails(
                         UpdateFarmDetailsInput(
                             farmId,
                             _farm.value.about,
                             _farm.value.thumbnail,
                         )
+                    ).dataOrThrow()
+                    val updateCachedData =
+                        apolloStore.readOperation(GetFarmByIdQuery(farmId)).getFarmById.copy(
+                            about = res.updateFarmDetails.about,
+                            thumbnail = res.updateFarmDetails.thumbnail
+                        )
+                    apolloStore.writeOperation(
+                        GetFarmByIdQuery(farmId), GetFarmByIdQuery.Data(updateCachedData)
                     )
                     SaveFarmDetailsState.Success
                 } catch (e: ApolloException) {
@@ -134,7 +142,7 @@ interface GettingFarmDetails {
 }
 
 interface SaveFarmDetailsState {
-    data object Loading: SaveFarmDetailsState
-    data object Success: SaveFarmDetailsState
-    data class Error(val msg: String?): SaveFarmDetailsState
+    data object Loading : SaveFarmDetailsState
+    data object Success : SaveFarmDetailsState
+    data class Error(val msg: String?) : SaveFarmDetailsState
 }
