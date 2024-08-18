@@ -192,6 +192,7 @@ fun NavGraphBuilder.addDashboardGraph(
         }
         composable(route = MarketScreenDestination.route) {
             MarketScreen(deviceDetails = deviceDetails,
+                snackbarHostState = snackbarHostState,
                 onNavigateToMarketCart = { navHostController.navigate(MarketCartScreenDestination.route) },
                 onNavigateToUserOrders = { navHostController.navigate(UserOrdersScreenDestination.route) },
                 bottomNav = {

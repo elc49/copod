@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
@@ -148,6 +149,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
+                        val snackbarHostState = remember { SnackbarHostState() }
                         if (shouldShowPermissionRationale) {
                             AlertDialog(onDismissRequest = { return@AlertDialog }, confirmButton = {
                                 Button(onClick = {
@@ -175,7 +177,7 @@ class MainActivity : ComponentActivity() {
                             })
                         }
 
-                        VunoApplication(rememberNavController())
+                        VunoApplication(rememberNavController(), snackbarHostState)
                     }
                 }
             }

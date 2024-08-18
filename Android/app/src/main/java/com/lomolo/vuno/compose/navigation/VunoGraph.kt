@@ -9,17 +9,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.MainViewModel
 import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.SettingDeviceDetails
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.screens.ErrorComposable
 import com.lomolo.vuno.compose.screens.GenesisScreen
 import com.lomolo.vuno.model.DeviceDetails
@@ -42,6 +41,7 @@ interface Navigation {
 fun VunoNavigationHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
+    snackbarHostState: SnackbarHostState,
     mainViewModel: MainViewModel = viewModel(factory = VunoViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
@@ -49,7 +49,6 @@ fun VunoNavigationHost(
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
     val session by sessionViewModel.sessionUiState.collectAsState()
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     when (mainViewModel.settingDeviceDetailsState) {
         SettingDeviceDetails.Loading -> GenesisScreen()
