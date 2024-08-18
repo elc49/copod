@@ -23,5 +23,6 @@ object Data {
         "coconut oil",
         "butter",
         "avocado oil",
+        "machinery",
     )
 }
