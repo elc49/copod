@@ -65,6 +65,7 @@ fun MarketCard(
     decreaseOrderVolume: (String) -> Unit,
     addToCart: (Order, cb: () -> Unit) -> Unit,
     addingToCart: AddingToCartState,
+    showToast: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -151,7 +152,7 @@ fun MarketCard(
                 order = orders[data.id.toString()],
                 increaseOrderVolume = { increaseOrderVolume(data.id.toString()) },
                 decreaseOrderVolume = { decreaseOrderVolume(data.id.toString()) },
-                addToCart = { order: Order -> addToCart(order) { onCloseBottomSheet() } },
+                addToCart = { order: Order -> addToCart(order) { showToast("Added to cart"); onCloseBottomSheet() } },
                 addingToCart = addingToCart,
                 language = language,
             )

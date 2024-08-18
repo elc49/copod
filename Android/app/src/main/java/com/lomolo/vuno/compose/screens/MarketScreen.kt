@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -75,6 +76,7 @@ fun MarketScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(
@@ -220,14 +222,17 @@ fun MarketScreen(
                                 addToCart = { order: Order, cb: () -> Unit ->
                                     viewModel.addToCart(
                                         order
-                                    ) {
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar("Added to cart", withDismissAction = true)
-                                        }
-                                        cb()
+                                    ) { cb() }
+                                },
+                                showToast = { it: String ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            it,
+                                            withDismissAction = true
+                                        )
                                     }
                                 },
-                                addingToCart = viewModel.addingToCart,
+                                addingToCart = viewModel . addingToCart,
                                 language = deviceDetails.languages,
                             )
                         }
