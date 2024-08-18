@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS markets(
   running_volume INTEGER NOT NULL,
   status VARCHAR(6) NOT NULL DEFAULT 'OPEN',
   unit TEXT NOT NULL,
+  details TEXT NOT NULL DEFAULT '',
   price_per_unit INTEGER NOT NULL,
   location GEOGRAPHY NOT NULL,
   harvest_date TIMESTAMPTZ,

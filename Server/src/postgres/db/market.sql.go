@@ -24,15 +24,16 @@ func (q *Queries) ClearTestMarkets(ctx context.Context) error {
 
 const createFarmMarket = `-- name: CreateFarmMarket :one
 INSERT INTO markets (
-  product, image, volume, running_volume, unit, harvest_date, tag, price_per_unit, farm_id, location
+  product, details, image, volume, running_volume, unit, harvest_date, tag, price_per_unit, farm_id, location
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 )
-RETURNING id, product, image, volume, running_volume, status, unit, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
+RETURNING id, product, image, volume, running_volume, status, unit, details, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
 `
 
 type CreateFarmMarketParams struct {
 	Product       string       `json:"product"`
+	Details       string       `json:"details"`
 	Image         string       `json:"image"`
 	Volume        int32        `json:"volume"`
 	RunningVolume int32        `json:"running_volume"`
@@ -47,6 +48,7 @@ type CreateFarmMarketParams struct {
 func (q *Queries) CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error) {
 	row := q.db.QueryRowContext(ctx, createFarmMarket,
 		arg.Product,
+		arg.Details,
 		arg.Image,
 		arg.Volume,
 		arg.RunningVolume,
@@ -66,6 +68,7 @@ func (q *Queries) CreateFarmMarket(ctx context.Context, arg CreateFarmMarketPara
 		&i.RunningVolume,
 		&i.Status,
 		&i.Unit,
+		&i.Details,
 		&i.PricePerUnit,
 		&i.Location,
 		&i.HarvestDate,
@@ -90,7 +93,7 @@ func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 }
 
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
-SELECT id, product, image, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
+SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, $1::geography, $2) AND running_volume > 0
 `
 
@@ -103,6 +106,7 @@ type GetLocalizedMarketsRow struct {
 	ID            uuid.UUID   `json:"id"`
 	Product       string      `json:"product"`
 	Image         string      `json:"image"`
+	Details       string      `json:"details"`
 	PricePerUnit  int32       `json:"price_per_unit"`
 	Status        string      `json:"status"`
 	RunningVolume int32       `json:"running_volume"`
@@ -127,6 +131,7 @@ func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarke
 			&i.ID,
 			&i.Product,
 			&i.Image,
+			&i.Details,
 			&i.PricePerUnit,
 			&i.Status,
 			&i.RunningVolume,
@@ -151,13 +156,14 @@ func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarke
 }
 
 const getMarketByID = `-- name: GetMarketByID :one
-SELECT id, product, image, volume, running_volume, status, unit, farm_id, tag, price_per_unit, created_at, updated_at FROM markets
+SELECT id, product, details, image, volume, running_volume, status, unit, farm_id, tag, price_per_unit, created_at, updated_at FROM markets
 WHERE id = $1
 `
 
 type GetMarketByIDRow struct {
 	ID            uuid.UUID `json:"id"`
 	Product       string    `json:"product"`
+	Details       string    `json:"details"`
 	Image         string    `json:"image"`
 	Volume        int32     `json:"volume"`
 	RunningVolume int32     `json:"running_volume"`
@@ -176,6 +182,7 @@ func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByI
 	err := row.Scan(
 		&i.ID,
 		&i.Product,
+		&i.Details,
 		&i.Image,
 		&i.Volume,
 		&i.RunningVolume,
@@ -249,7 +256,7 @@ func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUI
 const setMarketStatus = `-- name: SetMarketStatus :one
 UPDATE markets SET status = $1
 WHERE id = $2
-RETURNING id, product, image, volume, running_volume, status, unit, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
+RETURNING id, product, image, volume, running_volume, status, unit, details, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
 `
 
 type SetMarketStatusParams struct {
@@ -268,6 +275,7 @@ func (q *Queries) SetMarketStatus(ctx context.Context, arg SetMarketStatusParams
 		&i.RunningVolume,
 		&i.Status,
 		&i.Unit,
+		&i.Details,
 		&i.PricePerUnit,
 		&i.Location,
 		&i.HarvestDate,
@@ -282,7 +290,7 @@ func (q *Queries) SetMarketStatus(ctx context.Context, arg SetMarketStatusParams
 const updateMarketVolume = `-- name: UpdateMarketVolume :one
 UPDATE markets SET running_volume = $1
 WHERE id = $2
-RETURNING id, product, image, volume, running_volume, status, unit, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
+RETURNING id, product, image, volume, running_volume, status, unit, details, price_per_unit, location, harvest_date, tag, farm_id, created_at, updated_at
 `
 
 type UpdateMarketVolumeParams struct {
@@ -301,6 +309,7 @@ func (q *Queries) UpdateMarketVolume(ctx context.Context, arg UpdateMarketVolume
 		&i.RunningVolume,
 		&i.Status,
 		&i.Unit,
+		&i.Details,
 		&i.PricePerUnit,
 		&i.Location,
 		&i.HarvestDate,

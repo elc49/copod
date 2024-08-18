@@ -123,6 +123,7 @@ class VunoGraphqlApi(
                 pricePerUnit = input.pricePerUnit.toInt(),
                 tag = input.tag,
                 location = GpsInput(input.location.latitude, input.location.longitude),
+                details = input.details,
                 volume = input.volume.toInt(),
             )
         ))

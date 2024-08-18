@@ -32,6 +32,7 @@ func TestMarketController(t *testing.T) {
 			Tag:          "seeds",
 			Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Unit:         "kg",
+			Details:      "Fresh from farm",
 			Volume:       120,
 			PricePerUnit: 5,
 			FarmID:       farm.ID,
@@ -50,6 +51,7 @@ func TestMarketController(t *testing.T) {
 		m, err := createMarket(ctx)
 		assert.Nil(t, err)
 		assert.Equal(t, m.Volume, m.RunningVolume)
+		assert.Equal(t, m.Details, "Fresh from farm")
 	})
 
 	t.Run("get_farm_market_by_its_id", func(t *testing.T) {

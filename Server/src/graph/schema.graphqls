@@ -74,6 +74,7 @@ type Market {
   name: String!
   image: String!
   volume: Int!
+  details: String!
   running_volume: Int!
   unit: String!
   status: MarketStatus!
@@ -159,6 +160,7 @@ input NewFarmInput {
 input NewFarmMarketInput {
   farmId: UUID!
   product: String!
+  details: String!
   image: String!
   volume: Int!
   location: GpsInput!
