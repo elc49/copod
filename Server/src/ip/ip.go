@@ -1,6 +1,7 @@
 package ip
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	vunoCache "github.com/elc49/vuno/Server/src/cache"
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/graph/model"
 	"github.com/elc49/vuno/Server/src/logger"
@@ -25,8 +27,9 @@ var (
 )
 
 type ipC struct {
-	client *ipinfo.Client
-	log    *logrus.Logger
+	client    *ipinfo.Client
+	log       *logrus.Logger
+	vunoCache vunoCache.Cache
 }
 
 func NewIpinfoClient() {
@@ -38,11 +41,18 @@ func NewIpinfoClient() {
 		config.Configuration.Ipinfo.ApiKey,
 	)
 
-	ipClient = &ipC{client, logger.GetLogger()}
+	ipClient = &ipC{client, logger.GetLogger(), vunoCache.GetCache()}
 }
 
 func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	ipinfo := &model.Ipinfo{}
+	cacheValue, err := ipc.vunoCache.Get(context.Background(), vunoCache.IpCacheKey(ip), ipinfo)
+	if err != nil {
+		return nil, err
+	} else if cacheValue != nil {
+		return (cacheValue).(*model.Ipinfo), nil
+	}
+
 	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
 	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
 
@@ -80,6 +90,13 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	}
 	ipinfo.CountryFlagURL = secondaryIpinfo.CountryFlagURL
 	ipinfo.Gps = secondaryIpinfo.Location
+
+	go func() {
+		if err := ipc.vunoCache.Set(context.Background(), vunoCache.IpCacheKey(ip), ipinfo, time.Hour*24); err != nil {
+			ipc.log.WithFields(logrus.Fields{"value": ipinfo, "err": err}).Errorf("ip: cache ipinfo")
+			return
+		}
+	}()
 
 	return ipinfo, nil
 }
