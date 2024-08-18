@@ -25,6 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -33,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +50,7 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.ui.theme.inverseOnSurfaceLight
+import kotlinx.coroutines.launch
 
 object MarketScreenDestination : Navigation {
     override val title = null
@@ -62,14 +66,17 @@ fun MarketScreen(
     deviceDetails: DeviceDetails,
     onNavigateToMarketCart: () -> Unit,
     onNavigateToUserOrders: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     viewModel: MarketsViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
     val orders by viewModel.orders.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(
@@ -217,7 +224,15 @@ fun MarketScreen(
                                         order
                                     ) { cb() }
                                 },
-                                addingToCart = viewModel.addingToCart,
+                                showToast = { it: String ->
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            it,
+                                            withDismissAction = true
+                                        )
+                                    }
+                                },
+                                addingToCart = viewModel . addingToCart,
                                 language = deviceDetails.languages,
                             )
                         }
