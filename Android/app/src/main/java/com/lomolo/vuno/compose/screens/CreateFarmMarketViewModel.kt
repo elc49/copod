@@ -90,9 +90,15 @@ class AddFarmMarketViewModel(
         }
     }
 
+    fun setMarketDetails(details: String) {
+        _marketInput.update {
+            it.copy(details = details)
+        }
+    }
+
     private fun validMarketInput(uiState: Market): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank()
         }
     }
 
@@ -174,6 +180,7 @@ data class Market(
     val location: LatLng = LatLng(0.0, 0.0),
     val storeId: String = "",
     val tag: String = "",
+    val details: String = "",
 )
 
 interface UploadMarketImageState {

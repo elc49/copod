@@ -231,6 +231,25 @@ fun CreateFarmMarketScreen(
                     ),
                     singleLine = true,
                 )
+                OutlinedTextField(
+                    value = market.details,
+                    onValueChange = { viewModel.setMarketDetails(it) },
+                    label = {
+                        Text(
+                            stringResource(R.string.product_details),
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(stringResource(R.string.describe_harvest))
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        imeAction = ImeAction.Next,
+                    ),
+                    minLines = 3,
+                )
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -242,7 +261,7 @@ fun CreateFarmMarketScreen(
                         value = market.unit,
                         onValueChange = { viewModel.setMarketUnit(it) },
                         modifier = Modifier
-                            .weight(.3f)
+                            .weight(.5f)
                             .padding(end = 4.dp),
                         label = {
                             Text(
@@ -262,7 +281,7 @@ fun CreateFarmMarketScreen(
                         value = market.pricePerUnit,
                         onValueChange = { viewModel.setMarketPricePerUnit(it) },
                         modifier = Modifier
-                            .weight(.3f)
+                            .weight(.5f)
                             .padding(start = 4.dp),
                         label = {
                             Text(
@@ -279,46 +298,43 @@ fun CreateFarmMarketScreen(
                         ),
                         singleLine = true,
                     )
-                    ExposedDropdownMenuBox(modifier = Modifier.weight(.4f),
+                }
+                ExposedDropdownMenuBox(modifier = Modifier.fillMaxWidth(),
+                    expanded = expanded, onExpandedChange = { expanded = it }) {
+                    OutlinedTextField(
+                        value = market.tag,
+                        onValueChange = {},
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        readOnly = true,
+                        singleLine = true,
+                        label = { Text(stringResource(R.string.category)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
                         expanded = expanded,
-                        onExpandedChange = { expanded = it }) {
-                        OutlinedTextField(
-                            value = market.tag,
-                            onValueChange = {},
-                            modifier = Modifier.menuAnchor(),
-                            readOnly = true,
-                            singleLine = true,
-                            label = { Text(stringResource(R.string.category)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                        ) {
-                            viewModel.category.forEach { category ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            category, style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    },
-                                    onClick = {
-                                        viewModel.addMarketCategory(category)
-                                        expanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    leadingIcon = {
-                                        if (viewModel.tagAlreadyExists(category)) {
-                                            Icon(
-                                                Icons.TwoTone.Check,
-                                                modifier = Modifier.size(20.dp),
-                                                contentDescription = stringResource(R.string.check_mark),
-                                            )
-                                        }
-                                    }
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        viewModel.category.forEach { category ->
+                            DropdownMenuItem(text = {
+                                Text(
+                                    category, style = MaterialTheme.typography.bodyLarge
                                 )
-                            }
+                            },
+                                onClick = {
+                                    viewModel.addMarketCategory(category)
+                                    expanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                leadingIcon = {
+                                    if (viewModel.tagAlreadyExists(category)) {
+                                        Icon(
+                                            Icons.TwoTone.Check,
+                                            modifier = Modifier.size(20.dp),
+                                            contentDescription = stringResource(R.string.check_mark),
+                                        )
+                                    }
+                                })
                         }
                     }
                 }

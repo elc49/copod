@@ -41,6 +41,7 @@ type Market struct {
 	RunningVolume int32        `json:"running_volume"`
 	Status        string       `json:"status"`
 	Unit          string       `json:"unit"`
+	Details       string       `json:"details"`
 	PricePerUnit  int32        `json:"price_per_unit"`
 	Location      interface{}  `json:"location"`
 	HarvestDate   sql.NullTime `json:"harvest_date"`

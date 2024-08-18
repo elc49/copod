@@ -91,6 +91,7 @@ type ComplexityRoot struct {
 	Market struct {
 		CanOrder      func(childComplexity int) int
 		CreatedAt     func(childComplexity int) int
+		Details       func(childComplexity int) int
 		FarmID        func(childComplexity int) int
 		ID            func(childComplexity int) int
 		Image         func(childComplexity int) int
@@ -423,6 +424,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Market.CreatedAt(childComplexity), true
+
+	case "Market.details":
+		if e.complexity.Market.Details == nil {
+			break
+		}
+
+		return e.complexity.Market.Details(childComplexity), true
 
 	case "Market.farmId":
 		if e.complexity.Market.FarmID == nil {
@@ -1880,6 +1888,8 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -2694,6 +2704,50 @@ func (ec *executionContext) fieldContext_Market_volume(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Market_details(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Market_details(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Details, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Market_details(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Market",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Market_running_volume(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_running_volume(ctx, field)
 	if err != nil {
@@ -3287,6 +3341,8 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -3693,6 +3749,8 @@ func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Co
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -4115,6 +4173,8 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -5524,6 +5584,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.C
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -5682,6 +5744,8 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_image(ctx, field)
 			case "volume":
 				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
 			case "running_volume":
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
@@ -8516,7 +8580,7 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"farmId", "product", "image", "volume", "location", "tag", "unit", "pricePerUnit"}
+	fieldsInOrder := [...]string{"farmId", "product", "details", "image", "volume", "location", "tag", "unit", "pricePerUnit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8537,6 +8601,13 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 				return it, err
 			}
 			it.Product = data
+		case "details":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("details"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Details = data
 		case "image":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -9200,6 +9271,11 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "volume":
 			out.Values[i] = ec._Market_volume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "details":
+			out.Values[i] = ec._Market_details(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

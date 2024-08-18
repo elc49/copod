@@ -56,6 +56,7 @@ type Market struct {
 	Name          string       `json:"name"`
 	Image         string       `json:"image"`
 	Volume        int          `json:"volume"`
+	Details       string       `json:"details"`
 	RunningVolume int          `json:"running_volume"`
 	Unit          string       `json:"unit"`
 	Status        MarketStatus `json:"status"`
@@ -79,6 +80,7 @@ type NewFarmInput struct {
 type NewFarmMarketInput struct {
 	FarmID       uuid.UUID `json:"farmId"`
 	Product      string    `json:"product"`
+	Details      string    `json:"details"`
 	Image        string    `json:"image"`
 	Volume       int       `json:"volume"`
 	Location     *GpsInput `json:"location"`
