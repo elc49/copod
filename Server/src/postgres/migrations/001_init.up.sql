@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS orders(
   status TEXT NOT NULL DEFAULT 'PENDING',
   to_be_paid INTEGER NOT NULL,
   currency TEXT NOT NULL,
+  tracking_id UUID NOT NULL DEFAULT uuid_generate_v4(),
   customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   market_id UUID NOT NULL REFERENCES markets(id) ON DELETE CASCADE,
   farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,

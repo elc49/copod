@@ -94,6 +94,7 @@ type Order {
   currency: String!
   customerId: UUID!
   marketId: UUID!
+  trackingId: UUID!
   market: Market!
   status: OrderStatus!
   customer: User!
