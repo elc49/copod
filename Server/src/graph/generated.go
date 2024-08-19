@@ -126,9 +126,9 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Market     func(childComplexity int) int
 		MarketID   func(childComplexity int) int
-		OrderID    func(childComplexity int) int
 		Status     func(childComplexity int) int
 		ToBePaid   func(childComplexity int) int
+		TrackingID func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
 		Volume     func(childComplexity int) int
 	}
@@ -679,13 +679,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Order.MarketID(childComplexity), true
 
-	case "Order.orderId":
-		if e.complexity.Order.OrderID == nil {
-			break
-		}
-
-		return e.complexity.Order.OrderID(childComplexity), true
-
 	case "Order.status":
 		if e.complexity.Order.Status == nil {
 			break
@@ -699,6 +692,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.ToBePaid(childComplexity), true
+
+	case "Order.trackingId":
+		if e.complexity.Order.TrackingID == nil {
+			break
+		}
+
+		return e.complexity.Order.TrackingID(childComplexity), true
 
 	case "Order.updated_at":
 		if e.complexity.Order.UpdatedAt == nil {
@@ -3682,8 +3682,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
-			case "orderId":
-				return ec.fieldContext_Order_orderId(ctx, field)
+			case "trackingId":
+				return ec.fieldContext_Order_trackingId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -4136,8 +4136,8 @@ func (ec *executionContext) fieldContext_Order_marketId(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Order_orderId(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Order_orderId(ctx, field)
+func (ec *executionContext) _Order_trackingId(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Order_trackingId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4150,7 +4150,7 @@ func (ec *executionContext) _Order_orderId(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.OrderID, nil
+		return obj.TrackingID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4167,7 +4167,7 @@ func (ec *executionContext) _Order_orderId(ctx context.Context, field graphql.Co
 	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Order_orderId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Order_trackingId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Order",
 		Field:      field,
@@ -5887,8 +5887,8 @@ func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
-			case "orderId":
-				return ec.fieldContext_Order_orderId(ctx, field)
+			case "trackingId":
+				return ec.fieldContext_Order_trackingId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -6168,8 +6168,8 @@ func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ contex
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
-			case "orderId":
-				return ec.fieldContext_Order_orderId(ctx, field)
+			case "trackingId":
+				return ec.fieldContext_Order_trackingId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -9558,8 +9558,8 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "orderId":
-			out.Values[i] = ec._Order_orderId(ctx, field, obj)
+		case "trackingId":
+			out.Values[i] = ec._Order_trackingId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

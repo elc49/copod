@@ -104,7 +104,7 @@ type Order struct {
 	Currency   string      `json:"currency"`
 	CustomerID uuid.UUID   `json:"customerId"`
 	MarketID   uuid.UUID   `json:"marketId"`
-	OrderID    uuid.UUID   `json:"orderId"`
+	TrackingID uuid.UUID   `json:"trackingId"`
 	Market     *Market     `json:"market"`
 	Status     OrderStatus `json:"status"`
 	Customer   *User       `json:"customer"`
