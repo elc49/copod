@@ -120,7 +120,7 @@ fun BottomNavBar(
     onNavigateTo: (String) -> Unit = {},
     currentDestination: NavDestination?,
 ) {
-    val navItems = listOf(Screen.Explore, Screen.Soko, Screen.Farm, Screen.Account)
+    val navItems = listOf(Screen.Farm, Screen.Explore, Screen.Soko, Screen.Account)
 
     NavigationBar(
         modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)
