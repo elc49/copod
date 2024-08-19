@@ -175,6 +175,8 @@ type Order {
 
   marketId: UUID!
 
+  orderId: UUID!
+
   market: Market!
 
   status: OrderStatus!

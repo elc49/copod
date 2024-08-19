@@ -126,6 +126,7 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Market     func(childComplexity int) int
 		MarketID   func(childComplexity int) int
+		OrderID    func(childComplexity int) int
 		Status     func(childComplexity int) int
 		ToBePaid   func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
@@ -677,6 +678,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.MarketID(childComplexity), true
+
+	case "Order.orderId":
+		if e.complexity.Order.OrderID == nil {
+			break
+		}
+
+		return e.complexity.Order.OrderID(childComplexity), true
 
 	case "Order.status":
 		if e.complexity.Order.Status == nil {
@@ -3674,6 +3682,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
+			case "orderId":
+				return ec.fieldContext_Order_orderId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -4114,6 +4124,50 @@ func (ec *executionContext) _Order_marketId(ctx context.Context, field graphql.C
 }
 
 func (ec *executionContext) fieldContext_Order_marketId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Order",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Order_orderId(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Order_orderId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OrderID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Order_orderId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Order",
 		Field:      field,
@@ -5833,6 +5887,8 @@ func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
+			case "orderId":
+				return ec.fieldContext_Order_orderId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -6112,6 +6168,8 @@ func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ contex
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "marketId":
 				return ec.fieldContext_Order_marketId(ctx, field)
+			case "orderId":
+				return ec.fieldContext_Order_orderId(ctx, field)
 			case "market":
 				return ec.fieldContext_Order_market(ctx, field)
 			case "status":
@@ -9497,6 +9555,11 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "marketId":
 			out.Values[i] = ec._Order_marketId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "orderId":
+			out.Values[i] = ec._Order_orderId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
