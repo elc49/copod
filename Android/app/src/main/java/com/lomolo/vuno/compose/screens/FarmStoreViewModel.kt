@@ -169,7 +169,7 @@ class FarmMarketViewModel(
     var updatingMarketId: String by mutableStateOf("")
         private set
 
-    fun setMarketStatus(input: SetMarketStatusInput) {
+    fun setMarketStatus(input: SetMarketStatusInput, cb: () -> Unit = {}) {
         if (settingMarketStatus !is SettingMarketStatus.Loading) {
             updatingMarketId = input.id.toString()
             settingMarketStatus = SettingMarketStatus.Loading
@@ -199,7 +199,7 @@ class FarmMarketViewModel(
                     } catch (e: ApolloException) {
                         e.printStackTrace()
                     }
-                    SettingMarketStatus.Success
+                    SettingMarketStatus.Success.also { cb() }
                 } catch (e: ApolloException) {
                     e.printStackTrace()
                     SettingMarketStatus.Error(e.localizedMessage)

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,15 +35,19 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +80,7 @@ import com.lomolo.vuno.ui.theme.errorContainerLight
 import com.lomolo.vuno.ui.theme.primaryContainerLight
 import com.lomolo.vuno.ui.theme.secondaryContainerLight
 import com.lomolo.vuno.ui.theme.surfaceContainerLight
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -135,6 +140,7 @@ private fun FarmHeader(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MarketCard(
     modifier: Modifier = Modifier,
@@ -142,7 +148,7 @@ private fun MarketCard(
     onShowBottomSheet: () -> Unit = {},
     currencyLocale: String,
     language: String,
-    setMarketStatus: (SetMarketStatusInput) -> Unit,
+    setMarketStatus: (SetMarketStatusInput, () -> Unit) -> Unit,
     settingMarketStatus: SettingMarketStatus,
     updatingMarketId: String,
 ) {
@@ -155,6 +161,28 @@ private fun MarketCard(
         MarketStatus.OPEN -> MaterialTheme.colorScheme.surfaceTint
         MarketStatus.CLOSED -> MaterialTheme.colorScheme.surfaceDim
         else -> MaterialTheme.colorScheme.background
+    }
+    val buttonText = when (marketStatus) {
+        MarketStatus.CLOSED -> "Close"
+        else -> marketStatus.toString().lowercase().replaceFirstChar { if (it. isLowerCase()) it. titlecase(Locale.getDefault()) else it. toString() }
+    }
+    val scope = rememberCoroutineScope()
+    var openBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    val bottomSheetState = rememberModalBottomSheetState()
+    val onCloseBottomSheet = {
+        scope.launch { bottomSheetState.hide() }
+            .invokeOnCompletion {
+                if (!bottomSheetState.isVisible) {
+                    openBottomSheet = false
+                }
+            }
+    }
+    val statusText = when (marketStatus) {
+        MarketStatus.OPEN -> "open"
+        MarketStatus.CLOSED -> "close"
+        else -> ""
     }
 
     Card(
@@ -199,17 +227,7 @@ private fun MarketCard(
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center
                 )
-                TextButton(onClick = {
-                    setMarketStatus(
-                        SetMarketStatusInput(
-                            market.id.toString(), marketStatus
-                        )
-                    )
-                }) {
-                    val buttonText = when (marketStatus) {
-                        MarketStatus.CLOSED -> "close"
-                        else -> marketStatus.toString().lowercase()
-                    }
+                TextButton(onClick = { openBottomSheet = true }) {
 
                     when (settingMarketStatus) {
                         SettingMarketStatus.Success -> Text(
@@ -232,6 +250,55 @@ private fun MarketCard(
                                     modifier = Modifier.padding(2.dp),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (openBottomSheet) {
+        ModalBottomSheet(dragHandle = null,
+            shape = RoundedCornerShape(0.dp),
+            sheetState = bottomSheetState,
+            onDismissRequest = { onCloseBottomSheet() }) {
+
+            Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    "Confirm to $statusText this market",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Button(
+                    onClick = {
+                        setMarketStatus(
+                            SetMarketStatusInput(
+                                market.id.toString(), marketStatus
+                            )
+                        ) { onCloseBottomSheet() }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(12.dp),
+                ) {
+                    when (settingMarketStatus) {
+                        SettingMarketStatus.Success -> Text(
+                            "$buttonText market",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+
+                        SettingMarketStatus.Loading -> {
+                            if (updatingMarketId == market.id.toString()) {
+                                CircularProgressIndicator(
+                                    Modifier.size(20.dp),
+                                    MaterialTheme.colorScheme.onPrimary,
+                                )
+                            } else {
+                                Text(
+                                    "$buttonText market",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -510,10 +577,10 @@ fun FarmStoreScreen(
                                     language = deviceDetails.languages,
                                     currencyLocale = deviceDetails.currency,
                                     market = it,
-                                    setMarketStatus = { input: SetMarketStatusInput ->
+                                    setMarketStatus = { input: SetMarketStatusInput, cb: () -> Unit ->
                                         viewModel.setMarketStatus(
                                             input
-                                        )
+                                        ) { cb() }
                                     },
                                     updatingMarketId = viewModel.updatingMarketId,
                                     settingMarketStatus = viewModel.settingMarketStatus,
