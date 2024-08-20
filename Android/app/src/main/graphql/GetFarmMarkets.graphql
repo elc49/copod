@@ -5,6 +5,7 @@ query GetFarmMarkets($id: UUID!) {
         image
         farmId
         status
+        unit
         volume
         pricePerUnit
     }

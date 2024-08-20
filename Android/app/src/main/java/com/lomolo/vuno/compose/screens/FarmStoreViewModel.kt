@@ -169,7 +169,7 @@ class FarmMarketViewModel(
     var updatingMarketId: String by mutableStateOf("")
         private set
 
-    fun setMarketStatus(input: SetMarketStatusInput, cb: () -> Unit) {
+    fun setMarketStatus(input: SetMarketStatusInput) {
         if (settingMarketStatus !is SettingMarketStatus.Loading) {
             updatingMarketId = input.id.toString()
             settingMarketStatus = SettingMarketStatus.Loading
@@ -187,6 +187,7 @@ class FarmMarketViewModel(
                             updateCachedData[where].image,
                             updateCachedData[where].farmId,
                             res.setMarketStatus.status,
+                            updateCachedData[where].unit,
                             updateCachedData[where].volume,
                             updateCachedData[where].pricePerUnit,
                         )
@@ -198,7 +199,7 @@ class FarmMarketViewModel(
                     } catch (e: ApolloException) {
                         e.printStackTrace()
                     }
-                    SettingMarketStatus.Success.also { cb() }
+                    SettingMarketStatus.Success
                 } catch (e: ApolloException) {
                     e.printStackTrace()
                     SettingMarketStatus.Error(e.localizedMessage)
