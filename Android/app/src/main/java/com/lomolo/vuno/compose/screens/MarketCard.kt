@@ -5,7 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.KeyboardArrowDown
 import androidx.compose.material.icons.twotone.KeyboardArrowUp
@@ -41,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -70,8 +73,7 @@ fun MarketCard(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    val onOpenCounter =
-        { if (data.canOrder || BuildConfig.ENV == "dev") showBottomSheet = true }
+    val onOpenCounter = { if (data.canOrder || BuildConfig.ENV == "dev") showBottomSheet = true }
     val onCloseBottomSheet = {
         scope.launch {
             sheetState.hide()
@@ -85,63 +87,38 @@ fun MarketCard(
 
     OutlinedCard(
         modifier
-            .height(180.dp)
+            .wrapContentHeight()
             .clickable { addOrder(); onOpenCounter() }) {
-        Box(Modifier.fillMaxSize()) {
-            Box {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(data.image)
-                        .crossfade(true).build(),
-                    contentDescription = null,
-                    placeholder = painterResource(id = R.drawable.loading_img),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.extraSmall)
-                )
-            }
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Box(
-                    Modifier
-                        .background(
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.shapes.small,
-                        )
-                        .padding(4.dp)
-                ) {
-                    Text(
-                        text = data.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(data.image).crossfade(true)
+                .build(),
+            contentDescription = null,
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .height(100.dp)
+                .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp))
+        )
+        Column(Modifier.padding(8.dp)) {
+            Text(
+                text = data.name,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                "${
+                    currencyText(
+                        currency = currencyLocale, amount = data.pricePerUnit, language
                     )
-                }
-                Box(
-                    Modifier
-                        .background(
-                            MaterialTheme.colorScheme.background,
-                            MaterialTheme.shapes.small,
-                        )
-                        .padding(4.dp)
-                ) {
-                    Text(
-                        "${
-                            currencyText(
-                                currency = currencyLocale, amount = data.pricePerUnit, language
-                            )
-                        } / ${data.unit}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+                } / ${data.unit}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         if (showBottomSheet) {
             CounterAction(
