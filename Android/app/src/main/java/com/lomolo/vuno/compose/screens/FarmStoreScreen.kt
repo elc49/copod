@@ -80,12 +80,8 @@ import com.lomolo.vuno.ui.theme.errorContainerLight
 import com.lomolo.vuno.ui.theme.primaryContainerLight
 import com.lomolo.vuno.ui.theme.secondaryContainerLight
 import com.lomolo.vuno.ui.theme.surfaceContainerLight
+import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import java.time.format.TextStyle
 import java.util.Locale
 
 object FarmStoreScreenDestination : Navigation {
@@ -316,25 +312,8 @@ private fun OrderDate(
     language: String,
     country: String,
 ) {
-    val cYear = Clock.System.now().toLocalDateTime(TimeZone.UTC).year
-    val instant = Instant.parse(date)
-    val dateTime = instant.toLocalDateTime(TimeZone.UTC)
-    val displayDate = if (cYear > dateTime.year) {
-        "${dateTime.dayOfMonth} ${
-            dateTime.month.getDisplayName(
-                TextStyle.SHORT, Locale(language, country)
-            )
-        } ${dateTime.year}"
-    } else {
-        "${dateTime.dayOfMonth} ${
-            dateTime.month.getDisplayName(
-                TextStyle.SHORT, Locale(language, country)
-            )
-        }"
-    }
-
     Text(
-        displayDate,
+        Util.vunoDateFormat(date, language, country),
         modifier = modifier,
     )
 }

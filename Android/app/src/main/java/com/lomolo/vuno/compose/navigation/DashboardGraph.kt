@@ -456,6 +456,8 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         ) {
             FarmSettingsScreen(
+                language = deviceDetails.languages,
+                country = deviceDetails.countryCode,
                 onNavigateBack = {
                     navHostController.popBackStack()
                 }
