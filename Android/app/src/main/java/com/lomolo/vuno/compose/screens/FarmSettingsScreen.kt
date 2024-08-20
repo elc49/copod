@@ -51,6 +51,7 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
+import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
 
 object FarmSettingsScreenDestination : Navigation {
@@ -65,6 +66,8 @@ object FarmSettingsScreenDestination : Navigation {
 fun FarmSettingsScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
+    language: String,
+    country: String,
     viewModel: FarmSettingsViewModel = viewModel(factory = VunoViewModelProvider.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -179,7 +182,7 @@ fun FarmSettingsScreen(
                             )
                         )
                         OutlinedTextField(
-                            value = farmDetails.dateStarted.toString(),
+                            value = Util.vunoDateFormat(farmDetails.dateStarted.toString(), language, country),
                             modifier = Modifier.width(300.dp),
                             label = {
                                 Text(stringResource(R.string.started))
