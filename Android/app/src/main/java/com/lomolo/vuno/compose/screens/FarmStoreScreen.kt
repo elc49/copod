@@ -189,24 +189,16 @@ private fun MarketCard(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Row(
-                    Modifier.wrapContentWidth()
-                ) {
-                    Text(
+                Text(
+                    "${
                         currencyText(
                             currency = currencyLocale, amount = market.pricePerUnit, language
-                        ),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                    Text("/")
-                    Text(
-                        market.unit,
-                        color = MaterialTheme.colorScheme.surfaceDim,
-                    )
-
-                }
+                        )
+                    } / ${market.unit}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                )
                 TextButton(onClick = {
                     setMarketStatus(
                         SetMarketStatusInput(
