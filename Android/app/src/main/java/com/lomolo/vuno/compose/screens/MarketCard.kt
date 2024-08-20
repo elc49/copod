@@ -154,84 +154,85 @@ private fun CounterAction(
     addingToCart: AddingToCartState,
 ) {
     ModalBottomSheet(
-        modifier = modifier, onDismissRequest = onDismissRequest, sheetState = sheetState
+        modifier = modifier,
+        dragHandle = null,
+        shape = RoundedCornerShape(0.dp),
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState
     ) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(start = 32.dp, end = 32.dp, bottom = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            OutlinedIconButton(
-                onClick = { increaseOrderVolume() },
-                shape = MaterialTheme.shapes.small,
+        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Icon(
-                    Icons.TwoTone.KeyboardArrowUp,
-                    contentDescription = null,
-                )
-            }
-            Text(
-                "${order?.volume}", modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.surfaceDim,
-                        MaterialTheme.shapes.small,
+                OutlinedIconButton(
+                    onClick = { increaseOrderVolume() },
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Icon(
+                        Icons.TwoTone.KeyboardArrowUp,
+                        contentDescription = null,
                     )
-                    .padding(start = 8.dp, end = 8.dp), style = MaterialTheme.typography.titleLarge
-            )
-            OutlinedIconButton(
-                onClick = { decreaseOrderVolume() },
-                shape = MaterialTheme.shapes.small,
-            ) {
-                Icon(
-                    Icons.TwoTone.KeyboardArrowDown, contentDescription = null
+                }
+                Text(
+                    "${order?.volume}",
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.surfaceDim,
+                            MaterialTheme.shapes.small,
+                        )
+                        .padding(start = 8.dp, end = 8.dp),
+                    style = MaterialTheme.typography.titleLarge
                 )
+                OutlinedIconButton(
+                    onClick = { decreaseOrderVolume() },
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Icon(
+                        Icons.TwoTone.KeyboardArrowDown, contentDescription = null
+                    )
+                }
             }
-        }
-        Row(
-            Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Button(
-                onClick = {
-                    if (order != null) {
-                        addToCart(order)
-                    }
-                },
-                contentPadding = PaddingValues(12.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = 32.dp),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                when (addingToCart) {
-                    AddingToCartState.Success -> {
-                        if (order?.volume != 0) {
-                            Text(
-                                "Add to Cart[${
-                                    currencyText(
-                                        currency = currency, amount = price.times(
-                                            order?.volume ?: 0
-                                        ), language = language
-                                    )
-                                }]",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        } else {
-                            Text(
-                                "Add to Cart",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
+                Button(
+                    onClick = {
+                        if (order != null) {
+                            addToCart(order)
                         }
-                    }
+                    }, contentPadding = PaddingValues(12.dp), modifier = Modifier.weight(1f)
+                ) {
+                    when (addingToCart) {
+                        AddingToCartState.Success -> {
+                            if (order?.volume != 0) {
+                                Text(
+                                    "Add to Cart[${
+                                        currencyText(
+                                            currency = currency, amount = price.times(
+                                                order?.volume ?: 0
+                                            ), language = language
+                                        )
+                                    }]",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            } else {
+                                Text(
+                                    "Add to Cart",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                        }
 
-                    AddingToCartState.Loading -> CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp),
-                    )
+                        AddingToCartState.Loading -> CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
                 }
             }
         }
