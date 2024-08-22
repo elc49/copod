@@ -10,7 +10,7 @@ import com.lomolo.vuno.compose.screens.AccountViewModel
 import com.lomolo.vuno.compose.screens.AddFarmMarketViewModel
 import com.lomolo.vuno.compose.screens.CreateFarmViewModel
 import com.lomolo.vuno.compose.screens.CreatePostViewModel
-import com.lomolo.vuno.compose.screens.DashboardViewModel
+import com.lomolo.vuno.compose.screens.ExploreViewModel
 import com.lomolo.vuno.compose.screens.FarmMarketViewModel
 import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
@@ -32,7 +32,7 @@ object VunoViewModelProvider {
         lateinit var signinViewModel: SigninViewModel
         lateinit var createPostViewModel: CreatePostViewModel
         lateinit var marketsViewModel: MarketsViewModel
-        lateinit var dashboardViewModel: DashboardViewModel
+        lateinit var exploreViewModel: ExploreViewModel
         lateinit var paymentViewModel: PaymentViewModel
         lateinit var marketCartViewModel: MarketCartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
@@ -121,11 +121,11 @@ object VunoViewModelProvider {
         }
 
         initializer {
-            dashboardViewModel = DashboardViewModel(
+            exploreViewModel = ExploreViewModel(
                 vunoApplication().container.postersRepository,
                 mainViewModel,
             )
-            dashboardViewModel
+            exploreViewModel
         }
 
         initializer {

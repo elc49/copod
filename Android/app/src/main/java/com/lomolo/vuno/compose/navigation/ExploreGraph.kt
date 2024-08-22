@@ -49,8 +49,8 @@ import com.lomolo.vuno.compose.screens.CreateFarmScreen
 import com.lomolo.vuno.compose.screens.CreateFarmScreenDestination
 import com.lomolo.vuno.compose.screens.CreatePostScreen
 import com.lomolo.vuno.compose.screens.CreatePostScreenDestination
-import com.lomolo.vuno.compose.screens.DashboardScreen
-import com.lomolo.vuno.compose.screens.DashboardScreenDestination
+import com.lomolo.vuno.compose.screens.ExploreScreen
+import com.lomolo.vuno.compose.screens.ExploreScreenDestination
 import com.lomolo.vuno.compose.screens.FarmScreenDestination
 import com.lomolo.vuno.compose.screens.FarmSettingsScreen
 import com.lomolo.vuno.compose.screens.FarmSettingsScreenDestination
@@ -74,7 +74,7 @@ import com.lomolo.vuno.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object DashboardDestination : Navigation {
+object ExploreDestination : Navigation {
     override val title = null
     override val route = "dashboard"
 }
@@ -89,7 +89,7 @@ sealed class Screen(
         R.string.explore,
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
-        "dashboard-home",
+        "dashboard-explore",
     )
 
     data object Soko : Screen(
@@ -150,7 +150,7 @@ fun BottomNavBar(
 
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.addDashboardGraph(
+fun NavGraphBuilder.addExploreGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
@@ -176,13 +176,13 @@ fun NavGraphBuilder.addDashboardGraph(
     }
 
     navigation(
-        startDestination = DashboardScreenDestination.route,
-        route = DashboardDestination.route,
+        startDestination = FarmScreenDestination.route,
+        route = ExploreDestination.route,
     ) {
-        composable(route = DashboardScreenDestination.route) {
+        composable(route = ExploreScreenDestination.route) {
             val currentDestination = it.destination
 
-            DashboardScreen(
+            ExploreScreen(
                 onNavigateTo = onNavigateTo,
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
@@ -421,7 +421,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         onNavigateTo = {
                             when (reason) {
                                 "poster_rights" -> {
-                                    onNavigateTo(DashboardScreenDestination.route)
+                                    onNavigateTo(ExploreScreenDestination.route)
                                 }
 
                                 "farming_rights" -> {

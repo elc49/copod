@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
 
-class DashboardViewModel(
+class ExploreViewModel(
     private val postersRepository: IPosters,
     mainViewModel: MainViewModel,
 ) : ViewModel() {
