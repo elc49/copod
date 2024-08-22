@@ -49,8 +49,8 @@ import com.lomolo.vuno.compose.screens.CreateFarmScreen
 import com.lomolo.vuno.compose.screens.CreateFarmScreenDestination
 import com.lomolo.vuno.compose.screens.CreatePostScreen
 import com.lomolo.vuno.compose.screens.CreatePostScreenDestination
-import com.lomolo.vuno.compose.screens.DashboardScreen
-import com.lomolo.vuno.compose.screens.DashboardScreenDestination
+import com.lomolo.vuno.compose.screens.ExploreScreen
+import com.lomolo.vuno.compose.screens.ExploreScreenDestination
 import com.lomolo.vuno.compose.screens.FarmScreenDestination
 import com.lomolo.vuno.compose.screens.FarmSettingsScreen
 import com.lomolo.vuno.compose.screens.FarmSettingsScreenDestination
@@ -150,7 +150,7 @@ fun BottomNavBar(
 
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.addDashboardGraph(
+fun NavGraphBuilder.addExploreGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
@@ -176,13 +176,13 @@ fun NavGraphBuilder.addDashboardGraph(
     }
 
     navigation(
-        startDestination = DashboardScreenDestination.route,
+        startDestination = ExploreScreenDestination.route,
         route = DashboardDestination.route,
     ) {
-        composable(route = DashboardScreenDestination.route) {
+        composable(route = ExploreScreenDestination.route) {
             val currentDestination = it.destination
 
-            DashboardScreen(
+            ExploreScreen(
                 onNavigateTo = onNavigateTo,
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
@@ -421,7 +421,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         onNavigateTo = {
                             when (reason) {
                                 "poster_rights" -> {
-                                    onNavigateTo(DashboardScreenDestination.route)
+                                    onNavigateTo(ExploreScreenDestination.route)
                                 }
 
                                 "farming_rights" -> {

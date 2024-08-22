@@ -25,4 +25,12 @@ object Data {
         "avocado oil",
         "machinery",
     )
+    val services = listOf(
+        "Machinery",
+        "Seeds",
+        "Seedlings",
+        "Cultivation process",
+        "Crop disease solution",
+        "Animal feed",
+    )
 }

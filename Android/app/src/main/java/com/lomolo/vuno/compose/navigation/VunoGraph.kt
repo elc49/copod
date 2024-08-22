@@ -73,7 +73,7 @@ fun VunoNavigationHost(
                     modifier = modifier,
                     navHostController = navHostController,
                 )
-                addDashboardGraph(
+                addExploreGraph(
                     modifier = modifier,
                     navHostController = navHostController,
                     sessionViewModel = sessionViewModel,
