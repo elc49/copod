@@ -74,7 +74,7 @@ import com.lomolo.vuno.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object DashboardDestination : Navigation {
+object ExploreDestination : Navigation {
     override val title = null
     override val route = "dashboard"
 }
@@ -89,7 +89,7 @@ sealed class Screen(
         R.string.explore,
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
-        "dashboard-home",
+        "dashboard-explore",
     )
 
     data object Soko : Screen(
@@ -176,8 +176,8 @@ fun NavGraphBuilder.addExploreGraph(
     }
 
     navigation(
-        startDestination = ExploreScreenDestination.route,
-        route = DashboardDestination.route,
+        startDestination = FarmScreenDestination.route,
+        route = ExploreDestination.route,
     ) {
         composable(route = ExploreScreenDestination.route) {
             val currentDestination = it.destination

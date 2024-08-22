@@ -32,7 +32,7 @@ object VunoViewModelProvider {
         lateinit var signinViewModel: SigninViewModel
         lateinit var createPostViewModel: CreatePostViewModel
         lateinit var marketsViewModel: MarketsViewModel
-        lateinit var dashboardViewModel: ExploreViewModel
+        lateinit var exploreViewModel: ExploreViewModel
         lateinit var paymentViewModel: PaymentViewModel
         lateinit var marketCartViewModel: MarketCartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
@@ -121,11 +121,11 @@ object VunoViewModelProvider {
         }
 
         initializer {
-            dashboardViewModel = ExploreViewModel(
+            exploreViewModel = ExploreViewModel(
                 vunoApplication().container.postersRepository,
                 mainViewModel,
             )
-            dashboardViewModel
+            exploreViewModel
         }
 
         initializer {

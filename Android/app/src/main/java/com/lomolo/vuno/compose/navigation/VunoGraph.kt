@@ -66,7 +66,7 @@ fun VunoNavigationHost(
         else -> {
             NavHost(
                 navController = navHostController,
-                startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
+                startDestination = if (session.token.isBlank()) HomeDestination.route else ExploreDestination.route,
                 route = RootNavigation.route,
             ) {
                 addHomeGraph(
