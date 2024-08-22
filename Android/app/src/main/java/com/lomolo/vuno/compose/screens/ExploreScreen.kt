@@ -1,6 +1,5 @@
 package com.lomolo.vuno.compose.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.lomolo.vuno.R
 import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.compose.navigation.BottomNavBar
@@ -112,10 +114,15 @@ fun ExploreScreen(
                         modifier = Modifier.size(120.dp),
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            Image(
-                                painter = painterResource(Data.serviceImages[it]!!),
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(Data.serviceImages[it])
+                                    .crossfade(true)
+                                    .build(),
                                 contentScale = ContentScale.Crop,
-                                contentDescription = null
+                                placeholder = painterResource(id = R.drawable.loading_img),
+                                error = painterResource(id = R.drawable.ic_broken_image),
+                                contentDescription = null,
                             )
                             Box(
                                 Modifier
