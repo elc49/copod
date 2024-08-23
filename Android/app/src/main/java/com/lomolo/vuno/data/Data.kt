@@ -3,45 +3,34 @@ package com.lomolo.vuno.data
 import com.lomolo.vuno.R
 
 object Data {
-    val category = listOf(
-        "livestock",
+    val marketTags = listOf(
         "animal feeds",
-        "poultry",
-        "farm inputs",
-        "disease",
-        "outbreak",
-        "vaccine",
+        "crops",
+        "flowers",
         "fruits",
         "trees",
         "seeds",
-        "grain",
-        "rabbit",
+        "meat",
+        "livestock",
+        "poultry",
         "vegetables",
-        "birds",
-        "mushrooms",
-        "nuts",
         "spices",
         "herbs",
-        "coconut oil",
-        "butter",
-        "avocado oil",
+    )
+    val serviceTags = listOf(
         "machinery",
+        "seeds",
+        "seedlings",
+        /*"cultivation",
+        "crop disease",
+        "animal feed",*/
     )
-    val services = listOf(
-        "Machinery",
-        "Seeds",
-        "Seedlings",
-        "Cultivation",
-        "Crop disease",
-        "Animal feed",
-    )
-
     val serviceImages = mapOf(
-        "Machinery" to R.drawable.machinery,
-        "Seeds" to R.drawable.seeds,
-        "Seedlings" to R.drawable.seedlings,
-        "Cultivation" to R.drawable.cultivation,
-        "Crop disease" to R.drawable.bad_leaf,
-        "Animal feed" to R.drawable.animal_feed,
+        "machinery" to R.drawable.machinery,
+        "seeds" to R.drawable.seeds,
+        "seedlings" to R.drawable.seedlings,
+        "cultivation" to R.drawable.cultivation,
+        "crop disease" to R.drawable.bad_leaf,
+        "animal feed" to R.drawable.animal_feed,
     )
 }

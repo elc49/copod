@@ -184,8 +184,6 @@ fun NavGraphBuilder.addExploreGraph(
 
             ExploreScreen(
                 onNavigateTo = onNavigateTo,
-                navHostController = navHostController,
-                sessionViewModel = sessionViewModel,
                 currentDestination = currentDestination,
                 snackbarHostState = snackbarHostState,
             )

@@ -150,7 +150,7 @@ class AddFarmMarketViewModel(
         _marketInput.value = Market()
     }
 
-    val category = Data.category
+    val category = Data.marketTags
 
     fun tagAlreadyExists(tag: String): Boolean {
         return _marketInput.value.tag == tag

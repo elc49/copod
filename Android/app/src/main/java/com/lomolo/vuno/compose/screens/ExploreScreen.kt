@@ -11,13 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -26,23 +21,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.R
-import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.compose.navigation.BottomNavBar
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.data.Data
@@ -57,19 +47,16 @@ object ExploreScreenDestination : Navigation {
 fun ExploreScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
-    navHostController: NavHostController,
     onNavigateTo: (String) -> Unit,
     currentDestination: NavDestination,
-    sessionViewModel: SessionViewModel,
 ) {
-    val session by sessionViewModel.sessionUiState.collectAsState()
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
             title = {
             Text("Services")
         })
-    }, floatingActionButton = {
+    }, /*floatingActionButton = {
         IconButton(modifier = Modifier.background(
             MaterialTheme.colorScheme.primary,
             CircleShape,
@@ -90,7 +77,7 @@ fun ExploreScreen(
                 contentDescription = stringResource(R.string.create_post),
             )
         }
-    }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
+    },*/ contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
         BottomNavBar(
             modifier = modifier,
             onNavigateTo = onNavigateTo,
@@ -108,7 +95,7 @@ fun ExploreScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(Data.services) {
+                items(Data.serviceTags) {
                     Card(
                         onClick = { /*TODO*/ },
                         modifier = Modifier.size(120.dp),
