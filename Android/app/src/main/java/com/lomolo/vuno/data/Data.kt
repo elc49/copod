@@ -31,8 +31,8 @@ object Data {
         "Machinery",
         "Seeds",
         "Seedlings",
-        "Cultivation process",
-        "Crop disease solution",
+        "Cultivation",
+        "Crop disease",
         "Animal feed",
     )
 
@@ -40,8 +40,8 @@ object Data {
         "Machinery" to R.drawable.machinery,
         "Seeds" to R.drawable.seeds,
         "Seedlings" to R.drawable.seedlings,
-        "Cultivation process" to R.drawable.cultivation,
-        "Crop disease solution" to R.drawable.bad_leaf,
+        "Cultivation" to R.drawable.cultivation,
+        "Crop disease" to R.drawable.bad_leaf,
         "Animal feed" to R.drawable.animal_feed,
     )
 }
