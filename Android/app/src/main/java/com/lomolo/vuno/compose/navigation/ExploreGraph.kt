@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -233,18 +232,6 @@ fun NavGraphBuilder.addExploreGraph(
                                 Icon(
                                     Icons.AutoMirrored.TwoTone.ArrowBack,
                                     contentDescription = stringResource(id = R.string.go_back),
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = {
-                                navHostController.navigate(
-                                    CreateFarmMarketDestination.route
-                                )
-                            }) {
-                                Icon(
-                                    Icons.TwoTone.Add,
-                                    contentDescription = stringResource(id = R.string.go_back)
                                 )
                             }
                         })
