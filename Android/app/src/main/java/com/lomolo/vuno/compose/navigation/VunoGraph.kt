@@ -66,14 +66,14 @@ fun VunoNavigationHost(
         else -> {
             NavHost(
                 navController = navHostController,
-                startDestination = if (session.token.isBlank()) HomeDestination.route else ExploreDestination.route,
+                startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
                 route = RootNavigation.route,
             ) {
                 addHomeGraph(
                     modifier = modifier,
                     navHostController = navHostController,
                 )
-                addExploreGraph(
+                addDashboardGraph(
                     modifier = modifier,
                     navHostController = navHostController,
                     sessionViewModel = sessionViewModel,
@@ -88,6 +88,12 @@ fun VunoNavigationHost(
                     deviceDetails = deviceDetails,
                     mainViewModel = mainViewModel,
                     initializing = initializing,
+                )
+                addFarmGraph(
+                    navHostController = navHostController,
+                    deviceDetails = deviceDetails,
+                    snackbarHostState = snackbarHostState,
+                    scope = scope,
                 )
             }
         }

@@ -36,7 +36,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
-import com.lomolo.vuno.compose.navigation.ExploreDestination
+import com.lomolo.vuno.compose.navigation.DashboardDestination
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.ui.theme.VunoTheme
 
@@ -89,7 +89,7 @@ fun SignInScreen(
                         keyboardController?.hide()
                         if (viewModel.signInUiState !is SigninState.Loading && signinDetails.phone.isNotBlank()) {
                             viewModel.signIn {
-                                onNavigateTo(ExploreDestination.route)
+                                onNavigateTo(DashboardDestination.route)
                             }
                         }
                     }
@@ -132,7 +132,7 @@ fun SignInScreen(
                     keyboardController?.hide()
                     if (viewModel.signInUiState !is SigninState.Loading && signinDetails.phone.isNotBlank()) {
                         viewModel.signIn {
-                            onNavigateTo(ExploreDestination.route)
+                            onNavigateTo(DashboardDestination.route)
                         }
                     }
                 }
