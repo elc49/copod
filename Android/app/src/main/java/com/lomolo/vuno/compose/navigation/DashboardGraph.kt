@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,23 +12,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -40,10 +30,9 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.vuno.R
 import com.lomolo.vuno.SessionViewModel
+import com.lomolo.vuno.common.BottomNavBar
 import com.lomolo.vuno.compose.screens.AccountScreen
 import com.lomolo.vuno.compose.screens.AccountScreenDestination
-import com.lomolo.vuno.compose.screens.CreateFarmMarketDestination
-import com.lomolo.vuno.compose.screens.CreateFarmMarketScreen
 import com.lomolo.vuno.compose.screens.CreateFarmScreen
 import com.lomolo.vuno.compose.screens.CreateFarmScreenDestination
 import com.lomolo.vuno.compose.screens.CreatePostScreen
@@ -51,10 +40,6 @@ import com.lomolo.vuno.compose.screens.CreatePostScreenDestination
 import com.lomolo.vuno.compose.screens.ExploreScreen
 import com.lomolo.vuno.compose.screens.ExploreScreenDestination
 import com.lomolo.vuno.compose.screens.FarmScreenDestination
-import com.lomolo.vuno.compose.screens.FarmSettingsScreen
-import com.lomolo.vuno.compose.screens.FarmSettingsScreenDestination
-import com.lomolo.vuno.compose.screens.FarmStoreScreen
-import com.lomolo.vuno.compose.screens.FarmStoreScreenDestination
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreen
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.vuno.compose.screens.FarmsScreen
@@ -73,7 +58,7 @@ import com.lomolo.vuno.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object ExploreDestination : Navigation {
+object DashboardDestination : Navigation {
     override val title = null
     override val route = "dashboard"
 }
@@ -113,43 +98,9 @@ sealed class Screen(
     )
 }
 
-@Composable
-fun BottomNavBar(
-    modifier: Modifier = Modifier,
-    onNavigateTo: (String) -> Unit = {},
-    currentDestination: NavDestination?,
-) {
-    val navItems = listOf(Screen.Farm, Screen.Explore, Screen.Soko, Screen.Account)
-
-    NavigationBar(
-        modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)
-    ) {
-        navItems.forEachIndexed { _, item ->
-            val isNavItemActive =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true
-
-            NavigationBarItem(selected = isNavItemActive, onClick = {
-                onNavigateTo(item.route)
-            }, icon = {
-                Icon(
-                    painterResource(if (isNavItemActive) item.activeIcon else item.defaultIcon),
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = stringResource(item.name)
-                )
-            }, label = {
-                Text(
-                    stringResource(item.name),
-                    fontWeight = if (isNavItemActive) FontWeight.ExtraBold
-                    else FontWeight.Normal,
-                )
-            })
-        }
-    }
-}
-
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.addExploreGraph(
+fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
@@ -176,7 +127,7 @@ fun NavGraphBuilder.addExploreGraph(
 
     navigation(
         startDestination = FarmScreenDestination.route,
-        route = ExploreDestination.route,
+        route = DashboardDestination.route,
     ) {
         composable(route = ExploreScreenDestination.route) {
             val currentDestination = it.destination
@@ -213,40 +164,6 @@ fun NavGraphBuilder.addExploreGraph(
                         onNavigateTo = onNavigateTo,
                     )
                 })
-        }
-        composable(
-            route = FarmStoreScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmStoreScreenDestination.farmIdArg) {
-                type = NavType.StringType
-            })
-        ) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                topBar = {
-                    TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-                        title = { Text(stringResource(FarmStoreScreenDestination.title)) },
-                        navigationIcon = {
-                            IconButton(onClick = {
-                                navHostController.popBackStack()
-                            }) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowBack,
-                                    contentDescription = stringResource(id = R.string.go_back),
-                                )
-                            }
-                        })
-                }) {
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    FarmStoreScreen(
-                        deviceDetails = deviceDetails,
-                        navHostController = navHostController,
-                    )
-                }
-            }
         }
         composable(route = AccountScreenDestination.route) {
             AccountScreen(
@@ -297,18 +214,6 @@ fun NavGraphBuilder.addExploreGraph(
                     snackbarHostState.showSnackbar(
                         "Farm created.", withDismissAction = true
                     )
-                }
-            })
-        }
-        dialog(
-            route = CreateFarmMarketDestination.route,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            CreateFarmMarketScreen(onGoBack = {
-                navHostController.popBackStack()
-            }, showToast = {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
                 }
             })
         }
@@ -432,20 +337,6 @@ fun NavGraphBuilder.addExploreGraph(
                 modifier = modifier,
                 deviceDetails = deviceDetails,
                 onNavigateBack = { navHostController.popBackStack() },
-            )
-        }
-        composable(
-            route = FarmSettingsScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmSettingsScreenDestination.farmIdArg) {
-                type = NavType.StringType
-            })
-        ) {
-            FarmSettingsScreen(
-                language = deviceDetails.languages,
-                country = deviceDetails.countryCode,
-                onNavigateBack = {
-                    navHostController.popBackStack()
-                }
             )
         }
     }

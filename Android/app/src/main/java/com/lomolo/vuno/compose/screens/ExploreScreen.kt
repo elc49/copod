@@ -33,7 +33,7 @@ import androidx.navigation.NavDestination
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.R
-import com.lomolo.vuno.compose.navigation.BottomNavBar
+import com.lomolo.vuno.common.BottomNavBar
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.data.Data
 

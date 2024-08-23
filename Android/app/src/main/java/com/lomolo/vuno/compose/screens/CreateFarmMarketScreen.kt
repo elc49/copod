@@ -18,8 +18,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Check
-import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -60,15 +60,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.ui.theme.VunoTheme
 import kotlinx.coroutines.launch
 
 object CreateFarmMarketDestination : Navigation {
     override val title = null
-    override val route = "dashboard-farm-market"
+    override val route = "farm/market"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,8 +159,7 @@ fun CreateFarmMarketScreen(
         }, navigationIcon = {
             IconButton(onClick = { onGoBack() }) {
                 Icon(
-                    Icons.TwoTone.Close,
-                    modifier = Modifier.size(28.dp),
+                    Icons.AutoMirrored.TwoTone.ArrowBack,
                     contentDescription = null,
                 )
             }
