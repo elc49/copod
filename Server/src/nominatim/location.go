@@ -57,7 +57,7 @@ func ReverseGeocode(coords model.Gps) (*model.Address, error) {
 			address.AddressString += fmt.Sprintf("%s, ", result.Address.County)
 		}
 	}
-	address.AddressString += fmt.Sprintf("%s", strings.ToUpper(result.Address.CountryCode))
+	address.AddressString += strings.ToUpper(result.Address.CountryCode)
 
 	lat, err := strconv.ParseFloat(result.Lat, 64)
 	if err != nil {
