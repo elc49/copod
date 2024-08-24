@@ -26,7 +26,7 @@ func (c *PaystackController) Init(store postgres.Store) {
 func (c *PaystackController) ChargeMpesaPhone(ctx context.Context, userId uuid.UUID, input model.PayWithMpesaInput) (*model.ChargeMpesaPhoneRes, error) {
 	args := model.ChargeMpesaPhoneInput{
 		Currency: input.Currency,
-		Email:    fmt.Sprintf("%s@giggy.app", util.RandomStringByLength(5)),
+		Email:    fmt.Sprintf("%s@zaraa.app", util.RandomStringByLength(5)),
 		UserID:   userId,
 		Reason:   input.Reason,
 		Provider: struct {
