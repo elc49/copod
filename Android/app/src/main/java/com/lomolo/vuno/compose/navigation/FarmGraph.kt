@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -59,7 +58,7 @@ fun NavGraphBuilder.addFarmGraph(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 topBar = {
                     TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-                        title = { Text(stringResource(FarmStoreScreenDestination.title)) },
+                        title = {},
                         navigationIcon = {
                             IconButton(onClick = {
                                 navHostController.popBackStack()
