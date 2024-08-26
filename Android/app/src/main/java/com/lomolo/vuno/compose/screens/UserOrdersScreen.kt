@@ -133,7 +133,7 @@ fun UserOrdersScreen(
                                 TableCell(text = item.market.name, weight = .2f)
                                 TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
                                 TableCell(
-                                    text = Util.currencyText(
+                                    text = Util.formatCurrency(
                                         currency = item.currency, amount = item.toBePaid, language = deviceDetails.languages
                                     ), weight = .2f
                                 )

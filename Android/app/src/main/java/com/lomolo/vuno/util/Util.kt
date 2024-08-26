@@ -36,7 +36,7 @@ object Util {
         return text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-    fun currencyText(
+    fun formatCurrency(
         currency: String,
         amount: Int,
         language: String,
@@ -56,7 +56,7 @@ object Util {
         }
     }
 
-    fun statisticText(
+    fun statistic(
         language: String,
         v: Int,
     ): String {

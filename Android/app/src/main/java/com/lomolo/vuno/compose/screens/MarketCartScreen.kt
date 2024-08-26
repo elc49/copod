@@ -183,7 +183,7 @@ fun MarketCartScreen(
                                     "${item.volume} ${item.market.unit}", .25f
                                 )
                                 TableCell(
-                                    Util.currencyText(
+                                    Util.formatCurrency(
                                         currency = deviceDetails.currency,
                                         amount = item.volume.times(item.market.pricePerUnit),
                                         language = deviceDetails.languages,
@@ -236,7 +236,7 @@ fun MarketCartScreen(
                                 when (viewModel.sendToFarmState) {
                                     SendToFarmState.Success -> Text(
                                         "Send to farm [${
-                                            Util.currencyText(
+                                            Util.formatCurrency(
                                                 currency = deviceDetails.currency,
                                                 amount = item.volume.times(item.market.pricePerUnit),
                                                 language = deviceDetails.languages,
@@ -251,7 +251,7 @@ fun MarketCartScreen(
                                         modifier = Modifier.size(20.dp)
                                     ) else Text(
                                         "Send to farm [${
-                                            Util.currencyText(
+                                            Util.formatCurrency(
                                                 currency = deviceDetails.currency,
                                                 amount = item.volume.times(item.market.pricePerUnit),
                                                 language = deviceDetails.languages,

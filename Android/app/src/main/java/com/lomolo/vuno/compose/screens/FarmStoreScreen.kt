@@ -24,7 +24,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.twotone.Check
+import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,7 +56,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
@@ -169,7 +169,7 @@ private fun MarketCard(
             ) {
                 Text(
                     "${
-                        Util.currencyText(
+                        Util.formatCurrency(
                             currency = currencyLocale, amount = market.pricePerUnit, language
                         )
                     } / ${market.unit}",
@@ -207,11 +207,6 @@ private fun OrderCard(
     country: String,
 ) {
     val context = LocalContext.current
-    val states = listOf(
-        OrderStatus.CONFIRMED,
-        OrderStatus.DELIVERED,
-        OrderStatus.CANCELLED,
-    )
 
     Box {
         Column(
@@ -297,36 +292,54 @@ private fun OrderCard(
                     )
                 } else {
                     Row {
-                        states.forEach { state ->
-                            TextButton(
-                                onClick = { updateOrderStatus(order.id.toString(), state) },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = if (state.toString() == order.status.toString()) MaterialTheme.colorScheme.primaryContainer else ButtonDefaults.textButtonColors().containerColor,
-                                    contentColor = if (state.toString() == order.status.toString()) MaterialTheme.colorScheme.onPrimaryContainer else ButtonDefaults.textButtonColors().contentColor,
-                                ),
-                            ) {
-                                when (state) {
-                                    OrderStatus.CONFIRMED -> Text(
-                                        stringResource(R.string.confirm),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-
-                                    OrderStatus.DELIVERED -> Text(
-                                        stringResource(R.string.deliver),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-
-                                    OrderStatus.CANCELLED -> Text(
-                                        stringResource(id = R.string.cancel),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-
-                                    else -> {}
-                                }
+                        when (order.status) {
+                            OrderStatus.PENDING -> TextButton(onClick = {
+                                updateOrderStatus(
+                                    order.id.toString(), OrderStatus.CONFIRMED
+                                )
+                            }) {
+                                Text(
+                                    stringResource(R.string.confirm),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
                             }
+
+                            OrderStatus.CONFIRMED -> TextButton(onClick = {
+                                updateOrderStatus(
+                                    order.id.toString(), OrderStatus.DELIVERED
+                                )
+                            }) {
+                                Text(
+                                    stringResource(R.string.deliver),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+
+                            OrderStatus.CANCELLED -> {
+                                Icon(
+                                    Icons.TwoTone.Close,
+                                    contentDescription = stringResource(R.string.closed),
+                                    tint = MaterialTheme.colorScheme.onError,
+                                )
+                            }
+
+                            OrderStatus.DELIVERED -> {
+                                Icon(
+                                    Icons.TwoTone.Check,
+                                    modifier = Modifier
+                                        .background(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.shapes.small,
+                                        )
+                                        .padding(2.dp),
+                                    contentDescription = stringResource(R.string.success),
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                )
+                            }
+
+                            else -> {}
                         }
                     }
                 }
