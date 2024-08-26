@@ -158,7 +158,7 @@ fun MarketCartScreen(
                             TableHeader(text = "", weight = .15f)
                         }
                     }
-                    groupedByFarm.forEach { key, value ->
+                    groupedByFarm.forEach { (key, value) ->
                         stickyHeader {
                             Text(
                                 key,
