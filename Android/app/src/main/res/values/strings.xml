@@ -101,4 +101,6 @@
     <string name="farm_name_support_text">People will refer to your farm by this name</string>
     <string name="describe_harvest">Describe your harvest</string>
     <string name="product_details">Product details</string>
+    <string name="closed">closed</string>
+    <string name="success">success</string>
 </resources>

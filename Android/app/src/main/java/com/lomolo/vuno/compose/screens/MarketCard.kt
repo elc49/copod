@@ -110,7 +110,7 @@ fun MarketCard(
             )
             Text(
                 "${
-                    Util.currencyText(
+                    Util.formatCurrency(
                         currency = currencyLocale, amount = data.pricePerUnit, language
                     )
                 } / ${data.unit}",
@@ -210,7 +210,7 @@ private fun CounterAction(
                             if (order?.volume != 0) {
                                 Text(
                                     "Add to Cart[${
-                                        Util.currencyText(
+                                        Util.formatCurrency(
                                             currency = currency, amount = price.times(
                                                 order?.volume ?: 0
                                             ), language = language

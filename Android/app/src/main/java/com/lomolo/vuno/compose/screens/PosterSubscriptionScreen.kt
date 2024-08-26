@@ -90,7 +90,7 @@ fun PosterSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    Util.currencyText(
+                    Util.formatCurrency(
                         currency = deviceDetails.currency, amount = deviceDetails.posterRightsFee, deviceDetails.languages
                     ),
                     fontWeight = FontWeight.Bold,
