@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,19 +32,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,19 +63,14 @@ import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
-import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
-import com.lomolo.vuno.type.MarketStatus
 import com.lomolo.vuno.type.OrderStatus
-import com.lomolo.vuno.type.SetMarketStatusInput
 import com.lomolo.vuno.ui.theme.errorContainerLight
 import com.lomolo.vuno.ui.theme.primaryContainerLight
 import com.lomolo.vuno.ui.theme.secondaryContainerLight
 import com.lomolo.vuno.ui.theme.surfaceContainerLight
 import com.lomolo.vuno.util.Util
-import kotlinx.coroutines.launch
-import java.util.Locale
 
 object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -92,7 +82,6 @@ object FarmStoreScreenDestination : Navigation {
 @Composable
 private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
-    onNavigateToSettings: (String) -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -105,22 +94,25 @@ private fun FarmHeader(
             modifier = Modifier
                 .size(120.dp)
                 .padding(8.dp)
-                .clip(MaterialTheme.shapes.extraSmall),
+                .clip(MaterialTheme.shapes.small),
             placeholder = painterResource(id = R.drawable.loading_img),
             contentDescription = null
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            farm?.name?.let {
-                Text(
-                    text = it,
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-            /*
+            Text(
+                text = Util.capitalize(farm?.name ?: ""),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.ExtraBold
+            )
+            Text(
+                Util.capitalize(farm?.about ?: ""),
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+            )/*
             IconButton(onClick = {
                 if (farm != null) {
                     onNavigateToSettings(farm.id.toString())
@@ -136,56 +128,18 @@ private fun FarmHeader(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MarketCard(
     modifier: Modifier = Modifier,
     market: GetFarmMarketsQuery.GetFarmMarket,
-    onShowBottomSheet: () -> Unit = {},
     currencyLocale: String,
     language: String,
-    setMarketStatus: (SetMarketStatusInput, () -> Unit) -> Unit,
-    settingMarketStatus: SettingMarketStatus,
-    updatingMarketId: String,
 ) {
-    val marketStatus = when (market.status) {
-        MarketStatus.OPEN -> MarketStatus.CLOSED
-        MarketStatus.CLOSED -> MarketStatus.OPEN
-        else -> MarketStatus.UNKNOWN__
-    }
-    val marketStatusColor = when (market.status) {
-        MarketStatus.OPEN -> MaterialTheme.colorScheme.surfaceTint
-        MarketStatus.CLOSED -> MaterialTheme.colorScheme.surfaceDim
-        else -> MaterialTheme.colorScheme.background
-    }
-    val buttonText = when (marketStatus) {
-        MarketStatus.CLOSED -> "Close"
-        else -> marketStatus.toString().lowercase().replaceFirstChar { if (it. isLowerCase()) it. titlecase(Locale.getDefault()) else it. toString() }
-    }
-    val scope = rememberCoroutineScope()
-    var openBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    val bottomSheetState = rememberModalBottomSheetState()
-    val onCloseBottomSheet = {
-        scope.launch { bottomSheetState.hide() }
-            .invokeOnCompletion {
-                if (!bottomSheetState.isVisible) {
-                    openBottomSheet = false
-                }
-            }
-    }
-    val statusText = when (marketStatus) {
-        MarketStatus.OPEN -> "open"
-        MarketStatus.CLOSED -> "close"
-        else -> ""
-    }
 
     Card(
-        onClick = onShowBottomSheet,
         modifier = modifier.wrapContentHeight(),
         colors = CardDefaults.cardColors(
-            containerColor = marketStatusColor,
+            containerColor = MaterialTheme.colorScheme.background,
         ),
         shape = MaterialTheme.shapes.small,
         border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary),
@@ -195,7 +149,7 @@ private fun MarketCard(
                 .build(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(100.dp)
+                .height(80.dp)
                 .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)),
             contentDescription = stringResource(
                 id = R.string.product
@@ -215,7 +169,7 @@ private fun MarketCard(
             ) {
                 Text(
                     "${
-                        currencyText(
+                        Util.currencyText(
                             currency = currencyLocale, amount = market.pricePerUnit, language
                         )
                     } / ${market.unit}",
@@ -223,83 +177,6 @@ private fun MarketCard(
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center
                 )
-                TextButton(onClick = { openBottomSheet = true }) {
-
-                    when (settingMarketStatus) {
-                        SettingMarketStatus.Success -> Text(
-                            buttonText,
-                            modifier = Modifier.padding(2.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-
-                        SettingMarketStatus.Loading -> {
-                            if (updatingMarketId == market.id.toString()) {
-                                CircularProgressIndicator(
-                                    Modifier.size(16.dp),
-                                    MaterialTheme.colorScheme.onPrimary,
-                                    strokeWidth = 2.dp,
-                                )
-                            } else {
-                                Text(
-                                    buttonText,
-                                    modifier = Modifier.padding(2.dp),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if (openBottomSheet) {
-        ModalBottomSheet(dragHandle = null,
-            shape = RoundedCornerShape(0.dp),
-            sheetState = bottomSheetState,
-            onDismissRequest = { onCloseBottomSheet() }) {
-
-            Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    "Confirm to $statusText this market",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Button(
-                    onClick = {
-                        setMarketStatus(
-                            SetMarketStatusInput(
-                                market.id.toString(), marketStatus
-                            )
-                        ) { onCloseBottomSheet() }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(12.dp),
-                ) {
-                    when (settingMarketStatus) {
-                        SettingMarketStatus.Success -> Text(
-                            "$buttonText market",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-
-                        SettingMarketStatus.Loading -> {
-                            if (updatingMarketId == market.id.toString()) {
-                                CircularProgressIndicator(
-                                    Modifier.size(20.dp),
-                                    MaterialTheme.colorScheme.onPrimary,
-                                )
-                            } else {
-                                Text(
-                                    "$buttonText market",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -485,7 +362,6 @@ private fun OrderCard(
 fun FarmStoreScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
-    navHostController: NavHostController,
     viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
@@ -497,12 +373,11 @@ fun FarmStoreScreen(
     val orders by viewModel.farmOrders.collectAsState()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         when (viewModel.gettingFarmState) {
-            GetFarmState.Success -> FarmHeader(farm = farm, onNavigateToSettings = {
-                navHostController.navigate("${FarmSettingsScreenDestination.route}/$it")
-            })
+            GetFarmState.Success -> FarmHeader(farm = farm)
 
             GetFarmState.Loading -> Row(
                 Modifier
@@ -557,13 +432,6 @@ fun FarmStoreScreen(
                                     language = deviceDetails.languages,
                                     currencyLocale = deviceDetails.currency,
                                     market = it,
-                                    setMarketStatus = { input: SetMarketStatusInput, cb: () -> Unit ->
-                                        viewModel.setMarketStatus(
-                                            input
-                                        ) { cb() }
-                                    },
-                                    updatingMarketId = viewModel.updatingMarketId,
-                                    settingMarketStatus = viewModel.settingMarketStatus,
                                 )
                             }
                         }

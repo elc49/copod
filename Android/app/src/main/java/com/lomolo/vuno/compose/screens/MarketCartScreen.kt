@@ -41,11 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.R
-import com.lomolo.vuno.common.currencyText
+import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
 
 object MarketCartScreenDestination : Navigation {
@@ -183,7 +183,7 @@ fun MarketCartScreen(
                                     "${item.volume} ${item.market.unit}", .25f
                                 )
                                 TableCell(
-                                    currencyText(
+                                    Util.currencyText(
                                         currency = deviceDetails.currency,
                                         amount = item.volume.times(item.market.pricePerUnit),
                                         language = deviceDetails.languages,
@@ -236,7 +236,7 @@ fun MarketCartScreen(
                                 when (viewModel.sendToFarmState) {
                                     SendToFarmState.Success -> Text(
                                         "Send to farm [${
-                                            currencyText(
+                                            Util.currencyText(
                                                 currency = deviceDetails.currency,
                                                 amount = item.volume.times(item.market.pricePerUnit),
                                                 language = deviceDetails.languages,
@@ -251,7 +251,7 @@ fun MarketCartScreen(
                                         modifier = Modifier.size(20.dp)
                                     ) else Text(
                                         "Send to farm [${
-                                            currencyText(
+                                            Util.currencyText(
                                                 currency = deviceDetails.currency,
                                                 amount = item.volume.times(item.market.pricePerUnit),
                                                 language = deviceDetails.languages,

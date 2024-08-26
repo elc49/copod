@@ -24,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lomolo.vuno.R
-import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import com.lomolo.vuno.util.Util
 
 object PosterSubscriptionScreenDestination : Navigation {
     override val title = R.string.buy_poster_rights
@@ -90,7 +90,7 @@ fun PosterSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    currencyText(
+                    Util.currencyText(
                         currency = deviceDetails.currency, amount = deviceDetails.posterRightsFee, deviceDetails.languages
                     ),
                     fontWeight = FontWeight.Bold,

@@ -50,7 +50,7 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.BuildConfig
 import com.lomolo.vuno.GetLocalizedMarketsQuery
 import com.lomolo.vuno.R
-import com.lomolo.vuno.common.currencyText
+import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,7 +110,7 @@ fun MarketCard(
             )
             Text(
                 "${
-                    currencyText(
+                    Util.currencyText(
                         currency = currencyLocale, amount = data.pricePerUnit, language
                     )
                 } / ${data.unit}",
@@ -210,7 +210,7 @@ private fun CounterAction(
                             if (order?.volume != 0) {
                                 Text(
                                     "Add to Cart[${
-                                        currencyText(
+                                        Util.currencyText(
                                             currency = currency, amount = price.times(
                                                 order?.volume ?: 0
                                             ), language = language
