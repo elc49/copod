@@ -53,6 +53,7 @@ import com.lomolo.vuno.SessionViewModel
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.ui.theme.inverseOnSurfaceLight
+import com.lomolo.vuno.util.Util
 
 object FarmScreenDestination : Navigation {
     override val title = null
@@ -229,7 +230,7 @@ internal fun Farms(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            it.name,
+                            Util.capitalize(it.name),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.displaySmall,

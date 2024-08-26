@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
-import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.type.OrderStatus
@@ -48,6 +47,7 @@ import com.lomolo.vuno.ui.theme.errorContainerLight
 import com.lomolo.vuno.ui.theme.primaryContainerLight
 import com.lomolo.vuno.ui.theme.secondaryContainerLight
 import com.lomolo.vuno.ui.theme.surfaceContainerLight
+import com.lomolo.vuno.util.Util
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
@@ -133,7 +133,7 @@ fun UserOrdersScreen(
                                 TableCell(text = item.market.name, weight = .2f)
                                 TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
                                 TableCell(
-                                    text = currencyText(
+                                    text = Util.currencyText(
                                         currency = item.currency, amount = item.toBePaid, language = deviceDetails.languages
                                     ), weight = .2f
                                 )

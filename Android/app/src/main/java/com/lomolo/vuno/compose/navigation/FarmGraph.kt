@@ -77,7 +77,6 @@ fun NavGraphBuilder.addFarmGraph(
                 ) {
                     FarmStoreScreen(
                         deviceDetails = deviceDetails,
-                        navHostController = navHostController,
                     )
                 }
             }

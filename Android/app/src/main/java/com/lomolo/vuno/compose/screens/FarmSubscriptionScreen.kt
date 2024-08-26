@@ -24,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lomolo.vuno.R
-import com.lomolo.vuno.common.currencyText
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
+import com.lomolo.vuno.util.Util
 
 object FarmSubscriptionScreenDestination : Navigation {
     override val title = R.string.buy_farm_service
@@ -87,7 +87,7 @@ fun FarmSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    currencyText(deviceDetails.currency, deviceDetails.posterRightsFee, deviceDetails.languages),
+                    Util.currencyText(deviceDetails.currency, deviceDetails.posterRightsFee, deviceDetails.languages),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )
