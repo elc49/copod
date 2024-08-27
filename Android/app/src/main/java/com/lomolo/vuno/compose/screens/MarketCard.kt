@@ -52,6 +52,7 @@ import com.lomolo.vuno.GetLocalizedMarketsQuery
 import com.lomolo.vuno.R
 import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.R)
@@ -100,24 +101,49 @@ fun MarketCard(
                 .height(100.dp)
                 .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp))
         )
-        Column(Modifier.padding(8.dp)) {
-            Text(
-                text = data.name,
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                overflow = TextOverflow.Ellipsis,
-            )
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Text(
+                    text = data.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    "${
+                        Util.formatCurrency(
+                            currency = currencyLocale, amount = data.pricePerUnit, language
+                        )
+                    } / ${data.unit}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Text(
                 "${
-                    Util.formatCurrency(
-                        currency = currencyLocale, amount = data.pricePerUnit, language
+                    String.format(
+                        Locale.getDefault(),
+                        "%.0f",
+                        (data.running_volume.toDouble() / data.volume.toDouble()).times(100)
                     )
-                } / ${data.unit}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                overflow = TextOverflow.Ellipsis,
+                }%",
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
+                    )
+                    .padding(4.dp),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
         if (showBottomSheet) {

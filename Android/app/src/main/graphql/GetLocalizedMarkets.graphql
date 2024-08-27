@@ -6,6 +6,7 @@ query GetLocalizedMarkets($radius: GpsInput!) {
         canOrder
         status
         volume
+        running_volume
         pricePerUnit
         farmId
         unit
