@@ -217,6 +217,13 @@ fun MarketCartScreen(
                                     }
                                 }
                             }
+                        }
+                        item {
+                            val total = value.fold(0) { sum, element ->
+                                val itemTotal = element.volume.times(element.market.pricePerUnit)
+                                sum + itemTotal
+                            }
+
                             Button(
                                 onClick = {
                                     viewModel.sendOrderToFarm(key, value.map {
@@ -238,7 +245,7 @@ fun MarketCartScreen(
                                         "Send to farm [${
                                             Util.formatCurrency(
                                                 currency = deviceDetails.currency,
-                                                amount = item.volume.times(item.market.pricePerUnit),
+                                                amount = total,
                                                 language = deviceDetails.languages,
                                             )
                                         }]",
@@ -253,7 +260,7 @@ fun MarketCartScreen(
                                         "Send to farm [${
                                             Util.formatCurrency(
                                                 currency = deviceDetails.currency,
-                                                amount = item.volume.times(item.market.pricePerUnit),
+                                                amount = total,
                                                 language = deviceDetails.languages,
                                             )
                                         }]",
