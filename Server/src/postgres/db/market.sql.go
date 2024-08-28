@@ -95,17 +95,17 @@ func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 	return user_id, err
 }
 
-const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
+const getLocalizedHarvestMarkets = `-- name: GetLocalizedHarvestMarkets :many
 SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, $1::geography, $2) AND running_volume > 0
+WHERE ST_DWithin(location, $1::geography, $2) AND running_volume > 0 AND type = 'HARVEST'
 `
 
-type GetLocalizedMarketsParams struct {
+type GetLocalizedHarvestMarketsParams struct {
 	Point  interface{} `json:"point"`
 	Radius interface{} `json:"radius"`
 }
 
-type GetLocalizedMarketsRow struct {
+type GetLocalizedHarvestMarketsRow struct {
 	ID            uuid.UUID   `json:"id"`
 	Product       string      `json:"product"`
 	Image         string      `json:"image"`
@@ -121,15 +121,15 @@ type GetLocalizedMarketsRow struct {
 	UpdatedAt     time.Time   `json:"updated_at"`
 }
 
-func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getLocalizedMarkets, arg.Point, arg.Radius)
+func (q *Queries) GetLocalizedHarvestMarkets(ctx context.Context, arg GetLocalizedHarvestMarketsParams) ([]GetLocalizedHarvestMarketsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLocalizedHarvestMarkets, arg.Point, arg.Radius)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLocalizedMarketsRow{}
+	items := []GetLocalizedHarvestMarketsRow{}
 	for rows.Next() {
-		var i GetLocalizedMarketsRow
+		var i GetLocalizedHarvestMarketsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Product,
