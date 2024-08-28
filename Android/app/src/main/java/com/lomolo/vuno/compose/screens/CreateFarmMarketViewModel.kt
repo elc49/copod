@@ -27,7 +27,7 @@ import java.io.InputStream
 
 class AddFarmMarketViewModel(
     private val giggyRestApi: IVunoRestApi,
-    private val farmMarketViewModel: FarmMarketViewModel,
+    private val farmStoreViewModel: FarmStoreViewModel,
     private val giggyGraphqlApi: IVunoGraphqlApi,
     private val apolloStore: ApolloStore,
     private val mainViewModel: MainViewModel,
@@ -165,7 +165,7 @@ class AddFarmMarketViewModel(
     init {
         _marketInput.update {
             it.copy(
-                storeId = farmMarketViewModel.getFarmId(),
+                storeId = farmStoreViewModel.getFarmId(),
                 tag = category[0],
             )
         }

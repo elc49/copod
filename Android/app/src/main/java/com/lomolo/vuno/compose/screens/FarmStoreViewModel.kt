@@ -13,7 +13,6 @@ import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.type.OrderStatus
-import com.lomolo.vuno.type.SetMarketStatusInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +21,7 @@ import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
 import okio.IOException
 
-class FarmMarketViewModel(
+class FarmStoreViewModel(
     savedStateHandle: SavedStateHandle,
     private val vunoGraphqlApi: IVunoGraphqlApi,
     private val apolloStore: ApolloStore,
@@ -164,6 +163,7 @@ class FarmMarketViewModel(
         }
     }
 
+    /*
     var settingMarketStatus: SettingMarketStatus by mutableStateOf(SettingMarketStatus.Success)
         private set
     var updatingMarketId: String by mutableStateOf("")
@@ -209,6 +209,7 @@ class FarmMarketViewModel(
             }
         }
     }
+    */
 
     init {
         getFarm()

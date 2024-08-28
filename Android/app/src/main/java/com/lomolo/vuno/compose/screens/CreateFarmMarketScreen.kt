@@ -149,8 +149,8 @@ fun CreateFarmMarketScreen(
                 }
             }
         }
-    }, contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-        TopAppBar(title = {
+    }, topBar = {
+        TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
             Text(
                 stringResource(R.string.add_market),
                 style = MaterialTheme.typography.titleLarge,
@@ -299,11 +299,14 @@ fun CreateFarmMarketScreen(
                     )
                 }
                 ExposedDropdownMenuBox(modifier = Modifier.fillMaxWidth(),
-                    expanded = expanded, onExpandedChange = { expanded = it }) {
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it }) {
                     OutlinedTextField(
                         value = market.tag,
                         onValueChange = {},
-                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
                         readOnly = true,
                         singleLine = true,
                         label = { Text(stringResource(R.string.category)) },

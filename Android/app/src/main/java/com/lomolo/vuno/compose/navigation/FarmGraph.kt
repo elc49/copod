@@ -32,7 +32,7 @@ import com.lomolo.vuno.model.DeviceDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object FarmDestination: Navigation {
+object FarmDestination : Navigation {
     override val title = null
     override val route = "farm"
 }
@@ -45,8 +45,7 @@ fun NavGraphBuilder.addFarmGraph(
     scope: CoroutineScope,
 ) {
     navigation(
-        startDestination = FarmStoreScreenDestination.routeWithArgs,
-        route = FarmDestination.route
+        startDestination = FarmStoreScreenDestination.routeWithArgs, route = FarmDestination.route
     ) {
         composable(
             route = FarmStoreScreenDestination.routeWithArgs,
@@ -77,6 +76,7 @@ fun NavGraphBuilder.addFarmGraph(
                 ) {
                     FarmStoreScreen(
                         deviceDetails = deviceDetails,
+                        navHostController = navHostController,
                     )
                 }
             }
@@ -87,13 +87,11 @@ fun NavGraphBuilder.addFarmGraph(
                 type = NavType.StringType
             })
         ) {
-            FarmSettingsScreen(
-                language = deviceDetails.languages,
+            FarmSettingsScreen(language = deviceDetails.languages,
                 country = deviceDetails.countryCode,
                 onNavigateBack = {
                     navHostController.popBackStack()
-                }
-            )
+                })
         }
         composable(
             route = CreateFarmMarketDestination.route,

@@ -11,7 +11,7 @@ import com.lomolo.vuno.compose.screens.AddFarmMarketViewModel
 import com.lomolo.vuno.compose.screens.CreateFarmViewModel
 import com.lomolo.vuno.compose.screens.CreatePostViewModel
 import com.lomolo.vuno.compose.screens.ExploreViewModel
-import com.lomolo.vuno.compose.screens.FarmMarketViewModel
+import com.lomolo.vuno.compose.screens.FarmStoreViewModel
 import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
 import com.lomolo.vuno.compose.screens.MarketCartViewModel
@@ -26,7 +26,7 @@ object VunoViewModelProvider {
         lateinit var sessionViewModel: SessionViewModel
         lateinit var storeViewModel: FarmViewModel
         lateinit var addFarmMarketViewModel: AddFarmMarketViewModel
-        lateinit var farmMarketViewModel: FarmMarketViewModel
+        lateinit var farmStoreViewModel: FarmStoreViewModel
         lateinit var createFarmViewModel: CreateFarmViewModel
         lateinit var accountViewModel: AccountViewModel
         lateinit var signinViewModel: SigninViewModel
@@ -68,18 +68,18 @@ object VunoViewModelProvider {
         }
 
         initializer {
-            farmMarketViewModel = FarmMarketViewModel(
+            farmStoreViewModel = FarmStoreViewModel(
                 this.createSavedStateHandle(),
                 vunoApplication().container.vunoGraphqlApiService,
                 vunoApplication().container.apolloClient.apolloStore,
             )
-            farmMarketViewModel
+            farmStoreViewModel
         }
 
         initializer {
             addFarmMarketViewModel = AddFarmMarketViewModel(
                 vunoApplication().container.vunoRestApiService,
-                farmMarketViewModel,
+                farmStoreViewModel,
                 vunoApplication().container.vunoGraphqlApiService,
                 vunoApplication().container.apolloClient.apolloStore,
                 mainViewModel,
