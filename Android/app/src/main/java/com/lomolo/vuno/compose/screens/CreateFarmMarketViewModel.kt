@@ -14,6 +14,7 @@ import com.lomolo.vuno.data.Data
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.network.IVunoRestApi
 import com.lomolo.vuno.type.MarketType
+import com.lomolo.vuno.type.MetricUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,7 +74,7 @@ class AddFarmMarketViewModel(
         }
     }
 
-    fun setMarketUnit(unit: String) {
+    fun setMarketUnit(unit: MetricUnit) {
         _marketInput.update {
             it.copy(unit = unit)
         }
@@ -107,9 +108,13 @@ class AddFarmMarketViewModel(
         return type == _marketInput.value.type
     }
 
+    fun isUnitType(unit: MetricUnit): Boolean {
+        return unit == _marketInput.value.unit
+    }
+
     private fun validMarketInput(uiState: Market): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank() && type.toString().isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && unit.toString().isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank() && type.toString().isNotBlank()
         }
     }
 
@@ -187,7 +192,7 @@ class AddFarmMarketViewModel(
 data class Market(
     val name: String = "",
     val image: String = "",
-    val unit: String = "",
+    val unit: MetricUnit = MetricUnit.Kg,
     val pricePerUnit: String = "",
     val volume: String = "",
     val location: LatLng = LatLng(0.0, 0.0),

@@ -27,6 +27,14 @@ enum MarketType {
   HARVEST
 }
 
+# MetricUnits
+enum MetricUnit {
+  Kg
+  Litre
+  Hour
+  Piece
+}
+
 # Address
 type Address {
   addressString: String!
@@ -68,7 +76,7 @@ type Farm {
   id: UUID!
   name: String!
   thumbnail: String!
-  about: String!
+  about: String
   dateStarted: Time!
   userId: UUID!
   created_at: Time!
@@ -84,7 +92,7 @@ type Market {
   volume: Int!
   details: String!
   running_volume: Int!
-  unit: String!
+  unit: MetricUnit!
   type: MarketType!
   status: MarketStatus!
   farmId: UUID!
@@ -163,6 +171,7 @@ input NewPostInput {
 
 input NewFarmInput {
   name: String!
+  about: String!
   dateStarted: String!
   thumbnail: String!
 }
@@ -176,7 +185,7 @@ input NewFarmMarketInput {
   type: MarketType!
   location: GpsInput!
   tag: String!
-  unit: String!
+  unit: MetricUnit!
   pricePerUnit: Int!
 }
 

@@ -39,7 +39,7 @@ type Farm {
 
   thumbnail: String!
 
-  about: String!
+  about: String
 
   dateStarted: Time!
 
@@ -77,7 +77,7 @@ type Market {
 
   running_volume: Int!
 
-  unit: String!
+  unit: MetricUnit!
 
   type: MarketType!
 
@@ -112,6 +112,16 @@ enum MarketType {
   HARVEST
 }
 
+enum MetricUnit {
+  Kg
+
+  Litre
+
+  Hour
+
+  Piece
+}
+
 type Mutation {
   createPost(input: NewPostInput!): Post!
 
@@ -137,6 +147,8 @@ type Mutation {
 input NewFarmInput {
   name: String!
 
+  about: String!
+
   dateStarted: String!
 
   thumbnail: String!
@@ -159,7 +171,7 @@ input NewFarmMarketInput {
 
   tag: String!
 
-  unit: String!
+  unit: MetricUnit!
 
   pricePerUnit: Int!
 }

@@ -27,7 +27,7 @@ func (r *FarmRepository) CreateFarm(ctx context.Context, args db.CreateFarmParam
 	return &model.Farm{
 		ID:          farm.ID,
 		Name:        farm.Name,
-		About:       farm.About,
+		About:       &farm.About,
 		DateStarted: farm.DateStarted,
 		Thumbnail:   farm.Thumbnail,
 	}, nil
@@ -44,7 +44,7 @@ func (r *FarmRepository) GetFarmsBelongingToUser(ctx context.Context, id uuid.UU
 		farm := &model.Farm{
 			ID:          item.ID,
 			Name:        item.Name,
-			About:       item.About,
+			About:       &item.About,
 			DateStarted: item.DateStarted,
 			Thumbnail:   item.Thumbnail,
 		}
@@ -65,7 +65,7 @@ func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.
 	return &model.Farm{
 		ID:          farm.ID,
 		Name:        farm.Name,
-		About:       farm.About,
+		About:       &farm.About,
 		DateStarted: farm.DateStarted,
 		Thumbnail:   farm.Thumbnail,
 	}, nil
@@ -79,7 +79,7 @@ func (r *FarmRepository) UpdateFarmDetails(ctx context.Context, args db.UpdateFa
 
 	return &model.Farm{
 		ID:        f.ID,
-		About:     f.About,
+		About:     &f.About,
 		Thumbnail: f.Thumbnail,
 	}, nil
 }

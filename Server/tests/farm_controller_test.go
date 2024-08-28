@@ -25,6 +25,7 @@ func TestFarmController(t *testing.T) {
 	t.Run("create_farm", func(t *testing.T) {
 		farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
 			Name:        "Agro-dealers",
+			About:       "Fresh from farm",
 			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
 			Thumbnail:   avatar,
 			UserID:      user.ID,

@@ -38,7 +38,7 @@ type Farm struct {
 	ID          uuid.UUID  `json:"id"`
 	Name        string     `json:"name"`
 	Thumbnail   string     `json:"thumbnail"`
-	About       string     `json:"about"`
+	About       *string    `json:"about,omitempty"`
 	DateStarted time.Time  `json:"dateStarted"`
 	UserID      uuid.UUID  `json:"userId"`
 	CreatedAt   time.Time  `json:"created_at"`
@@ -58,7 +58,7 @@ type Market struct {
 	Volume        int          `json:"volume"`
 	Details       string       `json:"details"`
 	RunningVolume int          `json:"running_volume"`
-	Unit          string       `json:"unit"`
+	Unit          MetricUnit   `json:"unit"`
 	Type          MarketType   `json:"type"`
 	Status        MarketStatus `json:"status"`
 	FarmID        uuid.UUID    `json:"farmId"`
@@ -74,6 +74,7 @@ type Mutation struct {
 
 type NewFarmInput struct {
 	Name        string `json:"name"`
+	About       string `json:"about"`
 	DateStarted string `json:"dateStarted"`
 	Thumbnail   string `json:"thumbnail"`
 }
@@ -87,7 +88,7 @@ type NewFarmMarketInput struct {
 	Type         MarketType `json:"type"`
 	Location     *GpsInput  `json:"location"`
 	Tag          string     `json:"tag"`
-	Unit         string     `json:"unit"`
+	Unit         MetricUnit `json:"unit"`
 	PricePerUnit int        `json:"pricePerUnit"`
 }
 
@@ -268,6 +269,51 @@ func (e *MarketType) UnmarshalGQL(v interface{}) error {
 }
 
 func (e MarketType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MetricUnit string
+
+const (
+	MetricUnitKg    MetricUnit = "Kg"
+	MetricUnitLitre MetricUnit = "Litre"
+	MetricUnitHour  MetricUnit = "Hour"
+	MetricUnitPiece MetricUnit = "Piece"
+)
+
+var AllMetricUnit = []MetricUnit{
+	MetricUnitKg,
+	MetricUnitLitre,
+	MetricUnitHour,
+	MetricUnitPiece,
+}
+
+func (e MetricUnit) IsValid() bool {
+	switch e {
+	case MetricUnitKg, MetricUnitLitre, MetricUnitHour, MetricUnitPiece:
+		return true
+	}
+	return false
+}
+
+func (e MetricUnit) String() string {
+	return string(e)
+}
+
+func (e *MetricUnit) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MetricUnit(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MetricUnit", str)
+	}
+	return nil
+}
+
+func (e MetricUnit) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

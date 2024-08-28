@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Close
@@ -49,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -118,7 +116,6 @@ fun CreateFarmScreen(
             R.drawable.camera
         }
     }
-    val keyboardController = LocalSoftwareKeyboardController.current
     val datePickerState = rememberDatePickerState()
     val confirmedEnabled = remember {
         derivedStateOf { datePickerState.selectedDateMillis != null }
@@ -234,30 +231,47 @@ fun CreateFarmScreen(
                         onValueChange = { viewModel.setName(it) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Done,
+                            imeAction = ImeAction.Next,
                             capitalization = KeyboardCapitalization.Sentences,
                         ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                keyboardController?.hide()
-                            },
-                        )
                     )
                 }
-                OutlinedTextField(label = { Text(stringResource(id = R.string.date_started)) }, modifier = Modifier.fillMaxWidth(), value = DatePickerDefaults.dateFormatter().formatDate(
-                    datePickerState.selectedDateMillis, CalendarLocale(
-                        deviceDetails.languages, deviceDetails.countryCode
-                    )
-                ).orEmpty(), placeholder = {
-                    Text(stringResource(id = R.string.date_started))
-                }, onValueChange = {}, readOnly = true, trailingIcon = {
-                    IconButton(onClick = { openDialog.value = true }) {
-                        Icon(
-                            Icons.TwoTone.DateRange,
-                            contentDescription = stringResource(R.string.date)
+                OutlinedTextField(
+                    value = farm.about,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = {
+                        Text(
+                            stringResource(R.string.about),
+                            style = MaterialTheme.typography.labelLarge,
                         )
-                    }
-                })
+                    },
+                    minLines = 4,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                        capitalization = KeyboardCapitalization.Sentences,
+                    ),
+                    onValueChange = { viewModel.setAbout(it) },
+                )
+                OutlinedTextField(label = { Text(stringResource(id = R.string.date_started)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    value = DatePickerDefaults.dateFormatter().formatDate(
+                        datePickerState.selectedDateMillis, CalendarLocale(
+                            deviceDetails.languages, deviceDetails.countryCode
+                        )
+                    ).orEmpty(),
+                    placeholder = {
+                        Text(stringResource(id = R.string.date_started))
+                    },
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { openDialog.value = true }) {
+                            Icon(
+                                Icons.TwoTone.DateRange,
+                                contentDescription = stringResource(R.string.date)
+                            )
+                        }
+                    })
                 if (openDialog.value) {
                     DatePickerDialog(onDismissRequest = {
                         openDialog.value = false
@@ -265,7 +279,8 @@ fun CreateFarmScreen(
                         TextButton(onClick = {
                             openDialog.value = false
                             if (datePickerState.selectedDateMillis != null) {
-                                val t = Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
+                                val t =
+                                    Instant.fromEpochMilliseconds(datePickerState.selectedDateMillis!!)
                                 viewModel.setDateStarted(t.toString())
                             }
                         }, enabled = confirmedEnabled.value) {
