@@ -159,7 +159,7 @@ fun FarmSettingsScreen(
                             readOnly = true,
                         )
                         OutlinedTextField(
-                            value = farmDetails.about,
+                            value = farmDetails.about ?: "",
                             modifier = Modifier.width(300.dp),
                             label = {
                                 Text("Describe your farm")

@@ -64,6 +64,7 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.type.MarketType
+import com.lomolo.vuno.type.MetricUnit
 import com.lomolo.vuno.ui.theme.VunoTheme
 import kotlinx.coroutines.launch
 
@@ -122,6 +123,9 @@ fun CreateFarmMarketScreen(
     var marketsExpanded by remember { mutableStateOf(false) }
     val markets =
         listOf(MarketType.SEEDS, MarketType.SEEDLINGS, MarketType.MACHINERY, MarketType.HARVEST)
+    var unitsExpanded by remember { mutableStateOf(false) }
+    val metrics = listOf(MetricUnit.Kg, MetricUnit.Litre, MetricUnit.Hour, MetricUnit.Piece)
+
 
     Scaffold(bottomBar = {
         Button(
@@ -260,26 +264,51 @@ fun CreateFarmMarketScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    OutlinedTextField(
-                        value = market.unit,
-                        onValueChange = { viewModel.setMarketUnit(it) },
-                        modifier = Modifier
-                            .weight(.5f)
-                            .padding(end = 4.dp),
-                        label = {
-                            Text(
-                                stringResource(R.string.unit),
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                        },
-                        placeholder = {
-                            Text(stringResource(id = R.string.unit_support_text))
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                        ),
-                        singleLine = true,
-                    )
+                    ExposedDropdownMenuBox(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(.5f),
+                        expanded = unitsExpanded,
+                        onExpandedChange = { unitsExpanded = it }) {
+                        OutlinedTextField(
+                            value = market.unit.toString(),
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.unit)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = unitsExpanded) },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        )
+                        ExposedDropdownMenu(
+                            expanded = unitsExpanded,
+                            onDismissRequest = { unitsExpanded = false },
+                        ) {
+                            metrics.forEach { metric ->
+                                DropdownMenuItem(text = {
+                                    Text(
+                                        metric.toString(),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                    onClick = {
+                                        viewModel.setMarketUnit(metric)
+                                        unitsExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    leadingIcon = {
+                                        if (viewModel.isUnitType(metric)) {
+                                            Icon(
+                                                Icons.TwoTone.Check,
+                                                modifier = Modifier.size(20.dp),
+                                                contentDescription = stringResource(R.string.check_mark),
+                                            )
+                                        }
+                                    })
+                            }
+                        }
+                    }
                     OutlinedTextField(
                         value = market.pricePerUnit,
                         onValueChange = { viewModel.setMarketPricePerUnit(it) },

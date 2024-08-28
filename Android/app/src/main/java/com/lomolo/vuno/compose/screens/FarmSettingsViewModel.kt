@@ -92,7 +92,7 @@ class FarmSettingsViewModel(
                     val res = vunoGraphqlApi.updateFarmDetails(
                         UpdateFarmDetailsInput(
                             farmId,
-                            _farm.value.about,
+                            _farm.value.about ?: "",
                             _farm.value.thumbnail,
                         )
                     ).dataOrThrow()

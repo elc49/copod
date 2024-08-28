@@ -87,6 +87,7 @@ class VunoGraphqlApi(
         .mutation(CreateFarmMutation(
             NewFarmInput(
                 name = input.name,
+                about = input.about,
                 dateStarted = input.dateStarted,
                 thumbnail = input.image,
             )

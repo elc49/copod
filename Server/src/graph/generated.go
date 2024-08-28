@@ -2218,14 +2218,11 @@ func (ec *executionContext) _Farm_about(ctx context.Context, field graphql.Colle
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Farm_about(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2836,9 +2833,9 @@ func (ec *executionContext) _Market_unit(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(model.MetricUnit)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Market_unit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2848,7 +2845,7 @@ func (ec *executionContext) fieldContext_Market_unit(_ context.Context, field gr
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type MetricUnit does not have child fields")
 		},
 	}
 	return fc, nil
@@ -8661,7 +8658,7 @@ func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "dateStarted", "thumbnail"}
+	fieldsInOrder := [...]string{"name", "about", "dateStarted", "thumbnail"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8675,6 +8672,13 @@ func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.Name = data
+		case "about":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("about"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.About = data
 		case "dateStarted":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateStarted"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -8767,7 +8771,7 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 			it.Tag = data
 		case "unit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unit"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9280,9 +9284,6 @@ func (ec *executionContext) _Farm(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "about":
 			out.Values[i] = ec._Farm_about(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "dateStarted":
 			out.Values[i] = ec._Farm_dateStarted(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -11018,6 +11019,16 @@ func (ec *executionContext) unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋS
 }
 
 func (ec *executionContext) marshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, sel ast.SelectionSet, v model.MarketType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, v interface{}) (model.MetricUnit, error) {
+	var res model.MetricUnit
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, sel ast.SelectionSet, v model.MetricUnit) graphql.Marshaler {
 	return v
 }
 

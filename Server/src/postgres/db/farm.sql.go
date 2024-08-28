@@ -23,14 +23,15 @@ func (q *Queries) ClearTestFarms(ctx context.Context) error {
 
 const createFarm = `-- name: CreateFarm :one
 INSERT INTO farms (
-  name, date_started, thumbnail, user_id
+  name, about, date_started, thumbnail, user_id
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 ) RETURNING id, name, thumbnail, about, date_started, user_id, created_at, updated_at, deleted_at
 `
 
 type CreateFarmParams struct {
 	Name        string    `json:"name"`
+	About       string    `json:"about"`
 	DateStarted time.Time `json:"date_started"`
 	Thumbnail   string    `json:"thumbnail"`
 	UserID      uuid.UUID `json:"user_id"`
@@ -39,6 +40,7 @@ type CreateFarmParams struct {
 func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error) {
 	row := q.db.QueryRowContext(ctx, createFarm,
 		arg.Name,
+		arg.About,
 		arg.DateStarted,
 		arg.Thumbnail,
 		arg.UserID,

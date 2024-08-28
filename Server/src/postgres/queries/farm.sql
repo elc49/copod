@@ -1,8 +1,8 @@
 -- name: CreateFarm :one
 INSERT INTO farms (
-  name, date_started, thumbnail, user_id
+  name, about, date_started, thumbnail, user_id
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 ) RETURNING *;
 
 -- name: GetFarmsBelongingToUser :many

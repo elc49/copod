@@ -47,9 +47,15 @@ class CreateFarmViewModel(
         }
     }
 
+    fun setAbout(about: String) {
+        _farmInput.update {
+            it.copy(about = about)
+        }
+    }
+
     private fun validFarmInput(uiState: Farm): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && dateStarted.isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && dateStarted.isNotBlank() && about.isNotBlank()
         }
     }
 
@@ -131,6 +137,7 @@ class CreateFarmViewModel(
 data class Farm(
     val name: String = "",
     val image: String = "",
+    val about: String = "",
     val dateStarted: String = ""
 )
 

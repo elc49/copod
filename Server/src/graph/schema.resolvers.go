@@ -44,6 +44,7 @@ func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmIn
 
 	args := db.CreateFarmParams{
 		Name:        input.Name,
+		About:       input.About,
 		DateStarted: d,
 		Thumbnail:   input.Thumbnail,
 		UserID:      userId,
@@ -63,7 +64,7 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 		Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
 		FarmID:       input.FarmID,
 		Type:         input.Type.String(),
-		Unit:         input.Unit,
+		Unit:         input.Unit.String(),
 		PricePerUnit: int32(input.PricePerUnit),
 	}
 
