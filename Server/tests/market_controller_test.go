@@ -33,6 +33,7 @@ func TestMarketController(t *testing.T) {
 			Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Unit:         "kg",
 			Details:      "Fresh from farm",
+			Type:         "HARVEST",
 			Volume:       120,
 			PricePerUnit: 5,
 			FarmID:       farm.ID,
