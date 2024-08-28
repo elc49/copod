@@ -63,6 +63,7 @@ import coil.request.ImageRequest
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
+import com.lomolo.vuno.type.MarketType
 import com.lomolo.vuno.ui.theme.VunoTheme
 import kotlinx.coroutines.launch
 
@@ -117,7 +118,10 @@ fun CreateFarmMarketScreen(
             R.drawable.camera
         }
     }
-    var expanded by remember { mutableStateOf(false) }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var marketsExpanded by remember { mutableStateOf(false) }
+    val markets =
+        listOf(MarketType.SEEDS, MarketType.SEEDLINGS, MarketType.MACHINERY, MarketType.HARVEST)
 
     Scaffold(bottomBar = {
         Button(
@@ -298,45 +302,100 @@ fun CreateFarmMarketScreen(
                         singleLine = true,
                     )
                 }
-                ExposedDropdownMenuBox(modifier = Modifier.fillMaxWidth(),
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it }) {
-                    OutlinedTextField(
-                        value = market.tag,
-                        onValueChange = {},
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth(),
-                        readOnly = true,
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.category)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        viewModel.category.forEach { category ->
-                            DropdownMenuItem(text = {
-                                Text(
-                                    category, style = MaterialTheme.typography.bodyLarge
-                                )
-                            },
-                                onClick = {
-                                    viewModel.addMarketCategory(category)
-                                    expanded = false
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ExposedDropdownMenuBox(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(.5f),
+                        expanded = categoryExpanded,
+                        onExpandedChange = { categoryExpanded = it }) {
+                        OutlinedTextField(
+                            value = market.tag,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.category)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        )
+                        ExposedDropdownMenu(
+                            expanded = categoryExpanded,
+                            onDismissRequest = { categoryExpanded = false },
+                        ) {
+                            viewModel.category.forEach { category ->
+                                DropdownMenuItem(text = {
+                                    Text(
+                                        category, style = MaterialTheme.typography.bodyLarge
+                                    )
                                 },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                leadingIcon = {
-                                    if (viewModel.tagAlreadyExists(category)) {
-                                        Icon(
-                                            Icons.TwoTone.Check,
-                                            modifier = Modifier.size(20.dp),
-                                            contentDescription = stringResource(R.string.check_mark),
-                                        )
-                                    }
-                                })
+                                    onClick = {
+                                        viewModel.addMarketCategory(category)
+                                        categoryExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    leadingIcon = {
+                                        if (viewModel.tagAlreadyExists(category)) {
+                                            Icon(
+                                                Icons.TwoTone.Check,
+                                                modifier = Modifier.size(20.dp),
+                                                contentDescription = stringResource(R.string.check_mark),
+                                            )
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                    ExposedDropdownMenuBox(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(.5f),
+                        expanded = marketsExpanded,
+                        onExpandedChange = { marketsExpanded = it }) {
+                        OutlinedTextField(
+                            value = market.type.toString(),
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.markets)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = marketsExpanded) },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        )
+                        ExposedDropdownMenu(
+                            expanded = marketsExpanded,
+                            onDismissRequest = { marketsExpanded = false },
+                        ) {
+                            markets.forEach { category ->
+                                DropdownMenuItem(text = {
+                                    Text(
+                                        category.toString(),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                    onClick = {
+                                        viewModel.setMarketType(category)
+                                        marketsExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    leadingIcon = {
+                                        if (viewModel.isMarketType(category)) {
+                                            Icon(
+                                                Icons.TwoTone.Check,
+                                                modifier = Modifier.size(20.dp),
+                                                contentDescription = stringResource(R.string.check_mark),
+                                            )
+                                        }
+                                    })
+                            }
                         }
                     }
                 }
