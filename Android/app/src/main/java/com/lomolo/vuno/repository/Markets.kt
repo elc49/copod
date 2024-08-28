@@ -4,7 +4,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.vuno.AddToCartMutation
 import com.lomolo.vuno.DeleteCartItemMutation
-import com.lomolo.vuno.GetLocalizedMarketsQuery
+import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
 import com.lomolo.vuno.GetOrdersBelongingToUserQuery
 import com.lomolo.vuno.GetUserCartItemsQuery
 import com.lomolo.vuno.GetUserOrdersCountQuery
@@ -15,7 +15,7 @@ import com.lomolo.vuno.type.AddToCartInput
 import kotlinx.coroutines.flow.Flow
 
 interface IMarkets {
-    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
+    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedHarvestMarketsQuery.Data>
     suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>

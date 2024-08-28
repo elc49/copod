@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.apollographql.apollo3.exception.ApolloException
 import com.google.android.gms.maps.model.LatLng
-import com.lomolo.vuno.GetLocalizedMarketsQuery
+import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
 import com.lomolo.vuno.GetUserCartItemsQuery
 import com.lomolo.vuno.MainViewModel
 import com.lomolo.vuno.repository.IMarkets
@@ -31,9 +31,9 @@ class MarketsViewModel(
     var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
         private set
 
-    private val _marketsData: MutableStateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
+    private val _marketsData: MutableStateFlow<List<GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket>> =
         MutableStateFlow(listOf())
-    val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
+    val markets: StateFlow<List<GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket>> =
         _marketsData.asStateFlow()
     var ordersCount: Int by mutableIntStateOf(0)
         private set
@@ -45,7 +45,7 @@ class MarketsViewModel(
             viewModelScope.launch {
                 gettingMarkets = try {
                     val res = marketsRepository.getLocalizedMarkets(validGps).dataOrThrow()
-                    _marketsData.update { res.getLocalizedMarkets }
+                    _marketsData.update { res.getLocalizedHarvestMarkets }
                     GettingMarketsState.Success
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -58,7 +58,7 @@ class MarketsViewModel(
     private val _orderData: MutableStateFlow<Map<String, Order>> = MutableStateFlow(mapOf())
     val orders: StateFlow<Map<String, Order>> = _orderData.asStateFlow()
 
-    fun addOrder(data: GetLocalizedMarketsQuery.GetLocalizedMarket) {
+    fun addOrder(data: GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket) {
         val marketId: String = data.id.toString()
         val itemInCart = _cartData.value.find { it.market_id.toString() == marketId }
         if (itemInCart != null) {

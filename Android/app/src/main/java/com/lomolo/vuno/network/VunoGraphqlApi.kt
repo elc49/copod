@@ -16,7 +16,7 @@ import com.lomolo.vuno.GetFarmMarketsQuery
 import com.lomolo.vuno.GetFarmOrdersQuery
 import com.lomolo.vuno.GetFarmPaymentsQuery
 import com.lomolo.vuno.GetFarmsBelongingToUserQuery
-import com.lomolo.vuno.GetLocalizedMarketsQuery
+import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
 import com.lomolo.vuno.GetLocalizedPostersQuery
 import com.lomolo.vuno.GetOrdersBelongingToUserQuery
 import com.lomolo.vuno.GetPaystackPaymentVerificationQuery
@@ -55,7 +55,7 @@ interface IVunoGraphqlApi {
     suspend fun getFarmOrders(id: String): Flow<ApolloResponse<GetFarmOrdersQuery.Data>>
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
-    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedMarketsQuery.Data>
+    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedHarvestMarketsQuery.Data>
     suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
@@ -131,7 +131,7 @@ class VunoGraphqlApi(
         .execute()
 
     override suspend fun getLocalizedMarkets(radius: LatLng) = apolloClient
-        .query(GetLocalizedMarketsQuery(
+        .query(GetLocalizedHarvestMarketsQuery(
             GpsInput(radius.latitude, radius.longitude)
         ))
         .fetchPolicy(FetchPolicy.NetworkFirst)

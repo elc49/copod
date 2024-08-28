@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.BuildConfig
-import com.lomolo.vuno.GetLocalizedMarketsQuery
+import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
 import com.lomolo.vuno.R
 import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
@@ -59,7 +59,7 @@ import java.util.Locale
 @Composable
 fun MarketCard(
     modifier: Modifier = Modifier,
-    data: GetLocalizedMarketsQuery.GetLocalizedMarket,
+    data: GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket,
     currencyLocale: String,
     language: String,
     addOrder: () -> Unit,
