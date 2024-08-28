@@ -27,16 +27,17 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 
 	for _, item := range ps {
 		market := &model.Market{
-			ID:           item.ID,
-			Name:         item.Product,
-			Image:        item.Image,
-			FarmID:       item.FarmID,
-			Status:       model.MarketStatus(item.Status),
-			Unit:         item.Unit,
-			Volume:       int(item.Volume),
-			PricePerUnit: int(item.PricePerUnit),
-			CreatedAt:    item.CreatedAt,
-			UpdatedAt:    item.UpdatedAt,
+			ID:            item.ID,
+			Name:          item.Product,
+			Image:         item.Image,
+			FarmID:        item.FarmID,
+			Status:        model.MarketStatus(item.Status),
+			Unit:          item.Unit,
+			Volume:        int(item.Volume),
+			RunningVolume: int(item.RunningVolume),
+			PricePerUnit:  int(item.PricePerUnit),
+			CreatedAt:     item.CreatedAt,
+			UpdatedAt:     item.UpdatedAt,
 		}
 
 		markets = append(markets, market)

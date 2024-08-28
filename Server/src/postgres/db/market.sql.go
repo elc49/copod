@@ -201,23 +201,24 @@ func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByI
 }
 
 const getMarketsBelongingToFarm = `-- name: GetMarketsBelongingToFarm :many
-SELECT id, product, image, volume, unit, farm_id, status, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
+SELECT id, product, image, volume, running_volume, unit, farm_id, status, price_per_unit, tag, harvest_date, created_at, updated_at FROM markets
 WHERE farm_id = $1
 `
 
 type GetMarketsBelongingToFarmRow struct {
-	ID           uuid.UUID    `json:"id"`
-	Product      string       `json:"product"`
-	Image        string       `json:"image"`
-	Volume       int32        `json:"volume"`
-	Unit         string       `json:"unit"`
-	FarmID       uuid.UUID    `json:"farm_id"`
-	Status       string       `json:"status"`
-	PricePerUnit int32        `json:"price_per_unit"`
-	Tag          string       `json:"tag"`
-	HarvestDate  sql.NullTime `json:"harvest_date"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
+	ID            uuid.UUID    `json:"id"`
+	Product       string       `json:"product"`
+	Image         string       `json:"image"`
+	Volume        int32        `json:"volume"`
+	RunningVolume int32        `json:"running_volume"`
+	Unit          string       `json:"unit"`
+	FarmID        uuid.UUID    `json:"farm_id"`
+	Status        string       `json:"status"`
+	PricePerUnit  int32        `json:"price_per_unit"`
+	Tag           string       `json:"tag"`
+	HarvestDate   sql.NullTime `json:"harvest_date"`
+	CreatedAt     time.Time    `json:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
 func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetMarketsBelongingToFarmRow, error) {
@@ -234,6 +235,7 @@ func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUI
 			&i.Product,
 			&i.Image,
 			&i.Volume,
+			&i.RunningVolume,
 			&i.Unit,
 			&i.FarmID,
 			&i.Status,

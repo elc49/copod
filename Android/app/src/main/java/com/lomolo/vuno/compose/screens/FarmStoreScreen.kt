@@ -74,6 +74,7 @@ import com.lomolo.vuno.ui.theme.primaryContainerLight
 import com.lomolo.vuno.ui.theme.secondaryContainerLight
 import com.lomolo.vuno.ui.theme.surfaceContainerLight
 import com.lomolo.vuno.util.Util
+import java.util.Locale
 
 object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -163,18 +164,21 @@ private fun MarketCard(
                 id = R.string.product
             )
         )
-        Column(Modifier.padding(8.dp)) {
-            Text(
-                market.name,
-                modifier = Modifier.padding(2.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Text(
+                    market.name,
+                    modifier = Modifier.padding(2.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
                 Text(
                     "${
                         Util.formatCurrency(
@@ -186,6 +190,23 @@ private fun MarketCard(
                     textAlign = TextAlign.Center
                 )
             }
+            Text(
+                "${
+                    String.format(
+                        Locale.getDefault(),
+                        "%.0f",
+                        (market.running_volume.toDouble() / market.volume.toDouble()).times(100)
+                    )
+                }%",
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
+                    )
+                    .padding(4.dp),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
         }
     }
 }

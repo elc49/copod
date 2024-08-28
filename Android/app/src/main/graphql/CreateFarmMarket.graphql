@@ -8,6 +8,7 @@ mutation CreateFarmMarket($input: NewFarmMarketInput!) {
         status
         pricePerUnit
         volume
+        running_volume
         farmId
     }
 }

@@ -134,6 +134,7 @@ class AddFarmMarketViewModel(
                                     res.createFarmMarket.farmId,
                                     res.createFarmMarket.status,
                                     res.createFarmMarket.unit,
+                                    res.createFarmMarket.running_volume,
                                     res.createFarmMarket.volume,
                                     res.createFarmMarket.pricePerUnit,
                                 )
