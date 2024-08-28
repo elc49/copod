@@ -79,6 +79,8 @@ type Market {
 
   unit: String!
 
+  type: MarketType!
+
   status: MarketStatus!
 
   farmId: UUID!
@@ -98,6 +100,16 @@ enum MarketStatus {
   OPEN
 
   CLOSED
+}
+
+enum MarketType {
+  SEEDS
+
+  SEEDLINGS
+
+  MACHINERY
+
+  HARVEST
 }
 
 type Mutation {
@@ -141,6 +153,8 @@ input NewFarmMarketInput {
 
   volume: Int!
 
+  type: MarketType!
+
   location: GpsInput!
 
   tag: String!
@@ -175,7 +189,7 @@ type Order {
 
   marketId: UUID!
 
-  orderId: UUID!
+  trackingId: UUID!
 
   market: Market!
 

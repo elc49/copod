@@ -100,6 +100,7 @@ type ComplexityRoot struct {
 		RunningVolume func(childComplexity int) int
 		Status        func(childComplexity int) int
 		Tag           func(childComplexity int) int
+		Type          func(childComplexity int) int
 		Unit          func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
 		Volume        func(childComplexity int) int
@@ -488,6 +489,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Market.Tag(childComplexity), true
+
+	case "Market.type":
+		if e.complexity.Market.Type == nil {
+			break
+		}
+
+		return e.complexity.Market.Type(childComplexity), true
 
 	case "Market.unit":
 		if e.complexity.Market.Unit == nil {
@@ -1902,6 +1910,8 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -2844,6 +2854,50 @@ func (ec *executionContext) fieldContext_Market_unit(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Market_type(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Market_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.MarketType)
+	fc.Result = res
+	return ec.marshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Market_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Market",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type MarketType does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Market_status(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_status(ctx, field)
 	if err != nil {
@@ -3355,6 +3409,8 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -3765,6 +3821,8 @@ func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Co
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -4233,6 +4291,8 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -5644,6 +5704,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.C
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -5804,6 +5866,8 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_running_volume(ctx, field)
 			case "unit":
 				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
 			case "farmId":
@@ -8638,7 +8702,7 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"farmId", "product", "details", "image", "volume", "location", "tag", "unit", "pricePerUnit"}
+	fieldsInOrder := [...]string{"farmId", "product", "details", "image", "volume", "type", "location", "tag", "unit", "pricePerUnit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8680,6 +8744,13 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 				return it, err
 			}
 			it.Volume = data
+		case "type":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
 		case "location":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
 			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
@@ -9344,6 +9415,11 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "unit":
 			out.Values[i] = ec._Market_unit(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Market_type(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -10932,6 +11008,16 @@ func (ec *executionContext) unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋvuno�
 }
 
 func (ec *executionContext) marshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, sel ast.SelectionSet, v model.MarketStatus) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, v interface{}) (model.MarketType, error) {
+	var res model.MarketType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, sel ast.SelectionSet, v model.MarketType) graphql.Marshaler {
 	return v
 }
 

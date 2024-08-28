@@ -59,6 +59,7 @@ type Market struct {
 	Details       string       `json:"details"`
 	RunningVolume int          `json:"running_volume"`
 	Unit          string       `json:"unit"`
+	Type          MarketType   `json:"type"`
 	Status        MarketStatus `json:"status"`
 	FarmID        uuid.UUID    `json:"farmId"`
 	CanOrder      bool         `json:"canOrder"`
@@ -78,15 +79,16 @@ type NewFarmInput struct {
 }
 
 type NewFarmMarketInput struct {
-	FarmID       uuid.UUID `json:"farmId"`
-	Product      string    `json:"product"`
-	Details      string    `json:"details"`
-	Image        string    `json:"image"`
-	Volume       int       `json:"volume"`
-	Location     *GpsInput `json:"location"`
-	Tag          string    `json:"tag"`
-	Unit         string    `json:"unit"`
-	PricePerUnit int       `json:"pricePerUnit"`
+	FarmID       uuid.UUID  `json:"farmId"`
+	Product      string     `json:"product"`
+	Details      string     `json:"details"`
+	Image        string     `json:"image"`
+	Volume       int        `json:"volume"`
+	Type         MarketType `json:"type"`
+	Location     *GpsInput  `json:"location"`
+	Tag          string     `json:"tag"`
+	Unit         string     `json:"unit"`
+	PricePerUnit int        `json:"pricePerUnit"`
 }
 
 type NewPostInput struct {
@@ -221,6 +223,51 @@ func (e *MarketStatus) UnmarshalGQL(v interface{}) error {
 }
 
 func (e MarketStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MarketType string
+
+const (
+	MarketTypeSeeds     MarketType = "SEEDS"
+	MarketTypeSeedlings MarketType = "SEEDLINGS"
+	MarketTypeMachinery MarketType = "MACHINERY"
+	MarketTypeHarvest   MarketType = "HARVEST"
+)
+
+var AllMarketType = []MarketType{
+	MarketTypeSeeds,
+	MarketTypeSeedlings,
+	MarketTypeMachinery,
+	MarketTypeHarvest,
+}
+
+func (e MarketType) IsValid() bool {
+	switch e {
+	case MarketTypeSeeds, MarketTypeSeedlings, MarketTypeMachinery, MarketTypeHarvest:
+		return true
+	}
+	return false
+}
+
+func (e MarketType) String() string {
+	return string(e)
+}
+
+func (e *MarketType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MarketType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MarketType", str)
+	}
+	return nil
+}
+
+func (e MarketType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

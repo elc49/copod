@@ -19,6 +19,14 @@ enum MarketStatus {
   CLOSED
 }
 
+# MarketType
+enum MarketType {
+  SEEDS
+  SEEDLINGS
+  MACHINERY
+  HARVEST
+}
+
 # Address
 type Address {
   addressString: String!
@@ -77,6 +85,7 @@ type Market {
   details: String!
   running_volume: Int!
   unit: String!
+  type: MarketType!
   status: MarketStatus!
   farmId: UUID!
   canOrder: Boolean!
@@ -164,6 +173,7 @@ input NewFarmMarketInput {
   details: String!
   image: String!
   volume: Int!
+  type: MarketType!
   location: GpsInput!
   tag: String!
   unit: String!
