@@ -124,6 +124,7 @@ class VunoGraphqlApi(
                 tag = input.tag,
                 location = GpsInput(input.location.latitude, input.location.longitude),
                 details = input.details,
+                type = input.type,
                 volume = input.volume.toInt(),
             )
         ))

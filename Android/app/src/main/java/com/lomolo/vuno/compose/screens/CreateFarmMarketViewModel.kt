@@ -13,6 +13,7 @@ import com.lomolo.vuno.MainViewModel
 import com.lomolo.vuno.data.Data
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.network.IVunoRestApi
+import com.lomolo.vuno.type.MarketType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,7 @@ import java.io.InputStream
 
 class AddFarmMarketViewModel(
     private val giggyRestApi: IVunoRestApi,
-    private val farmMarketViewModel: FarmMarketViewModel,
+    private val farmStoreViewModel: FarmStoreViewModel,
     private val giggyGraphqlApi: IVunoGraphqlApi,
     private val apolloStore: ApolloStore,
     private val mainViewModel: MainViewModel,
@@ -96,9 +97,19 @@ class AddFarmMarketViewModel(
         }
     }
 
+    fun setMarketType(type: MarketType) {
+        _marketInput.update {
+            it.copy(type = type)
+        }
+    }
+
+    fun isMarketType(type: MarketType): Boolean {
+        return type == _marketInput.value.type
+    }
+
     private fun validMarketInput(uiState: Market): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && unit.isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank() && type.toString().isNotBlank()
         }
     }
 
@@ -165,7 +176,7 @@ class AddFarmMarketViewModel(
     init {
         _marketInput.update {
             it.copy(
-                storeId = farmMarketViewModel.getFarmId(),
+                storeId = farmStoreViewModel.getFarmId(),
                 tag = category[0],
             )
         }
@@ -182,6 +193,7 @@ data class Market(
     val storeId: String = "",
     val tag: String = "",
     val details: String = "",
+    val type: MarketType = MarketType.HARVEST,
 )
 
 interface UploadMarketImageState {

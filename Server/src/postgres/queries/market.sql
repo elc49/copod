@@ -8,9 +8,9 @@ WHERE id = $1;
 
 -- name: CreateFarmMarket :one
 INSERT INTO markets (
-  product, details, image, volume, running_volume, unit, harvest_date, tag, price_per_unit, farm_id, location
+  product, details, type, image, volume, running_volume, unit, harvest_date, tag, price_per_unit, farm_id, location
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, sqlc.arg(location)
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, sqlc.arg(location)
 )
 RETURNING *;
 

@@ -62,6 +62,7 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 		Tag:          input.Tag,
 		Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
 		FarmID:       input.FarmID,
+		Type:         input.Type.String(),
 		Unit:         input.Unit,
 		PricePerUnit: int32(input.PricePerUnit),
 	}

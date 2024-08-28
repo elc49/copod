@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material.icons.twotone.Close
@@ -33,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.GetFarmByIdQuery
@@ -82,6 +85,7 @@ object FarmStoreScreenDestination : Navigation {
 @Composable
 private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
+    onNavigateToCreateMarket: (String) -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -104,7 +108,7 @@ private fun FarmHeader(
             Text(
                 text = Util.capitalize(farm?.name ?: ""),
                 textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.displaySmall,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold
             )
             Text(
@@ -112,18 +116,22 @@ private fun FarmHeader(
                 maxLines = 1,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
-            )/*
-            IconButton(onClick = {
-                if (farm != null) {
-                    onNavigateToSettings(farm.id.toString())
-                }
-            }) {
+            )
+            OutlinedIconButton(
+                onClick = {
+                    if (farm != null) {
+                        onNavigateToCreateMarket(farm.id.toString())
+                    }
+                },
+                modifier = Modifier.size(24.dp),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            ) {
                 Icon(
-                    Icons.TwoTone.Settings,
+                    Icons.TwoTone.Add,
                     contentDescription = stringResource(R.string.settings),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
-             */
         }
     }
 }
@@ -375,7 +383,8 @@ private fun OrderCard(
 fun FarmStoreScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
-    viewModel: FarmMarketViewModel = viewModel(factory = VunoViewModelProvider.Factory),
+    navHostController: NavHostController,
+    viewModel: FarmStoreViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val titles = listOf("Market", "Orders"/*, "Payments"*/)
     var state by remember {
@@ -390,7 +399,9 @@ fun FarmStoreScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         when (viewModel.gettingFarmState) {
-            GetFarmState.Success -> FarmHeader(farm = farm)
+            GetFarmState.Success -> FarmHeader(farm = farm, onNavigateToCreateMarket = {
+                navHostController.navigate(CreateFarmMarketDestination.route)
+            })
 
             GetFarmState.Loading -> Row(
                 Modifier

@@ -39,6 +39,7 @@ type Market struct {
 	Image         string       `json:"image"`
 	Volume        int32        `json:"volume"`
 	RunningVolume int32        `json:"running_volume"`
+	Type          string       `json:"type"`
 	Status        string       `json:"status"`
 	Unit          string       `json:"unit"`
 	Details       string       `json:"details"`
@@ -57,6 +58,7 @@ type Order struct {
 	Status     string       `json:"status"`
 	ToBePaid   int32        `json:"to_be_paid"`
 	Currency   string       `json:"currency"`
+	TrackingID uuid.UUID    `json:"tracking_id"`
 	CustomerID uuid.UUID    `json:"customer_id"`
 	MarketID   uuid.UUID    `json:"market_id"`
 	FarmID     uuid.UUID    `json:"farm_id"`
