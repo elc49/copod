@@ -14,9 +14,9 @@ INSERT INTO markets (
 )
 RETURNING *;
 
--- name: GetLocalizedMarkets :many
+-- name: GetLocalizedHarvestMarkets :many
 SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND running_volume > 0;
+WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND running_volume > 0 AND type = 'HARVEST';
 
 -- name: UpdateMarketVolume :one
 UPDATE markets SET running_volume = $1

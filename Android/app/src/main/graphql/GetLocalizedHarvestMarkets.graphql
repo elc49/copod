@@ -1,5 +1,5 @@
-query GetLocalizedMarkets($radius: GpsInput!) {
-    getLocalizedMarkets(radius: $radius) {
+query GetLocalizedHarvestMarkets($radius: GpsInput!) {
+    getLocalizedHarvestMarkets(radius: $radius) {
         id
         name
         image

@@ -75,7 +75,7 @@ func TestMarketController(t *testing.T) {
 	t.Run("get_nearby_markets", func(t *testing.T) {
 		createMarket(ctx)
 
-		mrkts, err := marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
+		mrkts, err := marketC.GetLocalizedHarvestMarkets(ctx, user.ID, db.GetLocalizedHarvestMarketsParams{
 			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Radius: 2000,
 		})
@@ -87,7 +87,7 @@ func TestMarketController(t *testing.T) {
 	t.Run("get_nearby_markets_without_0_supply", func(t *testing.T) {
 		createMarket(ctx)
 
-		mrkts, _ := marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
+		mrkts, _ := marketC.GetLocalizedHarvestMarkets(ctx, user.ID, db.GetLocalizedHarvestMarketsParams{
 			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Radius: 2000,
 		})
@@ -110,7 +110,7 @@ func TestMarketController(t *testing.T) {
 		// Place order and exhaust supply
 		orderC.SendOrderToFarm(ctx, user.ID, order)
 		// Get markets
-		mrkts, _ = marketC.GetLocalizedMarkets(ctx, user.ID, db.GetLocalizedMarketsParams{
+		mrkts, _ = marketC.GetLocalizedHarvestMarkets(ctx, user.ID, db.GetLocalizedHarvestMarketsParams{
 			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Radius: 2000,
 		})

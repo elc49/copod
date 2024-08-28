@@ -92,9 +92,9 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 	}, nil
 }
 
-func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedMarketsParams) ([]*model.Market, error) {
+func (r *MarketRepository) GetLocalizedHarvestMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedHarvestMarketsParams) ([]*model.Market, error) {
 	var markets []*model.Market
-	m, err := r.store.StoreReader.GetLocalizedMarkets(ctx, args)
+	m, err := r.store.StoreReader.GetLocalizedHarvestMarkets(ctx, args)
 	if err != nil {
 		return nil, err
 	}
