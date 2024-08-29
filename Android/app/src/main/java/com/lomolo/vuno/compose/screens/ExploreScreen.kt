@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.common.BottomNavBar
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.data.Data
+import com.lomolo.vuno.util.Util
 
 object ExploreScreenDestination : Navigation {
     override val title = null
@@ -54,30 +56,9 @@ fun ExploreScreen(
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
             title = {
-            Text("Services")
+            Text(stringResource(R.string.services))
         })
-    }, /*floatingActionButton = {
-        IconButton(modifier = Modifier.background(
-            MaterialTheme.colorScheme.primary,
-            CircleShape,
-        ), onClick = {
-            if (session.hasPosterRights) {
-                navHostController.navigate(CreatePostScreenDestination.route) {
-                    launchSingleTop = true
-                }
-            } else {
-                navHostController.navigate(PosterSubscriptionScreenDestination.route) {
-                    launchSingleTop = true
-                }
-            }
-        }) {
-            Icon(
-                Icons.TwoTone.Add,
-                tint = MaterialTheme.colorScheme.background,
-                contentDescription = stringResource(R.string.create_post),
-            )
-        }
-    },*/ contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
+    }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
         BottomNavBar(
             modifier = modifier,
             onNavigateTo = onNavigateTo,
@@ -118,7 +99,7 @@ fun ExploreScreen(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    it,
+                                    Util.capitalize(it),
                                     modifier = Modifier
                                         .background(
                                             MaterialTheme.colorScheme.onPrimary,

@@ -163,54 +163,6 @@ class FarmStoreViewModel(
         }
     }
 
-    /*
-    var settingMarketStatus: SettingMarketStatus by mutableStateOf(SettingMarketStatus.Success)
-        private set
-    var updatingMarketId: String by mutableStateOf("")
-        private set
-
-    fun setMarketStatus(input: SetMarketStatusInput, cb: () -> Unit = {}) {
-        if (settingMarketStatus !is SettingMarketStatus.Loading) {
-            updatingMarketId = input.id.toString()
-            settingMarketStatus = SettingMarketStatus.Loading
-            viewModelScope.launch {
-                settingMarketStatus = try {
-                    val res = vunoGraphqlApi.setMarketStatus(input).dataOrThrow()
-                    try {
-                        val updateCachedData = apolloStore.readOperation(
-                            GetFarmMarketsQuery(storeId)
-                        ).getFarmMarkets.toMutableList()
-                        val where = updateCachedData.indexOfFirst { it.id.toString() == input.id }
-                        updateCachedData[where] = GetFarmMarketsQuery.GetFarmMarket(
-                            res.setMarketStatus.id,
-                            updateCachedData[where].name,
-                            updateCachedData[where].image,
-                            updateCachedData[where].farmId,
-                            res.setMarketStatus.status,
-                            updateCachedData[where].unit,
-                            updateCachedData[where].volume,
-                            updateCachedData[where].pricePerUnit,
-                        )
-                        updateCachedData.toImmutableList()
-                        apolloStore.writeOperation(
-                            GetFarmMarketsQuery(storeId),
-                            GetFarmMarketsQuery.Data(updateCachedData)
-                        )
-                    } catch (e: ApolloException) {
-                        e.printStackTrace()
-                    }
-                    SettingMarketStatus.Success.also { cb() }
-                } catch (e: ApolloException) {
-                    e.printStackTrace()
-                    SettingMarketStatus.Error(e.localizedMessage)
-                } finally {
-                    updatingOrderId = ""
-                }
-            }
-        }
-    }
-    */
-
     init {
         getFarm()
         getFarmMarkets()

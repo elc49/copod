@@ -104,10 +104,12 @@ class VunoGraphqlApi(
 
     override suspend fun getFarmMarkets(id: String) = apolloClient
         .query(GetFarmMarketsQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
 
     override suspend fun getFarmOrders(id: String) = apolloClient
         .query(GetFarmOrdersQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
 
     override suspend fun getFarmPayments(id: String) = apolloClient
