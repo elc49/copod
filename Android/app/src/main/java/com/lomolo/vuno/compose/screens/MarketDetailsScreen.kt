@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -114,10 +115,8 @@ fun MarketDetailsScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .crossfade(true)
-                            .data(market.image)
-                            .build(),
+                        model = ImageRequest.Builder(LocalContext.current).crossfade(true)
+                            .data(market.image).build(),
                         placeholder = painterResource(id = R.drawable.loading_img),
                         error = painterResource(id = R.drawable.ic_broken_image),
                         modifier = Modifier
@@ -138,7 +137,7 @@ fun MarketDetailsScreen(
                             Text(
                                 market.name,
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.ExtraBold,
                             )
                             Text(
                                 stringResource(R.string.available_in_stock),
@@ -146,7 +145,8 @@ fun MarketDetailsScreen(
                             )
                         }
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalAlignment = Alignment.End,
                         ) {
                             Text(
                                 "${
@@ -158,9 +158,41 @@ fun MarketDetailsScreen(
                                 } / ${market.unit}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
+                                textAlign = TextAlign.End,
                                 overflow = TextOverflow.Ellipsis,
                             )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                IconButton(
+                                    onClick = { /*TODO*/ },
+                                    modifier = Modifier.size(24.dp),
+                                ) {
+                                    Icon(
+                                        painterResource(id = R.drawable.minus),
+                                        contentDescription = stringResource(
+                                            R.string.minus
+                                        )
+                                    )
+                                }
+                                Text(
+                                    "${0} ${market.unit}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                IconButton(
+                                    onClick = { /*TODO*/ },
+                                    modifier = Modifier.size(24.dp),
+                                ) {
+                                    Icon(
+                                        painterResource(id = R.drawable.add),
+                                        contentDescription = stringResource(
+                                            R.string.add
+                                        ),
+                                    )
+                                }
+                            }
                         }
                     }
                     Column(
