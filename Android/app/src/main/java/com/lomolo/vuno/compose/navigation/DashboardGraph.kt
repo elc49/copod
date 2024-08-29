@@ -359,7 +359,8 @@ fun NavGraphBuilder.addDashboardGraph(
             MarketDetailsScreen(
                 onGoBack = {
                     navHostController.popBackStack()
-                }
+                },
+                deviceDetails = deviceDetails,
             )
         }
     }

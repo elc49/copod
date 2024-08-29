@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.vuno.GetMarketDetailsQuery
 import com.lomolo.vuno.repository.IMarkets
+import com.lomolo.vuno.type.MetricUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,7 @@ class MarketDetailsViewModel(
         checkNotNull(savedStateHandle[MarketDetailsScreenDestination.marketIdArg])
 
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
-        MutableStateFlow(GetMarketDetailsQuery.GetMarketDetails("", "", "", ""))
+        MutableStateFlow(GetMarketDetailsQuery.GetMarketDetails("", "", "", "", MetricUnit.Kg, 0))
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()
     var gettingMarketState: GetMarketDetailsState by mutableStateOf(GetMarketDetailsState.Success)
         private set

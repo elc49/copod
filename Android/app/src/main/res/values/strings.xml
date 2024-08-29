@@ -105,4 +105,7 @@
     <string name="success">success</string>
     <string name="about">About</string>
     <string name="services">Services</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="available_in_stock">Available in stock</string>
+    <string name="description">Description</string>
 </resources>
