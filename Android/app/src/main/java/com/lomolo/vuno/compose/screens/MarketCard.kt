@@ -3,7 +3,6 @@ package com.lomolo.vuno.compose.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -70,6 +69,7 @@ fun MarketCard(
     addToCart: (Order, cb: () -> Unit) -> Unit,
     addingToCart: AddingToCartState,
     showToast: (String) -> Unit,
+    onNavigateToMarketDetails: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -87,9 +87,10 @@ fun MarketCard(
     }
 
     OutlinedCard(
+        onClick = { onNavigateToMarketDetails(data.id.toString()) },
         modifier
             .wrapContentHeight()
-            .clickable { addOrder(); onOpenCounter() }) {
+    ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(data.image).crossfade(true)
                 .build(),

@@ -15,6 +15,7 @@ import com.lomolo.vuno.compose.screens.FarmStoreViewModel
 import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
 import com.lomolo.vuno.compose.screens.MarketCartViewModel
+import com.lomolo.vuno.compose.screens.MarketDetailsViewModel
 import com.lomolo.vuno.compose.screens.MarketsViewModel
 import com.lomolo.vuno.compose.screens.PaymentViewModel
 import com.lomolo.vuno.compose.screens.SigninViewModel
@@ -37,6 +38,7 @@ object VunoViewModelProvider {
         lateinit var marketCartViewModel: MarketCartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
         lateinit var farmSettingsViewModel: FarmSettingsViewModel
+        lateinit var marketDetailsViewModel: MarketDetailsViewModel
 
         initializer {
             mainViewModel = MainViewModel(vunoApplication().container.vunoRestApiService)
@@ -161,6 +163,15 @@ object VunoViewModelProvider {
                 vunoApplication().container.apolloClient.apolloStore,
             )
             farmSettingsViewModel
+        }
+
+        initializer {
+            marketDetailsViewModel = MarketDetailsViewModel(
+                this.createSavedStateHandle(),
+                vunoApplication().container.marketsRepository,
+            )
+
+            marketDetailsViewModel
         }
     }
 }

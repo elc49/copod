@@ -1,0 +1,8 @@
+query GetMarketDetails($id: UUID!) {
+    getMarketDetails(id: $id) {
+        id
+        name
+        details
+        image
+    }
+}

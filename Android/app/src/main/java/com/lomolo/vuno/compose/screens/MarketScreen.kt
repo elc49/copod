@@ -68,6 +68,7 @@ fun MarketScreen(
     deviceDetails: DeviceDetails,
     onNavigateToMarketCart: () -> Unit,
     onNavigateToUserOrders: () -> Unit,
+    onNavigateToMarketDetails: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
     viewModel: MarketsViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
@@ -207,6 +208,7 @@ fun MarketScreen(
                         items(markets) { market ->
                             MarketCard(
                                 currencyLocale = deviceDetails.currency,
+                                onNavigateToMarketDetails = onNavigateToMarketDetails,
                                 data = market,
                                 addOrder = { viewModel.addOrder(market) },
                                 removeOrder = { viewModel.removeOrder(market.id.toString()) },

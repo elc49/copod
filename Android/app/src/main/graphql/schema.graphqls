@@ -308,6 +308,8 @@ type Query {
   getOrdersBelongingToUser: [Order!]!
 
   getUserOrdersCount: Int!
+
+  getMarketDetails(id: UUID!): Market!
 }
 
 input SendOrderToFarmInput {

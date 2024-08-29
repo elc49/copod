@@ -220,6 +220,11 @@ func (r *queryResolver) GetUserOrdersCount(ctx context.Context) (int, error) {
 	return r.orderController.GetUserOrdersCount(ctx, userId)
 }
 
+// GetMarketDetails is the resolver for the getMarketDetails field.
+func (r *queryResolver) GetMarketDetails(ctx context.Context, id uuid.UUID) (*model.Market, error) {
+	return r.marketController.GetMarketByID(ctx, id)
+}
+
 // PaymentUpdate is the resolver for the paymentUpdate field.
 func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error) {
 	ch := make(chan *model.PaystackPaymentUpdate)
