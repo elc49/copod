@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,13 +22,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +52,7 @@ import com.lomolo.vuno.VunoViewModelProvider
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.util.Util
+import kotlinx.coroutines.launch
 
 object MarketDetailsScreenDestination : Navigation {
     override val title = null
@@ -61,18 +67,32 @@ fun MarketDetailsScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit,
     deviceDetails: DeviceDetails,
+    snackbarHostState: SnackbarHostState,
     viewModel: MarketDetailsViewModel = viewModel(factory = VunoViewModelProvider.Factory)
 ) {
-    val scrollState = rememberScrollState()
     val market by viewModel.market.collectAsState()
+    LaunchedEffect(key1 = market) {
+        viewModel.addOrder(market.farmId.toString())
+    }
+    val scrollState = rememberScrollState()
+    val orders by viewModel.orders.collectAsState()
+    val scope = rememberCoroutineScope()
+    val showToast = { message: String ->
+        scope.launch {
+            snackbarHostState.showSnackbar(message, withDismissAction = true)
+        }
+    }
 
-    Scaffold(topBar = {
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         when (viewModel.gettingMarketState) {
             GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
                 0.dp, 0.dp, 0.dp, 0.dp
             ), title = {}, navigationIcon = {
                 IconButton(
-                    onClick = onGoBack,
+                    onClick = {
+                        onGoBack()
+                        viewModel.removeOrder()
+                    },
                 ) {
                     Icon(
                         Icons.AutoMirrored.TwoTone.ArrowBack,
@@ -86,17 +106,49 @@ fun MarketDetailsScreen(
     }, bottomBar = {
         when (viewModel.gettingMarketState) {
             GetMarketDetailsState.Success -> Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    if (orders[market.id.toString()] != null) {
+                        viewModel.addToCart {
+                            showToast("Added to cart.")
+                            viewModel.removeOrder()
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(4.dp),
                 contentPadding = PaddingValues(16.dp),
             ) {
-                Text(
-                    stringResource(R.string.add_to_cart),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                when (viewModel.addingToCart) {
+                    AddingToCartState.Success -> {
+                        if (orders[market.id.toString()]?.volume != 0) {
+                            Text(
+                                "Add to Cart[${
+                                    Util.formatCurrency(
+                                        currency = deviceDetails.currency,
+                                        amount = market.pricePerUnit.times(
+                                            orders[market.id.toString()]?.volume ?: 0
+                                        ),
+                                        language = deviceDetails.languages
+                                    )
+                                }]",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        } else {
+                            Text(
+                                stringResource(id = R.string.add_to_cart),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+
+                    AddingToCartState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
 
             else -> {}
@@ -166,38 +218,38 @@ fun MarketDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
-                               TextButton(
-                                    onClick = { /*TODO*/ },
+                                TextButton(
+                                    onClick = { viewModel.decreaseOrderVolume() },
                                     shape = MaterialTheme.shapes.small,
                                     colors = ButtonDefaults.textButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                     ),
                                 ) {
-                                   Text(
-                                       "-",
-                                       style = MaterialTheme.typography.titleLarge,
-                                       fontWeight = FontWeight.ExtraBold,
-                                   )
+                                    Text(
+                                        "-",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.ExtraBold,
+                                    )
                                 }
                                 Text(
-                                    "${0} ${market.unit}",
+                                    "${orders[market.id.toString()]?.volume} ${market.unit}",
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.SemiBold,
                                 )
                                 TextButton(
-                                    onClick = { /*TODO*/ },
+                                    onClick = { viewModel.increaseOrderVolume(market.volume) },
                                     shape = MaterialTheme.shapes.small,
                                     colors = ButtonDefaults.textButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                     ),
                                 ) {
-                                   Text(
-                                       "+",
-                                       style = MaterialTheme.typography.titleLarge,
-                                       fontWeight = FontWeight.ExtraBold,
-                                   )
+                                    Text(
+                                        "+",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.ExtraBold,
+                                    )
                                 }
                             }
                         }

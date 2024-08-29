@@ -117,7 +117,6 @@ object VunoViewModelProvider {
             marketsViewModel = MarketsViewModel(
                 vunoApplication().container.marketsRepository,
                 mainViewModel,
-                vunoApplication().container.apolloClient.apolloStore,
             )
             marketsViewModel
         }
@@ -143,7 +142,6 @@ object VunoViewModelProvider {
             marketCartViewModel = MarketCartViewModel(
                 vunoApplication().container.marketsRepository,
                 vunoApplication().container.apolloClient.apolloStore,
-                marketsViewModel,
             )
             marketCartViewModel
         }
@@ -169,6 +167,7 @@ object VunoViewModelProvider {
             marketDetailsViewModel = MarketDetailsViewModel(
                 this.createSavedStateHandle(),
                 vunoApplication().container.marketsRepository,
+                vunoApplication().container.apolloClient.apolloStore,
             )
 
             marketDetailsViewModel

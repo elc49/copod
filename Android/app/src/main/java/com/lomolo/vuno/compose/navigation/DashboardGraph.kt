@@ -144,8 +144,6 @@ fun NavGraphBuilder.addDashboardGraph(
             MarketScreen(
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
-                onNavigateToMarketCart = { navHostController.navigate(MarketCartScreenDestination.route) },
-                onNavigateToUserOrders = { navHostController.navigate(UserOrdersScreenDestination.route) },
                 bottomNav = {
                     BottomNavBar(
                         modifier = modifier,
@@ -361,6 +359,7 @@ fun NavGraphBuilder.addDashboardGraph(
                     navHostController.popBackStack()
                 },
                 deviceDetails = deviceDetails,
+                snackbarHostState = snackbarHostState,
             )
         }
     }
