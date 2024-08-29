@@ -45,6 +45,8 @@ import com.lomolo.vuno.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.vuno.compose.screens.FarmsScreen
 import com.lomolo.vuno.compose.screens.MarketCartScreen
 import com.lomolo.vuno.compose.screens.MarketCartScreenDestination
+import com.lomolo.vuno.compose.screens.MarketDetailsScreen
+import com.lomolo.vuno.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.vuno.compose.screens.MarketScreen
 import com.lomolo.vuno.compose.screens.MarketScreenDestination
 import com.lomolo.vuno.compose.screens.MpesaPaymentScreen
@@ -139,17 +141,22 @@ fun NavGraphBuilder.addDashboardGraph(
             )
         }
         composable(route = MarketScreenDestination.route) {
-            MarketScreen(deviceDetails = deviceDetails,
+            MarketScreen(
+                deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
-                onNavigateToMarketCart = { navHostController.navigate(MarketCartScreenDestination.route) },
-                onNavigateToUserOrders = { navHostController.navigate(UserOrdersScreenDestination.route) },
                 bottomNav = {
                     BottomNavBar(
                         modifier = modifier,
                         onNavigateTo = onNavigateTo,
                         currentDestination = it.destination
                     )
-                })
+                },
+                onNavigateToMarketDetails = { marketId ->
+                    navHostController.navigate(
+                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                    )
+                },
+            )
         }
         composable(route = FarmScreenDestination.route) {
             val currentDestination = it.destination
@@ -328,15 +335,31 @@ fun NavGraphBuilder.addDashboardGraph(
             route = MarketCartScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            MarketCartScreen(snackbarHostState = snackbarHostState, deviceDetails = deviceDetails, onCloseDialog = {
-                navHostController.popBackStack()
-            })
+            MarketCartScreen(snackbarHostState = snackbarHostState,
+                deviceDetails = deviceDetails,
+                onCloseDialog = {
+                    navHostController.popBackStack()
+                })
         }
         composable(route = UserOrdersScreenDestination.route) {
             UserOrdersScreen(
                 modifier = modifier,
                 deviceDetails = deviceDetails,
                 onNavigateBack = { navHostController.popBackStack() },
+            )
+        }
+        composable(
+            route = MarketDetailsScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(MarketDetailsScreenDestination.marketIdArg) {
+                type = NavType.StringType
+            })
+        ) {
+            MarketDetailsScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                },
+                deviceDetails = deviceDetails,
+                snackbarHostState = snackbarHostState,
             )
         }
     }

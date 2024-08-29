@@ -18,6 +18,7 @@ import com.lomolo.vuno.GetFarmPaymentsQuery
 import com.lomolo.vuno.GetFarmsBelongingToUserQuery
 import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
 import com.lomolo.vuno.GetLocalizedPostersQuery
+import com.lomolo.vuno.GetMarketDetailsQuery
 import com.lomolo.vuno.GetOrdersBelongingToUserQuery
 import com.lomolo.vuno.GetPaystackPaymentVerificationQuery
 import com.lomolo.vuno.GetUserCartItemsQuery
@@ -69,6 +70,7 @@ interface IVunoGraphqlApi {
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
     suspend fun setMarketStatus(input: SetMarketStatusInput): ApolloResponse<SetMarketStatusMutation.Data>
     suspend fun updateFarmDetails(input: UpdateFarmDetailsInput): ApolloResponse<UpdateFarmDetailsMutation.Data>
+    suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
 
 }
 
@@ -211,5 +213,10 @@ class VunoGraphqlApi(
 
     override suspend fun updateFarmDetails(input: UpdateFarmDetailsInput) = apolloClient
         .mutation(UpdateFarmDetailsMutation(input))
+        .execute()
+
+    override suspend fun getMarketDetails(id: String) = apolloClient
+        .query(GetMarketDetailsQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()
 }

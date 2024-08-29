@@ -10,6 +10,7 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.vuno.GetUserCartItemsQuery
 import com.lomolo.vuno.GetUserOrdersCountQuery
 import com.lomolo.vuno.repository.IMarkets
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
@@ -17,9 +18,10 @@ import okio.IOException
 class MarketCartViewModel(
     private val marketsRepository: IMarkets,
     private val apolloStore: ApolloStore,
-    marketsViewModel: MarketsViewModel,
 ): ViewModel() {
-    val cartContent: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = marketsViewModel.cartItems
+    val cartContent: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = MutableStateFlow(
+        listOf()
+    )
     var deleteCartItemState: DeleteCartItemState by mutableStateOf(DeleteCartItemState.Success)
         private set
     var deletingItemId: String by mutableStateOf("")

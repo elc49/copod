@@ -240,6 +240,7 @@ type Query {
   getUserCartItems: [Cart!]!
   getOrdersBelongingToUser: [Order!]!
   getUserOrdersCount: Int!
+  getMarketDetails(id: UUID!): Market!
 }
 
 type Mutation {
