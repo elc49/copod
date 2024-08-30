@@ -31,7 +31,7 @@ class MarketDetailsViewModel(
         checkNotNull(savedStateHandle[MarketDetailsScreenDestination.marketIdArg])
 
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
-        MutableStateFlow(GetMarketDetailsQuery.GetMarketDetails("", "", "", "", MetricUnit.Kg, 0, "", 0))
+        MutableStateFlow(GetMarketDetailsQuery.GetMarketDetails("", "", "", "", MetricUnit.Kg, 0, "", GetMarketDetailsQuery.Farm("", ""), 0))
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()
     var gettingMarketState: GetMarketDetailsState by mutableStateOf(GetMarketDetailsState.Success)
         private set

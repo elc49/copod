@@ -61,6 +61,7 @@ type Market struct {
 	Unit          MetricUnit   `json:"unit"`
 	Type          MarketType   `json:"type"`
 	Status        MarketStatus `json:"status"`
+	Farm          *Farm        `json:"farm"`
 	FarmID        uuid.UUID    `json:"farmId"`
 	CanOrder      bool         `json:"canOrder"`
 	Tag           string       `json:"tag"`

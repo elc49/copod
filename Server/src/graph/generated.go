@@ -43,6 +43,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Cart() CartResolver
+	Market() MarketResolver
 	Mutation() MutationResolver
 	Order() OrderResolver
 	Post() PostResolver
@@ -92,6 +93,7 @@ type ComplexityRoot struct {
 		CanOrder      func(childComplexity int) int
 		CreatedAt     func(childComplexity int) int
 		Details       func(childComplexity int) int
+		Farm          func(childComplexity int) int
 		FarmID        func(childComplexity int) int
 		ID            func(childComplexity int) int
 		Image         func(childComplexity int) int
@@ -202,6 +204,9 @@ type CartResolver interface {
 	Farm(ctx context.Context, obj *model.Cart) (*model.Farm, error)
 
 	Market(ctx context.Context, obj *model.Cart) (*model.Market, error)
+}
+type MarketResolver interface {
+	Farm(ctx context.Context, obj *model.Market) (*model.Farm, error)
 }
 type MutationResolver interface {
 	CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error)
@@ -435,6 +440,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Market.Details(childComplexity), true
+
+	case "Market.farm":
+		if e.complexity.Market.Farm == nil {
+			break
+		}
+
+		return e.complexity.Market.Farm(childComplexity), true
 
 	case "Market.farmId":
 		if e.complexity.Market.FarmID == nil {
@@ -1943,6 +1955,8 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -2968,6 +2982,70 @@ func (ec *executionContext) fieldContext_Market_status(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Market_farm(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Market_farm(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Market().Farm(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Farm)
+	fc.Result = res
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Market_farm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Market",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Farm_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Farm_name(ctx, field)
+			case "thumbnail":
+				return ec.fieldContext_Farm_thumbnail(ctx, field)
+			case "about":
+				return ec.fieldContext_Farm_about(ctx, field)
+			case "dateStarted":
+				return ec.fieldContext_Farm_dateStarted(ctx, field)
+			case "userId":
+				return ec.fieldContext_Farm_userId(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Farm_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Farm_updated_at(ctx, field)
+			case "deleted_at":
+				return ec.fieldContext_Farm_deleted_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Farm", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Market_farmId(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_farmId(ctx, field)
 	if err != nil {
@@ -3439,6 +3517,8 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -3851,6 +3931,8 @@ func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Co
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -4321,6 +4403,8 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -5734,6 +5818,8 @@ func (ec *executionContext) fieldContext_Query_getLocalizedHarvestMarkets(ctx co
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -5896,6 +5982,8 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -6378,6 +6466,8 @@ func (ec *executionContext) fieldContext_Query_getMarketDetails(ctx context.Cont
 				return ec.fieldContext_Market_type(ctx, field)
 			case "status":
 				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
 			case "farmId":
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
@@ -9503,77 +9593,113 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 		case "id":
 			out.Values[i] = ec._Market_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Market_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "image":
 			out.Values[i] = ec._Market_image(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "volume":
 			out.Values[i] = ec._Market_volume(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "details":
 			out.Values[i] = ec._Market_details(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "running_volume":
 			out.Values[i] = ec._Market_running_volume(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "unit":
 			out.Values[i] = ec._Market_unit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "type":
 			out.Values[i] = ec._Market_type(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "status":
 			out.Values[i] = ec._Market_status(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "farm":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Market_farm(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "farmId":
 			out.Values[i] = ec._Market_farmId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "canOrder":
 			out.Values[i] = ec._Market_canOrder(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "tag":
 			out.Values[i] = ec._Market_tag(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "pricePerUnit":
 			out.Values[i] = ec._Market_pricePerUnit(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
 			out.Values[i] = ec._Market_created_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "updated_at":
 			out.Values[i] = ec._Market_updated_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

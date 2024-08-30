@@ -111,4 +111,6 @@
     <string name="soko">Soko</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
+    <string name="details">Details</string>
+    <string name="from">From %1$s</string>
 </resources>
