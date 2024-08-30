@@ -159,6 +159,7 @@ class VunoGraphqlApi(
 
     override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> = apolloClient
         .query(GetUserCartItemsQuery())
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
 
     override suspend fun addToCart(input: AddToCartInput) = apolloClient

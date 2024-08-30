@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,8 +39,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination
 import com.lomolo.vuno.R
 import com.lomolo.vuno.VunoViewModelProvider
+import com.lomolo.vuno.common.BottomNavBar
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.util.Util
@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 
 object MarketCartScreenDestination : Navigation {
     override val title = R.string.your_cart
-    override val route = "dashboard_market_cart"
+    override val route = "dashboard/cart"
 }
 
 @Composable
@@ -87,12 +87,13 @@ fun RowScope.TableCell(
 @Composable
 fun MarketCartScreen(
     modifier: Modifier = Modifier,
-    onCloseDialog: () -> Unit,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
+    currentDestination: NavDestination,
+    onNavigateTo: (String) -> Unit,
     viewModel: MarketCartViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
-    val cartItems by viewModel.cartContent.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }
     val scope = rememberCoroutineScope()
     val showToast = { it: String ->
@@ -101,177 +102,185 @@ fun MarketCartScreen(
         }
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) },
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
-            TopAppBar(title = {
-                Text(
-                    stringResource(id = MarketCartScreenDestination.title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onCloseDialog) {
-                    Icon(
-                        Icons.TwoTone.Close,
-                        modifier = Modifier.size(28.dp),
-                        contentDescription = null,
-                    )
-                }
-            })
-        }) { innerPadding ->
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+        TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
+            Text(
+                stringResource(id = MarketCartScreenDestination.title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
+        })
+    }, bottomBar = {
+        BottomNavBar(
+            modifier = modifier,
+            currentDestination = currentDestination,
+            onNavigateTo = onNavigateTo,
+        )
+    }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (cartItems.isEmpty()) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.empty_box),
-                        modifier = Modifier.size(64.dp),
-                        contentDescription = null
-                    )
-                    Text(
-                        stringResource(R.string.no_items),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            } else {
-                LazyColumn(
-                    Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    item {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+            when(viewModel.gettingCartItems) {
+                GettingCartItemsState.Success -> {
+                    if (cartItems.isEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            TableHeader(text = "#", weight = .1f)
-                            TableHeader(text = "Product", weight = .25f)
-                            TableHeader(text = "Volume", weight = .25f)
-                            TableHeader(text = "Cost", weight = .25f)
-                            TableHeader(text = "", weight = .15f)
-                        }
-                    }
-                    groupedByFarm.forEach { (key, value) ->
-                        stickyHeader {
+                            Image(
+                                painter = painterResource(id = R.drawable.empty_box),
+                                modifier = Modifier.size(64.dp),
+                                contentDescription = null
+                            )
                             Text(
-                                key,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
+                                stringResource(R.string.no_items),
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         }
-                        itemsIndexed(value) { index, item ->
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                TableCell(
-                                    "${index.plus(1)}",
-                                    .1f,
-                                )
-                                TableCell(
-                                    item.market.name, .25f
-                                )
-                                TableCell(
-                                    "${item.volume} ${item.market.unit}", .25f
-                                )
-                                TableCell(
-                                    Util.formatCurrency(
-                                        currency = deviceDetails.currency,
-                                        amount = item.volume.times(item.market.pricePerUnit),
-                                        language = deviceDetails.languages,
-                                    ), .25f
-                                )
-                                when (viewModel.deleteCartItemState) {
-                                    DeleteCartItemState.Success -> {
-                                        IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
-                                            Icon(
-                                                painterResource(id = R.drawable.bin),
-                                                modifier = Modifier.size(32.dp),
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    }
+                    } else {
+                        LazyColumn(
+                            Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            item {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    TableHeader(text = "#", weight = .1f)
+                                    TableHeader(text = "Product", weight = .25f)
+                                    TableHeader(text = "Volume", weight = .25f)
+                                    TableHeader(text = "Cost", weight = .25f)
+                                    TableHeader(text = "", weight = .15f)
+                                }
+                            }
+                            groupedByFarm.forEach { (key, value) ->
+                                stickyHeader {
+                                    Text(
+                                        key,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                    )
+                                }
+                                itemsIndexed(value) { index, item ->
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                    ) {
+                                        TableCell(
+                                            "${index.plus(1)}",
+                                            .1f,
+                                        )
+                                        TableCell(
+                                            item.market.name, .25f
+                                        )
+                                        TableCell(
+                                            "${item.volume} ${item.market.unit}", .25f
+                                        )
+                                        TableCell(
+                                            Util.formatCurrency(
+                                                currency = deviceDetails.currency,
+                                                amount = item.volume.times(item.market.pricePerUnit),
+                                                language = deviceDetails.languages,
+                                            ), .25f
+                                        )
+                                        when (viewModel.deleteCartItemState) {
+                                            DeleteCartItemState.Success -> {
+                                                IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                    Icon(
+                                                        painterResource(id = R.drawable.bin),
+                                                        modifier = Modifier.size(32.dp),
+                                                        contentDescription = null,
+                                                    )
+                                                }
+                                            }
 
-                                    DeleteCartItemState.Loading -> {
-                                        if (item.id == viewModel.deletingItemId) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        } else {
-                                            IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
-                                                Icon(
-                                                    painterResource(id = R.drawable.bin),
-                                                    modifier = Modifier.size(32.dp),
-                                                    contentDescription = null,
-                                                )
+                                            DeleteCartItemState.Loading -> {
+                                                if (item.id == viewModel.deletingItemId) {
+                                                    CircularProgressIndicator(
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                } else {
+                                                    IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                        Icon(
+                                                            painterResource(id = R.drawable.bin),
+                                                            modifier = Modifier.size(32.dp),
+                                                            contentDescription = null,
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
-                        }
-                        item {
-                            val total = value.fold(0) { sum, element ->
-                                val itemTotal = element.volume.times(element.market.pricePerUnit)
-                                sum + itemTotal
-                            }
+                                item {
+                                    val total = value.fold(0) { sum, element ->
+                                        val itemTotal = element.volume.times(element.market.pricePerUnit)
+                                        sum + itemTotal
+                                    }
 
-                            Button(
-                                onClick = {
-                                    viewModel.sendOrderToFarm(key, value.map {
-                                        SendOrderToFarm(
-                                            it.id.toString(),
-                                            it.volume,
-                                            deviceDetails.currency,
-                                            it.market_id.toString(),
-                                            it.farm_id.toString(),
-                                            it.volume.times(it.market.pricePerUnit),
-                                        )
-                                    }) { showToast("Sent. Waiting confirmation.") }
-                                },
-                                Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(12.dp),
-                            ) {
-                                when (viewModel.sendToFarmState) {
-                                    SendToFarmState.Success -> Text(
-                                        "Send to farm [${
-                                            Util.formatCurrency(
-                                                currency = deviceDetails.currency,
-                                                amount = total,
-                                                language = deviceDetails.languages,
+                                    Button(
+                                        onClick = {
+                                            viewModel.sendOrderToFarm(key, value.map {
+                                                SendOrderToFarm(
+                                                    it.id.toString(),
+                                                    it.volume,
+                                                    deviceDetails.currency,
+                                                    it.market_id.toString(),
+                                                    it.farm_id.toString(),
+                                                    it.volume.times(it.market.pricePerUnit),
+                                                )
+                                            }) { showToast("Sent. Waiting confirmation.") }
+                                        },
+                                        Modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(12.dp),
+                                    ) {
+                                        when (viewModel.sendToFarmState) {
+                                            SendToFarmState.Success -> Text(
+                                                "Send to farm [${
+                                                    Util.formatCurrency(
+                                                        currency = deviceDetails.currency,
+                                                        amount = total,
+                                                        language = deviceDetails.languages,
+                                                    )
+                                                }]",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold,
                                             )
-                                        }]",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                    )
 
-                                    SendToFarmState.Loading -> if (viewModel.sendingKey == key) CircularProgressIndicator(
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.size(20.dp)
-                                    ) else Text(
-                                        "Send to farm [${
-                                            Util.formatCurrency(
-                                                currency = deviceDetails.currency,
-                                                amount = total,
-                                                language = deviceDetails.languages,
+                                            SendToFarmState.Loading -> if (viewModel.sendingKey == key) CircularProgressIndicator(
+                                                color = MaterialTheme.colorScheme.onPrimary,
+                                                modifier = Modifier.size(20.dp)
+                                            ) else Text(
+                                                "Send to farm [${
+                                                    Util.formatCurrency(
+                                                        currency = deviceDetails.currency,
+                                                        amount = total,
+                                                        language = deviceDetails.languages,
+                                                    )
+                                                }]",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold,
                                             )
-                                        }]",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                    )
+                                        }
+                                    }
                                 }
                             }
+
                         }
                     }
+                }
 
+                GettingCartItemsState.Loading -> Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }

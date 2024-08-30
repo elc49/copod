@@ -57,7 +57,7 @@ import com.lomolo.vuno.util.Util
 
 object FarmScreenDestination : Navigation {
     override val title = null
-    override val route = "dashboard-farm"
+    override val route = "dashboard/farm"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

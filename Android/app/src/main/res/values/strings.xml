@@ -45,7 +45,7 @@
     <string name="buy_farm_service">Buy farm service</string>
     <string name="no_markets">Markets will soon open up</string>
     <string name="m_pesa">M-pesa</string>
-    <string name="your_cart">Cart items</string>
+    <string name="your_cart">Cart</string>
     <string name="no_items">No items</string>
     <string name="your_orders">Your orders</string>
     <string name="complete_from_m_pesa">Complete from M-pesa</string>
@@ -109,4 +109,5 @@
     <string name="available_in_stock">Available in stock</string>
     <string name="description">Description</string>
     <string name="minus">minus</string>
+    <string name="soko">Soko</string>
 </resources>

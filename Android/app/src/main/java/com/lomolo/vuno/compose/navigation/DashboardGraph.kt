@@ -65,41 +65,6 @@ object DashboardDestination : Navigation {
     override val route = "dashboard"
 }
 
-sealed class Screen(
-    val name: Int,
-    val defaultIcon: Int,
-    val activeIcon: Int,
-    val route: String,
-) {
-    data object Explore : Screen(
-        R.string.explore,
-        R.drawable.explore_outlined,
-        R.drawable.explore_filled,
-        "dashboard-explore",
-    )
-
-    data object Soko : Screen(
-        R.string.markets,
-        R.drawable.cart_outlined,
-        R.drawable.cart_filled,
-        "dashboard-market",
-    )
-
-    data object Farm : Screen(
-        R.string.farm,
-        R.drawable.farm_outlined,
-        R.drawable.farm_filled,
-        "dashboard-farm",
-    )
-
-    data object Account : Screen(
-        R.string.you,
-        R.drawable.account_outlined,
-        R.drawable.account_filled,
-        "dashboard-account",
-    )
-}
-
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addDashboardGraph(
@@ -132,11 +97,9 @@ fun NavGraphBuilder.addDashboardGraph(
         route = DashboardDestination.route,
     ) {
         composable(route = ExploreScreenDestination.route) {
-            val currentDestination = it.destination
-
             ExploreScreen(
                 onNavigateTo = onNavigateTo,
-                currentDestination = currentDestination,
+                currentDestination = it.destination,
                 snackbarHostState = snackbarHostState,
             )
         }
@@ -331,15 +294,13 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }
         }
-        dialog(
-            route = MarketCartScreenDestination.route,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            MarketCartScreen(snackbarHostState = snackbarHostState,
+        composable(route = MarketCartScreenDestination.route) {
+            MarketCartScreen(
+                snackbarHostState = snackbarHostState,
                 deviceDetails = deviceDetails,
-                onCloseDialog = {
-                    navHostController.popBackStack()
-                })
+                onNavigateTo = onNavigateTo,
+                currentDestination = it.destination,
+            )
         }
         composable(route = UserOrdersScreenDestination.route) {
             UserOrdersScreen(
