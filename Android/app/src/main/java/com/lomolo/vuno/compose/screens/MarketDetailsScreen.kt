@@ -91,7 +91,6 @@ fun MarketDetailsScreen(
                 IconButton(
                     onClick = {
                         onGoBack()
-                        viewModel.removeOrder()
                     },
                 ) {
                     Icon(
@@ -227,7 +226,7 @@ fun MarketDetailsScreen(
                                     ),
                                 ) {
                                     Text(
-                                        "-",
+                                        stringResource(R.string.minus),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.ExtraBold,
                                     )
@@ -246,7 +245,7 @@ fun MarketDetailsScreen(
                                     ),
                                 ) {
                                     Text(
-                                        "+",
+                                        stringResource(R.string.plus),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.ExtraBold,
                                     )
