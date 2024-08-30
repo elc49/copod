@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.lomolo.vuno.common.BottomNavBarViewModel
 import com.lomolo.vuno.compose.screens.AccountViewModel
 import com.lomolo.vuno.compose.screens.AddFarmMarketViewModel
 import com.lomolo.vuno.compose.screens.CreateFarmViewModel
@@ -14,7 +15,7 @@ import com.lomolo.vuno.compose.screens.ExploreViewModel
 import com.lomolo.vuno.compose.screens.FarmStoreViewModel
 import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
-import com.lomolo.vuno.compose.screens.MarketCartViewModel
+import com.lomolo.vuno.compose.screens.CartViewModel
 import com.lomolo.vuno.compose.screens.MarketDetailsViewModel
 import com.lomolo.vuno.compose.screens.MarketsViewModel
 import com.lomolo.vuno.compose.screens.PaymentViewModel
@@ -35,10 +36,11 @@ object VunoViewModelProvider {
         lateinit var marketsViewModel: MarketsViewModel
         lateinit var exploreViewModel: ExploreViewModel
         lateinit var paymentViewModel: PaymentViewModel
-        lateinit var marketCartViewModel: MarketCartViewModel
+        lateinit var cartViewModel: CartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
         lateinit var farmSettingsViewModel: FarmSettingsViewModel
         lateinit var marketDetailsViewModel: MarketDetailsViewModel
+        lateinit var bottomNavBarViewModel: BottomNavBarViewModel
 
         initializer {
             mainViewModel = MainViewModel(vunoApplication().container.vunoRestApiService)
@@ -139,11 +141,11 @@ object VunoViewModelProvider {
         }
 
         initializer {
-            marketCartViewModel = MarketCartViewModel(
+            cartViewModel = CartViewModel(
                 vunoApplication().container.marketsRepository,
                 vunoApplication().container.apolloClient.apolloStore,
             )
-            marketCartViewModel
+            cartViewModel
         }
 
         initializer {
@@ -169,8 +171,14 @@ object VunoViewModelProvider {
                 vunoApplication().container.marketsRepository,
                 vunoApplication().container.apolloClient.apolloStore,
             )
-
             marketDetailsViewModel
+        }
+
+        initializer {
+            bottomNavBarViewModel = BottomNavBarViewModel(
+                vunoApplication().container.apolloClient.apolloStore,
+            )
+            bottomNavBarViewModel
         }
     }
 }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
 
-class MarketCartViewModel(
+class CartViewModel(
     private val marketsRepository: IMarkets,
     private val apolloStore: ApolloStore,
 ) : ViewModel() {
