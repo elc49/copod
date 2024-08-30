@@ -95,6 +95,7 @@ type Market {
   unit: MetricUnit!
   type: MarketType!
   status: MarketStatus!
+  farm: Farm!
   farmId: UUID!
   canOrder: Boolean!
   tag: String!

@@ -87,7 +87,15 @@ fun MarketDetailsScreen(
         when (viewModel.gettingMarketState) {
             GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
                 0.dp, 0.dp, 0.dp, 0.dp
-            ), title = {}, navigationIcon = {
+            ), title = {
+                Column {
+                    Text(stringResource(R.string.details))
+                    Text(
+                        stringResource(R.string.from, market.farm.name),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }, navigationIcon = {
                 IconButton(
                     onClick = {
                         onGoBack()

@@ -104,3 +104,7 @@ models:
         resolver: true
       farm:
         resolver: true
+  Market:
+    fields:
+      farm:
+        resolver: true

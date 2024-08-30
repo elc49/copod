@@ -7,6 +7,10 @@ query GetMarketDetails($id: UUID!) {
         unit
         volume
         farmId
+        farm {
+            id
+            name
+        }
         pricePerUnit
     }
 }

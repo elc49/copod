@@ -28,6 +28,11 @@ func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Mark
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)
 }
 
+// Farm is the resolver for the farm field.
+func (r *marketResolver) Farm(ctx context.Context, obj *model.Market) (*model.Farm, error) {
+	return r.farmController.GetFarmByID(ctx, obj.FarmID)
+}
+
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
@@ -250,6 +255,9 @@ func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UU
 // Cart returns CartResolver implementation.
 func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 
+// Market returns MarketResolver implementation.
+func (r *Resolver) Market() MarketResolver { return &marketResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -266,6 +274,7 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
 
 type cartResolver struct{ *Resolver }
+type marketResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
 type postResolver struct{ *Resolver }
