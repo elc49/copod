@@ -14,7 +14,49 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.lomolo.vuno.compose.navigation.Screen
+import com.lomolo.vuno.R
+
+sealed class Screen(
+    val name: Int,
+    val defaultIcon: Int,
+    val activeIcon: Int,
+    val route: String,
+) {
+    data object Explore : Screen(
+        R.string.explore,
+        R.drawable.explore_outlined,
+        R.drawable.explore_filled,
+        "dashboard/explore",
+    )
+
+    data object Soko : Screen(
+        R.string.soko,
+        R.drawable.cart_outlined,
+        R.drawable.cart_filled,
+        "dashboard/market",
+    )
+
+    data object Farm : Screen(
+        R.string.farm,
+        R.drawable.farm_outlined,
+        R.drawable.farm_filled,
+        "dashboard/farm",
+    )
+
+    data object Account : Screen(
+        R.string.you,
+        R.drawable.account_outlined,
+        R.drawable.account_filled,
+        "dashboard/account",
+    )
+
+    data object Cart : Screen(
+        R.string.cart,
+        R.drawable.basket_outlined,
+        R.drawable.basket_filled,
+        "dashboard/cart",
+    )
+}
 
 @Composable
 fun BottomNavBar(
@@ -22,7 +64,7 @@ fun BottomNavBar(
     onNavigateTo: (String) -> Unit = {},
     currentDestination: NavDestination?,
 ) {
-    val navItems = listOf(Screen.Farm, Screen.Explore, Screen.Soko, Screen.Account)
+    val navItems = listOf(Screen.Farm, Screen.Explore, Screen.Soko, Screen.Cart, Screen.Account)
 
     NavigationBar(
         modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)

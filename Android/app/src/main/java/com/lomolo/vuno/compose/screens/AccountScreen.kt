@@ -37,7 +37,7 @@ import com.lomolo.vuno.compose.navigation.Navigation
 
 object AccountScreenDestination : Navigation {
     override val title = R.string.account
-    override val route = "dashboard-account"
+    override val route = "dashboard/account"
 }
 
 @Composable

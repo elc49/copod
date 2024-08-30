@@ -43,7 +43,7 @@ import com.lomolo.vuno.ui.theme.inverseOnSurfaceLight
 
 object MarketScreenDestination : Navigation {
     override val title = null
-    override val route = "dashboard-market"
+    override val route = "dashboard/market"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

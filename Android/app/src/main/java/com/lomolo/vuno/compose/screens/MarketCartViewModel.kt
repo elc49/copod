@@ -12,16 +12,15 @@ import com.lomolo.vuno.GetUserOrdersCountQuery
 import com.lomolo.vuno.repository.IMarkets
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.IOException
 
 class MarketCartViewModel(
     private val marketsRepository: IMarkets,
     private val apolloStore: ApolloStore,
-): ViewModel() {
-    val cartContent: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = MutableStateFlow(
-        listOf()
-    )
+) : ViewModel() {
     var deleteCartItemState: DeleteCartItemState by mutableStateOf(DeleteCartItemState.Success)
         private set
     var deletingItemId: String by mutableStateOf("")
@@ -43,14 +42,13 @@ class MarketCartViewModel(
                         val where = updatedCacheData.indexOfFirst { it.id.toString() == id }
                         updatedCacheData.removeAt(where)
                         apolloStore.writeOperation(
-                            GetUserCartItemsQuery(),
-                            GetUserCartItemsQuery.Data(updatedCacheData)
+                            GetUserCartItemsQuery(), GetUserCartItemsQuery.Data(updatedCacheData)
                         )
-                    } catch(e: Exception) {
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                     DeleteCartItemState.Success
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     DeleteCartItemState.Error(e.localizedMessage)
                 } finally {
@@ -75,7 +73,8 @@ class MarketCartViewModel(
                             val updatedCacheData = apolloStore.readOperation(
                                 GetUserCartItemsQuery()
                             ).getUserCartItems.toMutableList()
-                            val where = updatedCacheData.indexOfFirst { it.id.toString() == item.id }
+                            val where =
+                                updatedCacheData.indexOfFirst { it.id.toString() == item.id }
                             updatedCacheData.removeAt(where)
                             apolloStore.writeOperation(
                                 GetUserCartItemsQuery(),
@@ -89,17 +88,45 @@ class MarketCartViewModel(
                                 GetUserOrdersCountQuery(),
                                 GetUserOrdersCountQuery.Data(updatedOrderCacheData)
                             )
-                        } catch(e: ApolloException) {
+                        } catch (e: ApolloException) {
                             e.printStackTrace()
                         }
                     }
                     SendToFarmState.Success.also { cb() }
-                } catch(e: IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     SendToFarmState.Error(e.localizedMessage)
                 }
             }
         }
+    }
+
+    private val _cartData: MutableStateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> =
+        MutableStateFlow(
+            listOf()
+        )
+    val cartItems: StateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> = _cartData.asStateFlow()
+    var gettingCartItems: GettingCartItemsState by mutableStateOf(GettingCartItemsState.Success)
+        private set
+
+    private fun getUserCartItems() = viewModelScope.launch {
+        if (gettingCartItems !is GettingCartItemsState.Loading) {
+            gettingCartItems = GettingCartItemsState.Loading
+            try {
+                marketsRepository.getUserCartItems().collect { res ->
+                    _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                    gettingCartItems = GettingCartItemsState.Success
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                _cartData.update { listOf() }
+                gettingCartItems = GettingCartItemsState.Success
+            }
+        }
+    }
+
+    init {
+        getUserCartItems()
     }
 }
 
@@ -113,13 +140,13 @@ data class SendOrderToFarm(
 )
 
 interface SendToFarmState {
-    data object Loading: SendToFarmState
-    data object Success: SendToFarmState
-    data class Error(val msg: String?): SendToFarmState
+    data object Loading : SendToFarmState
+    data object Success : SendToFarmState
+    data class Error(val msg: String?) : SendToFarmState
 }
 
 interface DeleteCartItemState {
-    data object Loading: DeleteCartItemState
-    data object Success: DeleteCartItemState
-    data class Error(val msg: String?): DeleteCartItemState
+    data object Loading : DeleteCartItemState
+    data object Success : DeleteCartItemState
+    data class Error(val msg: String?) : DeleteCartItemState
 }

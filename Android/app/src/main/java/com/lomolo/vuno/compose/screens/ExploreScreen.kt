@@ -41,7 +41,7 @@ import com.lomolo.vuno.util.Util
 
 object ExploreScreenDestination : Navigation {
     override val title = null
-    override val route = "dashboard-explore"
+    override val route = "dashboard/explore"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
