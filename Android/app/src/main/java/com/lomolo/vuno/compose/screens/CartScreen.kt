@@ -16,8 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +35,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -48,7 +55,7 @@ import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.util.Util
 import kotlinx.coroutines.launch
 
-object MarketCartScreenDestination : Navigation {
+object CartScreenDestination : Navigation {
     override val title = R.string.your_cart
     override val route = "dashboard/cart"
 }
@@ -85,13 +92,14 @@ fun RowScope.TableCell(
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MarketCartScreen(
+fun CartScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
     currentDestination: NavDestination,
     onNavigateTo: (String) -> Unit,
-    viewModel: MarketCartViewModel = viewModel(factory = VunoViewModelProvider.Factory),
+    onNavigateToUserOrders: () -> Unit,
+    viewModel: CartViewModel = viewModel(factory = VunoViewModelProvider.Factory),
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val groupedByFarm = cartItems.groupBy { it.farm.name }
@@ -101,14 +109,40 @@ fun MarketCartScreen(
             snackbarHostState.showSnackbar(it, withDismissAction = true)
         }
     }
+    var dropMenuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
             Text(
-                stringResource(id = MarketCartScreenDestination.title),
+                stringResource(id = CartScreenDestination.title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
+        }, actions = {
+            IconButton(onClick = { dropMenuExpanded = true }) {
+                Icon(
+                    Icons.TwoTone.MoreVert,
+                    contentDescription = stringResource(R.string.menu),
+                )
+            }
+            DropdownMenu(expanded = dropMenuExpanded, onDismissRequest = { dropMenuExpanded = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.orders)) },
+                    onClick = {
+                        onNavigateToUserOrders()
+                        dropMenuExpanded = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.product_box),
+                            modifier = Modifier.size(20.dp),
+                            contentDescription = stringResource(
+                                id = R.string.product
+                            )
+                        )
+                    },
+                )
+            }
         })
     }, bottomBar = {
         BottomNavBar(

@@ -43,8 +43,8 @@ import com.lomolo.vuno.compose.screens.FarmScreenDestination
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreen
 import com.lomolo.vuno.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.vuno.compose.screens.FarmsScreen
-import com.lomolo.vuno.compose.screens.MarketCartScreen
-import com.lomolo.vuno.compose.screens.MarketCartScreenDestination
+import com.lomolo.vuno.compose.screens.CartScreen
+import com.lomolo.vuno.compose.screens.CartScreenDestination
 import com.lomolo.vuno.compose.screens.MarketDetailsScreen
 import com.lomolo.vuno.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.vuno.compose.screens.MarketScreen
@@ -294,12 +294,13 @@ fun NavGraphBuilder.addDashboardGraph(
                 }
             }
         }
-        composable(route = MarketCartScreenDestination.route) {
-            MarketCartScreen(
+        composable(route = CartScreenDestination.route) {
+            CartScreen(
                 snackbarHostState = snackbarHostState,
                 deviceDetails = deviceDetails,
                 onNavigateTo = onNavigateTo,
                 currentDestination = it.destination,
+                onNavigateToUserOrders = { navHostController.navigate(UserOrdersScreenDestination.route) },
             )
         }
         composable(route = UserOrdersScreenDestination.route) {
