@@ -17,19 +17,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okio.IOException
+import java.io.IOException
 
-class MarketsViewModel(
+class SeedsViewModel(
     private val marketsRepository: IMarkets,
     mainViewModel: MainViewModel,
-) : ViewModel() {
-    var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
-        private set
-
+): ViewModel() {
     private val _marketsData: MutableStateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
         MutableStateFlow(listOf())
     val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
         _marketsData.asStateFlow()
+    var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
+        private set
     private val validGps: LatLng = mainViewModel.getValidDeviceGps()
 
     fun getMarkets() {
@@ -38,7 +37,7 @@ class MarketsViewModel(
             viewModelScope.launch {
                 gettingMarkets = try {
                     val res = marketsRepository.getLocalizedMarkets(
-                        GetLocalizedMarketsInput(GpsInput(validGps.latitude, validGps.longitude), MarketType.HARVEST)
+                        GetLocalizedMarketsInput(GpsInput(validGps.latitude, validGps.longitude), MarketType.SEEDS)
                     ).dataOrThrow()
                     _marketsData.update { res.getLocalizedMarkets }
                     GettingMarketsState.Success
@@ -53,10 +52,4 @@ class MarketsViewModel(
     init {
         getMarkets()
     }
-}
-
-interface GettingMarketsState {
-    data object Loading : GettingMarketsState
-    data class Error(val msg: String?) : GettingMarketsState
-    data object Success : GettingMarketsState
 }

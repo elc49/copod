@@ -46,6 +46,11 @@ type Farm struct {
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 }
 
+type GetLocalizedMarketsInput struct {
+	Radius *GpsInput  `json:"radius"`
+	Market MarketType `json:"market"`
+}
+
 type GpsInput struct {
 	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`

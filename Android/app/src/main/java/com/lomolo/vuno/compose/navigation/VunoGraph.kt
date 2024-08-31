@@ -95,6 +95,10 @@ fun VunoNavigationHost(
                     snackbarHostState = snackbarHostState,
                     scope = scope,
                 )
+                addServicesGraph(
+                    navHostController = navHostController,
+                    deviceDetails = deviceDetails,
+                )
             }
         }
     }

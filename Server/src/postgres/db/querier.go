@@ -31,7 +31,7 @@ type Querier interface {
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
 	GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error)
-	GetLocalizedHarvestMarkets(ctx context.Context, arg GetLocalizedHarvestMarketsParams) ([]GetLocalizedHarvestMarketsRow, error)
+	GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error)
 	GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error)
 	GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByIDRow, error)
 	GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetMarketsBelongingToFarmRow, error)
