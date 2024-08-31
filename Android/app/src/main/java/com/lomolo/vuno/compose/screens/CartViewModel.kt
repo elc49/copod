@@ -28,18 +28,18 @@ class CartViewModel(
     var sendingKey: String by mutableStateOf("")
         private set
 
-    fun deleteCartItem(id: String) {
+    fun deleteCartItem(marketId: String) {
         if (deleteCartItemState !is DeleteCartItemState.Loading && deletingItemId.isBlank()) {
-            deletingItemId = id
+            deletingItemId = marketId
             deleteCartItemState = DeleteCartItemState.Loading
             viewModelScope.launch {
                 deleteCartItemState = try {
-                    marketsRepository.deleteCartItem(id)
+                    marketsRepository.deleteCartItem(marketId)
                     try {
                         val updatedCacheData = apolloStore.readOperation(
                             GetUserCartItemsQuery()
                         ).getUserCartItems.toMutableList()
-                        val where = updatedCacheData.indexOfFirst { it.id.toString() == id }
+                        val where = updatedCacheData.indexOfFirst { it.market_id.toString() == marketId }
                         updatedCacheData.removeAt(where)
                         apolloStore.writeOperation(
                             GetUserCartItemsQuery(), GetUserCartItemsQuery.Data(updatedCacheData)

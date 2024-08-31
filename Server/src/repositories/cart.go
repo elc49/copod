@@ -114,8 +114,8 @@ func (r *CartRepository) GetUserCartItems(ctx context.Context, userID uuid.UUID)
 	return carts, nil
 }
 
-func (r *CartRepository) DeleteCartItem(ctx context.Context, cartID uuid.UUID) (bool, error) {
-	err := r.store.StoreWriter.DeleteCartItem(ctx, cartID)
+func (r *CartRepository) DeleteCartItem(ctx context.Context, marketID uuid.UUID) (bool, error) {
+	err := r.store.StoreWriter.DeleteCartItem(ctx, marketID)
 	if err != nil {
 		return false, err
 	}

@@ -224,7 +224,7 @@ fun CartScreen(
                                         )
                                         when (viewModel.deleteCartItemState) {
                                             DeleteCartItemState.Success -> {
-                                                IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                IconButton(onClick = { viewModel.deleteCartItem(item.market_id.toString()) }) {
                                                     Icon(
                                                         painterResource(id = R.drawable.bin),
                                                         modifier = Modifier.size(32.dp),
@@ -234,7 +234,7 @@ fun CartScreen(
                                             }
 
                                             DeleteCartItemState.Loading -> {
-                                                if (item.id == viewModel.deletingItemId) {
+                                                if (item.market_id == viewModel.deletingItemId) {
                                                     CircularProgressIndicator(
                                                         modifier = Modifier.size(20.dp)
                                                     )

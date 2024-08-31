@@ -55,7 +55,7 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 			return false, err
 		}
 
-		if b := c.r.DeleteCartItemFromOrder(ctx, item.CartID); !b {
+		if b := c.r.DeleteCartItemFromOrder(ctx, item.MarketID); !b {
 			return false, errors.New("order: delete cart item from order")
 		}
 	}

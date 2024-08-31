@@ -31,7 +31,11 @@ class MarketDetailsViewModel(
         checkNotNull(savedStateHandle[MarketDetailsScreenDestination.marketIdArg])
 
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
-        MutableStateFlow(GetMarketDetailsQuery.GetMarketDetails("", "", "", "", MetricUnit.Kg, 0, "", GetMarketDetailsQuery.Farm("", ""), 0))
+        MutableStateFlow(
+            GetMarketDetailsQuery.GetMarketDetails(
+                "", "", "", "", MetricUnit.Kg, 0, "", GetMarketDetailsQuery.Farm("", ""), 0
+            )
+        )
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()
     var gettingMarketState: GetMarketDetailsState by mutableStateOf(GetMarketDetailsState.Success)
         private set
@@ -55,7 +59,7 @@ class MarketDetailsViewModel(
     private val _orderData: MutableStateFlow<Map<String, Order>> = MutableStateFlow(mapOf())
     val orders: StateFlow<Map<String, Order>> = _orderData.asStateFlow()
 
-    fun addOrder(farmId: String) {
+    private fun addOrder(farmId: String = "") {
         val itemInCart = _cartData.value.find { it.market_id.toString() == marketId }
         if (itemInCart != null) {
             _orderData.update {
@@ -81,7 +85,7 @@ class MarketDetailsViewModel(
         if (!itemInCart) {
             _orderData.update {
                 val m = it.toMutableMap()
-                m.remove(marketId)
+                m[marketId] = Order(marketId, _market.value.farmId.toString(), 0)
                 m.toImmutableMap()
             }
         }
@@ -96,11 +100,49 @@ class MarketDetailsViewModel(
         }
     }
 
+    var removingFromCart: RemoveFromCartState by mutableStateOf(RemoveFromCartState.Success)
+        private set
+
+    private fun deleteFromCart() {
+        if (removingFromCart !is RemoveFromCartState.Loading) {
+            removingFromCart = RemoveFromCartState.Loading
+            viewModelScope.launch {
+                removingFromCart = try {
+                    marketsRepository.deleteCartItem(marketId)
+                    try {
+                        val updatedCacheData = apolloStore.readOperation(
+                            GetUserCartItemsQuery()
+                        ).getUserCartItems.toMutableList()
+                        val where =
+                            updatedCacheData.indexOfFirst { it.market_id.toString() == marketId }
+                        if (where > 0) {
+                            updatedCacheData.removeAt(where)
+                            apolloStore.writeOperation(
+                                GetUserCartItemsQuery(),
+                                GetUserCartItemsQuery.Data(updatedCacheData)
+                            )
+                        }
+                    } catch (e: ApolloException) {
+                        e.printStackTrace()
+                    }
+                    RemoveFromCartState.Success
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    RemoveFromCartState.Error(e.localizedMessage)
+                } finally {
+                    removeOrder()
+                }
+            }
+        }
+    }
+
     fun decreaseOrderVolume() {
         _orderData.update {
             val m = it.toMutableMap()
-            if (m[marketId]!!.volume > 0) m[marketId] =
-                m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
+            if (m[marketId]!!.volume > 0) {
+                m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
+                if (m[marketId]?.volume == 0) deleteFromCart()
+            }
             m.toImmutableMap()
         }
     }
@@ -109,13 +151,20 @@ class MarketDetailsViewModel(
         MutableStateFlow(
             listOf()
         )
-    private var gettingCartItems: GettingCartItemsState by mutableStateOf(GettingCartItemsState.Success)
-        private set
+    var gettingCartItems: GettingCartItemsState by mutableStateOf(GettingCartItemsState.Success)
 
-    private fun getUserCartItems() = viewModelScope.launch {
+    fun getUserCartItems() = viewModelScope.launch {
+        // Init market order data
+        _orderData.update {
+            val m = it.toMutableMap()
+            m[marketId] = Order(marketId, _market.value.farmId.toString(), 0)
+            m.toImmutableMap()
+        }
         try {
             marketsRepository.getUserCartItems().collect { res ->
                 _cartData.update { res.data?.getUserCartItems ?: listOf() }
+                // Find current market in cart
+                addOrder(_market.value.farmId.toString())
                 gettingCartItems = GettingCartItemsState.Success
             }
         } catch (e: IOException) {
@@ -212,7 +261,6 @@ class MarketDetailsViewModel(
 
     init {
         getMarket(marketId)
-        getUserCartItems()
     }
 }
 
@@ -238,4 +286,10 @@ interface GettingCartItemsState {
     data object Success : GettingCartItemsState
     data object Loading : GettingCartItemsState
     data class Error(val msg: String?) : GettingCartItemsState
+}
+
+interface RemoveFromCartState {
+    data object Success : RemoveFromCartState
+    data object Loading : RemoveFromCartState
+    data class Error(val msg: String?) : RemoveFromCartState
 }

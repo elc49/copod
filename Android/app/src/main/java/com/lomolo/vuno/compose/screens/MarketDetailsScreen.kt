@@ -71,8 +71,10 @@ fun MarketDetailsScreen(
     viewModel: MarketDetailsViewModel = viewModel(factory = VunoViewModelProvider.Factory)
 ) {
     val market by viewModel.market.collectAsState()
-    LaunchedEffect(key1 = market) {
-        viewModel.addOrder(market.farmId.toString())
+    LaunchedEffect(key1 = viewModel.gettingMarketState) {
+        if (viewModel.gettingMarketState !is GetMarketDetailsState.Loading) {
+            viewModel.getUserCartItems()
+        }
     }
     val scrollState = rememberScrollState()
     val orders by viewModel.orders.collectAsState()
@@ -225,38 +227,44 @@ fun MarketDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
-                                TextButton(
-                                    onClick = { viewModel.decreaseOrderVolume() },
-                                    shape = MaterialTheme.shapes.small,
-                                    colors = ButtonDefaults.textButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    ),
-                                ) {
-                                    Text(
-                                        stringResource(R.string.minus),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.ExtraBold,
-                                    )
-                                }
-                                Text(
-                                    "${orders[market.id.toString()]?.volume} ${market.unit}",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                                TextButton(
-                                    onClick = { viewModel.increaseOrderVolume(market.volume) },
-                                    shape = MaterialTheme.shapes.small,
-                                    colors = ButtonDefaults.textButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    ),
-                                ) {
-                                    Text(
-                                        stringResource(R.string.plus),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.ExtraBold,
-                                    )
+                                when(viewModel.removingFromCart) {
+                                    RemoveFromCartState.Success -> {
+                                        TextButton(
+                                            onClick = { viewModel.decreaseOrderVolume() },
+                                            shape = MaterialTheme.shapes.small,
+                                            colors = ButtonDefaults.textButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            ),
+                                        ) {
+                                            Text(
+                                                stringResource(R.string.minus),
+                                                style = MaterialTheme.typography.titleLarge,
+                                                fontWeight = FontWeight.ExtraBold,
+                                            )
+                                        }
+                                        Text(
+                                            "${orders[market.id.toString()]?.volume} ${market.unit}",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
+                                        TextButton(
+                                            onClick = { viewModel.increaseOrderVolume(market.volume) },
+                                            shape = MaterialTheme.shapes.small,
+                                            colors = ButtonDefaults.textButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            ),
+                                        ) {
+                                            Text(
+                                                stringResource(R.string.plus),
+                                                style = MaterialTheme.typography.titleLarge,
+                                                fontWeight = FontWeight.ExtraBold,
+                                            )
+                                        }
+                                    }
+
+                                    RemoveFromCartState.Loading -> CircularProgressIndicator(Modifier.size(20.dp))
                                 }
                             }
                         }

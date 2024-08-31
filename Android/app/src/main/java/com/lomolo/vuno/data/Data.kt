@@ -16,6 +16,7 @@ object Data {
         "vegetables",
         "spices",
         "herbs",
+        "vineyard",
     )
     val serviceTags = listOf(
         "machinery",

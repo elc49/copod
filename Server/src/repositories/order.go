@@ -100,7 +100,8 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 		return nil, err
 	}
 
-	args.RunningVolume = market.Volume - args.RunningVolume
+	// Take from market running volume
+	args.RunningVolume = market.RunningVolume - args.RunningVolume
 	m, err := r.store.StoreWriter.UpdateMarketVolume(ctx, args)
 	if err != nil {
 		return nil, err
@@ -123,8 +124,8 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 	return m.RunningVolume != 0 && volume <= int(m.RunningVolume)
 }
 
-func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, cartID uuid.UUID) bool {
-	if err := r.store.StoreWriter.DeleteCartItem(ctx, cartID); err != nil {
+func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, marketID uuid.UUID) bool {
+	if err := r.store.StoreWriter.DeleteCartItem(ctx, marketID); err != nil {
 		return false
 	}
 

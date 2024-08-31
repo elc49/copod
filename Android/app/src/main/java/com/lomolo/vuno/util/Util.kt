@@ -47,12 +47,12 @@ object Util {
         numberFormat.maximumFractionDigits = 0
         numberFormat.currency = java.util.Currency.getInstance(currency)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return NumberFormatter.with().notation(Notation.simple())
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            NumberFormatter.with().notation(Notation.simple())
                 .unit(android.icu.util.Currency.getInstance(currency))
                 .precision(Precision.maxFraction(0)).locale(Locale.US).format(amount).toString()
         } else {
-            return numberFormat.format(amount)
+            numberFormat.format(amount)
         }
     }
 
@@ -62,14 +62,14 @@ object Util {
     ): String {
         val languageCode = language.split("-")
         val numberFormat =
-            NumberFormat.getCurrencyInstance(Locale(languageCode[0], languageCode[1]))
+            NumberFormat.getNumberInstance(Locale(languageCode[0], languageCode[1]))
         numberFormat.maximumFractionDigits = 0
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return NumberFormatter.with().notation(Notation.compactShort())
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            NumberFormatter.with().notation(Notation.compactShort())
                 .precision(Precision.maxFraction(0)).locale(Locale.US).format(v).toString()
         } else {
-            return numberFormat.format(v)
+            numberFormat.format(v)
         }
     }
 }

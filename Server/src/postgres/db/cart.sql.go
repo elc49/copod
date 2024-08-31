@@ -57,11 +57,11 @@ func (q *Queries) ClearTestCarts(ctx context.Context) error {
 }
 
 const deleteCartItem = `-- name: DeleteCartItem :exec
-DELETE FROM carts WHERE id = $1
+DELETE FROM carts WHERE market_id = $1
 `
 
-func (q *Queries) DeleteCartItem(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteCartItem, id)
+func (q *Queries) DeleteCartItem(ctx context.Context, marketID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteCartItem, marketID)
 	return err
 }
 
