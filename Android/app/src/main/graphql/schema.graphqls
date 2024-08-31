@@ -293,7 +293,7 @@ type Query {
 
   getUser: User!
 
-  getLocalizedHarvestMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(radius: GpsInput!): [Market!]!
 
   getFarmById(id: UUID!): Farm!
 

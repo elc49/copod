@@ -232,7 +232,7 @@ type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
-  getLocalizedHarvestMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(radius: GpsInput!): [Market!]!
   getFarmById(id: UUID!): Farm!
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!
