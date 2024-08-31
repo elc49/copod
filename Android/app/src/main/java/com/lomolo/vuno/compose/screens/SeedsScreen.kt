@@ -1,9 +1,31 @@
 package com.lomolo.vuno.compose.screens
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.lomolo.vuno.R
+import com.lomolo.vuno.compose.navigation.Navigation
+
+object SeedsScreenDestination: Navigation {
+    override val title = R.string.seeds
+    override val route = "seeds"
+}
 
 @Composable
 fun SeedsScreen(
     modifier: Modifier = Modifier,
-) {}
+) {
+    Scaffold { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Text("Seeds")
+        }
+    }
+}

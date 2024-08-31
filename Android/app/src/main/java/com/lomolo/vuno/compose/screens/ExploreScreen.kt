@@ -37,11 +37,28 @@ import com.lomolo.vuno.R
 import com.lomolo.vuno.common.BottomNavBar
 import com.lomolo.vuno.compose.navigation.Navigation
 import com.lomolo.vuno.data.Data
-import com.lomolo.vuno.util.Util
 
 object ExploreScreenDestination : Navigation {
     override val title = null
     override val route = "dashboard/explore"
+}
+
+sealed class ServicesScreen(
+    val name: Int,
+    val route: String,
+) {
+    data object Seeds: ServicesScreen(
+        R.string.seeds,
+        "seeds",
+    )
+    data object Machinery: ServicesScreen(
+        R.string.machinery,
+        "machinery",
+    )
+    data object Seedlings: ServicesScreen(
+        R.string.seedslings,
+        "seedlings",
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +69,7 @@ fun ExploreScreen(
     onNavigateTo: (String) -> Unit,
     currentDestination: NavDestination,
 ) {
+    val services = listOf(ServicesScreen.Machinery, ServicesScreen.Seeds, ServicesScreen.Seedlings)
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
@@ -76,15 +94,15 @@ fun ExploreScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp),
             ) {
-                items(Data.serviceTags) {
+                items(services) {
                     Card(
-                        onClick = { /*TODO*/ },
+                        onClick = { onNavigateTo(it.route) },
                         modifier = Modifier.size(120.dp),
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(Data.serviceImages[it])
+                                    .data(Data.serviceImages[it.route])
                                     .crossfade(true)
                                     .build(),
                                 contentScale = ContentScale.Crop,
@@ -99,7 +117,7 @@ fun ExploreScreen(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    Util.capitalize(it),
+                                    stringResource(it.name),
                                     modifier = Modifier
                                         .background(
                                             MaterialTheme.colorScheme.onPrimary,
