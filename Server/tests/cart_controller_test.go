@@ -99,7 +99,7 @@ func TestCartController(t *testing.T) {
 		})
 		assert.Nil(t, err)
 
-		b, err := cartC.DeleteCartItem(ctx, c.ID)
+		b, err := cartC.DeleteCartItem(ctx, c.MarketID)
 		assert.Nil(t, err)
 		assert.True(t, b)
 
