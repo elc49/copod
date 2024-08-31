@@ -1,10 +1,9 @@
 package com.lomolo.vuno.repository
 
 import com.apollographql.apollo3.api.ApolloResponse
-import com.google.android.gms.maps.model.LatLng
 import com.lomolo.vuno.AddToCartMutation
 import com.lomolo.vuno.DeleteCartItemMutation
-import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
+import com.lomolo.vuno.GetLocalizedMarketsQuery
 import com.lomolo.vuno.GetMarketDetailsQuery
 import com.lomolo.vuno.GetOrdersBelongingToUserQuery
 import com.lomolo.vuno.GetUserCartItemsQuery
@@ -13,10 +12,11 @@ import com.lomolo.vuno.SendOrderToFarmMutation
 import com.lomolo.vuno.compose.screens.SendOrderToFarm
 import com.lomolo.vuno.network.IVunoGraphqlApi
 import com.lomolo.vuno.type.AddToCartInput
+import com.lomolo.vuno.type.GetLocalizedMarketsInput
 import kotlinx.coroutines.flow.Flow
 
 interface IMarkets {
-    suspend fun getLocalizedMarkets(radius: LatLng): ApolloResponse<GetLocalizedHarvestMarketsQuery.Data>
+    suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput): ApolloResponse<GetLocalizedMarketsQuery.Data>
     suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
@@ -29,7 +29,7 @@ interface IMarkets {
 class MarketsRepository(
     private val vunoGraphqlApi: IVunoGraphqlApi,
 ): IMarkets {
-    override suspend fun getLocalizedMarkets(radius: LatLng) = vunoGraphqlApi.getLocalizedMarkets(radius)
+    override suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput) = vunoGraphqlApi.getLocalizedMarkets(input)
     override suspend fun getUserCartItems() = vunoGraphqlApi.getUserCartItems()
     override suspend fun addToCart(input: AddToCartInput) = vunoGraphqlApi.addToCart(input)
     override suspend fun deleteCartItem(id: String) = vunoGraphqlApi.deleteCartItem(id)

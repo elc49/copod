@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
+import com.lomolo.vuno.GetLocalizedMarketsQuery
 import com.lomolo.vuno.R
 import com.lomolo.vuno.util.Util
 import java.util.Locale
@@ -37,7 +37,7 @@ import java.util.Locale
 @Composable
 fun MarketCard(
     modifier: Modifier = Modifier,
-    data: GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket,
+    data: GetLocalizedMarketsQuery.GetLocalizedMarket,
     currencyLocale: String,
     language: String,
     onNavigateToMarketDetails: (String) -> Unit,

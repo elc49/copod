@@ -5,11 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.google.android.gms.maps.model.LatLng
-import com.lomolo.vuno.GetLocalizedHarvestMarketsQuery
+import com.lomolo.vuno.GetLocalizedMarketsQuery
 import com.lomolo.vuno.MainViewModel
 import com.lomolo.vuno.repository.IMarkets
+import com.lomolo.vuno.type.GetLocalizedMarketsInput
+import com.lomolo.vuno.type.GpsInput
+import com.lomolo.vuno.type.MarketType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +26,9 @@ class MarketsViewModel(
     var gettingMarkets: GettingMarketsState by mutableStateOf(GettingMarketsState.Success)
         private set
 
-    private val _marketsData: MutableStateFlow<List<GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket>> =
+    private val _marketsData: MutableStateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
         MutableStateFlow(listOf())
-    val markets: StateFlow<List<GetLocalizedHarvestMarketsQuery.GetLocalizedHarvestMarket>> =
+    val markets: StateFlow<List<GetLocalizedMarketsQuery.GetLocalizedMarket>> =
         _marketsData.asStateFlow()
     private val validGps: LatLng = mainViewModel.getValidDeviceGps()
 
@@ -35,8 +37,10 @@ class MarketsViewModel(
             gettingMarkets = GettingMarketsState.Loading
             viewModelScope.launch {
                 gettingMarkets = try {
-                    val res = marketsRepository.getLocalizedMarkets(validGps).dataOrThrow()
-                    _marketsData.update { res.getLocalizedHarvestMarkets }
+                    val res = marketsRepository.getLocalizedMarkets(
+                        GetLocalizedMarketsInput(GpsInput(validGps.latitude, validGps.longitude), MarketType.HARVEST)
+                    ).dataOrThrow()
+                    _marketsData.update { res.getLocalizedMarkets }
                     GettingMarketsState.Success
                 } catch (e: IOException) {
                     e.printStackTrace()
