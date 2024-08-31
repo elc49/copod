@@ -175,7 +175,7 @@ type ComplexityRoot struct {
 		GetFarmOrders                  func(childComplexity int, id uuid.UUID) int
 		GetFarmPayments                func(childComplexity int, id uuid.UUID) int
 		GetFarmsBelongingToUser        func(childComplexity int) int
-		GetLocalizedMarkets            func(childComplexity int, radius model.GpsInput) int
+		GetLocalizedMarkets            func(childComplexity int, input model.GetLocalizedMarketsInput) int
 		GetLocalizedPosters            func(childComplexity int, radius model.GpsInput) int
 		GetMarketDetails               func(childComplexity int, id uuid.UUID) int
 		GetOrdersBelongingToUser       func(childComplexity int) int
@@ -232,7 +232,7 @@ type QueryResolver interface {
 	GetLocalizedPosters(ctx context.Context, radius model.GpsInput) ([]*model.Post, error)
 	GetFarmsBelongingToUser(ctx context.Context) ([]*model.Farm, error)
 	GetUser(ctx context.Context) (*model.User, error)
-	GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error)
+	GetLocalizedMarkets(ctx context.Context, input model.GetLocalizedMarketsInput) ([]*model.Market, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error)
 	GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error)
 	GetFarmOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error)
@@ -948,7 +948,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetLocalizedMarkets(childComplexity, args["radius"].(model.GpsInput)), true
+		return e.complexity.Query.GetLocalizedMarkets(childComplexity, args["input"].(model.GetLocalizedMarketsInput)), true
 
 	case "Query.getLocalizedPosters":
 		if e.complexity.Query.GetLocalizedPosters == nil {
@@ -1084,6 +1084,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAddToCartInput,
+		ec.unmarshalInputGetLocalizedMarketsInput,
 		ec.unmarshalInputGpsInput,
 		ec.unmarshalInputNewFarmInput,
 		ec.unmarshalInputNewFarmMarketInput,
@@ -1454,15 +1455,15 @@ func (ec *executionContext) field_Query_getFarmPayments_args(ctx context.Context
 func (ec *executionContext) field_Query_getLocalizedMarkets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.GpsInput
-	if tmp, ok := rawArgs["radius"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
-		arg0, err = ec.unmarshalNGpsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, tmp)
+	var arg0 model.GetLocalizedMarketsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["radius"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -5775,7 +5776,7 @@ func (ec *executionContext) _Query_getLocalizedMarkets(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetLocalizedMarkets(rctx, fc.Args["radius"].(model.GpsInput))
+		return ec.resolvers.Query().GetLocalizedMarkets(rctx, fc.Args["input"].(model.GetLocalizedMarketsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8823,6 +8824,40 @@ func (ec *executionContext) unmarshalInputAddToCartInput(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputGetLocalizedMarketsInput(ctx context.Context, obj interface{}) (model.GetLocalizedMarketsInput, error) {
+	var it model.GetLocalizedMarketsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"radius", "market"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "radius":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Radius = data
+		case "market":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("market"))
+			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Market = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGpsInput(ctx context.Context, obj interface{}) (model.GpsInput, error) {
 	var it model.GpsInput
 	asMap := map[string]interface{}{}
@@ -11171,6 +11206,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx context.Context, v interface{}) (model.GetLocalizedMarketsInput, error) {
+	res, err := ec.unmarshalInputGetLocalizedMarketsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGps(ctx context.Context, sel ast.SelectionSet, v *model.Gps) graphql.Marshaler {

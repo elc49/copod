@@ -228,11 +228,16 @@ input UpdateFarmDetailsInput {
   thumbnail: String!
 }
 
+input GetLocalizedMarketsInput {
+  radius: GpsInput!
+  market: MarketType!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
-  getLocalizedMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(input: GetLocalizedMarketsInput!): [Market!]!
   getFarmById(id: UUID!): Farm!
   getFarmMarkets(id: UUID!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!

@@ -173,10 +173,10 @@ func (r *queryResolver) GetUser(ctx context.Context) (*model.User, error) {
 }
 
 // GetLocalizedMarkets is the resolver for the getLocalizedHarvestMarkets field.
-func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, radius model.GpsInput) ([]*model.Market, error) {
+func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, input model.GetLocalizedMarketsInput) ([]*model.Market, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	args := db.GetLocalizedMarketsParams{
-		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
+		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Radius.Lng, input.Radius.Lat),
 		Radius: 20000,
 		Type:   model.MarketTypeHarvest.String(),
 	}
