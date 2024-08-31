@@ -52,6 +52,12 @@ type Farm {
   deleted_at: Time
 }
 
+input GetLocalizedMarketsInput {
+  radius: GpsInput!
+
+  market: MarketType!
+}
+
 type Gps {
   lat: Float!
 
@@ -293,7 +299,7 @@ type Query {
 
   getUser: User!
 
-  getLocalizedMarkets(radius: GpsInput!): [Market!]!
+  getLocalizedMarkets(input: GetLocalizedMarketsInput!): [Market!]!
 
   getFarmById(id: UUID!): Farm!
 
