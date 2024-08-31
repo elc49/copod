@@ -178,7 +178,7 @@ func (r *queryResolver) GetLocalizedMarkets(ctx context.Context, input model.Get
 	args := db.GetLocalizedMarketsParams{
 		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Radius.Lng, input.Radius.Lat),
 		Radius: 20000,
-		Type:   model.MarketTypeHarvest.String(),
+		Type:   input.Market.String(),
 	}
 	return r.marketController.GetLocalizedMarkets(ctx, userId, args)
 }
