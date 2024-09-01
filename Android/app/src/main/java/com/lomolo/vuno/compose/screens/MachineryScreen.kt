@@ -7,7 +7,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import com.lomolo.vuno.compose.navigation.Navigation
+import com.lomolo.vuno.model.DeviceDetails
 
 object MachineryScreenDestination: Navigation {
     override val title = null
@@ -17,6 +19,9 @@ object MachineryScreenDestination: Navigation {
 @Composable
 fun MachineryScreen(
     modifier: Modifier = Modifier,
+    deviceDetails: DeviceDetails,
+    onNavigateToMarketDetails: (String) -> Unit,
+    navHostController: NavHostController,
 ) {
     Scaffold { innerPadding ->
         Surface(
