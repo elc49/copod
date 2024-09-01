@@ -99,6 +99,7 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = ExploreScreenDestination.route) {
             ExploreScreen(
                 onNavigateTo = onNavigateTo,
+                navHostController = navHostController,
                 currentDestination = it.destination,
                 snackbarHostState = snackbarHostState,
             )

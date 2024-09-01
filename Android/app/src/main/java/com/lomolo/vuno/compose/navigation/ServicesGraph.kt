@@ -41,10 +41,26 @@ fun NavGraphBuilder.addServicesGraph(
             )
         }
         composable(route = MachineryScreenDestination.route) {
-            MachineryScreen()
+            MachineryScreen(
+                deviceDetails = deviceDetails,
+                navHostController = navHostController,
+                onNavigateToMarketDetails = { marketId ->
+                    navHostController.navigate(
+                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                    )
+                },
+            )
         }
         composable(route = SeedlingsScreenDestination.route) {
-            SeedlingsScreen()
+            SeedlingsScreen(
+                deviceDetails = deviceDetails,
+                navHostController = navHostController,
+                onNavigateToMarketDetails = { marketId ->
+                    navHostController.navigate(
+                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                    )
+                },
+            )
         }
     }
 }

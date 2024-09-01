@@ -19,6 +19,7 @@ import com.lomolo.vuno.compose.screens.CartViewModel
 import com.lomolo.vuno.compose.screens.MarketDetailsViewModel
 import com.lomolo.vuno.compose.screens.MarketsViewModel
 import com.lomolo.vuno.compose.screens.PaymentViewModel
+import com.lomolo.vuno.compose.screens.SeedlingsViewModel
 import com.lomolo.vuno.compose.screens.SeedsViewModel
 import com.lomolo.vuno.compose.screens.SigninViewModel
 import com.lomolo.vuno.compose.screens.UserOrdersViewModel
@@ -43,6 +44,7 @@ object VunoViewModelProvider {
         lateinit var marketDetailsViewModel: MarketDetailsViewModel
         lateinit var bottomNavBarViewModel: BottomNavBarViewModel
         lateinit var seedsViewModel: SeedsViewModel
+        lateinit var seedlingsViewModel: SeedlingsViewModel
 
         initializer {
             mainViewModel = MainViewModel(vunoApplication().container.vunoRestApiService)
@@ -189,6 +191,15 @@ object VunoViewModelProvider {
                 mainViewModel
             )
             seedsViewModel
+        }
+
+        initializer {
+            seedlingsViewModel = SeedlingsViewModel(
+                vunoApplication().container.marketsRepository,
+                mainViewModel = mainViewModel,
+            )
+
+            seedlingsViewModel
         }
     }
 }

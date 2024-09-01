@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.vuno.R
@@ -47,16 +48,18 @@ sealed class ServicesScreen(
     val name: Int,
     val route: String,
 ) {
-    data object Seeds: ServicesScreen(
+    data object Seeds : ServicesScreen(
         R.string.seeds,
         "seeds",
     )
-    data object Machinery: ServicesScreen(
+
+    data object Machinery : ServicesScreen(
         R.string.machinery,
         "machinery",
     )
-    data object Seedlings: ServicesScreen(
-        R.string.seedslings,
+
+    data object Seedlings : ServicesScreen(
+        R.string.seedlings,
         "seedlings",
     )
 }
@@ -66,14 +69,14 @@ sealed class ServicesScreen(
 fun ExploreScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
+    navHostController: NavHostController,
     onNavigateTo: (String) -> Unit,
     currentDestination: NavDestination,
 ) {
     val services = listOf(ServicesScreen.Machinery, ServicesScreen.Seeds, ServicesScreen.Seedlings)
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-        TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-            title = {
+        TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
             Text(stringResource(R.string.services))
         })
     }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
@@ -96,15 +99,13 @@ fun ExploreScreen(
             ) {
                 items(services) {
                     Card(
-                        onClick = { onNavigateTo(it.route) },
+                        onClick = { navHostController.navigate(it.route) },
                         modifier = Modifier.size(120.dp),
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(Data.serviceImages[it.route])
-                                    .crossfade(true)
-                                    .build(),
+                                    .data(Data.serviceImages[it.route]).crossfade(true).build(),
                                 contentScale = ContentScale.Crop,
                                 placeholder = painterResource(id = R.drawable.loading_img),
                                 error = painterResource(id = R.drawable.ic_broken_image),
