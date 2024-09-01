@@ -16,6 +16,7 @@ import com.lomolo.vuno.compose.screens.FarmStoreViewModel
 import com.lomolo.vuno.compose.screens.FarmSettingsViewModel
 import com.lomolo.vuno.compose.screens.FarmViewModel
 import com.lomolo.vuno.compose.screens.CartViewModel
+import com.lomolo.vuno.compose.screens.MachineryViewModel
 import com.lomolo.vuno.compose.screens.MarketDetailsViewModel
 import com.lomolo.vuno.compose.screens.MarketsViewModel
 import com.lomolo.vuno.compose.screens.PaymentViewModel
@@ -45,6 +46,7 @@ object VunoViewModelProvider {
         lateinit var bottomNavBarViewModel: BottomNavBarViewModel
         lateinit var seedsViewModel: SeedsViewModel
         lateinit var seedlingsViewModel: SeedlingsViewModel
+        lateinit var machineryViewModel: MachineryViewModel
 
         initializer {
             mainViewModel = MainViewModel(vunoApplication().container.vunoRestApiService)
@@ -113,8 +115,7 @@ object VunoViewModelProvider {
 
         initializer {
             signinViewModel = SigninViewModel(
-                vunoApplication().container.sessionRepository,
-                mainViewModel
+                vunoApplication().container.sessionRepository, mainViewModel
             )
             signinViewModel
         }
@@ -187,8 +188,7 @@ object VunoViewModelProvider {
 
         initializer {
             seedsViewModel = SeedsViewModel(
-                vunoApplication().container.marketsRepository,
-                mainViewModel
+                vunoApplication().container.marketsRepository, mainViewModel
             )
             seedsViewModel
         }
@@ -198,11 +198,19 @@ object VunoViewModelProvider {
                 vunoApplication().container.marketsRepository,
                 mainViewModel = mainViewModel,
             )
-
             seedlingsViewModel
+        }
+
+        initializer {
+            machineryViewModel = MachineryViewModel(
+                vunoApplication().container.marketsRepository,
+                mainViewModel = mainViewModel,
+            )
+            machineryViewModel
         }
     }
 }
 
 /* Instance of Vuno App */
-fun CreationExtras.vunoApplication(): VunoApp = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as VunoApp)
+fun CreationExtras.vunoApplication(): VunoApp =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as VunoApp)

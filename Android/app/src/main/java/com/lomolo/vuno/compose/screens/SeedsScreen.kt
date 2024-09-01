@@ -45,7 +45,7 @@ import com.lomolo.vuno.model.DeviceDetails
 import com.lomolo.vuno.ui.theme.inverseOnSurfaceLight
 
 object SeedsScreenDestination : Navigation {
-    override val title = R.string.seeds
+    override val title = null
     override val route = "seeds"
 }
 
