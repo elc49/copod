@@ -6,14 +6,12 @@ import (
 	"strings"
 	"time"
 
-	infisical "github.com/infisical/go-sdk"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	Configuration   *configs
-	infisicalClient infisical.InfisicalClientInterface
+	Configuration *configs
 )
 
 type configs struct {
@@ -27,7 +25,6 @@ type configs struct {
 	Fees        Fees
 	Redis       Redis
 	Sentry      Sentry
-	Aws         Aws
 }
 
 func env() { godotenv.Load() }
@@ -47,7 +44,6 @@ func New() {
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
 	c.Sentry = sentryConfig()
-	c.Aws = awsConfig()
 
 	Configuration = &c
 	logrus.Infoln("Configurations...OK")
@@ -94,7 +90,7 @@ func postgresConfig() Postgres {
 	}
 	config.Migrate = forceMigrate
 	config.Migration = strings.TrimSpace(os.Getenv("POSTGRES_MIGRATION"))
-	config.DbPass = strings.TrimSpace(os.Getenv("POSTGRES_PASSWORD"))
+	config.DbPass = strings.TrimSpace(os.Getenv("POSTGRES_PASS"))
 
 	return config
 }
@@ -176,17 +172,6 @@ func sentryConfig() Sentry {
 	var config Sentry
 
 	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
-
-	return config
-}
-
-func awsConfig() Aws {
-	var config Aws
-
-	config.AccessKey = strings.TrimSpace(os.Getenv("AWS_ACCESS_KEY"))
-	config.SecretAccessKey = strings.TrimSpace(os.Getenv("AWS_SECRET_ACCESS_KEY"))
-	config.Region = strings.TrimSpace(os.Getenv("AWS_REGION"))
-	config.PostgresSecretName = strings.TrimSpace(os.Getenv("POSTGRES_SECRET_NAME"))
 
 	return config
 }

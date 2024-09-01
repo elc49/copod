@@ -55,8 +55,16 @@ class ApplicationContainer(
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    val baseApi = if (BuildConfig.ENV == "dev") BuildConfig.LOCAL_BASE_API else BuildConfig.PROD_BASE_API
-    val baseWssApi = if (BuildConfig.ENV == "dev") BuildConfig.LOCAL_WSS_API else BuildConfig.PROD_WSS_API
+    private val baseApi = when (BuildConfig.ENV) {
+        "staging" -> BuildConfig.STAGING_BASE_API
+        "prod" -> BuildConfig.PROD_BASE_API
+        else -> BuildConfig.LOCAL_BASE_API
+    }
+    private val baseWssApi = when (BuildConfig.ENV) {
+        "staging" -> BuildConfig.STAGING_WSS_API
+        "prod" -> BuildConfig.PROD_WSS_API
+        else -> BuildConfig.LOCAL_WSS_API
+    }
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseApi)
         .addConverterFactory(MoshiConverterFactory.create(moshi))

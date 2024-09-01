@@ -34,12 +34,16 @@ android {
         val localWssApi = properties.getProperty("LOCAL_WSS_API")
         val prodWssAPi = properties.getProperty("PROD_WSS_API")
         val localEnv = properties.getProperty("ENV")
+        val stagingBaseApi = properties.getProperty("STAGING_BASE_API")
+        val stagingWssApi = properties.getProperty("STAGING_WSS_API")
 
         buildConfigField(type="String", name="LOCAL_BASE_API", value=localBaseApi)
         buildConfigField(type="String", name="PROD_BASE_API", value=prodBaseApi)
         buildConfigField(type="String", name="LOCAL_WSS_API", value=localWssApi)
         buildConfigField(type="String", name="PROD_WSS_API", value=prodWssAPi)
         buildConfigField(type="String", name="ENV" , value=localEnv)
+        buildConfigField(type="String", name="STAGING_BASE_API", value=stagingBaseApi)
+        buildConfigField(type="String", name="STAGING_WSS_API", value=stagingWssApi)
     }
 
     buildTypes {

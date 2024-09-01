@@ -1,13 +1,9 @@
 package postgres
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	awsService "github.com/elc49/vuno/Server/src/aws"
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/logger"
 	"github.com/elc49/vuno/Server/src/postgres/db"
@@ -23,33 +19,14 @@ type Store struct {
 
 func InitWriter(option config.Rdbms) *db.Queries {
 	log := logger.GetLogger()
-	dbPass := new(awsService.PostgresSecret)
-	if isProd() {
-		awS := awsService.GetAwsService()
-		pass, err := awS.SecretValueFromSecretManager(context.Background(), &secretsmanager.GetSecretValueInput{
-			SecretId: aws.String(config.Configuration.Aws.PostgresSecretName),
-		})
-		if err != nil {
-			log.WithError(err).Fatalln("postgres: reading secret value from aws secret manager")
-			return nil
-		}
-
-		dbPass = pass
-	} else {
-		dbPass = &awsService.PostgresSecret{
-			Password: option.Postgres.DbPass,
-			Username: "postgres",
-		}
-	}
-
-	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", dbPass.Username, dbPass.Password, option.Postgres.WriterHost, option.Postgres.DbName)
+	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", option.Postgres.DbUser, option.Postgres.DbPass, option.Postgres.WriterHost, option.Postgres.DbName)
 	if !isProd() {
 		uri += " sslmode=disable"
 	}
 
 	dbConn, err := sql.Open(option.Postgres.Driver, uri)
 	if err != nil {
-		log.WithError(err).Fatalln("postgres: Init")
+		log.WithError(err).Fatalln("postgres: db connect")
 		return nil
 	}
 
@@ -79,33 +56,14 @@ func InitWriter(option config.Rdbms) *db.Queries {
 
 func InitReader(option config.Rdbms) *db.Queries {
 	log := logger.GetLogger()
-	dbPass := new(awsService.PostgresSecret)
-	if isProd() {
-		awS := awsService.GetAwsService()
-		pass, err := awS.SecretValueFromSecretManager(context.Background(), &secretsmanager.GetSecretValueInput{
-			SecretId: aws.String(config.Configuration.Aws.PostgresSecretName),
-		})
-		if err != nil {
-			log.WithError(err).Fatalln("postgres: reading secret value from aws secret manager")
-			return nil
-		}
-
-		dbPass = pass
-	} else {
-		dbPass = &awsService.PostgresSecret{
-			Password: option.Postgres.DbPass,
-			Username: "postgres",
-		}
-	}
-
-	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", dbPass.Username, dbPass.Password, option.Postgres.ReaderHost, option.Postgres.DbName)
+	uri := fmt.Sprintf("user=%s password=%s host=%s dbname=%s", option.Postgres.DbUser, option.Postgres.DbPass, option.Postgres.ReaderHost, option.Postgres.DbName)
 	if !isProd() {
 		uri += " sslmode=disable"
 	}
 
 	dbConn, err := sql.Open(option.Postgres.Driver, uri)
 	if err != nil {
-		log.WithError(err).Fatalln("postgres: Init")
+		log.WithError(err).Fatalln("postgres: db connect")
 		return nil
 	}
 

@@ -8,7 +8,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/elc49/vuno/Server/src/aws"
 	"github.com/elc49/vuno/Server/src/cache"
 	"github.com/elc49/vuno/Server/src/config"
 	"github.com/elc49/vuno/Server/src/controllers"
@@ -45,7 +44,6 @@ func New() *Server {
 }
 
 func (s *Server) database(option config.Rdbms) postgres.Store {
-	aws.New()
 	queries := postgres.Store{
 		StoreReader: postgres.InitReader(option),
 		StoreWriter: postgres.InitWriter(option),
