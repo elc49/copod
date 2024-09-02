@@ -37,7 +37,7 @@ class MachineryViewModel(
             viewModelScope.launch {
                 gettingMarkets = try {
                     val res = marketsRepository.getLocalizedMarkets(
-                        GetLocalizedMarketsInput(GpsInput(validGps.latitude, validGps.longitude), MarketType.SEEDS)
+                        GetLocalizedMarketsInput(GpsInput(validGps.latitude, validGps.longitude), MarketType.MACHINERY)
                     ).dataOrThrow()
                     _marketsData.update { res.getLocalizedMarkets }
                     GettingMarketsState.Success
