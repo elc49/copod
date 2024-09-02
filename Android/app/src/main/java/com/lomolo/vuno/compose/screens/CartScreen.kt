@@ -314,7 +314,7 @@ fun CartScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(Modifier.size(20.dp))
                 }
             }
         }

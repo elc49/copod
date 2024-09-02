@@ -176,8 +176,9 @@ private fun MarketCard(
                     market.name,
                     modifier = Modifier.padding(2.dp),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     "${
@@ -185,9 +186,9 @@ private fun MarketCard(
                             currency = currencyLocale, amount = market.pricePerUnit, language
                         )
                     } / ${market.unit}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Text(
@@ -203,7 +204,7 @@ private fun MarketCard(
                         MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
                     )
                     .padding(4.dp),
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary,
             )

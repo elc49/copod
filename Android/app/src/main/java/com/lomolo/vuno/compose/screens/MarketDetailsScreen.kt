@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
@@ -91,7 +92,11 @@ fun MarketDetailsScreen(
                 0.dp, 0.dp, 0.dp, 0.dp
             ), title = {
                 Column {
-                    Text(stringResource(R.string.details))
+                    Text(
+                        stringResource(R.string.details),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                     Text(
                         stringResource(R.string.from, market.farm.name),
                         style = MaterialTheme.typography.bodySmall,
@@ -194,16 +199,17 @@ fun MarketDetailsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             Text(
                                 market.name,
-                                style = MaterialTheme.typography.titleLarge,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.ExtraBold,
                             )
                             Text(
                                 stringResource(R.string.available_in_stock),
                                 color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelMedium,
                             )
                         }
                         Column(
@@ -218,20 +224,20 @@ fun MarketDetailsScreen(
                                         deviceDetails.languages,
                                     )
                                 } / ${market.unit}",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
                                 when(viewModel.removingFromCart) {
                                     RemoveFromCartState.Success -> {
                                         TextButton(
                                             onClick = { viewModel.decreaseOrderVolume() },
-                                            shape = MaterialTheme.shapes.small,
+                                            shape = CircleShape,
                                             colors = ButtonDefaults.textButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -239,8 +245,7 @@ fun MarketDetailsScreen(
                                         ) {
                                             Text(
                                                 stringResource(R.string.minus),
-                                                style = MaterialTheme.typography.titleLarge,
-                                                fontWeight = FontWeight.ExtraBold,
+                                                style = MaterialTheme.typography.bodyLarge,
                                             )
                                         }
                                         Text(
@@ -250,7 +255,7 @@ fun MarketDetailsScreen(
                                         )
                                         TextButton(
                                             onClick = { viewModel.increaseOrderVolume(market.volume) },
-                                            shape = MaterialTheme.shapes.small,
+                                            shape = CircleShape,
                                             colors = ButtonDefaults.textButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -258,8 +263,7 @@ fun MarketDetailsScreen(
                                         ) {
                                             Text(
                                                 stringResource(R.string.plus),
-                                                style = MaterialTheme.typography.titleLarge,
-                                                fontWeight = FontWeight.ExtraBold,
+                                                style = MaterialTheme.typography.bodyLarge,
                                             )
                                         }
                                     }
@@ -279,6 +283,7 @@ fun MarketDetailsScreen(
                         )
                         Text(
                             market.details,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }
@@ -288,7 +293,7 @@ fun MarketDetailsScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(Modifier.size(20.dp))
                 }
             }
         }

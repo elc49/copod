@@ -35,8 +35,8 @@ sealed class Screen(
         "dashboard/explore",
     )
 
-    data object Soko : Screen(
-        R.string.soko,
+    data object Market : Screen(
+        R.string.markets,
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard/market",
@@ -74,7 +74,7 @@ fun BottomNavBar(
     val cart = Screen.Cart
     cart.showBadge = viewModel.countCartItems() > 0
     val navItems = remember {
-        mutableListOf(Screen.Farm, Screen.Explore, Screen.Soko, cart, Screen.Account)
+        mutableListOf(Screen.Farm, Screen.Explore, Screen.Market, cart, Screen.Account)
     }
 
     NavigationBar(

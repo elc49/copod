@@ -69,7 +69,7 @@ fun MarketCard(
             Column {
                 Text(
                     text = data.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
@@ -80,9 +80,8 @@ fun MarketCard(
                             currency = currencyLocale, amount = data.pricePerUnit, language
                         )
                     } / ${data.unit}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -99,7 +98,7 @@ fun MarketCard(
                         MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
                     )
                     .padding(4.dp),
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary,
             )
