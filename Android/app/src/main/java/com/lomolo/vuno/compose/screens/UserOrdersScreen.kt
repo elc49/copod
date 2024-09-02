@@ -67,7 +67,9 @@ fun UserOrdersScreen(
                 Text(stringResource(UserOrdersScreenDestination.title))
             }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = null)
+                    Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(
+                        id = R.string.go_back
+                    ))
                 }
             })
         }) { innerPadding ->

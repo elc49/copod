@@ -181,6 +181,7 @@ internal fun NoFarm(
             text = stringResource(R.string.no_farm),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }
