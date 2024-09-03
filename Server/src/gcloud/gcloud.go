@@ -10,9 +10,9 @@ import (
 	"mime/multipart"
 
 	"cloud.google.com/go/storage"
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/logger"
-	"github.com/elc49/vuno/Server/src/util"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/util"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/option"
 )

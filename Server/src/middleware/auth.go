@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/elc49/vuno/Server/src/jwt"
+	"github.com/elc49/copod/Server/src/jwt"
 	jsonwebtoken "github.com/golang-jwt/jwt/v5"
 )
 

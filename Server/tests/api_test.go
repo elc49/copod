@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/elc49/vuno/Server/src/handlers"
+	"github.com/elc49/copod/Server/src/handlers"
 	"github.com/stretchr/testify/assert"
 )
 

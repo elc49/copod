@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/elc49/vuno/Server/src/util"
+	"github.com/elc49/copod/Server/src/util"
 	"github.com/stretchr/testify/assert"
 )
 

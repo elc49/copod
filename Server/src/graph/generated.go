@@ -16,7 +16,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/google/uuid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -1233,7 +1233,7 @@ func (ec *executionContext) field_Mutation_addToCart_args(ctx context.Context, r
 	var arg0 model.AddToCartInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNAddToCartInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐAddToCartInput(ctx, tmp)
+		arg0, err = ec.unmarshalNAddToCartInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐAddToCartInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1248,7 +1248,7 @@ func (ec *executionContext) field_Mutation_createFarmMarket_args(ctx context.Con
 	var arg0 model.NewFarmMarketInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewFarmMarketInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmMarketInput(ctx, tmp)
+		arg0, err = ec.unmarshalNNewFarmMarketInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmMarketInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1263,7 +1263,7 @@ func (ec *executionContext) field_Mutation_createFarm_args(ctx context.Context, 
 	var arg0 model.NewFarmInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewFarmInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmInput(ctx, tmp)
+		arg0, err = ec.unmarshalNNewFarmInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1278,7 +1278,7 @@ func (ec *executionContext) field_Mutation_createPost_args(ctx context.Context, 
 	var arg0 model.NewPostInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewPostInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewPostInput(ctx, tmp)
+		arg0, err = ec.unmarshalNNewPostInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewPostInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1308,7 +1308,7 @@ func (ec *executionContext) field_Mutation_payWithMpesa_args(ctx context.Context
 	var arg0 model.PayWithMpesaInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesaInput(ctx, tmp)
+		arg0, err = ec.unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesaInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1323,7 +1323,7 @@ func (ec *executionContext) field_Mutation_sendOrderToFarm_args(ctx context.Cont
 	var arg0 []*model.SendOrderToFarmInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1338,7 +1338,7 @@ func (ec *executionContext) field_Mutation_setMarketStatus_args(ctx context.Cont
 	var arg0 model.SetMarketStatusInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx, tmp)
+		arg0, err = ec.unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1353,7 +1353,7 @@ func (ec *executionContext) field_Mutation_updateFarmDetails_args(ctx context.Co
 	var arg0 model.UpdateFarmDetailsInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1368,7 +1368,7 @@ func (ec *executionContext) field_Mutation_updateOrderStatus_args(ctx context.Co
 	var arg0 model.UpdateOrderStatusInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateOrderStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateOrderStatusInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateOrderStatusInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateOrderStatusInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1458,7 +1458,7 @@ func (ec *executionContext) field_Query_getLocalizedMarkets_args(ctx context.Con
 	var arg0 model.GetLocalizedMarketsInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1473,7 +1473,7 @@ func (ec *executionContext) field_Query_getLocalizedPosters_args(ctx context.Con
 	var arg0 model.GpsInput
 	if tmp, ok := rawArgs["radius"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
-		arg0, err = ec.unmarshalNGpsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGpsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1637,7 +1637,7 @@ func (ec *executionContext) _Address_coords(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Gps)
 	fc.Result = res
-	return ec.marshalNGps2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGps(ctx, field.Selections, res)
+	return ec.marshalNGps2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGps(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Address_coords(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1819,7 +1819,7 @@ func (ec *executionContext) _Cart_farm(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Cart_farm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1927,7 +1927,7 @@ func (ec *executionContext) _Cart_market(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2879,7 +2879,7 @@ func (ec *executionContext) _Market_unit(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(model.MetricUnit)
 	fc.Result = res
-	return ec.marshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, field.Selections, res)
+	return ec.marshalNMetricUnit2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Market_unit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2923,7 +2923,7 @@ func (ec *executionContext) _Market_type(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(model.MarketType)
 	fc.Result = res
-	return ec.marshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, field.Selections, res)
+	return ec.marshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Market_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2967,7 +2967,7 @@ func (ec *executionContext) _Market_status(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(model.MarketStatus)
 	fc.Result = res
-	return ec.marshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, field.Selections, res)
+	return ec.marshalNMarketStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Market_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3011,7 +3011,7 @@ func (ec *executionContext) _Market_farm(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Market_farm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3339,7 +3339,7 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3414,7 +3414,7 @@ func (ec *executionContext) _Mutation_createFarm(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createFarm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3489,7 +3489,7 @@ func (ec *executionContext) _Mutation_createFarmMarket(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3578,7 +3578,7 @@ func (ec *executionContext) _Mutation_payWithMpesa(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.PayWithMpesa)
 	fc.Result = res
-	return ec.marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx, field.Selections, res)
+	return ec.marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_payWithMpesa(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3637,7 +3637,7 @@ func (ec *executionContext) _Mutation_addToCart(ctx context.Context, field graph
 	}
 	res := resTmp.(*model.Cart)
 	fc.Result = res
-	return ec.marshalNCart2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx, field.Selections, res)
+	return ec.marshalNCart2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_addToCart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3822,7 +3822,7 @@ func (ec *executionContext) _Mutation_updateOrderStatus(ctx context.Context, fie
 	}
 	res := resTmp.(*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3903,7 +3903,7 @@ func (ec *executionContext) _Mutation_setMarketStatus(ctx context.Context, field
 	}
 	res := resTmp.(*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3992,7 +3992,7 @@ func (ec *executionContext) _Mutation_updateFarmDetails(ctx context.Context, fie
 	}
 	res := resTmp.(*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateFarmDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4375,7 +4375,7 @@ func (ec *executionContext) _Order_market(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Order_market(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4453,7 +4453,7 @@ func (ec *executionContext) _Order_status(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(model.OrderStatus)
 	fc.Result = res
-	return ec.marshalNOrderStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx, field.Selections, res)
+	return ec.marshalNOrderStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Order_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4497,7 +4497,7 @@ func (ec *executionContext) _Order_customer(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Order_customer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5349,7 +5349,7 @@ func (ec *executionContext) _Post_farmAddress(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Address)
 	fc.Result = res
-	return ec.marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐAddress(ctx, field.Selections, res)
+	return ec.marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐAddress(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Post_farmAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5443,7 +5443,7 @@ func (ec *executionContext) _Post_user(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Post_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5591,7 +5591,7 @@ func (ec *executionContext) _Query_getLocalizedPosters(ctx context.Context, fiel
 	}
 	res := resTmp.([]*model.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPostᚄ(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPostᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getLocalizedPosters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5666,7 +5666,7 @@ func (ec *executionContext) _Query_getFarmsBelongingToUser(ctx context.Context, 
 	}
 	res := resTmp.([]*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarmᚄ(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarmᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getFarmsBelongingToUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5730,7 +5730,7 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5790,7 +5790,7 @@ func (ec *executionContext) _Query_getLocalizedMarkets(ctx context.Context, fiel
 	}
 	res := resTmp.([]*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5879,7 +5879,7 @@ func (ec *executionContext) _Query_getFarmById(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.Farm)
 	fc.Result = res
-	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
+	return ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getFarmById(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5954,7 +5954,7 @@ func (ec *executionContext) _Query_getFarmMarkets(ctx context.Context, field gra
 	}
 	res := resTmp.([]*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6043,7 +6043,7 @@ func (ec *executionContext) _Query_getFarmOrders(ctx context.Context, field grap
 	}
 	res := resTmp.([]*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6124,7 +6124,7 @@ func (ec *executionContext) _Query_getFarmPayments(ctx context.Context, field gr
 	}
 	res := resTmp.([]*model.Payment)
 	fc.Result = res
-	return ec.marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaymentᚄ(ctx, field.Selections, res)
+	return ec.marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaymentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getFarmPayments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6197,7 +6197,7 @@ func (ec *executionContext) _Query_getPaystackPaymentVerification(ctx context.Co
 	}
 	res := resTmp.(*model.PaystackPaymentUpdate)
 	fc.Result = res
-	return ec.marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx, field.Selections, res)
+	return ec.marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getPaystackPaymentVerification(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6260,7 +6260,7 @@ func (ec *executionContext) _Query_getUserCartItems(ctx context.Context, field g
 	}
 	res := resTmp.([]*model.Cart)
 	fc.Result = res
-	return ec.marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCartᚄ(ctx, field.Selections, res)
+	return ec.marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCartᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getUserCartItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6324,7 +6324,7 @@ func (ec *executionContext) _Query_getOrdersBelongingToUser(ctx context.Context,
 	}
 	res := resTmp.([]*model.Order)
 	fc.Result = res
-	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6438,7 +6438,7 @@ func (ec *executionContext) _Query_getMarketDetails(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Market)
 	fc.Result = res
-	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
+	return ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getMarketDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6664,7 +6664,7 @@ func (ec *executionContext) _Subscription_paymentUpdate(ctx context.Context, fie
 				w.Write([]byte{'{'})
 				graphql.MarshalString(field.Alias).MarshalGQL(w)
 				w.Write([]byte{':'})
-				ec.marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx, field.Selections, res).MarshalGQL(w)
+				ec.marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx, field.Selections, res).MarshalGQL(w)
 				w.Write([]byte{'}'})
 			})
 		case <-ctx.Done():
@@ -8840,14 +8840,14 @@ func (ec *executionContext) unmarshalInputGetLocalizedMarketsInput(ctx context.C
 		switch k {
 		case "radius":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
-			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Radius = data
 		case "market":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("market"))
-			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
+			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8991,14 +8991,14 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 			it.Volume = data
 		case "type":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
+			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Type = data
 		case "location":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
-			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9012,7 +9012,7 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 			it.Tag = data
 		case "unit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unit"))
-			data, err := ec.unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, v)
+			data, err := ec.unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9074,7 +9074,7 @@ func (ec *executionContext) unmarshalInputNewPostInput(ctx context.Context, obj 
 			it.UserID = data
 		case "location":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
-			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9218,7 +9218,7 @@ func (ec *executionContext) unmarshalInputSetMarketStatusInput(ctx context.Conte
 			it.ID = data
 		case "status":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			data, err := ec.unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, v)
+			data, err := ec.unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9293,7 +9293,7 @@ func (ec *executionContext) unmarshalInputUpdateOrderStatusInput(ctx context.Con
 			it.ID = data
 		case "status":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			data, err := ec.unmarshalNOrderStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx, v)
+			data, err := ec.unmarshalNOrderStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11047,12 +11047,12 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAddToCartInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐAddToCartInput(ctx context.Context, v interface{}) (model.AddToCartInput, error) {
+func (ec *executionContext) unmarshalNAddToCartInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐAddToCartInput(ctx context.Context, v interface{}) (model.AddToCartInput, error) {
 	res, err := ec.unmarshalInputAddToCartInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐAddress(ctx context.Context, sel ast.SelectionSet, v *model.Address) graphql.Marshaler {
+func (ec *executionContext) marshalNAddress2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐAddress(ctx context.Context, sel ast.SelectionSet, v *model.Address) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11077,11 +11077,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCart2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx context.Context, sel ast.SelectionSet, v model.Cart) graphql.Marshaler {
+func (ec *executionContext) marshalNCart2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx context.Context, sel ast.SelectionSet, v model.Cart) graphql.Marshaler {
 	return ec._Cart(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCartᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Cart) graphql.Marshaler {
+func (ec *executionContext) marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCartᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Cart) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11105,7 +11105,7 @@ func (ec *executionContext) marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCart2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx, sel, v[i])
+			ret[i] = ec.marshalNCart2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11125,7 +11125,7 @@ func (ec *executionContext) marshalNCart2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 	return ret
 }
 
-func (ec *executionContext) marshalNCart2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx context.Context, sel ast.SelectionSet, v *model.Cart) graphql.Marshaler {
+func (ec *executionContext) marshalNCart2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐCart(ctx context.Context, sel ast.SelectionSet, v *model.Cart) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11135,11 +11135,11 @@ func (ec *executionContext) marshalNCart2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServer
 	return ec._Cart(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNFarm2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx context.Context, sel ast.SelectionSet, v model.Farm) graphql.Marshaler {
+func (ec *executionContext) marshalNFarm2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx context.Context, sel ast.SelectionSet, v model.Farm) graphql.Marshaler {
 	return ec._Farm(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarmᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Farm) graphql.Marshaler {
+func (ec *executionContext) marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarmᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Farm) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11163,7 +11163,7 @@ func (ec *executionContext) marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, sel, v[i])
+			ret[i] = ec.marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11183,7 +11183,7 @@ func (ec *executionContext) marshalNFarm2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 	return ret
 }
 
-func (ec *executionContext) marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx context.Context, sel ast.SelectionSet, v *model.Farm) graphql.Marshaler {
+func (ec *executionContext) marshalNFarm2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐFarm(ctx context.Context, sel ast.SelectionSet, v *model.Farm) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11208,12 +11208,12 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
-func (ec *executionContext) unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx context.Context, v interface{}) (model.GetLocalizedMarketsInput, error) {
+func (ec *executionContext) unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx context.Context, v interface{}) (model.GetLocalizedMarketsInput, error) {
 	res, err := ec.unmarshalInputGetLocalizedMarketsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGps(ctx context.Context, sel ast.SelectionSet, v *model.Gps) graphql.Marshaler {
+func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGps(ctx context.Context, sel ast.SelectionSet, v *model.Gps) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11223,12 +11223,12 @@ func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServer�
 	return ec._Gps(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNGpsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (model.GpsInput, error) {
+func (ec *executionContext) unmarshalNGpsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (model.GpsInput, error) {
 	res, err := ec.unmarshalInputGpsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (*model.GpsInput, error) {
+func (ec *executionContext) unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (*model.GpsInput, error) {
 	res, err := ec.unmarshalInputGpsInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -11248,11 +11248,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNMarket2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx context.Context, sel ast.SelectionSet, v model.Market) graphql.Marshaler {
+func (ec *executionContext) marshalNMarket2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx context.Context, sel ast.SelectionSet, v model.Market) graphql.Marshaler {
 	return ec._Market(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Market) graphql.Marshaler {
+func (ec *executionContext) marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Market) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11276,7 +11276,7 @@ func (ec *executionContext) marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋS
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, sel, v[i])
+			ret[i] = ec.marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11296,7 +11296,7 @@ func (ec *executionContext) marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋS
 	return ret
 }
 
-func (ec *executionContext) marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx context.Context, sel ast.SelectionSet, v *model.Market) graphql.Marshaler {
+func (ec *executionContext) marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarket(ctx context.Context, sel ast.SelectionSet, v *model.Market) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11306,56 +11306,56 @@ func (ec *executionContext) marshalNMarket2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServ
 	return ec._Market(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, v interface{}) (model.MarketStatus, error) {
+func (ec *executionContext) unmarshalNMarketStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, v interface{}) (model.MarketStatus, error) {
 	var res model.MarketStatus
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNMarketStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, sel ast.SelectionSet, v model.MarketStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNMarketStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketStatus(ctx context.Context, sel ast.SelectionSet, v model.MarketStatus) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, v interface{}) (model.MarketType, error) {
+func (ec *executionContext) unmarshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, v interface{}) (model.MarketType, error) {
 	var res model.MarketType
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNMarketType2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, sel ast.SelectionSet, v model.MarketType) graphql.Marshaler {
+func (ec *executionContext) marshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx context.Context, sel ast.SelectionSet, v model.MarketType) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, v interface{}) (model.MetricUnit, error) {
+func (ec *executionContext) unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, v interface{}) (model.MetricUnit, error) {
 	var res model.MetricUnit
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNMetricUnit2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, sel ast.SelectionSet, v model.MetricUnit) graphql.Marshaler {
+func (ec *executionContext) marshalNMetricUnit2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx context.Context, sel ast.SelectionSet, v model.MetricUnit) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNNewFarmInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmInput(ctx context.Context, v interface{}) (model.NewFarmInput, error) {
+func (ec *executionContext) unmarshalNNewFarmInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmInput(ctx context.Context, v interface{}) (model.NewFarmInput, error) {
 	res, err := ec.unmarshalInputNewFarmInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewFarmMarketInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmMarketInput(ctx context.Context, v interface{}) (model.NewFarmMarketInput, error) {
+func (ec *executionContext) unmarshalNNewFarmMarketInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewFarmMarketInput(ctx context.Context, v interface{}) (model.NewFarmMarketInput, error) {
 	res, err := ec.unmarshalInputNewFarmMarketInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewPostInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐNewPostInput(ctx context.Context, v interface{}) (model.NewPostInput, error) {
+func (ec *executionContext) unmarshalNNewPostInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐNewPostInput(ctx context.Context, v interface{}) (model.NewPostInput, error) {
 	res, err := ec.unmarshalInputNewPostInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNOrder2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v model.Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v model.Order) graphql.Marshaler {
 	return ec._Order(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Order) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11379,7 +11379,7 @@ func (ec *executionContext) marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSe
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx, sel, v[i])
+			ret[i] = ec.marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11399,7 +11399,7 @@ func (ec *executionContext) marshalNOrder2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSe
 	return ret
 }
 
-func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v *model.Order) graphql.Marshaler {
+func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx context.Context, sel ast.SelectionSet, v *model.Order) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11409,21 +11409,21 @@ func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServe
 	return ec._Order(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNOrderStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, v interface{}) (model.OrderStatus, error) {
+func (ec *executionContext) unmarshalNOrderStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, v interface{}) (model.OrderStatus, error) {
 	var res model.OrderStatus
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNOrderStatus2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, sel ast.SelectionSet, v model.OrderStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNOrderStatus2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrderStatus(ctx context.Context, sel ast.SelectionSet, v model.OrderStatus) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNPayWithMpesa2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v model.PayWithMpesa) graphql.Marshaler {
+func (ec *executionContext) marshalNPayWithMpesa2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v model.PayWithMpesa) graphql.Marshaler {
 	return ec._PayWithMpesa(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v *model.PayWithMpesa) graphql.Marshaler {
+func (ec *executionContext) marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesa(ctx context.Context, sel ast.SelectionSet, v *model.PayWithMpesa) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11433,12 +11433,12 @@ func (ec *executionContext) marshalNPayWithMpesa2ᚖgithubᚗcomᚋelc49ᚋvuno�
 	return ec._PayWithMpesa(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesaInput(ctx context.Context, v interface{}) (model.PayWithMpesaInput, error) {
+func (ec *executionContext) unmarshalNPayWithMpesaInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayWithMpesaInput(ctx context.Context, v interface{}) (model.PayWithMpesaInput, error) {
 	res, err := ec.unmarshalInputPayWithMpesaInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaymentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Payment) graphql.Marshaler {
+func (ec *executionContext) marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaymentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Payment) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11462,7 +11462,7 @@ func (ec *executionContext) marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayment(ctx, sel, v[i])
+			ret[i] = ec.marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11482,7 +11482,7 @@ func (ec *executionContext) marshalNPayment2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPayment(ctx context.Context, sel ast.SelectionSet, v *model.Payment) graphql.Marshaler {
+func (ec *executionContext) marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPayment(ctx context.Context, sel ast.SelectionSet, v *model.Payment) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11492,11 +11492,11 @@ func (ec *executionContext) marshalNPayment2ᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 	return ec._Payment(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaystackPaymentUpdate2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v model.PaystackPaymentUpdate) graphql.Marshaler {
+func (ec *executionContext) marshalNPaystackPaymentUpdate2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v model.PaystackPaymentUpdate) graphql.Marshaler {
 	return ec._PaystackPaymentUpdate(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v *model.PaystackPaymentUpdate) graphql.Marshaler {
+func (ec *executionContext) marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPaystackPaymentUpdate(ctx context.Context, sel ast.SelectionSet, v *model.PaystackPaymentUpdate) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11506,11 +11506,11 @@ func (ec *executionContext) marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc4
 	return ec._PaystackPaymentUpdate(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPost2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx context.Context, sel ast.SelectionSet, v model.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx context.Context, sel ast.SelectionSet, v model.Post) graphql.Marshaler {
 	return ec._Post(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPostᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPostᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Post) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -11534,7 +11534,7 @@ func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPost2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx, sel, v[i])
+			ret[i] = ec.marshalNPost2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -11554,7 +11554,7 @@ func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋSer
 	return ret
 }
 
-func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx context.Context, sel ast.SelectionSet, v *model.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐPost(ctx context.Context, sel ast.SelectionSet, v *model.Post) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -11564,7 +11564,7 @@ func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServer
 	return ec._Post(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx context.Context, v interface{}) ([]*model.SendOrderToFarmInput, error) {
+func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx context.Context, v interface{}) ([]*model.SendOrderToFarmInput, error) {
 	var vSlice []interface{}
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
@@ -11573,7 +11573,7 @@ func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋ
 	res := make([]*model.SendOrderToFarmInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -11581,12 +11581,12 @@ func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (*model.SendOrderToFarmInput, error) {
+func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (*model.SendOrderToFarmInput, error) {
 	res, err := ec.unmarshalInputSendOrderToFarmInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx context.Context, v interface{}) (model.SetMarketStatusInput, error) {
+func (ec *executionContext) unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx context.Context, v interface{}) (model.SetMarketStatusInput, error) {
 	res, err := ec.unmarshalInputSetMarketStatusInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -11668,21 +11668,21 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx context.Context, v interface{}) (model.UpdateFarmDetailsInput, error) {
+func (ec *executionContext) unmarshalNUpdateFarmDetailsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateFarmDetailsInput(ctx context.Context, v interface{}) (model.UpdateFarmDetailsInput, error) {
 	res, err := ec.unmarshalInputUpdateFarmDetailsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateOrderStatusInput2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateOrderStatusInput(ctx context.Context, v interface{}) (model.UpdateOrderStatusInput, error) {
+func (ec *executionContext) unmarshalNUpdateOrderStatusInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUpdateOrderStatusInput(ctx context.Context, v interface{}) (model.UpdateOrderStatusInput, error) {
 	res, err := ec.unmarshalInputUpdateOrderStatusInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNUser2githubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋelc49ᚋvunoᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

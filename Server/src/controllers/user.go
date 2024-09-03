@@ -3,8 +3,8 @@ package controllers
 import (
 	"context"
 
-	"github.com/elc49/vuno/Server/src/postgres"
-	"github.com/elc49/vuno/Server/src/repositories"
+	"github.com/elc49/copod/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/repositories"
 )
 
 type UserController struct {

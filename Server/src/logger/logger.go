@@ -3,7 +3,7 @@ package logger
 import (
 	"time"
 
-	"github.com/elc49/vuno/Server/src/config"
+	"github.com/elc49/copod/Server/src/config"
 	"github.com/getsentry/sentry-go"
 	logrusSentry "github.com/getsentry/sentry-go/logrus"
 	"github.com/sirupsen/logrus"

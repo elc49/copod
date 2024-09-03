@@ -1,4 +1,4 @@
-module github.com/elc49/vuno/Server
+module github.com/elc49/copod/Server
 
 go 1.22.0
 

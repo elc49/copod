@@ -1,10 +1,10 @@
 package graph
 
 import (
-	"github.com/elc49/vuno/Server/src/cache"
-	"github.com/elc49/vuno/Server/src/controllers"
-	"github.com/elc49/vuno/Server/src/logger"
-	"github.com/elc49/vuno/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/cache"
+	"github.com/elc49/copod/Server/src/controllers"
+	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/postgres"
 	"github.com/redis/go-redis/v9"
 )
 

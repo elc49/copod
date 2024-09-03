@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/elc49/vuno/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/stretchr/testify/assert"
 )
 

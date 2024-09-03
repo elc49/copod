@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/paystack"
+	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/paystack"
 	"github.com/sirupsen/logrus"
 )
 

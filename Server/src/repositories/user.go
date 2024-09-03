@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"github.com/elc49/vuno/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/postgres"
 )
 
 type UserRepository struct {

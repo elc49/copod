@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/postgres"
-	"github.com/elc49/vuno/Server/src/postgres/db"
-	"github.com/elc49/vuno/Server/src/repositories"
+	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/postgres/db"
+	"github.com/elc49/copod/Server/src/repositories"
 	"github.com/google/uuid"
 )
 

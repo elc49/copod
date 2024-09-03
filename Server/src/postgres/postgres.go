@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/logger"
-	"github.com/elc49/vuno/Server/src/postgres/db"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/elc49/vuno/Server/src/ip"
+	"github.com/elc49/copod/Server/src/ip"
 )
 
 func Ip() http.Handler {

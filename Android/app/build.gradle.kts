@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lomolo.vuno"
+    namespace = "com.lomolo.copod"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lomolo.vuno"
+        applicationId = "com.lomolo.copod"
         minSdk = 28
         targetSdk = 34
         versionCode = 10
@@ -114,8 +114,8 @@ dependencies {
 }
 
 apollo {
-    service("vuno") {
-        packageName.set("com.lomolo.vuno")
+    service("copod") {
+        packageName.set("com.lomolo.copod")
         generateOptionalOperationVariables.set(false)
     }
 }

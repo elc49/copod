@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/elc49/vuno/Server/src/gcloud"
-	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/copod/Server/src/gcloud"
+	"github.com/elc49/copod/Server/src/logger"
 )
 
 var (

@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/paystack"
-	"github.com/elc49/vuno/Server/src/postgres"
-	"github.com/elc49/vuno/Server/src/util"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/paystack"
+	"github.com/elc49/copod/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/util"
 	"github.com/google/uuid"
 )
 

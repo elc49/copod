@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/logger"
 	jsonwebtoken "github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 )

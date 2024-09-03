@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Vuno"
+rootProject.name = "Copod"
 include(":app")

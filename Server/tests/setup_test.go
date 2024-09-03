@@ -3,10 +3,10 @@ package tests
 import (
 	"time"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/controllers"
-	"github.com/elc49/vuno/Server/src/jwt"
-	"github.com/elc49/vuno/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/controllers"
+	"github.com/elc49/copod/Server/src/jwt"
+	"github.com/elc49/copod/Server/src/postgres"
 )
 
 var (

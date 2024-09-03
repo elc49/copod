@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/elc49/vuno/Server/src/config"
+	"github.com/elc49/copod/Server/src/config"
 	sentryHttp "github.com/getsentry/sentry-go/http"
 )
 

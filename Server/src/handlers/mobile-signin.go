@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/controllers"
-	"github.com/elc49/vuno/Server/src/gcloud"
-	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/jwt"
-	"github.com/elc49/vuno/Server/src/logger"
-	"github.com/elc49/vuno/Server/src/util"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/controllers"
+	"github.com/elc49/copod/Server/src/gcloud"
+	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/jwt"
+	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/util"
 )
 
 func MobileSignin(signinController controllers.SigninController) http.Handler {

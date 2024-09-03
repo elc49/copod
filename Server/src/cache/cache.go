@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/elc49/vuno/Server/src/config"
-	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )

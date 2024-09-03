@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/elc49/vuno/Server/src/graph/model"
-	"github.com/elc49/vuno/Server/src/logger"
+	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/logger"
 )
 
 const nominatimApi = "https://nominatim.openstreetmap.org"
