@@ -67,7 +67,7 @@ class FarmStoreViewModel(
             listOf()
         )
     val farmOrders: StateFlow<List<GetFarmOrdersQuery.GetFarmOrder>> = _farmOrders.asStateFlow()
-    private var gettingFarmOrdersState: GetFarmOrdersState by mutableStateOf(
+    var gettingFarmOrdersState: GetFarmOrdersState by mutableStateOf(
         GetFarmOrdersState.Success
     )
         private set
@@ -101,6 +101,7 @@ class FarmStoreViewModel(
 
     private fun getFarmMarkets() {
         if (gettingFarmMarketsState !is GetFarmMarketsState.Loading) {
+            gettingFarmMarketsState = GetFarmMarketsState.Loading
             viewModelScope.launch {
                 gettingFarmMarketsState = GetFarmMarketsState.Loading
                 try {

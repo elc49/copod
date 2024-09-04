@@ -483,6 +483,12 @@ fun FarmStoreScreen(
                         }
                     }
 
+                    GetFarmMarketsState.Loading -> item {
+                        Row(Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(Modifier.size(20.dp))
+                        }
+                    }
+
                     is GetFarmMarketsState.Error -> {
                         item {
                             Row(
@@ -504,28 +510,41 @@ fun FarmStoreScreen(
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                item {
-                    if (orders.isEmpty()) {
-                        Text(
-                            stringResource(R.string.no_orders),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                when (viewModel.gettingFarmOrdersState) {
+                    GetFarmOrdersState.Success -> {
+                        if (orders.isEmpty()) {
+                            item {
+                                Text(
+                                    stringResource(R.string.no_orders),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        } else {
+                            itemsIndexed(orders) { index, item ->
+                                OrderCard(
+                                    order = item,
+                                    index = index,
+                                    orderStatus = viewModel.updatingOrderState,
+                                    changingOrderId = viewModel.updatingOrderId,
+                                    language = deviceDetails.languages,
+                                    country = deviceDetails.countryCode,
+                                    updateOrderStatus = { id: String, status: OrderStatus ->
+                                        viewModel.updateOrderStatus(
+                                            id, status
+                                        )
+                                    },
+                                )
+                            }
+                        }
                     }
-                }
-                itemsIndexed(orders) { index, item ->
-                    OrderCard(
-                        order = item,
-                        index = index,
-                        orderStatus = viewModel.updatingOrderState,
-                        changingOrderId = viewModel.updatingOrderId,
-                        language = deviceDetails.languages,
-                        country = deviceDetails.countryCode,
-                        updateOrderStatus = { id: String, status: OrderStatus ->
-                            viewModel.updateOrderStatus(
-                                id, status
-                            )
-                        },
-                    )
+
+                    GetFarmOrdersState.Loading -> {
+                        item {
+                            Row(Modifier.fillMaxWidth()) {
+                                CircularProgressIndicator(Modifier.size(20.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
