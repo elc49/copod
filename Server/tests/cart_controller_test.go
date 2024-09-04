@@ -39,7 +39,6 @@ func TestCartController(t *testing.T) {
 		return marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
 			Product:      "Guavas",
 			Image:        avatar,
-			Tag:          "seeds",
 			Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Unit:         "kg",
 			Volume:       120,
