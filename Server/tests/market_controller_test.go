@@ -29,7 +29,7 @@ func TestMarketController(t *testing.T) {
 		return marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
 			Product:      "Guavas",
 			Image:        avatar,
-			Tag:          "seeds",
+			Tag:          "Seeds",
 			Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 			Unit:         "kg",
 			Details:      "Fresh from farm",
@@ -67,7 +67,7 @@ func TestMarketController(t *testing.T) {
 	t.Run("get_markets_belonging_to_farm", func(t *testing.T) {
 		createMarket(ctx)
 
-		mrkts, err := marketC.GetMarketsBelongingToFarm(ctx, farm.ID)
+		mrkts, err := marketC.GetMarketsBelongingToFarm(ctx, db.GetMarketsBelongingToFarmParams{FarmID: farm.ID, Type: model.MarketTypeHarvest.String()})
 		assert.Nil(t, err)
 		assert.Equal(t, len(mrkts), 1)
 	})
