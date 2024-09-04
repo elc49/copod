@@ -33,7 +33,7 @@ object Util {
     }
 
     fun capitalize(text: String): String {
-        return text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        return text.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
     fun formatCurrency(

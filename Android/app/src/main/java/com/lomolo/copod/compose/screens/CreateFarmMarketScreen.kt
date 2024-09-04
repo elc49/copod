@@ -60,17 +60,43 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.MetricUnit
 import com.lomolo.copod.ui.theme.CopodTheme
+import com.lomolo.copod.util.Util
 import kotlinx.coroutines.launch
 
 object CreateFarmMarketDestination : Navigation {
     override val title = null
     override val route = "farm/market"
+}
+
+sealed class CopodMarket(
+    val type: MarketType,
+    val metric: List<MetricUnit>,
+) {
+    data object Seeds : CopodMarket(
+        MarketType.SEEDS,
+        listOf(MetricUnit.Kg, MetricUnit.Gram, MetricUnit.Piece),
+    )
+
+    data object Seedlings : CopodMarket(
+        MarketType.SEEDLINGS,
+        listOf(MetricUnit.Piece),
+    )
+
+    data object Machinery : CopodMarket(
+        MarketType.MACHINERY,
+        listOf(MetricUnit.Hour),
+    )
+
+    data object Harvest : CopodMarket(
+        MarketType.HARVEST,
+        listOf(MetricUnit.Kg, MetricUnit.Gram, MetricUnit.Litre),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,10 +145,9 @@ fun CreateFarmMarketScreen(
             R.drawable.camera
         }
     }
-    var categoryExpanded by remember { mutableStateOf(false) }
     var marketsExpanded by remember { mutableStateOf(false) }
     val markets =
-        listOf(MarketType.SEEDS, MarketType.SEEDLINGS, MarketType.MACHINERY, MarketType.HARVEST)
+        listOf(CopodMarket.Seeds, CopodMarket.Seedlings, CopodMarket.Machinery, CopodMarket.Harvest)
     var unitsExpanded by remember { mutableStateOf(false) }
     val metrics = listOf(MetricUnit.Kg, MetricUnit.Litre, MetricUnit.Hour, MetricUnit.Piece)
 
@@ -261,6 +286,60 @@ fun CreateFarmMarketScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    ExposedDropdownMenuBox(modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                        expanded = marketsExpanded,
+                        onExpandedChange = { marketsExpanded = it }) {
+                        OutlinedTextField(
+                            value = if (market.type == null) "" else Util.capitalize(market.type.toString()),
+                            onValueChange = {},
+                            placeholder = { Text("Select market") },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.markets)) },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = marketsExpanded) },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                        )
+                        ExposedDropdownMenu(
+                            expanded = marketsExpanded,
+                            onDismissRequest = { marketsExpanded = false },
+                        ) {
+                            markets.forEach { category ->
+                                DropdownMenuItem(text = {
+                                    Text(
+                                        Util.capitalize(category.type.toString()),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                    onClick = {
+                                        viewModel.setMarketType(category.type)
+                                        marketsExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    leadingIcon = {
+                                        if (viewModel.isMarketType(category.type)) {
+                                            Icon(
+                                                Icons.TwoTone.Check,
+                                                modifier = Modifier.size(20.dp),
+                                                contentDescription = stringResource(R.string.check_mark),
+                                            )
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
@@ -270,7 +349,7 @@ fun CreateFarmMarketScreen(
                         expanded = unitsExpanded,
                         onExpandedChange = { unitsExpanded = it }) {
                         OutlinedTextField(
-                            value = market.unit.toString(),
+                            value = if (market.type == null) "" else if (market.unit == null) "" else market.unit.toString(),
                             onValueChange = {},
                             modifier = Modifier
                                 .menuAnchor()
@@ -280,12 +359,14 @@ fun CreateFarmMarketScreen(
                             label = { Text(stringResource(R.string.unit)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = unitsExpanded) },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                            placeholder = { Text("Metric unit") },
                         )
                         ExposedDropdownMenu(
                             expanded = unitsExpanded,
                             onDismissRequest = { unitsExpanded = false },
                         ) {
-                            metrics.forEach { metric ->
+                            (markets.find { it.type == market.type }?.metric
+                                ?: metrics).forEach { metric ->
                                 DropdownMenuItem(text = {
                                     Text(
                                         metric.toString(),
@@ -330,103 +411,6 @@ fun CreateFarmMarketScreen(
                         ),
                         singleLine = true,
                     )
-                }
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    ExposedDropdownMenuBox(modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(.5f),
-                        expanded = categoryExpanded,
-                        onExpandedChange = { categoryExpanded = it }) {
-                        OutlinedTextField(
-                            value = market.tag,
-                            onValueChange = {},
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            readOnly = true,
-                            singleLine = true,
-                            label = { Text(stringResource(R.string.category)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        )
-                        ExposedDropdownMenu(
-                            expanded = categoryExpanded,
-                            onDismissRequest = { categoryExpanded = false },
-                        ) {
-                            viewModel.category.forEach { category ->
-                                DropdownMenuItem(text = {
-                                    Text(
-                                        category, style = MaterialTheme.typography.bodyLarge
-                                    )
-                                },
-                                    onClick = {
-                                        viewModel.addMarketCategory(category)
-                                        categoryExpanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    leadingIcon = {
-                                        if (viewModel.tagAlreadyExists(category)) {
-                                            Icon(
-                                                Icons.TwoTone.Check,
-                                                modifier = Modifier.size(20.dp),
-                                                contentDescription = stringResource(R.string.check_mark),
-                                            )
-                                        }
-                                    })
-                            }
-                        }
-                    }
-                    ExposedDropdownMenuBox(modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(.5f),
-                        expanded = marketsExpanded,
-                        onExpandedChange = { marketsExpanded = it }) {
-                        OutlinedTextField(
-                            value = market.type.toString(),
-                            onValueChange = {},
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            readOnly = true,
-                            singleLine = true,
-                            label = { Text(stringResource(R.string.markets)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = marketsExpanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        )
-                        ExposedDropdownMenu(
-                            expanded = marketsExpanded,
-                            onDismissRequest = { marketsExpanded = false },
-                        ) {
-                            markets.forEach { category ->
-                                DropdownMenuItem(text = {
-                                    Text(
-                                        category.toString(),
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                },
-                                    onClick = {
-                                        viewModel.setMarketType(category)
-                                        marketsExpanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                    leadingIcon = {
-                                        if (viewModel.isMarketType(category)) {
-                                            Icon(
-                                                Icons.TwoTone.Check,
-                                                modifier = Modifier.size(20.dp),
-                                                contentDescription = stringResource(R.string.check_mark),
-                                            )
-                                        }
-                                    })
-                            }
-                        }
-                    }
                 }
                 OutlinedTextField(
                     value = market.volume,

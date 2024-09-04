@@ -28,9 +28,9 @@ import okio.IOException
 import java.io.InputStream
 
 class AddFarmMarketViewModel(
-    private val giggyRestApi: ICopodRestApi,
+    private val copodRestApi: ICopodRestApi,
     private val farmStoreViewModel: FarmStoreViewModel,
-    private val giggyGraphqlApi: ICopodGraphqlApi,
+    private val copodGraphqlApi: ICopodGraphqlApi,
     private val apolloStore: ApolloStore,
     private val mainViewModel: MainViewModel,
 ) : ViewModel() {
@@ -55,7 +55,7 @@ class AddFarmMarketViewModel(
             )
             viewModelScope.launch(Dispatchers.IO) {
                 uploadingMarketImageState = try {
-                    val res = giggyRestApi.imageUpload(file)
+                    val res = copodRestApi.imageUpload(file)
                     _marketInput.update {
                         it.copy(image = res.imageUri)
                     }
@@ -126,7 +126,7 @@ class AddFarmMarketViewModel(
                     _marketInput.update {
                         it.copy(location = mainViewModel.getValidDeviceGps())
                     }
-                    val res = giggyGraphqlApi.createFarmMarket(_marketInput.value).dataOrThrow()
+                    val res = copodGraphqlApi.createFarmMarket(_marketInput.value).dataOrThrow()
                     try {
                         val updatedCachedData = apolloStore.readOperation(
                             GetFarmMarketsQuery(_marketInput.value.storeId)
@@ -169,16 +169,6 @@ class AddFarmMarketViewModel(
 
     val category = Data.marketTags
 
-    fun tagAlreadyExists(tag: String): Boolean {
-        return _marketInput.value.tag == tag
-    }
-
-    fun addMarketCategory(tag: String) {
-        _marketInput.update {
-            it.copy(tag = tag)
-        }
-    }
-
     init {
         _marketInput.update {
             it.copy(
@@ -192,14 +182,14 @@ class AddFarmMarketViewModel(
 data class Market(
     val name: String = "",
     val image: String = "",
-    val unit: MetricUnit = MetricUnit.Kg,
+    val unit: MetricUnit? = null,
     val pricePerUnit: String = "",
     val volume: String = "",
     val location: LatLng = LatLng(0.0, 0.0),
     val storeId: String = "",
     val tag: String = "",
     val details: String = "",
-    val type: MarketType = MarketType.HARVEST,
+    val type: MarketType? = null,
 )
 
 interface UploadMarketImageState {

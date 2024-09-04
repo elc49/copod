@@ -30,6 +30,7 @@ enum MarketType {
 # MetricUnits
 enum MetricUnit {
   Kg
+  Gram
   Litre
   Hour
   Piece

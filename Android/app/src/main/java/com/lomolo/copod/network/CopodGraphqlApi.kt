@@ -125,12 +125,12 @@ class CopodGraphqlApi(
                 farmId = input.storeId,
                 product = input.name,
                 image = input.image,
-                unit = input.unit,
+                unit = input.unit!!,
                 pricePerUnit = input.pricePerUnit.toInt(),
                 tag = input.tag,
                 location = GpsInput(input.location.latitude, input.location.longitude),
                 details = input.details,
-                type = input.type,
+                type = input.type!!,
                 volume = input.volume.toInt(),
             )
         ))

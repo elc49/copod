@@ -282,6 +282,7 @@ type MetricUnit string
 
 const (
 	MetricUnitKg    MetricUnit = "Kg"
+	MetricUnitGram  MetricUnit = "Gram"
 	MetricUnitLitre MetricUnit = "Litre"
 	MetricUnitHour  MetricUnit = "Hour"
 	MetricUnitPiece MetricUnit = "Piece"
@@ -289,6 +290,7 @@ const (
 
 var AllMetricUnit = []MetricUnit{
 	MetricUnitKg,
+	MetricUnitGram,
 	MetricUnitLitre,
 	MetricUnitHour,
 	MetricUnitPiece,
@@ -296,7 +298,7 @@ var AllMetricUnit = []MetricUnit{
 
 func (e MetricUnit) IsValid() bool {
 	switch e {
-	case MetricUnitKg, MetricUnitLitre, MetricUnitHour, MetricUnitPiece:
+	case MetricUnitKg, MetricUnitGram, MetricUnitLitre, MetricUnitHour, MetricUnitPiece:
 		return true
 	}
 	return false

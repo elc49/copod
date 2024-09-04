@@ -123,6 +123,8 @@ enum MarketType {
 enum MetricUnit {
   Kg
 
+  Gram
+
   Litre
 
   Hour
