@@ -52,6 +52,12 @@ type Farm {
   deleted_at: Time
 }
 
+input GetFarmMarketsInput {
+  farmId: UUID!
+
+  market: MarketType!
+}
+
 input GetLocalizedMarketsInput {
   radius: GpsInput!
 
@@ -94,8 +100,6 @@ type Market {
   farmId: UUID!
 
   canOrder: Boolean!
-
-  tag: String!
 
   pricePerUnit: Int!
 
@@ -178,8 +182,6 @@ input NewFarmMarketInput {
   type: MarketType!
 
   location: GpsInput!
-
-  tag: String!
 
   unit: MetricUnit!
 
@@ -305,7 +307,7 @@ type Query {
 
   getFarmById(id: UUID!): Farm!
 
-  getFarmMarkets(id: UUID!): [Market!]!
+  getFarmMarkets(input: GetFarmMarketsInput!): [Market!]!
 
   getFarmOrders(id: UUID!): [Order!]!
 

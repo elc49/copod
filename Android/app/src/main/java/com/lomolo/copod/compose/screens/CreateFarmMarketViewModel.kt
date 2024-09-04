@@ -10,9 +10,9 @@ import com.apollographql.apollo3.exception.CacheMissException
 import com.google.android.gms.maps.model.LatLng
 import com.lomolo.copod.GetFarmMarketsQuery
 import com.lomolo.copod.MainViewModel
-import com.lomolo.copod.data.Data
 import com.lomolo.copod.network.ICopodGraphqlApi
 import com.lomolo.copod.network.ICopodRestApi
+import com.lomolo.copod.type.GetFarmMarketsInput
 import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.MetricUnit
 import kotlinx.coroutines.Dispatchers
@@ -114,7 +114,9 @@ class AddFarmMarketViewModel(
 
     private fun validMarketInput(uiState: Market): Boolean {
         return with(uiState) {
-            name.isNotBlank() && image.isNotBlank() && unit.toString().isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && tag.isNotBlank() && details.isNotBlank() && type.toString().isNotBlank()
+            name.isNotBlank() && image.isNotBlank() && unit.toString()
+                .isNotBlank() && volume.isNotBlank() && pricePerUnit.isNotBlank() && storeId.isNotBlank() && details.isNotBlank() && type.toString()
+                .isNotBlank()
         }
     }
 
@@ -129,7 +131,12 @@ class AddFarmMarketViewModel(
                     val res = copodGraphqlApi.createFarmMarket(_marketInput.value).dataOrThrow()
                     try {
                         val updatedCachedData = apolloStore.readOperation(
-                            GetFarmMarketsQuery(_marketInput.value.storeId)
+                            GetFarmMarketsQuery(
+                                GetFarmMarketsInput(
+                                    _marketInput.value.storeId,
+                                    res.createFarmMarket.type,
+                                )
+                            )
                         ).getFarmMarkets.toMutableList().apply {
                             add(
                                 GetFarmMarketsQuery.GetFarmMarket(
@@ -138,6 +145,7 @@ class AddFarmMarketViewModel(
                                     res.createFarmMarket.image,
                                     res.createFarmMarket.farmId,
                                     res.createFarmMarket.status,
+                                    res.createFarmMarket.type,
                                     res.createFarmMarket.unit,
                                     res.createFarmMarket.running_volume,
                                     res.createFarmMarket.volume,
@@ -146,7 +154,12 @@ class AddFarmMarketViewModel(
                             )
                         }.toImmutableList()
                         apolloStore.writeOperation(
-                            GetFarmMarketsQuery(_marketInput.value.storeId),
+                            GetFarmMarketsQuery(
+                                GetFarmMarketsInput(
+                                    _marketInput.value.storeId,
+                                    res.createFarmMarket.type,
+                                )
+                            ),
                             GetFarmMarketsQuery.Data(updatedCachedData),
                         )
                     } catch (e: CacheMissException) {
@@ -167,13 +180,10 @@ class AddFarmMarketViewModel(
         _marketInput.value = Market()
     }
 
-    val category = Data.marketTags
-
     init {
         _marketInput.update {
             it.copy(
                 storeId = farmStoreViewModel.getFarmId(),
-                tag = category[0],
             )
         }
     }
@@ -184,10 +194,9 @@ data class Market(
     val image: String = "",
     val unit: MetricUnit? = null,
     val pricePerUnit: String = "",
-    val volume: String = "",
+    val volume: String = "0",
     val location: LatLng = LatLng(0.0, 0.0),
     val storeId: String = "",
-    val tag: String = "",
     val details: String = "",
     val type: MarketType? = null,
 )

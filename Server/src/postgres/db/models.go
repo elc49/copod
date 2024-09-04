@@ -46,7 +46,6 @@ type Market struct {
 	PricePerUnit  int32        `json:"price_per_unit"`
 	Location      interface{}  `json:"location"`
 	HarvestDate   sql.NullTime `json:"harvest_date"`
-	Tag           string       `json:"tag"`
 	FarmID        uuid.UUID    `json:"farm_id"`
 	CreatedAt     time.Time    `json:"created_at"`
 	UpdatedAt     time.Time    `json:"updated_at"`

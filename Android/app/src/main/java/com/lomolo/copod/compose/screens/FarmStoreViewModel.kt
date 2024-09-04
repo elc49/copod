@@ -12,6 +12,8 @@ import com.lomolo.copod.GetFarmByIdQuery
 import com.lomolo.copod.GetFarmMarketsQuery
 import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.network.ICopodGraphqlApi
+import com.lomolo.copod.type.GetFarmMarketsInput
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.OrderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +25,7 @@ import okio.IOException
 
 class FarmStoreViewModel(
     savedStateHandle: SavedStateHandle,
-    private val vunoGraphqlApi: ICopodGraphqlApi,
+    private val copodGraphqlApi: ICopodGraphqlApi,
     private val apolloStore: ApolloStore,
 ) : ViewModel() {
     private val storeId: String =
@@ -51,7 +53,7 @@ class FarmStoreViewModel(
             gettingFarmState = GetFarmState.Loading
             viewModelScope.launch {
                 gettingFarmState = try {
-                    val res = vunoGraphqlApi.getFarm(storeId).dataOrThrow()
+                    val res = copodGraphqlApi.getFarm(storeId).dataOrThrow()
                     _farmData.update { res.getFarmById }
                     GetFarmState.Success
                 } catch (e: IOException) {
@@ -77,7 +79,7 @@ class FarmStoreViewModel(
             gettingFarmOrdersState = GetFarmOrdersState.Loading
             viewModelScope.launch {
                 try {
-                    vunoGraphqlApi.getFarmOrders(storeId).collect { res ->
+                    copodGraphqlApi.getFarmOrders(storeId).collect { res ->
                         _farmOrders.update { res.data?.getFarmOrders ?: listOf() }
                         gettingFarmOrdersState = GetFarmOrdersState.Success
                     }
@@ -99,13 +101,12 @@ class FarmStoreViewModel(
     )
         private set
 
-    private fun getFarmMarkets() {
+    private fun getFarmHarvests() {
         if (gettingFarmMarketsState !is GetFarmMarketsState.Loading) {
             gettingFarmMarketsState = GetFarmMarketsState.Loading
             viewModelScope.launch {
-                gettingFarmMarketsState = GetFarmMarketsState.Loading
                 try {
-                    vunoGraphqlApi.getFarmMarkets(storeId).collect { res ->
+                    copodGraphqlApi.getFarmMarkets(GetFarmMarketsInput(storeId, MarketType.HARVEST)).collect { res ->
                         _farmMarkets.update { res.data?.getFarmMarkets ?: listOf() }
                         gettingFarmMarketsState = GetFarmMarketsState.Success
                     }
@@ -128,7 +129,7 @@ class FarmStoreViewModel(
             updatingOrderState = UpdateOrderState.Loading
             viewModelScope.launch {
                 updatingOrderState = try {
-                    val res = vunoGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status))
+                    val res = copodGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status))
                         .dataOrThrow()
                     try {
                         val updatedCacheData = apolloStore.readOperation(
@@ -164,10 +165,85 @@ class FarmStoreViewModel(
         }
     }
 
+    private val _seeds: MutableStateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = MutableStateFlow(
+        listOf()
+    )
+    val seeds: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _seeds.asStateFlow()
+    var gettingFarmSeeds: GetFarmSeedsState by mutableStateOf(GetFarmSeedsState.Success)
+        private set
+
+    private fun getFarmSeeds() {
+        if (gettingFarmSeeds !is GetFarmSeedsState.Loading) {
+            gettingFarmSeeds = GetFarmSeedsState.Loading
+            viewModelScope.launch {
+                try {
+                    copodGraphqlApi.getFarmMarkets(GetFarmMarketsInput(storeId, MarketType.SEEDS)).collect { res ->
+                        _seeds.update { res.data?.getFarmMarkets ?: listOf() }
+                        gettingFarmSeeds = GetFarmSeedsState.Success
+                    }
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    gettingFarmSeeds = GetFarmSeedsState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    private val _seedlings: MutableStateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = MutableStateFlow(
+        listOf()
+    )
+    val seedlings: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _seedlings.asStateFlow()
+    var gettingFarmSeedlingsState: GetFarmSeedlingsState by mutableStateOf(GetFarmSeedlingsState.Success)
+        private set
+
+    private fun getFarmSeedlings() {
+        if (gettingFarmSeedlingsState !is GetFarmSeedlingsState.Loading) {
+            gettingFarmSeedlingsState = GetFarmSeedlingsState.Loading
+            viewModelScope.launch {
+                try {
+                    copodGraphqlApi.getFarmMarkets(GetFarmMarketsInput(storeId, MarketType.SEEDLINGS)).collect { res ->
+                        _seedlings.update { res.data?.getFarmMarkets ?: listOf() }
+                        gettingFarmSeedlingsState = GetFarmSeedlingsState.Success
+                    }
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    gettingFarmSeedlingsState = GetFarmSeedlingsState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    private val _machinery: MutableStateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = MutableStateFlow(
+        listOf()
+    )
+    val machinery: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _machinery.asStateFlow()
+    var gettingFarmMachineryState: GetFarmMachineryState by mutableStateOf(GetFarmMachineryState.Success)
+        private set
+
+    private fun getFarmMachinery() {
+        if (gettingFarmMachineryState !is GetFarmMachineryState.Loading) {
+            gettingFarmMachineryState = GetFarmMachineryState.Loading
+            viewModelScope.launch {
+                try {
+                    copodGraphqlApi.getFarmMarkets(GetFarmMarketsInput(storeId, MarketType.MACHINERY)).collect { res ->
+                        _machinery.update { res.data?.getFarmMarkets ?: listOf() }
+                        gettingFarmMachineryState = GetFarmMachineryState.Success
+                    }
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    gettingFarmMachineryState = GetFarmMachineryState.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
     init {
         getFarm()
-        getFarmMarkets()
+        getFarmHarvests()
         getFarmOrders()
+        getFarmSeeds()
+        getFarmSeedlings()
+        getFarmMachinery()
     }
 }
 
@@ -204,4 +280,22 @@ interface SettingMarketStatus {
     data object Success : SettingMarketStatus
     data object Loading : SettingMarketStatus
     data class Error(val msg: String?) : SettingMarketStatus
+}
+
+interface GetFarmSeedsState {
+    data object Success: GetFarmSeedsState
+    data object Loading: GetFarmSeedsState
+    data class Error(val msg: String?): GetFarmSeedsState
+}
+
+interface GetFarmSeedlingsState {
+    data object Success: GetFarmSeedlingsState
+    data object Loading: GetFarmSeedlingsState
+    data class Error(val msg: String?): GetFarmSeedlingsState
+}
+
+interface GetFarmMachineryState {
+    data object Success: GetFarmMachineryState
+    data object Loading: GetFarmMachineryState
+    data class Error(val msg: String?): GetFarmMachineryState
 }

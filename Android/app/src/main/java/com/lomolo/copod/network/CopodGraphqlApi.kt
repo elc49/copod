@@ -35,6 +35,7 @@ import com.lomolo.copod.compose.screens.Market
 import com.lomolo.copod.compose.screens.SendOrderToFarm
 import com.lomolo.copod.compose.screens.UpdateOrderStatus
 import com.lomolo.copod.type.AddToCartInput
+import com.lomolo.copod.type.GetFarmMarketsInput
 import com.lomolo.copod.type.GetLocalizedMarketsInput
 import com.lomolo.copod.type.GpsInput
 import com.lomolo.copod.type.NewFarmInput
@@ -53,7 +54,7 @@ interface ICopodGraphqlApi {
     suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
     suspend fun getFarm(id: String): ApolloResponse<GetFarmByIdQuery.Data>
-    suspend fun getFarmMarkets(id: String): Flow<ApolloResponse<GetFarmMarketsQuery.Data>>
+    suspend fun getFarmMarkets(input: GetFarmMarketsInput): Flow<ApolloResponse<GetFarmMarketsQuery.Data>>
     suspend fun getFarmOrders(id: String): Flow<ApolloResponse<GetFarmOrdersQuery.Data>>
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
@@ -105,8 +106,8 @@ class CopodGraphqlApi(
         .query(GetFarmByIdQuery(id))
         .execute()
 
-    override suspend fun getFarmMarkets(id: String) = apolloClient
-        .query(GetFarmMarketsQuery(id))
+    override suspend fun getFarmMarkets(input: GetFarmMarketsInput) = apolloClient
+        .query(GetFarmMarketsQuery(input))
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
 
@@ -127,7 +128,6 @@ class CopodGraphqlApi(
                 image = input.image,
                 unit = input.unit!!,
                 pricePerUnit = input.pricePerUnit.toInt(),
-                tag = input.tag,
                 location = GpsInput(input.location.latitude, input.location.longitude),
                 details = input.details,
                 type = input.type!!,

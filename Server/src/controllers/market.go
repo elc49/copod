@@ -19,8 +19,8 @@ func (c *MarketController) Init(store postgres.Store) {
 	c.r.Init(store)
 }
 
-func (c *MarketController) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
-	return c.r.GetMarketsBelongingToFarm(ctx, id)
+func (c *MarketController) GetMarketsBelongingToFarm(ctx context.Context, args db.GetMarketsBelongingToFarmParams) ([]*model.Market, error) {
+	return c.r.GetMarketsBelongingToFarm(ctx, args)
 }
 
 func (c *MarketController) GetMarketByID(ctx context.Context, id uuid.UUID) (*model.Market, error) {

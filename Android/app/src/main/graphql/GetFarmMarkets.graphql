@@ -1,10 +1,11 @@
-query GetFarmMarkets($id: UUID!) {
-    getFarmMarkets(id: $id) {
+query GetFarmMarkets($input: GetFarmMarketsInput!) {
+    getFarmMarkets(input: $input) {
         id
         name
         image
         farmId
         status
+        type
         unit
         running_volume
         volume
