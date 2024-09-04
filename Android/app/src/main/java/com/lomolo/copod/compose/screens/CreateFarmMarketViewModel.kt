@@ -60,7 +60,7 @@ class AddFarmMarketViewModel(
                         it.copy(image = res.imageUri)
                     }
                     UploadMarketImageState.Success
-                } catch (e: java.io.IOException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                     UploadMarketImageState.Error(e.localizedMessage)
                 }
