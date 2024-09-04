@@ -101,7 +101,6 @@ type ComplexityRoot struct {
 		PricePerUnit  func(childComplexity int) int
 		RunningVolume func(childComplexity int) int
 		Status        func(childComplexity int) int
-		Tag           func(childComplexity int) int
 		Type          func(childComplexity int) int
 		Unit          func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
@@ -171,7 +170,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		GetFarmByID                    func(childComplexity int, id uuid.UUID) int
-		GetFarmMarkets                 func(childComplexity int, id uuid.UUID) int
+		GetFarmMarkets                 func(childComplexity int, input model.GetFarmMarketsInput) int
 		GetFarmOrders                  func(childComplexity int, id uuid.UUID) int
 		GetFarmPayments                func(childComplexity int, id uuid.UUID) int
 		GetFarmsBelongingToUser        func(childComplexity int) int
@@ -234,7 +233,7 @@ type QueryResolver interface {
 	GetUser(ctx context.Context) (*model.User, error)
 	GetLocalizedMarkets(ctx context.Context, input model.GetLocalizedMarketsInput) ([]*model.Market, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (*model.Farm, error)
-	GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error)
+	GetFarmMarkets(ctx context.Context, input model.GetFarmMarketsInput) ([]*model.Market, error)
 	GetFarmOrders(ctx context.Context, id uuid.UUID) ([]*model.Order, error)
 	GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*model.Payment, error)
 	GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentUpdate, error)
@@ -496,13 +495,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Market.Status(childComplexity), true
-
-	case "Market.tag":
-		if e.complexity.Market.Tag == nil {
-			break
-		}
-
-		return e.complexity.Market.Tag(childComplexity), true
 
 	case "Market.type":
 		if e.complexity.Market.Type == nil {
@@ -905,7 +897,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetFarmMarkets(childComplexity, args["id"].(uuid.UUID)), true
+		return e.complexity.Query.GetFarmMarkets(childComplexity, args["input"].(model.GetFarmMarketsInput)), true
 
 	case "Query.getFarmOrders":
 		if e.complexity.Query.GetFarmOrders == nil {
@@ -1084,6 +1076,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAddToCartInput,
+		ec.unmarshalInputGetFarmMarketsInput,
 		ec.unmarshalInputGetLocalizedMarketsInput,
 		ec.unmarshalInputGpsInput,
 		ec.unmarshalInputNewFarmInput,
@@ -1410,15 +1403,15 @@ func (ec *executionContext) field_Query_getFarmById_args(ctx context.Context, ra
 func (ec *executionContext) field_Query_getFarmMarkets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 uuid.UUID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	var arg0 model.GetFarmMarketsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetFarmMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetFarmMarketsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1962,8 +1955,6 @@ func (ec *executionContext) fieldContext_Cart_market(_ context.Context, field gr
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -3135,50 +3126,6 @@ func (ec *executionContext) fieldContext_Market_canOrder(_ context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Market_tag(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Market_tag(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Tag, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Market_tag(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Market",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Market_pricePerUnit(ctx context.Context, field graphql.CollectedField, obj *model.Market) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Market_pricePerUnit(ctx, field)
 	if err != nil {
@@ -3524,8 +3471,6 @@ func (ec *executionContext) fieldContext_Mutation_createFarmMarket(ctx context.C
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -3938,8 +3883,6 @@ func (ec *executionContext) fieldContext_Mutation_setMarketStatus(ctx context.Co
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -4410,8 +4353,6 @@ func (ec *executionContext) fieldContext_Order_market(_ context.Context, field g
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -5825,8 +5766,6 @@ func (ec *executionContext) fieldContext_Query_getLocalizedMarkets(ctx context.C
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -5940,7 +5879,7 @@ func (ec *executionContext) _Query_getFarmMarkets(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetFarmMarkets(rctx, fc.Args["id"].(uuid.UUID))
+		return ec.resolvers.Query().GetFarmMarkets(rctx, fc.Args["input"].(model.GetFarmMarketsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5989,8 +5928,6 @@ func (ec *executionContext) fieldContext_Query_getFarmMarkets(ctx context.Contex
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -6473,8 +6410,6 @@ func (ec *executionContext) fieldContext_Query_getMarketDetails(ctx context.Cont
 				return ec.fieldContext_Market_farmId(ctx, field)
 			case "canOrder":
 				return ec.fieldContext_Market_canOrder(ctx, field)
-			case "tag":
-				return ec.fieldContext_Market_tag(ctx, field)
 			case "pricePerUnit":
 				return ec.fieldContext_Market_pricePerUnit(ctx, field)
 			case "created_at":
@@ -8824,6 +8759,40 @@ func (ec *executionContext) unmarshalInputAddToCartInput(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputGetFarmMarketsInput(ctx context.Context, obj interface{}) (model.GetFarmMarketsInput, error) {
+	var it model.GetFarmMarketsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"farmId", "market"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "farmId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("farmId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FarmID = data
+		case "market":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("market"))
+			data, err := ec.unmarshalNMarketType2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Market = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGetLocalizedMarketsInput(ctx context.Context, obj interface{}) (model.GetLocalizedMarketsInput, error) {
 	var it model.GetLocalizedMarketsInput
 	asMap := map[string]interface{}{}
@@ -8947,7 +8916,7 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"farmId", "product", "details", "image", "volume", "type", "location", "tag", "unit", "pricePerUnit"}
+	fieldsInOrder := [...]string{"farmId", "product", "details", "image", "volume", "type", "location", "unit", "pricePerUnit"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9003,13 +8972,6 @@ func (ec *executionContext) unmarshalInputNewFarmMarketInput(ctx context.Context
 				return it, err
 			}
 			it.Location = data
-		case "tag":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tag"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Tag = data
 		case "unit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unit"))
 			data, err := ec.unmarshalNMetricUnit2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMetricUnit(ctx, v)
@@ -9713,11 +9675,6 @@ func (ec *executionContext) _Market(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "canOrder":
 			out.Values[i] = ec._Market_canOrder(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "tag":
-			out.Values[i] = ec._Market_tag(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -11206,6 +11163,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 		}
 	}
 	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) unmarshalNGetFarmMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetFarmMarketsInput(ctx context.Context, v interface{}) (model.GetFarmMarketsInput, error) {
+	res, err := ec.unmarshalInputGetFarmMarketsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNGetLocalizedMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMarketsInput(ctx context.Context, v interface{}) (model.GetLocalizedMarketsInput, error) {

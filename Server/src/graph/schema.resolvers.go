@@ -65,7 +65,6 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 		Image:        input.Image,
 		Volume:       int32(input.Volume),
 		Details:      input.Details,
-		Tag:          input.Tag,
 		Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Location.Lng, input.Location.Lat),
 		FarmID:       input.FarmID,
 		Type:         input.Type.String(),
@@ -189,8 +188,12 @@ func (r *queryResolver) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.F
 }
 
 // GetFarmMarkets is the resolver for the getFarmMarkets field.
-func (r *queryResolver) GetFarmMarkets(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
-	return r.marketController.GetMarketsBelongingToFarm(ctx, id)
+func (r *queryResolver) GetFarmMarkets(ctx context.Context, input model.GetFarmMarketsInput) ([]*model.Market, error) {
+	args := db.GetMarketsBelongingToFarmParams{
+		FarmID: input.FarmID,
+		Type:   input.Market.String(),
+	}
+	return r.marketController.GetMarketsBelongingToFarm(ctx, args)
 }
 
 // GetFarmOrders is the resolver for the getFarmOrders field.

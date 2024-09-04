@@ -164,49 +164,37 @@ private fun MarketCard(
                 id = R.string.product
             )
         )
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+        Column(
+            Modifier.padding(4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            Column {
-                Text(
-                    market.name,
-                    modifier = Modifier.padding(2.dp),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    "${
-                        Util.formatCurrency(
-                            currency = currencyLocale, amount = market.pricePerUnit, language
-                        )
-                    } / ${market.unit}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            Text(
+                market.name,
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                overflow = TextOverflow.Clip,
+            )
             Text(
                 "${
+                    Util.formatCurrency(
+                        currency = currencyLocale, amount = market.pricePerUnit, language
+                    )
+                } / ${market.unit}",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Clip,
+            )
+            Text(
+                "Remaining ${
                     String.format(
                         Locale.getDefault(),
                         "%.0f",
                         (market.running_volume.toDouble() / market.volume.toDouble()).times(100)
                     )
                 }%",
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
-                    )
-                    .padding(4.dp),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
     }
@@ -408,13 +396,16 @@ fun FarmStoreScreen(
     navHostController: NavHostController,
     viewModel: FarmStoreViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
-    val titles = listOf("Market", "Orders"/*, "Payments"*/)
+    val titles = listOf("Harvests", "Orders", "Seeds", "Seedlings", "Machinery")
     var state by remember {
         mutableIntStateOf(0)
     }
     val farm by viewModel.farm.collectAsState()
     val markets by viewModel.farmMarkets.collectAsState()
     val orders by viewModel.farmOrders.collectAsState()
+    val seeds by viewModel.seeds.collectAsState()
+    val seedlings by viewModel.seedlings.collectAsState()
+    val machinery by viewModel.machinery.collectAsState()
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -542,6 +533,162 @@ fun FarmStoreScreen(
                         item {
                             Row(Modifier.fillMaxWidth()) {
                                 CircularProgressIndicator(Modifier.size(20.dp))
+                            }
+                        }
+                    }
+
+                    is GetFarmOrdersState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            2 -> LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (viewModel.gettingFarmSeeds) {
+                    GetFarmSeedsState.Success -> if (seeds.isEmpty()) {
+                        item {
+                            Text(
+                                stringResource(R.string.no_seeds),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
+                    } else {
+                        items(seeds) {
+                            MarketCard(
+                                language = deviceDetails.languages,
+                                currencyLocale = deviceDetails.currency,
+                                market = it,
+                            )
+                        }
+                    }
+
+                    GetFarmSeedsState.Loading -> item {
+                        Row(Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(Modifier.size(20.dp))
+                        }
+                    }
+
+                    is GetFarmSeedsState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            3 -> LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (viewModel.gettingFarmSeedlingsState) {
+                    GetFarmSeedlingsState.Success -> if (seedlings.isEmpty()) {
+                        item {
+                            Text(
+                                stringResource(R.string.no_seedlings),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
+                    } else {
+                        items(seedlings) {
+                            MarketCard(
+                                language = deviceDetails.languages,
+                                currencyLocale = deviceDetails.currency,
+                                market = it,
+                            )
+                        }
+                    }
+
+                    GetFarmSeedlingsState.Loading -> item {
+                        Row(Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(Modifier.size(20.dp))
+                        }
+                    }
+
+                    is GetFarmSeedlingsState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            4 -> LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                when (viewModel.gettingFarmMachineryState) {
+                    GetFarmMachineryState.Success -> if (machinery.isEmpty()) {
+                        item {
+                            Text(
+                                stringResource(R.string.no_machinery),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
+                    } else {
+                        items(machinery) {
+                            MarketCard(
+                                language = deviceDetails.languages,
+                                currencyLocale = deviceDetails.currency,
+                                market = it,
+                            )
+                        }
+                    }
+
+                    GetFarmMachineryState.Loading -> item {
+                        Row(Modifier.fillMaxWidth()) {
+                            CircularProgressIndicator(Modifier.size(20.dp))
+                        }
+                    }
+
+                    is GetFarmMachineryState.Error -> {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    stringResource(R.string.something_went_wrong),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
                             }
                         }
                     }

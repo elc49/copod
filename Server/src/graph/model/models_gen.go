@@ -46,6 +46,11 @@ type Farm struct {
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 }
 
+type GetFarmMarketsInput struct {
+	FarmID uuid.UUID  `json:"farmId"`
+	Market MarketType `json:"market"`
+}
+
 type GetLocalizedMarketsInput struct {
 	Radius *GpsInput  `json:"radius"`
 	Market MarketType `json:"market"`
@@ -69,7 +74,6 @@ type Market struct {
 	Farm          *Farm        `json:"farm"`
 	FarmID        uuid.UUID    `json:"farmId"`
 	CanOrder      bool         `json:"canOrder"`
-	Tag           string       `json:"tag"`
 	PricePerUnit  int          `json:"pricePerUnit"`
 	CreatedAt     time.Time    `json:"created_at"`
 	UpdatedAt     time.Time    `json:"updated_at"`
@@ -93,7 +97,6 @@ type NewFarmMarketInput struct {
 	Volume       int        `json:"volume"`
 	Type         MarketType `json:"type"`
 	Location     *GpsInput  `json:"location"`
-	Tag          string     `json:"tag"`
 	Unit         MetricUnit `json:"unit"`
 	PricePerUnit int        `json:"pricePerUnit"`
 }

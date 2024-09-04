@@ -34,7 +34,7 @@ type Querier interface {
 	GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error)
 	GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error)
 	GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByIDRow, error)
-	GetMarketsBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]GetMarketsBelongingToFarmRow, error)
+	GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]GetMarketsBelongingToFarmRow, error)
 	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error)
 	GetOrdersBelongingToUser(ctx context.Context, customerID uuid.UUID) ([]Order, error)

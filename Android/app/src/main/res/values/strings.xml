@@ -116,4 +116,7 @@
     <string name="seeds">Seeds</string>
     <string name="machinery">Machinery</string>
     <string name="seedlings">Seedlings</string>
+    <string name="no_seeds">No seeds</string>
+    <string name="no_seedlings">No seedlings</string>
+    <string name="no_machinery">No machinery</string>
 </resources>

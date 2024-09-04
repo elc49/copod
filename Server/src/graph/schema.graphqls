@@ -99,7 +99,6 @@ type Market {
   farm: Farm!
   farmId: UUID!
   canOrder: Boolean!
-  tag: String!
   pricePerUnit: Int!
   created_at: Time!
   updated_at: Time!
@@ -186,7 +185,6 @@ input NewFarmMarketInput {
   volume: Int!
   type: MarketType!
   location: GpsInput!
-  tag: String!
   unit: MetricUnit!
   pricePerUnit: Int!
 }
@@ -234,13 +232,18 @@ input GetLocalizedMarketsInput {
   market: MarketType!
 }
 
+input GetFarmMarketsInput {
+  farmId: UUID!
+  market: MarketType!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
   getLocalizedMarkets(input: GetLocalizedMarketsInput!): [Market!]!
   getFarmById(id: UUID!): Farm!
-  getFarmMarkets(id: UUID!): [Market!]!
+  getFarmMarkets(input: GetFarmMarketsInput!): [Market!]!
   getFarmOrders(id: UUID!): [Order!]!
   getFarmPayments(id: UUID!): [Payment!]!
   getPaystackPaymentVerification(referenceId: String!): PaystackPaymentUpdate!

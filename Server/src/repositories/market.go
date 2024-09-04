@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/postgres"
@@ -18,9 +19,9 @@ func (r *MarketRepository) Init(store postgres.Store) {
 	r.store = store
 }
 
-func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Market, error) {
+func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, arg db.GetMarketsBelongingToFarmParams) ([]*model.Market, error) {
 	var markets []*model.Market
-	ps, err := r.store.StoreReader.GetMarketsBelongingToFarm(ctx, id)
+	ps, err := r.store.StoreReader.GetMarketsBelongingToFarm(ctx, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +31,7 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 			ID:            item.ID,
 			Name:          item.Product,
 			Image:         item.Image,
+			Type:          model.MarketType(item.Type),
 			FarmID:        item.FarmID,
 			Status:        model.MarketStatus(item.Status),
 			Unit:          model.MetricUnit(item.Unit),
@@ -48,7 +50,7 @@ func (r *MarketRepository) GetMarketsBelongingToFarm(ctx context.Context, id uui
 
 func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*model.Market, error) {
 	p, err := r.store.StoreReader.GetMarketByID(ctx, id)
-	if err != nil && err == sql.ErrNoRows {
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -62,6 +64,7 @@ func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 		FarmID:        p.FarmID,
 		Volume:        int(p.Volume),
 		Details:       p.Details,
+		Type:          model.MarketType(p.Type),
 		RunningVolume: int(p.RunningVolume),
 		PricePerUnit:  int(p.PricePerUnit),
 		CreatedAt:     p.CreatedAt,
@@ -80,8 +83,8 @@ func (r *MarketRepository) CreateFarmMarket(ctx context.Context, args db.CreateF
 		Name:          market.Product,
 		Image:         market.Image,
 		Unit:          model.MetricUnit(market.Unit),
+		Type:          model.MarketType(market.Type),
 		Details:       market.Details,
-		Tag:           market.Tag,
 		FarmID:        market.FarmID,
 		Status:        model.MarketStatus(market.Status),
 		Volume:        int(market.Volume),
