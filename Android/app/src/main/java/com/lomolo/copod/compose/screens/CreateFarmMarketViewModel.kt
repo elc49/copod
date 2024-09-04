@@ -194,7 +194,7 @@ data class Market(
     val image: String = "",
     val unit: MetricUnit? = null,
     val pricePerUnit: String = "",
-    val volume: String = "",
+    val volume: String = "0",
     val location: LatLng = LatLng(0.0, 0.0),
     val storeId: String = "",
     val details: String = "",

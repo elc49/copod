@@ -68,6 +68,7 @@ import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
@@ -185,17 +186,19 @@ private fun MarketCard(
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Clip,
             )
-            Text(
-                "Remaining ${
-                    String.format(
-                        Locale.getDefault(),
-                        "%.0f",
-                        (market.running_volume.toDouble() / market.volume.toDouble()).times(100)
-                    )
-                }%",
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-            )
+            if (market.type != MarketType.MACHINERY) {
+                Text(
+                    "Remaining ${
+                        String.format(
+                            Locale.getDefault(),
+                            "%.0f",
+                            (market.running_volume.toDouble() / market.volume.toDouble()).times(100)
+                        )
+                    }%",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }

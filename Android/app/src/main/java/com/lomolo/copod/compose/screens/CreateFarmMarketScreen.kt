@@ -412,33 +412,35 @@ fun CreateFarmMarketScreen(
                         singleLine = true,
                     )
                 }
-                OutlinedTextField(
-                    value = market.volume,
-                    onValueChange = { viewModel.setMarketVolume(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            stringResource(R.string.total_supply),
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done,
-                    ),
-                    placeholder = {
-                        Text(stringResource(id = R.string.total_supply))
-                    },
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                        viewModel.addMarket {
-                            onGoBack()
-                            viewModel.resetMarketState()
-                            showToast()
-                        }
-                    }),
-                    singleLine = true,
-                )
+                if (market.type != MarketType.MACHINERY) {
+                    OutlinedTextField(
+                        value = market.volume,
+                        onValueChange = { viewModel.setMarketVolume(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                stringResource(R.string.total_supply),
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done,
+                        ),
+                        placeholder = {
+                            Text(stringResource(id = R.string.total_supply))
+                        },
+                        keyboardActions = KeyboardActions(onDone = {
+                            keyboardController?.hide()
+                            viewModel.addMarket {
+                                onGoBack()
+                                viewModel.resetMarketState()
+                                showToast()
+                            }
+                        }),
+                        singleLine = true,
+                    )
+                }
             }
         }
     }
