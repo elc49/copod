@@ -84,7 +84,6 @@ fun BottomNavBar(
         modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         navItems.forEachIndexed { _, item ->
-            println(currentDestination?.route)
             val isNavItemActive =
                 currentDestination?.hierarchy?.any { it.route == item.route } == true || item.childRoute.contains(currentDestination?.route)
 
