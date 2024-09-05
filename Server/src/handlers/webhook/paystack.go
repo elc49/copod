@@ -32,7 +32,10 @@ func Paystack() http.Handler {
 
 		go func() {
 			ctx := context.Background()
-			pS.ReconcileMpesaChargeCallback(ctx, *paystackRes)
+			psErr := pS.ReconcileMpesaChargeCallback(ctx, *paystackRes)
+			if psErr != nil {
+				return
+			}
 		}()
 
 		w.WriteHeader(http.StatusOK)

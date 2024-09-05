@@ -1,6 +1,7 @@
 package server
 
 import (
+	"embed"
 	"net/http"
 	"time"
 
@@ -31,6 +32,7 @@ import (
 type Server struct {
 	Router *chi.Mux
 	Store  postgres.Store
+	fs     *embed.FS
 }
 
 func New() *Server {
@@ -68,7 +70,7 @@ func (s *Server) services() {
 	paystack.New(s.Store)
 }
 
-func (s *Server) MountHandlers() {
+func (s *Server) MountHandlers(static embed.FS) {
 	// Data controllers
 	signinController := controllers.SigninController{}
 	signinController.Init(s.Store)
@@ -110,6 +112,9 @@ func (s *Server) MountHandlers() {
 		})
 		r.Handle("/img/upload", handlers.ImageUploader())
 	})
+	s.Router.Handle("/privacy", handlers.Privacy())
+	s.Router.Handle("/favicon.ico", handlers.Favicon())
+	s.Router.Handle("/static/*", http.FileServer(http.FS(static)))
 }
 
 func (s *Server) isProd() bool {
