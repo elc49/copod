@@ -27,11 +27,11 @@ object Data {
         "animal feed",*/
     )
     val serviceImages = mapOf(
-        "machinery" to R.drawable.machinery,
-        "seeds" to R.drawable.seeds,
-        "seedlings" to R.drawable.seedlings,
-        "cultivation" to R.drawable.cultivation,
-        "crop disease" to R.drawable.bad_leaf,
-        "animal feed" to R.drawable.animal_feed,
+        "services/machinery" to R.drawable.machinery,
+        "services/seeds" to R.drawable.seeds,
+        "services/seedlings" to R.drawable.seedlings,
+        "services/cultivation" to R.drawable.cultivation,
+        "services/crop disease" to R.drawable.bad_leaf,
+        "services/animal feed" to R.drawable.animal_feed,
     )
 }

@@ -41,12 +41,13 @@ import androidx.navigation.NavHostController
 import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.compose.navigation.Navigation
+import com.lomolo.copod.compose.navigation.ServicesGraph
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.ui.theme.inverseOnSurfaceLight
 
 object MachineryScreenDestination : Navigation {
     override val title = null
-    override val route = "machinery"
+    override val route = "${ServicesGraph.route}/machinery"
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -57,6 +58,7 @@ fun MachineryScreen(
     deviceDetails: DeviceDetails,
     onNavigateToMarketDetails: (String) -> Unit,
     navHostController: NavHostController,
+    bottomNav: @Composable () -> Unit,
     viewModel: MachineryViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
@@ -76,7 +78,7 @@ fun MachineryScreen(
                 )
             }
         })
-    }) { innerPadding ->
+    }, bottomBar = bottomNav) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()

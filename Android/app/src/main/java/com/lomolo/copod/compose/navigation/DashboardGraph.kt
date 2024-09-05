@@ -20,7 +20,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -33,6 +32,8 @@ import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.screens.AccountScreen
 import com.lomolo.copod.compose.screens.AccountScreenDestination
+import com.lomolo.copod.compose.screens.CartScreen
+import com.lomolo.copod.compose.screens.CartScreenDestination
 import com.lomolo.copod.compose.screens.CreateFarmScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
 import com.lomolo.copod.compose.screens.CreatePostScreen
@@ -43,8 +44,6 @@ import com.lomolo.copod.compose.screens.FarmScreenDestination
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.FarmsScreen
-import com.lomolo.copod.compose.screens.CartScreen
-import com.lomolo.copod.compose.screens.CartScreenDestination
 import com.lomolo.copod.compose.screens.MarketDetailsScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.copod.compose.screens.MarketScreen
@@ -75,23 +74,8 @@ fun NavGraphBuilder.addDashboardGraph(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
+    onNavigateTo: (String) -> Unit,
 ) {
-    val onNavigateTo = { route: String ->
-        navHostController.navigate(route) {
-            // Pop up to the start destination of the graph to
-            // avoid building up a large stack of destinations
-            // on the back stack as users select items
-            popUpTo(navHostController.graph.findStartDestination().id) {
-                saveState = false
-            }
-            // Avoid multiple copies of the same destination when
-            // re-selecting the same item
-            launchSingleTop = true
-            // Restore state when re-selecting a previously selected item
-            restoreState = true
-        }
-    }
-
     navigation(
         startDestination = FarmScreenDestination.route,
         route = DashboardDestination.route,

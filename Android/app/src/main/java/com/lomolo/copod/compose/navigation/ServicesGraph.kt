@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.screens.MachineryScreen
 import com.lomolo.copod.compose.screens.MachineryScreenDestination
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
@@ -24,6 +25,7 @@ object ServicesGraph : Navigation {
 fun NavGraphBuilder.addServicesGraph(
     navHostController: NavHostController,
     deviceDetails: DeviceDetails,
+    onNavigateTo: (String) -> Unit,
 ) {
     navigation(
         startDestination = SeedsScreenDestination.route,
@@ -38,6 +40,12 @@ fun NavGraphBuilder.addServicesGraph(
                         "${MarketDetailsScreenDestination.route}/${marketId}"
                     )
                 },
+                bottomNav = {
+                    BottomNavBar(
+                        currentDestination = it.destination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                },
             )
         }
         composable(route = MachineryScreenDestination.route) {
@@ -49,6 +57,12 @@ fun NavGraphBuilder.addServicesGraph(
                         "${MarketDetailsScreenDestination.route}/${marketId}"
                     )
                 },
+                bottomNav = {
+                    BottomNavBar(
+                        currentDestination = it.destination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                }
             )
         }
         composable(route = SeedlingsScreenDestination.route) {
@@ -60,6 +74,12 @@ fun NavGraphBuilder.addServicesGraph(
                         "${MarketDetailsScreenDestination.route}/${marketId}"
                     )
                 },
+                bottomNav = {
+                    BottomNavBar(
+                        currentDestination = it.destination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                }
             )
         }
     }

@@ -27,12 +27,15 @@ sealed class Screen(
     val activeIcon: Int,
     val route: String,
     var showBadge: Boolean = false,
+    val childRoute: List<String> = listOf(),
 ) {
     data object Explore : Screen(
         R.string.explore,
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
         "dashboard/explore",
+        false,
+        listOf("services/machinery", "services/seeds", "services/seedlings"),
     )
 
     data object Market : Screen(
@@ -40,6 +43,8 @@ sealed class Screen(
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard/market",
+        false,
+        listOf("dashboard/markets"),
     )
 
     data object Farm : Screen(
@@ -81,8 +86,9 @@ fun BottomNavBar(
         modifier = modifier, windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         navItems.forEachIndexed { _, item ->
+            println(currentDestination?.route)
             val isNavItemActive =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true
+                currentDestination?.hierarchy?.any { it.route == item.route } == true || item.childRoute.contains(currentDestination?.route)
 
             NavigationBarItem(selected = isNavItemActive, onClick = {
                 onNavigateTo(item.route)
