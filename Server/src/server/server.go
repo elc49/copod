@@ -32,7 +32,6 @@ import (
 type Server struct {
 	Router *chi.Mux
 	Store  postgres.Store
-	fs     *embed.FS
 }
 
 func New() *Server {
