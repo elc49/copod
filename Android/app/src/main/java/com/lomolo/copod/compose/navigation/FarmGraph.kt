@@ -96,13 +96,17 @@ fun NavGraphBuilder.addFarmGraph(
         composable(
             route = CreateFarmMarketDestination.route,
         ) {
-            CreateFarmMarketScreen(onGoBack = {
-                navHostController.popBackStack()
-            }, showToast = {
-                scope.launch {
-                    snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
-                }
-            })
+            CreateFarmMarketScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                },
+                showToast = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Market created.", withDismissAction = true)
+                    }
+                },
+                currencyLocale = deviceDetails.currency,
+            )
         }
     }
 }

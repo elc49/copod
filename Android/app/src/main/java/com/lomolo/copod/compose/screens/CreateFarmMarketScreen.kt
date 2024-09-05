@@ -55,7 +55,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -65,7 +64,6 @@ import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.MetricUnit
-import com.lomolo.copod.ui.theme.CopodTheme
 import com.lomolo.copod.util.Util
 import kotlinx.coroutines.launch
 
@@ -104,6 +102,7 @@ sealed class CopodMarket(
 fun CreateFarmMarketScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit = {},
+    currencyLocale: String,
     viewModel: AddFarmMarketViewModel = viewModel(factory = CopodViewModelProvider.Factory),
     showToast: () -> Unit = {},
 ) {
@@ -402,6 +401,7 @@ fun CreateFarmMarketScreen(
                                 style = MaterialTheme.typography.labelLarge,
                             )
                         },
+                        leadingIcon = { Text(currencyLocale) },
                         placeholder = {
                             Text(stringResource(id = R.string.price_support_text))
                         },
@@ -443,13 +443,5 @@ fun CreateFarmMarketScreen(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun CreateFarmMarketScreenPreview() {
-    CopodTheme {
-        CreateFarmMarketScreen()
     }
 }
