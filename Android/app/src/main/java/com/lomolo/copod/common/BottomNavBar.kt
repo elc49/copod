@@ -43,8 +43,6 @@ sealed class Screen(
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard/market",
-        false,
-        listOf("dashboard/markets"),
     )
 
     data object Farm : Screen(
