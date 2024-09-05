@@ -37,6 +37,7 @@ import coil.request.ImageRequest
 import com.lomolo.copod.R
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.navigation.Navigation
+import com.lomolo.copod.compose.navigation.ServicesGraph
 import com.lomolo.copod.data.Data
 
 object ExploreScreenDestination : Navigation {
@@ -50,17 +51,17 @@ sealed class ServicesScreen(
 ) {
     data object Seeds : ServicesScreen(
         R.string.seeds,
-        "seeds",
+        "${ServicesGraph.route}/seeds",
     )
 
     data object Machinery : ServicesScreen(
         R.string.machinery,
-        "machinery",
+        "${ServicesGraph.route}/machinery",
     )
 
     data object Seedlings : ServicesScreen(
         R.string.seedlings,
-        "seedlings",
+        "${ServicesGraph.route}/seedlings",
     )
 }
 

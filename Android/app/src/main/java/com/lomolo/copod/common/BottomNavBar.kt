@@ -27,12 +27,15 @@ sealed class Screen(
     val activeIcon: Int,
     val route: String,
     var showBadge: Boolean = false,
+    val childRoute: List<String> = listOf(),
 ) {
     data object Explore : Screen(
         R.string.explore,
         R.drawable.explore_outlined,
         R.drawable.explore_filled,
         "dashboard/explore",
+        false,
+        listOf("services/machinery", "services/seeds", "services/seedlings"),
     )
 
     data object Market : Screen(
@@ -82,7 +85,7 @@ fun BottomNavBar(
     ) {
         navItems.forEachIndexed { _, item ->
             val isNavItemActive =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true
+                currentDestination?.hierarchy?.any { it.route == item.route } == true || item.childRoute.contains(currentDestination?.route)
 
             NavigationBarItem(selected = isNavItemActive, onClick = {
                 onNavigateTo(item.route)

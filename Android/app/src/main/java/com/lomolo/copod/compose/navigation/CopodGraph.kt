@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.lomolo.copod.MainViewModel
@@ -49,6 +50,21 @@ fun CopodNavigationHost(
     val deviceDetails: DeviceDetails by mainViewModel.deviceDetailsState.collectAsState()
     val session by sessionViewModel.sessionUiState.collectAsState()
     val scope = rememberCoroutineScope()
+    val onNavigateTo = { route: String ->
+        navHostController.navigate(route) {
+            // Pop up to the start destination of the graph to
+            // avoid building up a large stack of destinations
+            // on the back stack as users select items
+            popUpTo(navHostController.graph.findStartDestination().id) {
+                saveState = false
+            }
+            // Avoid multiple copies of the same destination when
+            // re-selecting the same item
+            launchSingleTop = true
+            // Restore state when re-selecting a previously selected item
+            restoreState = true
+        }
+    }
 
     when (mainViewModel.settingDeviceDetailsState) {
         SettingDeviceDetails.Loading -> GenesisScreen()
@@ -81,6 +97,7 @@ fun CopodNavigationHost(
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
                     session = session,
+                    onNavigateTo = onNavigateTo,
                 )
                 addAuthGraph(
                     modifier = modifier,
@@ -98,6 +115,7 @@ fun CopodNavigationHost(
                 addServicesGraph(
                     navHostController = navHostController,
                     deviceDetails = deviceDetails,
+                    onNavigateTo = onNavigateTo,
                 )
             }
         }
