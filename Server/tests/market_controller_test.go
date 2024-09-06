@@ -38,6 +38,20 @@ func TestMarketController(t *testing.T) {
 			FarmID:       farm.ID,
 		})
 	}
+	createMachineryMarket := func(ctx context.Context) (*model.Market, error) {
+		store.StoreWriter.ClearTestMarkets(ctx)
+		return marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
+			Product:      "Tractor",
+			Image:        avatar,
+			Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			Unit:         "Hour",
+			Details:      "Diesel powered",
+			Type:         "MACHINERY",
+			Volume:       0,
+			PricePerUnit: 500,
+			FarmID:       farm.ID,
+		})
+	}
 
 	defer func() {
 		store.StoreWriter.ClearTestMarkets(ctx)
@@ -137,5 +151,17 @@ func TestMarketController(t *testing.T) {
 		})
 		assert.Nil(t, err)
 		assert.Equal(t, r.Status, model.MarketStatusOpen)
+	})
+
+	t.Run("get_localized_machinery_markets", func(t *testing.T) {
+		m, _ := createMachineryMarket(ctx)
+		assert.Equal(t, m.Name, "Tractor")
+
+		mrkts, err := marketC.GetLocalizedMachineryMarkets(ctx, user.ID, db.GetLocalizedMachineryMarketsParams{
+			Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			Radius: 20000,
+		})
+		assert.Nil(t, err)
+		assert.Equal(t, len(mrkts), 1)
 	})
 }
