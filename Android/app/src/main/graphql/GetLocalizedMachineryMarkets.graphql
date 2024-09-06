@@ -1,0 +1,12 @@
+query GetLocalizedMachineryMarkets($input: GetLocalizedMachineryMarketsInput!) {
+    getLocalizedMachineryMarkets(input: $input) {
+        id
+        name
+        image
+        canOrder
+        status
+        pricePerUnit
+        farmId
+        unit
+    }
+}

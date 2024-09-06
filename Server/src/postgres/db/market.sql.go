@@ -92,6 +92,65 @@ func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 	return user_id, err
 }
 
+const getLocalizedMachineryMarkets = `-- name: GetLocalizedMachineryMarkets :many
+SELECT id, product, image, details, price_per_unit, status, unit, farm_id, location, created_at, updated_at FROM markets
+WHERE ST_DWithin(location, $1::geography, $2) AND type = 'MACHINERY'
+`
+
+type GetLocalizedMachineryMarketsParams struct {
+	Point  interface{} `json:"point"`
+	Radius interface{} `json:"radius"`
+}
+
+type GetLocalizedMachineryMarketsRow struct {
+	ID           uuid.UUID   `json:"id"`
+	Product      string      `json:"product"`
+	Image        string      `json:"image"`
+	Details      string      `json:"details"`
+	PricePerUnit int32       `json:"price_per_unit"`
+	Status       string      `json:"status"`
+	Unit         string      `json:"unit"`
+	FarmID       uuid.UUID   `json:"farm_id"`
+	Location     interface{} `json:"location"`
+	CreatedAt    time.Time   `json:"created_at"`
+	UpdatedAt    time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocalizedMachineryMarketsParams) ([]GetLocalizedMachineryMarketsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLocalizedMachineryMarkets, arg.Point, arg.Radius)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetLocalizedMachineryMarketsRow{}
+	for rows.Next() {
+		var i GetLocalizedMachineryMarketsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Product,
+			&i.Image,
+			&i.Details,
+			&i.PricePerUnit,
+			&i.Status,
+			&i.Unit,
+			&i.FarmID,
+			&i.Location,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
 SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, $1::geography, $2) AND running_volume > 0 AND type = $3

@@ -18,6 +18,10 @@ RETURNING *;
 SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND running_volume > 0 AND type = sqlc.arg(type);
 
+-- name: GetLocalizedMachineryMarkets :many
+SELECT id, product, image, details, price_per_unit, status, unit, farm_id, location, created_at, updated_at FROM markets
+WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND type = 'MACHINERY';
+
 -- name: UpdateMarketVolume :one
 UPDATE markets SET running_volume = $1
 WHERE id = $2

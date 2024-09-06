@@ -51,6 +51,10 @@ type GetFarmMarketsInput struct {
 	Market MarketType `json:"market"`
 }
 
+type GetLocalizedMachineryMarketsInput struct {
+	Radius *GpsInput `json:"radius"`
+}
+
 type GetLocalizedMarketsInput struct {
 	Radius *GpsInput  `json:"radius"`
 	Market MarketType `json:"market"`

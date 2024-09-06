@@ -58,6 +58,10 @@ input GetFarmMarketsInput {
   market: MarketType!
 }
 
+input GetLocalizedMachineryMarketsInput {
+  radius: GpsInput!
+}
+
 input GetLocalizedMarketsInput {
   radius: GpsInput!
 
@@ -322,6 +326,8 @@ type Query {
   getUserOrdersCount: Int!
 
   getMarketDetails(id: UUID!): Market!
+
+  getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
 }
 
 input SendOrderToFarmInput {

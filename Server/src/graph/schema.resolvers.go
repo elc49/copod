@@ -234,6 +234,16 @@ func (r *queryResolver) GetMarketDetails(ctx context.Context, id uuid.UUID) (*mo
 	return r.marketController.GetMarketByID(ctx, id)
 }
 
+// GetLocalizedMachineryMarkets is the resolver for the getLocalizedMachineryMarkets field.
+func (r *queryResolver) GetLocalizedMachineryMarkets(ctx context.Context, input model.GetLocalizedMachineryMarketsInput) ([]*model.Market, error) {
+	args := db.GetLocalizedMachineryMarketsParams{
+		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", input.Radius.Lng, input.Radius.Lat),
+		Radius: 20000,
+	}
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	return r.marketController.GetLocalizedMachineryMarkets(ctx, userId, args)
+}
+
 // PaymentUpdate is the resolver for the paymentUpdate field.
 func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error) {
 	ch := make(chan *model.PaystackPaymentUpdate)
