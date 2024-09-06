@@ -1,9 +1,11 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 -- name: GetMarketsBelongingToFarm :many
-SELECT id, product, image, volume, type, running_volume, unit, farm_id, status, price_per_unit, harvest_date, created_at, updated_at FROM markets
+SELECT * FROM markets
 WHERE farm_id = $1 AND type = $2;
 
 -- name: GetMarketByID :one
-SELECT id, product, type, details, image, volume, running_volume, status, unit, farm_id, price_per_unit, created_at, updated_at FROM markets
+SELECT * FROM markets
 WHERE id = $1;
 
 -- name: CreateFarmMarket :one
@@ -15,12 +17,12 @@ INSERT INTO markets (
 RETURNING *;
 
 -- name: GetLocalizedMarkets :many
-SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
+SELECT * FROM markets
 WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND running_volume > 0 AND type = sqlc.arg(type);
 
 -- name: GetLocalizedMachineryMarkets :many
-SELECT id, product, image, details, price_per_unit, status, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND type = 'MACHINERY';
+SELECT * FROM markets
+WHERE ST_DWithin(location, sqlc.arg(point)::geography, sqlc.arg(radius)) AND type = 'MACHINERY' AND status = 'OPEN';
 
 -- name: UpdateMarketVolume :one
 UPDATE markets SET running_volume = $1

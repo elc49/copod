@@ -17,6 +17,7 @@ enum OrderStatus {
 enum MarketStatus {
   OPEN
   CLOSED
+  BOOKED
 }
 
 # MarketType

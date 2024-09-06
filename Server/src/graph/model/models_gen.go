@@ -204,16 +204,18 @@ type MarketStatus string
 const (
 	MarketStatusOpen   MarketStatus = "OPEN"
 	MarketStatusClosed MarketStatus = "CLOSED"
+	MarketStatusBooked MarketStatus = "BOOKED"
 )
 
 var AllMarketStatus = []MarketStatus{
 	MarketStatusOpen,
 	MarketStatusClosed,
+	MarketStatusBooked,
 }
 
 func (e MarketStatus) IsValid() bool {
 	switch e {
-	case MarketStatusOpen, MarketStatusClosed:
+	case MarketStatusOpen, MarketStatusClosed, MarketStatusBooked:
 		return true
 	}
 	return false
