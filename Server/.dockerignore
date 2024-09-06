@@ -2,7 +2,7 @@
 **/Server/.env
 **/Server/.vscode
 **/Server/.github/
-fly-live.toml
+fly.toml
 fly-staging.toml
 tailwind.config.js
 package-lock.json
