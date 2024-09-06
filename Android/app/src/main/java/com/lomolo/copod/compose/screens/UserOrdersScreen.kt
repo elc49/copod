@@ -64,7 +64,11 @@ fun UserOrdersScreen(
 
     Scaffold(topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                Text(stringResource(UserOrdersScreenDestination.title))
+                Text(
+                    stringResource(UserOrdersScreenDestination.title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
             }, navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(

@@ -78,7 +78,11 @@ fun ExploreScreen(
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-            Text(stringResource(R.string.services))
+            Text(
+                stringResource(R.string.services),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
         })
     }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
         BottomNavBar(
