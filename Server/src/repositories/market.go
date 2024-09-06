@@ -64,6 +64,7 @@ func (r *MarketRepository) GetMarketByID(ctx context.Context, id uuid.UUID) (*mo
 		FarmID:        p.FarmID,
 		Volume:        int(p.Volume),
 		Details:       p.Details,
+		Status:        model.MarketStatus(p.Status),
 		Type:          model.MarketType(p.Type),
 		RunningVolume: int(p.RunningVolume),
 		PricePerUnit:  int(p.PricePerUnit),

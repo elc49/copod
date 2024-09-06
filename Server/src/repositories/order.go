@@ -100,20 +100,41 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 		return nil, err
 	}
 
-	// Take from market running volume
-	args.RunningVolume = market.RunningVolume - args.RunningVolume
-	m, err := r.store.StoreWriter.UpdateMarketVolume(ctx, args)
-	if err != nil {
-		return nil, err
+	switch model.MarketType(market.Type) {
+	// Book equipment
+	case model.MarketTypeMachinery:
+		m, err := r.store.StoreWriter.SetMarketStatus(ctx, db.SetMarketStatusParams{
+			ID:     args.ID,
+			Status: model.MarketStatusBooked.String(),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return &model.Market{
+			ID:            m.ID,
+			RunningVolume: int(m.RunningVolume),
+			FarmID:        m.FarmID,
+			CreatedAt:     m.CreatedAt,
+			UpdatedAt:     m.UpdatedAt,
+		}, nil
+	default:
+		// Take from market running volume
+		args.RunningVolume = market.RunningVolume - args.RunningVolume
+		m, err := r.store.StoreWriter.UpdateMarketVolume(ctx, args)
+		if err != nil {
+			return nil, err
+		}
+
+		return &model.Market{
+			ID:            m.ID,
+			RunningVolume: int(m.RunningVolume),
+			FarmID:        m.FarmID,
+			CreatedAt:     m.CreatedAt,
+			UpdatedAt:     m.UpdatedAt,
+		}, nil
 	}
 
-	return &model.Market{
-		ID:            m.ID,
-		RunningVolume: int(m.RunningVolume),
-		FarmID:        m.FarmID,
-		CreatedAt:     m.CreatedAt,
-		UpdatedAt:     m.UpdatedAt,
-	}, nil
 }
 
 func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUID, volume int) bool {
@@ -121,7 +142,12 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 	defer r.mu.Unlock()
 
 	m, _ := r.store.StoreReader.GetMarketByID(ctx, marketID)
-	return m.RunningVolume != 0 && volume <= int(m.RunningVolume)
+	switch model.MarketType(m.Type) {
+	case model.MarketTypeMachinery:
+		return m.Status == model.MarketStatusOpen.String()
+	default:
+		return m.RunningVolume != 0 && volume <= int(m.RunningVolume)
+	}
 }
 
 func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, marketID uuid.UUID) bool {

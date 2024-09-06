@@ -8,7 +8,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -93,8 +92,8 @@ func (q *Queries) GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 }
 
 const getLocalizedMachineryMarkets = `-- name: GetLocalizedMachineryMarkets :many
-SELECT id, product, image, details, price_per_unit, status, unit, farm_id, location, created_at, updated_at FROM markets
-WHERE ST_DWithin(location, $1::geography, $2) AND type = 'MACHINERY'
+SELECT id, product, image, volume, running_volume, type, status, unit, details, price_per_unit, location, harvest_date, farm_id, created_at, updated_at FROM markets
+WHERE ST_DWithin(location, $1::geography, $2) AND type = 'MACHINERY' AND status = 'OPEN'
 `
 
 type GetLocalizedMachineryMarketsParams struct {
@@ -102,39 +101,29 @@ type GetLocalizedMachineryMarketsParams struct {
 	Radius interface{} `json:"radius"`
 }
 
-type GetLocalizedMachineryMarketsRow struct {
-	ID           uuid.UUID   `json:"id"`
-	Product      string      `json:"product"`
-	Image        string      `json:"image"`
-	Details      string      `json:"details"`
-	PricePerUnit int32       `json:"price_per_unit"`
-	Status       string      `json:"status"`
-	Unit         string      `json:"unit"`
-	FarmID       uuid.UUID   `json:"farm_id"`
-	Location     interface{} `json:"location"`
-	CreatedAt    time.Time   `json:"created_at"`
-	UpdatedAt    time.Time   `json:"updated_at"`
-}
-
-func (q *Queries) GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocalizedMachineryMarketsParams) ([]GetLocalizedMachineryMarketsRow, error) {
+func (q *Queries) GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocalizedMachineryMarketsParams) ([]Market, error) {
 	rows, err := q.db.QueryContext(ctx, getLocalizedMachineryMarkets, arg.Point, arg.Radius)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLocalizedMachineryMarketsRow{}
+	items := []Market{}
 	for rows.Next() {
-		var i GetLocalizedMachineryMarketsRow
+		var i Market
 		if err := rows.Scan(
 			&i.ID,
 			&i.Product,
 			&i.Image,
-			&i.Details,
-			&i.PricePerUnit,
+			&i.Volume,
+			&i.RunningVolume,
+			&i.Type,
 			&i.Status,
 			&i.Unit,
-			&i.FarmID,
+			&i.Details,
+			&i.PricePerUnit,
 			&i.Location,
+			&i.HarvestDate,
+			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -152,7 +141,7 @@ func (q *Queries) GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocal
 }
 
 const getLocalizedMarkets = `-- name: GetLocalizedMarkets :many
-SELECT id, product, image, details, price_per_unit, status, running_volume, volume, unit, farm_id, location, created_at, updated_at FROM markets
+SELECT id, product, image, volume, running_volume, type, status, unit, details, price_per_unit, location, harvest_date, farm_id, created_at, updated_at FROM markets
 WHERE ST_DWithin(location, $1::geography, $2) AND running_volume > 0 AND type = $3
 `
 
@@ -162,43 +151,29 @@ type GetLocalizedMarketsParams struct {
 	Type   string      `json:"type"`
 }
 
-type GetLocalizedMarketsRow struct {
-	ID            uuid.UUID   `json:"id"`
-	Product       string      `json:"product"`
-	Image         string      `json:"image"`
-	Details       string      `json:"details"`
-	PricePerUnit  int32       `json:"price_per_unit"`
-	Status        string      `json:"status"`
-	RunningVolume int32       `json:"running_volume"`
-	Volume        int32       `json:"volume"`
-	Unit          string      `json:"unit"`
-	FarmID        uuid.UUID   `json:"farm_id"`
-	Location      interface{} `json:"location"`
-	CreatedAt     time.Time   `json:"created_at"`
-	UpdatedAt     time.Time   `json:"updated_at"`
-}
-
-func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]GetLocalizedMarketsRow, error) {
+func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]Market, error) {
 	rows, err := q.db.QueryContext(ctx, getLocalizedMarkets, arg.Point, arg.Radius, arg.Type)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLocalizedMarketsRow{}
+	items := []Market{}
 	for rows.Next() {
-		var i GetLocalizedMarketsRow
+		var i Market
 		if err := rows.Scan(
 			&i.ID,
 			&i.Product,
 			&i.Image,
+			&i.Volume,
+			&i.RunningVolume,
+			&i.Type,
+			&i.Status,
+			&i.Unit,
 			&i.Details,
 			&i.PricePerUnit,
-			&i.Status,
-			&i.RunningVolume,
-			&i.Volume,
-			&i.Unit,
-			&i.FarmID,
 			&i.Location,
+			&i.HarvestDate,
+			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -216,41 +191,27 @@ func (q *Queries) GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarke
 }
 
 const getMarketByID = `-- name: GetMarketByID :one
-SELECT id, product, type, details, image, volume, running_volume, status, unit, farm_id, price_per_unit, created_at, updated_at FROM markets
+SELECT id, product, image, volume, running_volume, type, status, unit, details, price_per_unit, location, harvest_date, farm_id, created_at, updated_at FROM markets
 WHERE id = $1
 `
 
-type GetMarketByIDRow struct {
-	ID            uuid.UUID `json:"id"`
-	Product       string    `json:"product"`
-	Type          string    `json:"type"`
-	Details       string    `json:"details"`
-	Image         string    `json:"image"`
-	Volume        int32     `json:"volume"`
-	RunningVolume int32     `json:"running_volume"`
-	Status        string    `json:"status"`
-	Unit          string    `json:"unit"`
-	FarmID        uuid.UUID `json:"farm_id"`
-	PricePerUnit  int32     `json:"price_per_unit"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-}
-
-func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByIDRow, error) {
+func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (Market, error) {
 	row := q.db.QueryRowContext(ctx, getMarketByID, id)
-	var i GetMarketByIDRow
+	var i Market
 	err := row.Scan(
 		&i.ID,
 		&i.Product,
-		&i.Type,
-		&i.Details,
 		&i.Image,
 		&i.Volume,
 		&i.RunningVolume,
+		&i.Type,
 		&i.Status,
 		&i.Unit,
-		&i.FarmID,
+		&i.Details,
 		&i.PricePerUnit,
+		&i.Location,
+		&i.HarvestDate,
+		&i.FarmID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -258,7 +219,8 @@ func (q *Queries) GetMarketByID(ctx context.Context, id uuid.UUID) (GetMarketByI
 }
 
 const getMarketsBelongingToFarm = `-- name: GetMarketsBelongingToFarm :many
-SELECT id, product, image, volume, type, running_volume, unit, farm_id, status, price_per_unit, harvest_date, created_at, updated_at FROM markets
+
+SELECT id, product, image, volume, running_volume, type, status, unit, details, price_per_unit, location, harvest_date, farm_id, created_at, updated_at FROM markets
 WHERE farm_id = $1 AND type = $2
 `
 
@@ -267,43 +229,30 @@ type GetMarketsBelongingToFarmParams struct {
 	Type   string    `json:"type"`
 }
 
-type GetMarketsBelongingToFarmRow struct {
-	ID            uuid.UUID    `json:"id"`
-	Product       string       `json:"product"`
-	Image         string       `json:"image"`
-	Volume        int32        `json:"volume"`
-	Type          string       `json:"type"`
-	RunningVolume int32        `json:"running_volume"`
-	Unit          string       `json:"unit"`
-	FarmID        uuid.UUID    `json:"farm_id"`
-	Status        string       `json:"status"`
-	PricePerUnit  int32        `json:"price_per_unit"`
-	HarvestDate   sql.NullTime `json:"harvest_date"`
-	CreatedAt     time.Time    `json:"created_at"`
-	UpdatedAt     time.Time    `json:"updated_at"`
-}
-
-func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]GetMarketsBelongingToFarmRow, error) {
+// noinspection SqlNoDataSourceInspectionForFile
+func (q *Queries) GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]Market, error) {
 	rows, err := q.db.QueryContext(ctx, getMarketsBelongingToFarm, arg.FarmID, arg.Type)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMarketsBelongingToFarmRow{}
+	items := []Market{}
 	for rows.Next() {
-		var i GetMarketsBelongingToFarmRow
+		var i Market
 		if err := rows.Scan(
 			&i.ID,
 			&i.Product,
 			&i.Image,
 			&i.Volume,
-			&i.Type,
 			&i.RunningVolume,
-			&i.Unit,
-			&i.FarmID,
+			&i.Type,
 			&i.Status,
+			&i.Unit,
+			&i.Details,
 			&i.PricePerUnit,
+			&i.Location,
 			&i.HarvestDate,
+			&i.FarmID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

@@ -12,6 +12,7 @@ import com.lomolo.copod.GetMarketDetailsQuery
 import com.lomolo.copod.GetUserCartItemsQuery
 import com.lomolo.copod.repository.IMarkets
 import com.lomolo.copod.type.AddToCartInput
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.MetricUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class MarketDetailsViewModel(
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
         MutableStateFlow(
             GetMarketDetailsQuery.GetMarketDetails(
-                "", "", "", "", MetricUnit.Kg, 0, "", GetMarketDetailsQuery.Farm("", ""), 0
+                "", "", "", "", MetricUnit.Kg, 0, MarketType.UNKNOWN__, "", GetMarketDetailsQuery.Farm("", ""), 0
             )
         )
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()
@@ -94,8 +95,23 @@ class MarketDetailsViewModel(
     fun increaseOrderVolume(existingVolume: Int) {
         _orderData.update {
             val m = it.toMutableMap()
-            if (m[marketId]!!.volume < existingVolume) m[marketId] =
-                m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
+            if (_market.value.type != MarketType.MACHINERY) {
+                if (m[marketId]!!.volume < existingVolume) m[marketId] =
+                    m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
+            } else {
+                m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.plus(1))
+            }
+            m.toImmutableMap()
+        }
+    }
+
+    fun decreaseOrderVolume() {
+        _orderData.update {
+            val m = it.toMutableMap()
+            if (m[marketId]!!.volume > 0) {
+                m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
+                if (m[marketId]?.volume == 0) deleteFromCart()
+            }
             m.toImmutableMap()
         }
     }
@@ -133,17 +149,6 @@ class MarketDetailsViewModel(
                     removeOrder()
                 }
             }
-        }
-    }
-
-    fun decreaseOrderVolume() {
-        _orderData.update {
-            val m = it.toMutableMap()
-            if (m[marketId]!!.volume > 0) {
-                m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
-                if (m[marketId]?.volume == 0) deleteFromCart()
-            }
-            m.toImmutableMap()
         }
     }
 
