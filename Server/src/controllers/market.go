@@ -39,3 +39,7 @@ func (c *MarketController) GetLocalizedMarkets(ctx context.Context, userID uuid.
 func (c *MarketController) SetMarketStatus(ctx context.Context, args db.SetMarketStatusParams) (*model.Market, error) {
 	return c.r.SetMarketStatus(ctx, args)
 }
+
+func (c *MarketController) GetLocalizedMachineryMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedMachineryMarketsParams) ([]*model.Market, error) {
+	return c.r.GetLocalizedMachineryMarkets(ctx, userID, args)
+}

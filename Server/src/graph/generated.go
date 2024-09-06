@@ -174,6 +174,7 @@ type ComplexityRoot struct {
 		GetFarmOrders                  func(childComplexity int, id uuid.UUID) int
 		GetFarmPayments                func(childComplexity int, id uuid.UUID) int
 		GetFarmsBelongingToUser        func(childComplexity int) int
+		GetLocalizedMachineryMarkets   func(childComplexity int, input model.GetLocalizedMachineryMarketsInput) int
 		GetLocalizedMarkets            func(childComplexity int, input model.GetLocalizedMarketsInput) int
 		GetLocalizedPosters            func(childComplexity int, radius model.GpsInput) int
 		GetMarketDetails               func(childComplexity int, id uuid.UUID) int
@@ -241,6 +242,7 @@ type QueryResolver interface {
 	GetOrdersBelongingToUser(ctx context.Context) ([]*model.Order, error)
 	GetUserOrdersCount(ctx context.Context) (int, error)
 	GetMarketDetails(ctx context.Context, id uuid.UUID) (*model.Market, error)
+	GetLocalizedMachineryMarkets(ctx context.Context, input model.GetLocalizedMachineryMarketsInput) ([]*model.Market, error)
 }
 type SubscriptionResolver interface {
 	PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error)
@@ -930,6 +932,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetFarmsBelongingToUser(childComplexity), true
 
+	case "Query.getLocalizedMachineryMarkets":
+		if e.complexity.Query.GetLocalizedMachineryMarkets == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getLocalizedMachineryMarkets_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetLocalizedMachineryMarkets(childComplexity, args["input"].(model.GetLocalizedMachineryMarketsInput)), true
+
 	case "Query.getLocalizedMarkets":
 		if e.complexity.Query.GetLocalizedMarkets == nil {
 			break
@@ -1077,6 +1091,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAddToCartInput,
 		ec.unmarshalInputGetFarmMarketsInput,
+		ec.unmarshalInputGetLocalizedMachineryMarketsInput,
 		ec.unmarshalInputGetLocalizedMarketsInput,
 		ec.unmarshalInputGpsInput,
 		ec.unmarshalInputNewFarmInput,
@@ -1442,6 +1457,21 @@ func (ec *executionContext) field_Query_getFarmPayments_args(ctx context.Context
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getLocalizedMachineryMarkets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.GetLocalizedMachineryMarketsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetLocalizedMachineryMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMachineryMarketsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -6434,6 +6464,93 @@ func (ec *executionContext) fieldContext_Query_getMarketDetails(ctx context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getLocalizedMachineryMarkets(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getLocalizedMachineryMarkets(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetLocalizedMachineryMarkets(rctx, fc.Args["input"].(model.GetLocalizedMachineryMarketsInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Market)
+	fc.Result = res
+	return ec.marshalNMarket2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐMarketᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getLocalizedMachineryMarkets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Market_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Market_name(ctx, field)
+			case "image":
+				return ec.fieldContext_Market_image(ctx, field)
+			case "volume":
+				return ec.fieldContext_Market_volume(ctx, field)
+			case "details":
+				return ec.fieldContext_Market_details(ctx, field)
+			case "running_volume":
+				return ec.fieldContext_Market_running_volume(ctx, field)
+			case "unit":
+				return ec.fieldContext_Market_unit(ctx, field)
+			case "type":
+				return ec.fieldContext_Market_type(ctx, field)
+			case "status":
+				return ec.fieldContext_Market_status(ctx, field)
+			case "farm":
+				return ec.fieldContext_Market_farm(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Market_farmId(ctx, field)
+			case "canOrder":
+				return ec.fieldContext_Market_canOrder(ctx, field)
+			case "pricePerUnit":
+				return ec.fieldContext_Market_pricePerUnit(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Market_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Market_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Market", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getLocalizedMachineryMarkets_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -8793,6 +8910,33 @@ func (ec *executionContext) unmarshalInputGetFarmMarketsInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputGetLocalizedMachineryMarketsInput(ctx context.Context, obj interface{}) (model.GetLocalizedMachineryMarketsInput, error) {
+	var it model.GetLocalizedMachineryMarketsInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"radius"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "radius":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("radius"))
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Radius = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGetLocalizedMarketsInput(ctx context.Context, obj interface{}) (model.GetLocalizedMarketsInput, error) {
 	var it model.GetLocalizedMarketsInput
 	asMap := map[string]interface{}{}
@@ -10561,6 +10705,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getLocalizedMachineryMarkets":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getLocalizedMachineryMarkets(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -11167,6 +11333,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 
 func (ec *executionContext) unmarshalNGetFarmMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetFarmMarketsInput(ctx context.Context, v interface{}) (model.GetFarmMarketsInput, error) {
 	res, err := ec.unmarshalInputGetFarmMarketsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNGetLocalizedMachineryMarketsInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGetLocalizedMachineryMarketsInput(ctx context.Context, v interface{}) (model.GetLocalizedMachineryMarketsInput, error) {
+	res, err := ec.unmarshalInputGetLocalizedMachineryMarketsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

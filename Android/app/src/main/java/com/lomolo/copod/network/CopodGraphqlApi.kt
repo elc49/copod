@@ -16,6 +16,7 @@ import com.lomolo.copod.GetFarmMarketsQuery
 import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.GetFarmPaymentsQuery
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
+import com.lomolo.copod.GetLocalizedMachineryMarketsQuery
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.GetLocalizedPostersQuery
 import com.lomolo.copod.GetMarketDetailsQuery
@@ -36,6 +37,7 @@ import com.lomolo.copod.compose.screens.SendOrderToFarm
 import com.lomolo.copod.compose.screens.UpdateOrderStatus
 import com.lomolo.copod.type.AddToCartInput
 import com.lomolo.copod.type.GetFarmMarketsInput
+import com.lomolo.copod.type.GetLocalizedMachineryMarketsInput
 import com.lomolo.copod.type.GetLocalizedMarketsInput
 import com.lomolo.copod.type.GpsInput
 import com.lomolo.copod.type.NewFarmInput
@@ -73,6 +75,7 @@ interface ICopodGraphqlApi {
     suspend fun setMarketStatus(input: SetMarketStatusInput): ApolloResponse<SetMarketStatusMutation.Data>
     suspend fun updateFarmDetails(input: UpdateFarmDetailsInput): ApolloResponse<UpdateFarmDetailsMutation.Data>
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
+    suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
 
 }
 
@@ -219,6 +222,11 @@ class CopodGraphqlApi(
 
     override suspend fun getMarketDetails(id: String) = apolloClient
         .query(GetMarketDetailsQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput) = apolloClient
+        .query(GetLocalizedMachineryMarketsQuery(input))
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()
 }

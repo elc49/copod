@@ -152,3 +152,34 @@ func (r *MarketRepository) SetMarketStatus(ctx context.Context, args db.SetMarke
 		Status: model.MarketStatus(m.Status),
 	}, nil
 }
+
+func (r *MarketRepository) GetLocalizedMachineryMarkets(ctx context.Context, userID uuid.UUID, args db.GetLocalizedMachineryMarketsParams) ([]*model.Market, error) {
+	var markets []*model.Market
+	m, err := r.store.StoreReader.GetLocalizedMachineryMarkets(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range m {
+		farmOwner, err := r.getFarmOwnerID(ctx, item.FarmID)
+		if err != nil {
+			return nil, err
+		}
+
+		market := &model.Market{
+			ID:           item.ID,
+			Name:         item.Product,
+			Image:        item.Image,
+			Unit:         model.MetricUnit(item.Unit),
+			Details:      item.Details,
+			CanOrder:     farmOwner != userID.String(),
+			FarmID:       item.FarmID,
+			PricePerUnit: int(item.PricePerUnit),
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+		}
+		markets = append(markets, market)
+	}
+
+	return markets, nil
+}

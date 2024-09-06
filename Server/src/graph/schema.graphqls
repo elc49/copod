@@ -237,6 +237,10 @@ input GetFarmMarketsInput {
   market: MarketType!
 }
 
+input GetLocalizedMachineryMarketsInput {
+  radius: GpsInput!
+}
+
 type Query {
   getLocalizedPosters(radius: GpsInput!): [Post!]!
   getFarmsBelongingToUser: [Farm!]!
@@ -251,6 +255,7 @@ type Query {
   getOrdersBelongingToUser: [Order!]!
   getUserOrdersCount: Int!
   getMarketDetails(id: UUID!): Market!
+  getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
 }
 
 type Mutation {
