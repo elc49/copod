@@ -3,7 +3,6 @@ package tests
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/elc49/copod/Server/src/graph/model"
@@ -76,7 +75,6 @@ func TestOrderController(t *testing.T) {
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
 		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
 		m, _ = marketC.GetMarketByID(ctx, machineryMarket.ID)
-		logrus.Infoln(m)
 		assert.Equal(t, m.Status, model.MarketStatusBooked)
 	})
 
