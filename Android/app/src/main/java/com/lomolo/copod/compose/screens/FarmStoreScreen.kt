@@ -27,13 +27,14 @@ import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -61,11 +62,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetFarmByIdQuery
 import com.lomolo.copod.GetFarmMarketsQuery
 import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.R
-import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.type.MarketType
@@ -101,6 +102,7 @@ private fun FarmHeader(
                 .size(120.dp)
                 .padding(8.dp)
                 .clip(MaterialTheme.shapes.small),
+            error = painterResource(R.drawable.ic_broken_image),
             placeholder = painterResource(id = R.drawable.loading_img),
             contentDescription = null
         )
@@ -158,6 +160,8 @@ private fun MarketCard(
             model = ImageRequest.Builder(LocalContext.current).data(market.image).crossfade(true)
                 .build(),
             contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.loading_img),
+            error = painterResource(R.drawable.ic_broken_image),
             modifier = Modifier
                 .height(80.dp)
                 .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)),
@@ -212,6 +216,8 @@ private fun OrderDate(
 ) {
     Text(
         Util.vunoDateFormat(date, language, country),
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.SemiBold,
         modifier = modifier,
     )
 }
@@ -229,9 +235,13 @@ private fun OrderCard(
 ) {
     val context = LocalContext.current
 
-    Box {
+    OutlinedCard(
+        shape = MaterialTheme.shapes.small,
+    ) {
         Column(
-            modifier.fillMaxSize(),
+            modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Row(
@@ -253,52 +263,60 @@ private fun OrderCard(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(MaterialTheme.shapes.small),
+                    placeholder = painterResource(R.drawable.loading_img),
+                    error = painterResource(R.drawable.ic_broken_image),
                     contentScale = ContentScale.Crop,
                     contentDescription = stringResource(
                         id = R.string.product
                     )
                 )
-                Text(
-                    "#${index.plus(1)} - ${order.market.name}",
-                    fontWeight = FontWeight.Bold,
-                )
-                Box(
-                    Modifier
-                        .background(
-                            statusColor,
-                            MaterialTheme.shapes.small,
+                Column(Modifier.padding(4.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            "#${index.plus(1)} - ${order.market.name}",
+                            fontWeight = FontWeight.Bold,
                         )
-                        .padding(4.dp)
-                        .wrapContentSize(Alignment.Center),
-                ) {
-                    Text(
-                        order.status.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                    )
+                        Box(
+                            Modifier
+                                .background(
+                                    statusColor,
+                                    MaterialTheme.shapes.small,
+                                )
+                                .padding(4.dp)
+                                .wrapContentSize(Alignment.Center),
+                        ) {
+                            Text(
+                                order.status.toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        OrderDate(
+                            date = order.created_at.toString(),
+                            language = language,
+                            country = country,
+                        )
+                        Icon(
+                            painterResource(id = R.drawable.dot),
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .size(32.dp),
+                            contentDescription = stringResource(R.string.dot),
+                        )
+                        Text(
+                            "${order.volume} ${order.market.unit}",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
             }
-            // TODO time created
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OrderDate(
-                    date = order.created_at.toString(),
-                    language = language,
-                    country = country,
-                )
-                Icon(
-                    painterResource(id = R.drawable.dot),
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(32.dp),
-                    contentDescription = stringResource(R.string.dot),
-                )
-                Text(
-                    "${order.volume} ${order.market.unit}",
-                    textAlign = TextAlign.Center,
-                )
-            }
+
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -314,26 +332,42 @@ private fun OrderCard(
                 } else {
                     Row {
                         when (order.status) {
-                            OrderStatus.PENDING -> TextButton(onClick = {
-                                updateOrderStatus(
-                                    order.id.toString(), OrderStatus.CONFIRMED
-                                )
-                            }) {
+                            OrderStatus.PENDING -> TextButton(
+                                onClick = {
+                                    updateOrderStatus(
+                                        order.id.toString(), OrderStatus.CONFIRMED
+                                    )
+                                },
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                ),
+                                contentPadding = PaddingValues(2.dp),
+                                shape = MaterialTheme.shapes.small
+                            ) {
                                 Text(
                                     stringResource(R.string.confirm),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
 
-                            OrderStatus.CONFIRMED -> TextButton(onClick = {
-                                updateOrderStatus(
-                                    order.id.toString(), OrderStatus.DELIVERED
-                                )
-                            }) {
+                            OrderStatus.CONFIRMED -> TextButton(
+                                onClick = {
+                                    updateOrderStatus(
+                                        order.id.toString(), OrderStatus.DELIVERED
+                                    )
+                                },
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                ),
+                                contentPadding = PaddingValues(2.dp),
+                                shape = MaterialTheme.shapes.small
+                            ) {
                                 Text(
                                     stringResource(R.string.deliver),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
@@ -354,7 +388,8 @@ private fun OrderCard(
                                             MaterialTheme.colorScheme.primary,
                                             MaterialTheme.shapes.small,
                                         )
-                                        .padding(2.dp),
+                                        .padding(2.dp)
+                                        .size(20.dp),
                                     contentDescription = stringResource(R.string.success),
                                     tint = MaterialTheme.colorScheme.onPrimary,
                                 )
@@ -384,9 +419,6 @@ private fun OrderCard(
                     }
                 }
             }
-            HorizontalDivider(
-                Modifier.fillMaxWidth()
-            )
         }
     }
 }
