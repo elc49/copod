@@ -6,6 +6,7 @@ COPY . .
 RUN go mod download && go mod verify
 RUN CGO_ENABLED=0 GOOS=linux go build -o copod
 
-EXPOSE 8080
+EXPOSE 4000
+EXPOSE 4001
 
 CMD ["./copod"]
