@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/elc49/copod/Server/src/graph/model"
@@ -26,10 +27,21 @@ func TestOrderController(t *testing.T) {
 		Product:      "Guavas",
 		Image:        avatar,
 		Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
-		Unit:         "kg",
+		Unit:         "Kg",
 		Volume:       120,
 		PricePerUnit: 5,
 		FarmID:       farm.ID,
+		Type:         model.MarketTypeHarvest.String(),
+	})
+	machineryMarket, _ := marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{
+		Product:      "Tractor",
+		Image:        avatar,
+		Location:     fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+		Unit:         "Hour",
+		Volume:       0,
+		PricePerUnit: 1000,
+		FarmID:       farm.ID,
+		Type:         model.MarketTypeMachinery.String(),
 	})
 
 	defer func() {
@@ -48,6 +60,13 @@ func TestOrderController(t *testing.T) {
 				MarketID: market.ID,
 				FarmID:   farm.ID,
 			},
+			{
+				Volume:   2,
+				ToBePaid: 2000,
+				Currency: "KES",
+				MarketID: machineryMarket.ID,
+				FarmID:   farm.ID,
+			},
 		}
 		b, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
 
@@ -56,6 +75,9 @@ func TestOrderController(t *testing.T) {
 
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
 		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
+		m, _ = marketC.GetMarketByID(ctx, machineryMarket.ID)
+		logrus.Infoln(m)
+		assert.Equal(t, m.Status, model.MarketStatusBooked)
 	})
 
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
@@ -67,30 +89,37 @@ func TestOrderController(t *testing.T) {
 				MarketID: market.ID,
 				FarmID:   farm.ID,
 			},
+			{
+				Volume:   2,
+				ToBePaid: 2000,
+				Currency: "KES",
+				MarketID: machineryMarket.ID,
+				FarmID:   farm.ID,
+			},
 		}
 		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
 		assert.Nil(t, err)
 
 		o, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(o), 1)
+		assert.Equal(t, len(o), 2)
 	})
 
 	t.Run("get_orders_belonging_to_user", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 1)
+		assert.Equal(t, len(orders), 2)
 	})
 
 	t.Run("get_user_orders_count", func(t *testing.T) {
 		c, err := orderC.GetUserOrdersCount(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, c, 1)
+		assert.Equal(t, c, 2)
 	})
 
 	t.Run("get_farm_orders", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 1)
+		assert.Equal(t, len(orders), 2)
 	})
 }
