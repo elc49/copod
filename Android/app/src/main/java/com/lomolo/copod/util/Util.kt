@@ -13,7 +13,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 object Util {
-    fun vunoDateFormat(date: String, language: String, country: String): String {
+    fun copodDataFormat(date: String, language: String, country: String): String {
         val cYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
         val dateTime = Instant.parse(date).toLocalDateTime(TimeZone.currentSystemDefault())
         val displayDate = if (cYear > dateTime.year) {
@@ -42,6 +42,7 @@ object Util {
         language: String,
     ): String {
         val languageCode = language.split("-")
+        if (languageCode.isEmpty()) return ""
         val numberFormat =
             NumberFormat.getCurrencyInstance(Locale(languageCode[0], languageCode[1]))
         numberFormat.maximumFractionDigits = 0
@@ -53,23 +54,6 @@ object Util {
                 .precision(Precision.maxFraction(0)).locale(Locale.US).format(amount).toString()
         } else {
             numberFormat.format(amount)
-        }
-    }
-
-    fun statistic(
-        language: String,
-        v: Int,
-    ): String {
-        val languageCode = language.split("-")
-        val numberFormat =
-            NumberFormat.getNumberInstance(Locale(languageCode[0], languageCode[1]))
-        numberFormat.maximumFractionDigits = 0
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            NumberFormatter.with().notation(Notation.compactShort())
-                .precision(Precision.maxFraction(0)).locale(Locale.US).format(v).toString()
-        } else {
-            numberFormat.format(v)
         }
     }
 }

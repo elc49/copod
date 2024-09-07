@@ -163,7 +163,7 @@ fun CreateFarmMarketScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(12.dp),
         ) {
             when (viewModel.addingFarmMarketState) {
                 AddFarmMarketState.Success -> Text(

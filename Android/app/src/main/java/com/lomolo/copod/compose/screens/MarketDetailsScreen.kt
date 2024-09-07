@@ -131,7 +131,7 @@ fun MarketDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(4.dp),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(12.dp),
             ) {
                 when (viewModel.addingToCart) {
                     AddingToCartState.Success -> {

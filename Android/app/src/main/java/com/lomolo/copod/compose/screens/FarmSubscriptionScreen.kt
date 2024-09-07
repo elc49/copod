@@ -83,7 +83,6 @@ fun FarmSubscriptionScreen(
             Button(
                 onClick = { onNavigateTo("farming_rights") },
                 contentPadding = PaddingValues(12.dp),
-                shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(

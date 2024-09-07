@@ -200,7 +200,7 @@ private fun OrderDate(
     country: String,
 ) {
     Text(
-        Util.vunoDateFormat(date, language, country),
+        Util.copodDataFormat(date, language, country),
         style = MaterialTheme.typography.bodySmall,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier,

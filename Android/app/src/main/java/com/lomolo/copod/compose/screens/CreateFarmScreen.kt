@@ -135,7 +135,6 @@ fun CreateFarmScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            shape = MaterialTheme.shapes.extraSmall,
         ) {
             when (viewModel.createFarmState) {
                 CreateFarmState.Success -> Text(

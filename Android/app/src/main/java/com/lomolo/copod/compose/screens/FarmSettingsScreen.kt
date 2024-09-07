@@ -182,7 +182,7 @@ fun FarmSettingsScreen(
                             )
                         )
                         OutlinedTextField(
-                            value = Util.vunoDateFormat(farmDetails.dateStarted.toString(), language, country),
+                            value = Util.copodDataFormat(farmDetails.dateStarted.toString(), language, country),
                             modifier = Modifier.width(300.dp),
                             label = {
                                 Text(stringResource(R.string.started))
