@@ -69,14 +69,12 @@ import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
-import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
 import com.lomolo.copod.ui.theme.secondaryContainerLight
 import com.lomolo.copod.ui.theme.surfaceContainerLight
 import com.lomolo.copod.util.Util
-import java.util.Locale
 
 object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
@@ -190,19 +188,6 @@ private fun MarketCard(
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Clip,
             )
-            if (market.type != MarketType.MACHINERY) {
-                Text(
-                    "Remaining ${
-                        String.format(
-                            Locale.getDefault(),
-                            "%.0f",
-                            (market.running_volume.toDouble() / market.volume.toDouble()).times(100)
-                        )
-                    }%",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
         }
     }
 }
@@ -590,7 +575,7 @@ fun FarmStoreScreen(
             }
 
             2 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -637,7 +622,7 @@ fun FarmStoreScreen(
             }
 
             3 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -684,7 +669,7 @@ fun FarmStoreScreen(
             }
 
             4 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),

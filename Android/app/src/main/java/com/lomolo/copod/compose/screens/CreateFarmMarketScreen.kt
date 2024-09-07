@@ -163,8 +163,7 @@ fun CreateFarmMarketScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            contentPadding = PaddingValues(12.dp),
-            shape = MaterialTheme.shapes.extraSmall,
+            contentPadding = PaddingValues(16.dp),
         ) {
             when (viewModel.addingFarmMarketState) {
                 AddFarmMarketState.Success -> Text(
@@ -220,7 +219,7 @@ fun CreateFarmMarketScreen(
                     OutlinedIconButton(
                         onClick = { selectImage() },
                         modifier = Modifier.size(120.dp),
-                        shape = MaterialTheme.shapes.extraSmall,
+                        shape = MaterialTheme.shapes.small,
                     ) {
                         Icon(
                             painterResource(id = image),
@@ -238,7 +237,7 @@ fun CreateFarmMarketScreen(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .size(120.dp)
-                            .clip(MaterialTheme.shapes.extraSmall)
+                            .clip(MaterialTheme.shapes.small)
                             .clickable {
                                 selectImage()
                             })
