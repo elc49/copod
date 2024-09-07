@@ -2,7 +2,6 @@ package com.lomolo.copod.compose.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +30,6 @@ import coil.request.ImageRequest
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.util.Util
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
@@ -85,23 +83,6 @@ fun MarketCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Text(
-                "${
-                    String.format(
-                        Locale.getDefault(),
-                        "%.0f",
-                        (data.running_volume.toDouble() / data.volume.toDouble()).times(100)
-                    )
-                }%",
-                modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small
-                    )
-                    .padding(4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
         }
     }
 }
