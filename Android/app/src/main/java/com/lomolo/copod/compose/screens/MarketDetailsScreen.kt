@@ -142,8 +142,7 @@ fun MarketDetailsScreen(
                                         currency = deviceDetails.currency,
                                         amount = market.pricePerUnit.times(
                                             orders[market.id.toString()]?.volume ?: 0
-                                        ),
-                                        language = deviceDetails.languages
+                                        )
                                     )
                                 }]",
                                 style = MaterialTheme.typography.titleMedium,
@@ -221,7 +220,6 @@ fun MarketDetailsScreen(
                                     Util.formatCurrency(
                                         currency = deviceDetails.currency,
                                         amount = market.pricePerUnit,
-                                        deviceDetails.languages,
                                     )
                                 } / ${market.unit}",
                                 textAlign = TextAlign.End,

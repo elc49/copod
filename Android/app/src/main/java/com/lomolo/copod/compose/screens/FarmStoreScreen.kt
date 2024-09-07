@@ -181,7 +181,7 @@ private fun MarketCard(
             Text(
                 "${
                     Util.formatCurrency(
-                        currency = currencyLocale, amount = market.pricePerUnit, language
+                        currency = currencyLocale, amount = market.pricePerUnit
                     )
                 } / ${market.unit}",
                 style = MaterialTheme.typography.bodyMedium,

@@ -219,7 +219,6 @@ fun CartScreen(
                                             Util.formatCurrency(
                                                 currency = deviceDetails.currency,
                                                 amount = item.volume.times(item.market.pricePerUnit),
-                                                language = deviceDetails.languages,
                                             ), .25f
                                         )
                                         when (viewModel.deleteCartItemState) {
@@ -279,7 +278,6 @@ fun CartScreen(
                                                     Util.formatCurrency(
                                                         currency = deviceDetails.currency,
                                                         amount = total,
-                                                        language = deviceDetails.languages,
                                                     )
                                                 }]",
                                                 style = MaterialTheme.typography.titleMedium,
@@ -294,7 +292,6 @@ fun CartScreen(
                                                     Util.formatCurrency(
                                                         currency = deviceDetails.currency,
                                                         amount = total,
-                                                        language = deviceDetails.languages,
                                                     )
                                                 }]",
                                                 style = MaterialTheme.typography.titleMedium,

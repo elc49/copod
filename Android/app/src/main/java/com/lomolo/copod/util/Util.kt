@@ -19,7 +19,7 @@ object Util {
         val displayDate = if (cYear > dateTime.year) {
             "${dateTime.dayOfMonth} ${
                 dateTime.month.getDisplayName(
-                    TextStyle.SHORT, Locale(language, country)
+                    TextStyle.SHORT, Locale.getDefault()
                 )
             } ${dateTime.year}"
         } else {
@@ -39,12 +39,9 @@ object Util {
     fun formatCurrency(
         currency: String,
         amount: Int,
-        language: String,
     ): String {
-        val languageCode = language.split("-")
-        if (languageCode.isEmpty()) return ""
         val numberFormat =
-            NumberFormat.getCurrencyInstance(Locale(languageCode[0], languageCode[1]))
+            NumberFormat.getCurrencyInstance(Locale.getDefault())
         numberFormat.maximumFractionDigits = 0
         numberFormat.currency = java.util.Currency.getInstance(currency)
 

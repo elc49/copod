@@ -108,7 +108,7 @@ private fun MachineryCard(
                 Text(
                     "${
                         Util.formatCurrency(
-                            currency = currencyLocale, amount = data.pricePerUnit, language
+                            currency = currencyLocale, amount = data.pricePerUnit
                         )
                     } / ${data.unit}",
                     textAlign = TextAlign.Center,
