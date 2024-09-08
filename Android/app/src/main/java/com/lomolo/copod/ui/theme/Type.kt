@@ -2,6 +2,7 @@ package com.lomolo.copod.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import com.lomolo.copod.R
@@ -14,14 +15,15 @@ val provider = GoogleFont.Provider(
 
 val bodyFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("IBM Plex Sans"),
+        googleFont = GoogleFont("Space Mono"),
         fontProvider = provider,
     )
 )
 
 val displayFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Space Grotesk"),
+        googleFont = GoogleFont("Space Mono"),
+        weight = FontWeight.Medium,
         fontProvider = provider,
     )
 )
