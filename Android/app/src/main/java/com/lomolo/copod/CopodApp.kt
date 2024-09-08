@@ -9,6 +9,14 @@ import com.lomolo.copod.compose.navigation.CopodNavigationHost
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-fun CopodApplication(navHostController: NavHostController, snackbarHostState: SnackbarHostState) {
-    CopodNavigationHost(navHostController = navHostController, snackbarHostState = snackbarHostState)
+fun CopodApplication(
+    navHostController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit
+) {
+    CopodNavigationHost(
+        navHostController = navHostController,
+        snackbarHostState = snackbarHostState,
+        copodSnackbarHost = copodSnackbarHost,
+    )
 }

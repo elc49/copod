@@ -9,10 +9,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
@@ -42,6 +42,7 @@ fun NavGraphBuilder.addFarmGraph(
     navHostController: NavHostController,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     scope: CoroutineScope,
 ) {
     navigation(
@@ -54,7 +55,7 @@ fun NavGraphBuilder.addFarmGraph(
             })
         ) {
             Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                snackbarHost = { SnackbarHost(snackbarHostState) },
+                snackbarHost = { copodSnackbarHost(snackbarHostState) },
                 topBar = {
                     TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
                         title = {},

@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -70,13 +69,14 @@ sealed class ServicesScreen(
 fun ExploreScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     navHostController: NavHostController,
     onNavigateTo: (String) -> Unit,
     currentDestination: NavDestination,
 ) {
     val services = listOf(ServicesScreen.Machinery, ServicesScreen.Seeds, ServicesScreen.Seedlings)
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+    Scaffold(snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
             Text(
                 stringResource(R.string.services),

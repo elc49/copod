@@ -35,8 +35,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.type.OrderStatus
@@ -62,7 +62,8 @@ fun UserOrdersScreen(
 ) {
     val orders by viewModel.userOrders.collectAsState()
 
-    Scaffold(topBar = {
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(
                     stringResource(UserOrdersScreenDestination.title),
