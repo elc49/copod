@@ -27,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,8 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
@@ -96,6 +95,7 @@ fun CartScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     currentDestination: NavDestination,
     onNavigateTo: (String) -> Unit,
     onNavigateToUserOrders: () -> Unit,
@@ -111,7 +111,7 @@ fun CartScreen(
     }
     var dropMenuExpanded by remember { mutableStateOf(false) }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+    Scaffold(snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
             Text(
                 stringResource(id = CartScreenDestination.title),

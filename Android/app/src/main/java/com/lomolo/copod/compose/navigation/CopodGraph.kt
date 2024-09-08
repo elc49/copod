@@ -43,6 +43,7 @@ fun CopodNavigationHost(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     mainViewModel: MainViewModel = viewModel(factory = CopodViewModelProvider.Factory),
     sessionViewModel: SessionViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
@@ -96,6 +97,7 @@ fun CopodNavigationHost(
                     scope = scope,
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
+                    copodSnackbarHost = copodSnackbarHost,
                     session = session,
                     onNavigateTo = onNavigateTo,
                 )
@@ -110,6 +112,7 @@ fun CopodNavigationHost(
                     navHostController = navHostController,
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
+                    copodSnackbarHost = copodSnackbarHost,
                     scope = scope,
                 )
                 addServicesGraph(

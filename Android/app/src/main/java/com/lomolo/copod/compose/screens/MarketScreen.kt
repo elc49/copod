@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,8 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.ui.theme.inverseOnSurfaceLight
@@ -54,13 +53,14 @@ fun MarketScreen(
     bottomNav: @Composable () -> Unit = {},
     deviceDetails: DeviceDetails,
     onNavigateToMarketDetails: (String) -> Unit,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     snackbarHostState: SnackbarHostState,
     viewModel: MarketsViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val markets by viewModel.markets.collectAsState()
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { copodSnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(

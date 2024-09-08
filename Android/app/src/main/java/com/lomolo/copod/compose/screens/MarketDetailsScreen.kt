@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.util.Util
@@ -69,6 +68,7 @@ fun MarketDetailsScreen(
     onGoBack: () -> Unit,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     viewModel: MarketDetailsViewModel = viewModel(factory = CopodViewModelProvider.Factory)
 ) {
     val market by viewModel.market.collectAsState()
@@ -86,7 +86,8 @@ fun MarketDetailsScreen(
         }
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
         when (viewModel.gettingMarketState) {
             GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
                 0.dp, 0.dp, 0.dp, 0.dp

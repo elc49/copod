@@ -17,6 +17,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
@@ -74,6 +75,7 @@ fun NavGraphBuilder.addDashboardGraph(
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     session: Session,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     onNavigateTo: (String) -> Unit,
 ) {
     navigation(
@@ -86,12 +88,14 @@ fun NavGraphBuilder.addDashboardGraph(
                 navHostController = navHostController,
                 currentDestination = it.destination,
                 snackbarHostState = snackbarHostState,
+                copodSnackbarHost = copodSnackbarHost,
             )
         }
         composable(route = MarketScreenDestination.route) {
             MarketScreen(
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
+                copodSnackbarHost = copodSnackbarHost,
                 bottomNav = {
                     BottomNavBar(
                         modifier = modifier,
@@ -173,7 +177,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+            Scaffold(topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = PosterSubscriptionScreenDestination.title),
@@ -203,7 +207,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+            Scaffold(topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = FarmSubscriptionScreenDestination.title),
@@ -240,7 +244,7 @@ fun NavGraphBuilder.addDashboardGraph(
         ) {
             val reason = it.arguments?.getString("paymentReason")
 
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+            Scaffold(topBar = {
                 TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = MpesaPaymentScreenDestination.title),
@@ -282,6 +286,7 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = CartScreenDestination.route) {
             CartScreen(
                 snackbarHostState = snackbarHostState,
+                copodSnackbarHost = copodSnackbarHost,
                 deviceDetails = deviceDetails,
                 onNavigateTo = onNavigateTo,
                 currentDestination = it.destination,
@@ -307,6 +312,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 },
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
+                copodSnackbarHost = copodSnackbarHost,
             )
         }
     }
