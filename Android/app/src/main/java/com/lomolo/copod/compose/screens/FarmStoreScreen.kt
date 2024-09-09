@@ -144,7 +144,6 @@ private fun MarketCard(
     modifier: Modifier = Modifier,
     market: GetFarmMarketsQuery.GetFarmMarket,
     currencyLocale: String,
-    language: String,
 ) {
 
     Card(
@@ -496,7 +495,6 @@ fun FarmStoreScreen(
                         } else {
                             items(markets) {
                                 MarketCard(
-                                    language = deviceDetails.languages,
                                     currencyLocale = deviceDetails.currency,
                                     market = it,
                                 )
@@ -601,7 +599,6 @@ fun FarmStoreScreen(
                     } else {
                         items(seeds) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
@@ -648,7 +645,6 @@ fun FarmStoreScreen(
                     } else {
                         items(seedlings) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
@@ -695,7 +691,6 @@ fun FarmStoreScreen(
                     } else {
                         items(machinery) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
