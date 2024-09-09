@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,10 +46,10 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.copod.BuildConfig
+import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.SessionViewModel
-import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.ui.theme.inverseOnSurfaceLight
 import com.lomolo.copod.util.Util
@@ -65,6 +64,7 @@ object FarmScreenDestination : Navigation {
 fun FarmsScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     bottomNav: @Composable () -> Unit = {},
     sessionViewModel: SessionViewModel,
     navHostController: NavHostController,
@@ -74,7 +74,7 @@ fun FarmsScreen(
     val farms by viewModel.farms.collectAsState()
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { copodSnackbarHost(snackbarHostState) },
         bottomBar = bottomNav,
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {

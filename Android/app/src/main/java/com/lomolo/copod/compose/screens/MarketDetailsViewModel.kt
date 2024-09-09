@@ -110,7 +110,8 @@ class MarketDetailsViewModel(
             val m = it.toMutableMap()
             if (m[marketId]!!.volume > 0) {
                 m[marketId] = m[marketId]!!.copy(volume = m[marketId]!!.volume.minus(1))
-                if (m[marketId]?.volume == 0) deleteFromCart()
+                // TODO looks into this properly
+                //if (m[marketId]?.volume == 0) deleteFromCart()
             }
             m.toImmutableMap()
         }

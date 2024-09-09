@@ -116,6 +116,7 @@ fun NavGraphBuilder.addDashboardGraph(
             FarmsScreen(snackbarHostState = snackbarHostState,
                 navHostController = navHostController,
                 sessionViewModel = sessionViewModel,
+                copodSnackbarHost = copodSnackbarHost,
                 bottomNav = {
                     BottomNavBar(
                         modifier = modifier,

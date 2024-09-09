@@ -29,30 +29,33 @@ class CartViewModel(
         private set
 
     fun deleteCartItem(marketId: String) {
-        if (deleteCartItemState !is DeleteCartItemState.Loading && deletingItemId.isBlank()) {
-            deletingItemId = marketId
-            deleteCartItemState = DeleteCartItemState.Loading
-            viewModelScope.launch {
-                deleteCartItemState = try {
-                    marketsRepository.deleteCartItem(marketId)
-                    try {
-                        val updatedCacheData = apolloStore.readOperation(
-                            GetUserCartItemsQuery()
-                        ).getUserCartItems.toMutableList()
-                        val where = updatedCacheData.indexOfFirst { it.market_id.toString() == marketId }
-                        updatedCacheData.removeAt(where)
-                        apolloStore.writeOperation(
-                            GetUserCartItemsQuery(), GetUserCartItemsQuery.Data(updatedCacheData)
-                        )
-                    } catch (e: Exception) {
+        val itemFound = _cartData.value.any { it.market_id.toString() == marketId }
+        if (itemFound) {
+            if (deleteCartItemState !is DeleteCartItemState.Loading && deletingItemId.isBlank()) {
+                deletingItemId = marketId
+                deleteCartItemState = DeleteCartItemState.Loading
+                viewModelScope.launch {
+                    deleteCartItemState = try {
+                        marketsRepository.deleteCartItem(marketId)
+                        try {
+                            val updatedCacheData = apolloStore.readOperation(
+                                GetUserCartItemsQuery()
+                            ).getUserCartItems.toMutableList()
+                            val where = updatedCacheData.indexOfFirst { it.market_id.toString() == marketId }
+                            updatedCacheData.removeAt(where)
+                            apolloStore.writeOperation(
+                                GetUserCartItemsQuery(), GetUserCartItemsQuery.Data(updatedCacheData)
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        DeleteCartItemState.Success
+                    } catch (e: IOException) {
                         e.printStackTrace()
+                        DeleteCartItemState.Error(e.localizedMessage)
+                    } finally {
+                        deletingItemId = ""
                     }
-                    DeleteCartItemState.Success
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    DeleteCartItemState.Error(e.localizedMessage)
-                } finally {
-                    deletingItemId = ""
                 }
             }
         }

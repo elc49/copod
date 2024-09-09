@@ -227,8 +227,8 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Text(
                                             data.visuals.message,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.SemiBold,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Bold,
                                         )
                                     }
                                 }

@@ -23,7 +23,7 @@ val bodyFontFamily = FontFamily(
 
 val displayFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Space Mono"),
+        googleFont = GoogleFont("Space Grotesk"),
         weight = FontWeight.Medium,
         fontProvider = provider,
     )
