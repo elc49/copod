@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ object AccountScreenDestination : Navigation {
     override val route = "dashboard/account"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
     modifier: Modifier = Modifier,
@@ -48,7 +51,15 @@ fun AccountScreen(
     viewModel: AccountViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = bottomNav
+        topBar = {
+            TopAppBar(title = {
+                Text(
+                    text = stringResource(R.string.account_details),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }, windowInsets = WindowInsets(0, 0, 0, 0))
+        }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = bottomNav
     ) { innerPadding ->
         Surface(
             modifier = modifier
@@ -110,15 +121,8 @@ private fun AccountCard(
             .padding(8.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(40.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            Row {
-                Text(
-                    text = stringResource(R.string.account_details),
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.displaySmall,
-                )
-            }
             Row {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current).data(user?.avatar).build(),
@@ -142,13 +146,12 @@ private fun AccountCard(
                     ) {
                         Text(
                             stringResource(id = R.string.phone_number),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
                         )
                         user?.phone?.let {
                             Text(
                                 it,
-                                style = MaterialTheme.typography.titleMedium,
                             )
                         }
                     }

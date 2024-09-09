@@ -87,87 +87,83 @@ fun MarketDetailsScreen(
     }
 
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
-        when (viewModel.gettingMarketState) {
-            GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
-                0.dp, 0.dp, 0.dp, 0.dp
-            ), title = {
-                Column {
+        snackbarHost = { copodSnackbarHost(snackbarHostState) },
+        topBar = {
+            when (viewModel.gettingMarketState) {
+                GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
+                    0.dp, 0.dp, 0.dp, 0.dp
+                ), title = {
                     Text(
-                        stringResource(R.string.details),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
+                        market.farm.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
                     )
-                    Text(
-                        stringResource(R.string.from, market.farm.name),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-            }, navigationIcon = {
-                IconButton(
-                    onClick = {
-                        onGoBack()
-                    },
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = null,
-                    )
-                }
-            })
-
-            else -> {}
-        }
-    }, bottomBar = {
-        when (viewModel.gettingMarketState) {
-            GetMarketDetailsState.Success -> Button(
-                onClick = {
-                    if (orders[market.id.toString()] != null) {
-                        viewModel.addToCart {
-                            showToast("Added to cart.")
-                            viewModel.removeOrder()
-                        }
+                }, navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onGoBack()
+                        },
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = null,
+                        )
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                contentPadding = PaddingValues(12.dp),
-            ) {
-                when (viewModel.addingToCart) {
-                    AddingToCartState.Success -> {
-                        if (orders[market.id.toString()]?.volume != 0) {
-                            Text(
-                                "Add to Cart[${
-                                    Util.formatCurrency(
-                                        currency = deviceDetails.currency,
-                                        amount = market.pricePerUnit.times(
-                                            orders[market.id.toString()]?.volume ?: 0
-                                        )
-                                    )
-                                }]",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        } else {
-                            Text(
-                                stringResource(id = R.string.add_to_cart),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
+                })
 
-                    AddingToCartState.Loading -> CircularProgressIndicator(
-                        Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
+                else -> {}
             }
+        },
+        bottomBar = {
+            when (viewModel.gettingMarketState) {
+                GetMarketDetailsState.Success -> Button(
+                    onClick = {
+                        if (orders[market.id.toString()] != null) {
+                            viewModel.addToCart {
+                                showToast("Added to cart.")
+                                viewModel.removeOrder()
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    contentPadding = PaddingValues(12.dp),
+                ) {
+                    when (viewModel.addingToCart) {
+                        AddingToCartState.Success -> {
+                            if (orders[market.id.toString()]?.volume != 0) {
+                                Text(
+                                    "Add to Cart[${
+                                        Util.formatCurrency(
+                                            currency = deviceDetails.currency,
+                                            amount = market.pricePerUnit.times(
+                                                orders[market.id.toString()]?.volume ?: 0
+                                            )
+                                        )
+                                    }]",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            } else {
+                                Text(
+                                    stringResource(id = R.string.add_to_cart),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                        }
 
-            else -> {}
-        }
-    }) { innerPadding ->
+                        AddingToCartState.Loading -> CircularProgressIndicator(
+                            Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                }
+
+                else -> {}
+            }
+        }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -203,7 +199,7 @@ fun MarketDetailsScreen(
                         ) {
                             Text(
                                 market.name,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.ExtraBold,
                             )
                             Text(
@@ -224,7 +220,7 @@ fun MarketDetailsScreen(
                                     )
                                 } / ${market.unit}",
                                 textAlign = TextAlign.End,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.SemiBold,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -232,7 +228,7 @@ fun MarketDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
-                                when(viewModel.removingFromCart) {
+                                when (viewModel.removingFromCart) {
                                     RemoveFromCartState.Success -> {
                                         TextButton(
                                             onClick = { viewModel.decreaseOrderVolume() },
@@ -267,7 +263,9 @@ fun MarketDetailsScreen(
                                         }
                                     }
 
-                                    RemoveFromCartState.Loading -> CircularProgressIndicator(Modifier.size(20.dp))
+                                    RemoveFromCartState.Loading -> CircularProgressIndicator(
+                                        Modifier.size(20.dp)
+                                    )
                                 }
                             }
                         }
@@ -278,7 +276,7 @@ fun MarketDetailsScreen(
                         Text(
                             stringResource(R.string.description),
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.ExtraBold,
                         )
                         Text(
                             market.details,
