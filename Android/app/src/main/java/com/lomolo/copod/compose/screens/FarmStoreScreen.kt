@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -143,7 +144,6 @@ private fun MarketCard(
     modifier: Modifier = Modifier,
     market: GetFarmMarketsQuery.GetFarmMarket,
     currencyLocale: String,
-    language: String,
 ) {
 
     Card(
@@ -451,10 +451,19 @@ fun FarmStoreScreen(
 
         ScrollableTabRow(divider = {}, edgePadding = 4.dp, selectedTabIndex = state) {
             titles.forEachIndexed { index, title ->
+                val selected = state == index
                 Tab(
-                    selected = state == index,
+                    selected = selected,
                     onClick = { state = index },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            if (selected) BorderStroke(
+                                1.dp, MaterialTheme.colorScheme.primary
+                            ) else BorderStroke(0.dp, MaterialTheme.colorScheme.background),
+                            MaterialTheme.shapes.extraSmall,
+                        )
+                        .padding(if(selected) 2.dp else 0.dp),
                     text = {
                         Text(
                             title,
@@ -486,7 +495,6 @@ fun FarmStoreScreen(
                         } else {
                             items(markets) {
                                 MarketCard(
-                                    language = deviceDetails.languages,
                                     currencyLocale = deviceDetails.currency,
                                     market = it,
                                 )
@@ -591,7 +599,6 @@ fun FarmStoreScreen(
                     } else {
                         items(seeds) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
@@ -638,7 +645,6 @@ fun FarmStoreScreen(
                     } else {
                         items(seedlings) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
@@ -685,7 +691,6 @@ fun FarmStoreScreen(
                     } else {
                         items(machinery) {
                             MarketCard(
-                                language = deviceDetails.languages,
                                 currencyLocale = deviceDetails.currency,
                                 market = it,
                             )
