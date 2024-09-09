@@ -177,7 +177,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
-            Scaffold(topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = PosterSubscriptionScreenDestination.title),
@@ -207,7 +207,7 @@ fun NavGraphBuilder.addDashboardGraph(
             }
         }
         composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = FarmSubscriptionScreenDestination.title),
@@ -244,7 +244,7 @@ fun NavGraphBuilder.addDashboardGraph(
         ) {
             val reason = it.arguments?.getString("paymentReason")
 
-            Scaffold(topBar = {
+            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
                 TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                     Text(
                         stringResource(id = MpesaPaymentScreenDestination.title),

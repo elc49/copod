@@ -15,8 +15,9 @@ val provider = GoogleFont.Provider(
 
 val bodyFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Space Mono"),
+        googleFont = GoogleFont("IBM Plex Sans"),
         fontProvider = provider,
+        weight = FontWeight.Medium,
     )
 )
 
