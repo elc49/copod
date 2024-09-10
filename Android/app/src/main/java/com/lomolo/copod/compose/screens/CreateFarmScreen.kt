@@ -154,13 +154,12 @@ fun CreateFarmScreen(
             Text(
                 stringResource(id = CreateFarmScreenDestination.title),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
             )
         }, navigationIcon = {
             IconButton(onClick = onNavigateBack) {
                 Icon(
                     Icons.TwoTone.Close,
-                    modifier = Modifier.size(28.dp),
                     contentDescription = stringResource(R.string.close),
                 )
             }

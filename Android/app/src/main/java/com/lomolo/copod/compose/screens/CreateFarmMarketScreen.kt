@@ -185,7 +185,7 @@ fun CreateFarmMarketScreen(
             Text(
                 stringResource(R.string.add_market),
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
             )
         }, navigationIcon = {
             IconButton(onClick = { onGoBack() }) {
