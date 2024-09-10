@@ -118,7 +118,6 @@ fun MpesaPaymentScreen(
                     deviceDetails.farmingRightsFee, deviceDetails.currency, deviceDetails
                 )
             },
-            shape = MaterialTheme.shapes.extraSmall,
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
         ) {
