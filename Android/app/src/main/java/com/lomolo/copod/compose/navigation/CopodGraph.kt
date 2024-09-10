@@ -16,12 +16,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.MainViewModel
 import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.SettingDeviceDetails
-import com.lomolo.copod.CopodViewModelProvider
-import com.lomolo.copod.compose.screens.ErrorComposable
 import com.lomolo.copod.compose.screens.GenesisScreen
+import com.lomolo.copod.compose.screens.HomeErrorScreen
 import com.lomolo.copod.model.DeviceDetails
 
 object RootNavigation : Navigation {
@@ -76,7 +76,10 @@ fun CopodNavigationHost(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                ErrorComposable()
+                HomeErrorScreen(
+                    retry = { mainViewModel.getDeviceDetails() },
+                    loading = mainViewModel.settingDeviceDetailsState == SettingDeviceDetails.Loading,
+                )
             }
         }
 
