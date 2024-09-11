@@ -11,15 +11,16 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -38,7 +39,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
-import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
@@ -57,7 +57,6 @@ object UserOrdersScreenDestination : Navigation {
 fun UserOrdersScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
-    deviceDetails: DeviceDetails,
     viewModel: UserOrdersViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val orders by viewModel.userOrders.collectAsState()
@@ -165,7 +164,9 @@ fun UserOrdersScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        LinearProgressIndicator()
+                        CircularProgressIndicator(
+                            Modifier.size(20.dp)
+                        )
                     }
                 }
             }
