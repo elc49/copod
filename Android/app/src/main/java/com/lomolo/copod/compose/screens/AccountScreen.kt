@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetUserQuery
 import com.lomolo.copod.R
-import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.compose.navigation.Navigation
 
 object AccountScreenDestination : Navigation {
@@ -76,7 +75,9 @@ fun AccountScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    LinearProgressIndicator()
+                    CircularProgressIndicator(
+                        Modifier.size(20.dp)
+                    )
                 }
 
                 is GetUserState.Error -> {

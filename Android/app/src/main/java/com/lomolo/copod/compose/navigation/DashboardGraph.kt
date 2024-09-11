@@ -297,7 +297,6 @@ fun NavGraphBuilder.addDashboardGraph(
         composable(route = UserOrdersScreenDestination.route) {
             UserOrdersScreen(
                 modifier = modifier,
-                deviceDetails = deviceDetails,
                 onNavigateBack = { navHostController.popBackStack() },
             )
         }
