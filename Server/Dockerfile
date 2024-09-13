@@ -1,5 +1,8 @@
 FROM golang:1.22
 
+RUN mkdir -p go/src/copod
+WORKDIR go/src/copod
+
 # Server
 ENV PORT=$PORT
 ENV ENV=$ENV
@@ -34,8 +37,6 @@ ENV REDIS_ENDPOINT=$REDIS_ENDPOINT
 # Sentry
 ENV SENTRY_DSN=$SENTRY_DSN
 
-RUN mkdir -p go/src/copod
-WORKDIR go/src/copod
 COPY . .
 RUN make tidy
 
