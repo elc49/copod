@@ -52,25 +52,19 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 			return
 		}
 
-		jwt, err := jwtService.Sign(jwt.NewPayload(user.ID.String(), jwtService.GetExpiry()))
+		copodJwt, err := jwtService.Sign(jwt.NewPayload(user.ID.String(), jwtService.GetExpiry()))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		res.Token = jwt
+		res.Token = copodJwt
 		res.UserID = user.ID
 		res.HasFarmingRights = user.HasFarmingRights
 		res.HasPosterRights = user.HasPosterRights
 
-		result, err := json.Marshal(res)
-		if err != nil {
-			log.WithError(err).Error("handlers: json.Marshal() signin response")
+		if err := renderJSON(w, res, http.StatusOK); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(result)
 	})
 }

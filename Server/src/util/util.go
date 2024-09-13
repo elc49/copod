@@ -3,11 +3,10 @@ package util
 import (
 	"crypto/rand"
 	"encoding/json"
-	"math/big"
-
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/logger"
 	"github.com/google/uuid"
+	"math/big"
 )
 
 var log = logger.GetLogger()
@@ -41,7 +40,7 @@ func ParsePostgisLocation(p interface{}) *model.Address {
 	var location *point
 
 	if p != nil {
-		json.Unmarshal([]byte((p).(string)), &location)
+		_ = json.Unmarshal([]byte((p).(string)), &location)
 
 		lat := &location.Coordinates[1]
 		lng := &location.Coordinates[0]

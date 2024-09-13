@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/elc49/copod/Server/src/controllers"
@@ -35,15 +34,9 @@ func RefreshToken(signinController controllers.SigninController) http.Handler {
 		res.HasFarmingRights = user.HasFarmingRights
 		res.HasPosterRights = user.HasPosterRights
 
-		result, err := json.Marshal(res)
-		if err != nil {
-			log.WithError(err).Error("handlers: json.Marshal() refresh token response")
+		if err := renderJSON(w, res, http.StatusCreated); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		w.Write(result)
 	})
 }

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/elc49/copod/Server/src/ip"
@@ -15,14 +14,10 @@ func Ip() http.Handler {
 			return
 		}
 
-		res, err := json.Marshal(ipinfo)
+		err = renderJSON(w, ipinfo, http.StatusOK)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
 	})
 }
