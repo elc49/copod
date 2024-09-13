@@ -2,14 +2,14 @@
 tidy:
 	go mod tidy
 # Generate graphql resolvers and models
-graphql-api:
+graphql:
 	go run github.com/99designs/gqlgen generate --verbose
 # Sqlc
-postgres-db:
+postgres:
 	sqlc generate
 # Test
-tests-run:
+test:
 	go test ./tests
 # Run server
-vuno-api:
+copod:
 	go run .

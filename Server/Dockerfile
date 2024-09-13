@@ -9,4 +9,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o copod
 EXPOSE 4000
 EXPOSE 4001
 
-CMD ["./copod"]
+CMD ["make copod"]

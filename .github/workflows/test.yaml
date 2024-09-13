@@ -34,4 +34,4 @@ jobs:
         PGPASSWORD=demo1234 psql -h localhost -U postgres -c 'DROP DATABASE IF EXISTS test;'
         PGPASSWORD=demo1234 psql -h localhost -U postgres -c 'CREATE DATABASE test;'
     - name: test
-      run: cd Server && make tests-run
+      run: cd Server && make test
