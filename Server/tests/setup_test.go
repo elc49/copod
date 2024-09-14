@@ -64,12 +64,6 @@ func marketController() controllers.MarketController {
 	return c
 }
 
-func postController() controllers.PostController {
-	c := controllers.PostController{}
-	c.Init(store)
-	return c
-}
-
 func cartController() controllers.CartController {
 	c := controllers.CartController{}
 	c.Init(store)

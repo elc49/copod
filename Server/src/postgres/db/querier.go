@@ -18,13 +18,11 @@ type Querier interface {
 	ClearTestFarms(ctx context.Context) error
 	ClearTestMarkets(ctx context.Context) error
 	ClearTestOrders(ctx context.Context) error
-	ClearTestPosters(ctx context.Context) error
 	ClearTestUsers(ctx context.Context) error
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error)
 	CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
-	CreatePost(ctx context.Context, arg CreatePostParams) (Post, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	DeleteCartItem(ctx context.Context, marketID uuid.UUID) error
 	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
@@ -33,7 +31,6 @@ type Querier interface {
 	GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error)
 	GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocalizedMachineryMarketsParams) ([]Market, error)
 	GetLocalizedMarkets(ctx context.Context, arg GetLocalizedMarketsParams) ([]Market, error)
-	GetLocalizedPosters(ctx context.Context, arg GetLocalizedPostersParams) ([]GetLocalizedPostersRow, error)
 	GetMarketByID(ctx context.Context, id uuid.UUID) (Market, error)
 	// noinspection SqlNoDataSourceInspectionForFile
 	GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]Market, error)

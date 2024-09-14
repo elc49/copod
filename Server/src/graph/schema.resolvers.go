@@ -33,12 +33,6 @@ func (r *marketResolver) Farm(ctx context.Context, obj *model.Market) (*model.Fa
 	return r.farmController.GetFarmByID(ctx, obj.FarmID)
 }
 
-// CreatePost is the resolver for the createPost field.
-func (r *mutationResolver) CreatePost(ctx context.Context, input model.NewPostInput) (*model.Post, error) {
-	userId := util.StringToUUID(ctx.Value("userId").(string))
-	return r.postController.CreatePost(ctx, userId, input)
-}
-
 // CreateFarm is the resolver for the createFarm field.
 func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmInput) (*model.Farm, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
@@ -143,20 +137,6 @@ func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Ma
 // Customer is the resolver for the customer field.
 func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, obj.CustomerID)
-}
-
-// User is the resolver for the user field.
-func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
-	return r.signinController.GetUserByID(ctx, obj.UserID)
-}
-
-// GetLocalizedPosters is the resolver for the getLocalizedPosters field.
-func (r *queryResolver) GetLocalizedPosters(ctx context.Context, radius model.GpsInput) ([]*model.Post, error) {
-	args := db.GetLocalizedPostersParams{
-		Point:  fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", radius.Lng, radius.Lat),
-		Radius: 20000,
-	}
-	return r.postController.GetLocalizedPosters(ctx, args)
 }
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
@@ -278,9 +258,6 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Order returns OrderResolver implementation.
 func (r *Resolver) Order() OrderResolver { return &orderResolver{r} }
 
-// Post returns PostResolver implementation.
-func (r *Resolver) Post() PostResolver { return &postResolver{r} }
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
@@ -291,6 +268,5 @@ type cartResolver struct{ *Resolver }
 type marketResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
-type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
