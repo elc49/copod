@@ -37,8 +37,6 @@ import com.lomolo.copod.compose.screens.CartScreen
 import com.lomolo.copod.compose.screens.CartScreenDestination
 import com.lomolo.copod.compose.screens.CreateFarmScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
-import com.lomolo.copod.compose.screens.CreatePostScreen
-import com.lomolo.copod.compose.screens.CreatePostScreenDestination
 import com.lomolo.copod.compose.screens.ExploreScreen
 import com.lomolo.copod.compose.screens.ExploreScreenDestination
 import com.lomolo.copod.compose.screens.FarmScreenDestination
@@ -74,7 +72,6 @@ fun NavGraphBuilder.addDashboardGraph(
     deviceDetails: DeviceDetails,
     scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
-    session: Session,
     copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     onNavigateTo: (String) -> Unit,
 ) {
@@ -145,22 +142,6 @@ fun NavGraphBuilder.addDashboardGraph(
                         }
                     }
                 },
-            )
-        }
-        dialog(
-            route = CreatePostScreenDestination.route,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            CreatePostScreen(
-                onCloseDialog = {
-                    navHostController.popBackStack()
-                },
-                showToast = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Post created", withDismissAction = true)
-                    }
-                },
-                session = session,
             )
         }
         dialog(

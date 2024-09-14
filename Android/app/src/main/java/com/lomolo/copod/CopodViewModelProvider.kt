@@ -9,13 +9,11 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.lomolo.copod.common.BottomNavBarViewModel
 import com.lomolo.copod.compose.screens.AccountViewModel
 import com.lomolo.copod.compose.screens.AddFarmMarketViewModel
-import com.lomolo.copod.compose.screens.CreateFarmViewModel
-import com.lomolo.copod.compose.screens.CreatePostViewModel
-import com.lomolo.copod.compose.screens.ExploreViewModel
-import com.lomolo.copod.compose.screens.FarmStoreViewModel
-import com.lomolo.copod.compose.screens.FarmSettingsViewModel
-import com.lomolo.copod.compose.screens.FarmViewModel
 import com.lomolo.copod.compose.screens.CartViewModel
+import com.lomolo.copod.compose.screens.CreateFarmViewModel
+import com.lomolo.copod.compose.screens.FarmSettingsViewModel
+import com.lomolo.copod.compose.screens.FarmStoreViewModel
+import com.lomolo.copod.compose.screens.FarmViewModel
 import com.lomolo.copod.compose.screens.MachineryViewModel
 import com.lomolo.copod.compose.screens.MarketDetailsViewModel
 import com.lomolo.copod.compose.screens.MarketsViewModel
@@ -35,9 +33,7 @@ object CopodViewModelProvider {
         lateinit var createFarmViewModel: CreateFarmViewModel
         lateinit var accountViewModel: AccountViewModel
         lateinit var signinViewModel: SigninViewModel
-        lateinit var createPostViewModel: CreatePostViewModel
         lateinit var marketsViewModel: MarketsViewModel
-        lateinit var exploreViewModel: ExploreViewModel
         lateinit var paymentViewModel: PaymentViewModel
         lateinit var cartViewModel: CartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
@@ -59,15 +55,6 @@ object CopodViewModelProvider {
                 vunoApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel
-        }
-
-        initializer {
-            createPostViewModel = CreatePostViewModel(
-                mainViewModel,
-                vunoApplication().container.copodRestApiService,
-                vunoApplication().container.copodGraphqlApiService,
-            )
-            createPostViewModel
         }
 
         initializer {
@@ -126,14 +113,6 @@ object CopodViewModelProvider {
                 mainViewModel,
             )
             marketsViewModel
-        }
-
-        initializer {
-            exploreViewModel = ExploreViewModel(
-                vunoApplication().container.postersRepository,
-                mainViewModel,
-            )
-            exploreViewModel
         }
 
         initializer {

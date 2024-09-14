@@ -101,7 +101,6 @@ fun CopodNavigationHost(
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
                     copodSnackbarHost = copodSnackbarHost,
-                    session = session,
                     onNavigateTo = onNavigateTo,
                 )
                 addAuthGraph(

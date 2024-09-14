@@ -5,11 +5,9 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
-import com.google.android.gms.maps.model.LatLng
 import com.lomolo.copod.AddToCartMutation
 import com.lomolo.copod.CreateFarmMarketMutation
 import com.lomolo.copod.CreateFarmMutation
-import com.lomolo.copod.CreatePostMutation
 import com.lomolo.copod.DeleteCartItemMutation
 import com.lomolo.copod.GetFarmByIdQuery
 import com.lomolo.copod.GetFarmMarketsQuery
@@ -18,7 +16,6 @@ import com.lomolo.copod.GetFarmPaymentsQuery
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.GetLocalizedMachineryMarketsQuery
 import com.lomolo.copod.GetLocalizedMarketsQuery
-import com.lomolo.copod.GetLocalizedPostersQuery
 import com.lomolo.copod.GetMarketDetailsQuery
 import com.lomolo.copod.GetOrdersBelongingToUserQuery
 import com.lomolo.copod.GetPaystackPaymentVerificationQuery
@@ -42,7 +39,6 @@ import com.lomolo.copod.type.GetLocalizedMarketsInput
 import com.lomolo.copod.type.GpsInput
 import com.lomolo.copod.type.NewFarmInput
 import com.lomolo.copod.type.NewFarmMarketInput
-import com.lomolo.copod.type.NewPostInput
 import com.lomolo.copod.type.PayWithMpesaInput
 import com.lomolo.copod.type.SendOrderToFarmInput
 import com.lomolo.copod.type.SetMarketStatusInput
@@ -51,7 +47,6 @@ import com.lomolo.copod.type.UpdateOrderStatusInput
 import kotlinx.coroutines.flow.Flow
 
 interface ICopodGraphqlApi {
-    suspend fun createPost(input: NewPostInput): ApolloResponse<CreatePostMutation.Data>
     suspend fun getFarmsBelongingToUser(): Flow<ApolloResponse<GetFarmsBelongingToUserQuery.Data>>
     suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
     suspend fun getUser(): ApolloResponse<GetUserQuery.Data>
@@ -61,7 +56,6 @@ interface ICopodGraphqlApi {
     suspend fun getFarmPayments(id: String): ApolloResponse<GetFarmPaymentsQuery.Data>
     suspend fun createFarmMarket(input: Market): ApolloResponse<CreateFarmMarketMutation.Data>
     suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput): ApolloResponse<GetLocalizedMarketsQuery.Data>
-    suspend fun getLocalizedPosters(radius: LatLng): ApolloResponse<GetLocalizedPostersQuery.Data>
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
     suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>>
@@ -82,10 +76,6 @@ interface ICopodGraphqlApi {
 class CopodGraphqlApi(
     private val apolloClient: ApolloClient,
 ): ICopodGraphqlApi {
-    override suspend fun createPost(input: NewPostInput) = apolloClient
-        .mutation(CreatePostMutation(input))
-        .execute()
-
     override suspend fun getFarmsBelongingToUser() = apolloClient
         .query(GetFarmsBelongingToUserQuery())
         .watch()
@@ -142,13 +132,6 @@ class CopodGraphqlApi(
     override suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput) = apolloClient
         .query(GetLocalizedMarketsQuery(
             input
-        ))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
-
-    override suspend fun getLocalizedPosters(radius: LatLng) = apolloClient
-        .query(GetLocalizedPostersQuery(
-            GpsInput(radius.latitude, radius.longitude)
         ))
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()

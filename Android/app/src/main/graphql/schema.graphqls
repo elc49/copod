@@ -143,8 +143,6 @@ enum MetricUnit {
 }
 
 type Mutation {
-  createPost(input: NewPostInput!): Post!
-
   createFarm(input: NewFarmInput!): Farm!
 
   createFarmMarket(input: NewFarmMarketInput!): Market!
@@ -282,29 +280,7 @@ type PaystackPaymentUpdate {
   sessionId: UUID!
 }
 
-type Post {
-  id: UUID!
-
-  text: String!
-
-  image: String!
-
-  tags: [String!]!
-
-  farmAddress: Address!
-
-  userId: UUID!
-
-  user: User!
-
-  created_at: Time!
-
-  updated_at: Time!
-}
-
 type Query {
-  getLocalizedPosters(radius: GpsInput!): [Post!]!
-
   getFarmsBelongingToUser: [Farm!]!
 
   getUser: User!

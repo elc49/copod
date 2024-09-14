@@ -15,11 +15,9 @@ import com.lomolo.copod.repository.FarmRepository
 import com.lomolo.copod.repository.IFarm
 import com.lomolo.copod.repository.IMarkets
 import com.lomolo.copod.repository.IPayment
-import com.lomolo.copod.repository.IPosters
 import com.lomolo.copod.repository.ISession
 import com.lomolo.copod.repository.MarketsRepository
 import com.lomolo.copod.repository.PaymentRepository
-import com.lomolo.copod.repository.PostersRepository
 import com.lomolo.copod.repository.SessionRepository
 import com.lomolo.copod.sql.Store
 import com.squareup.moshi.Moshi
@@ -37,7 +35,6 @@ interface IApplicationContainer{
     val copodGraphqlApiService: ICopodGraphqlApi
     val farmRepository: IFarm
     val marketsRepository: IMarkets
-    val postersRepository: IPosters
     val paymentRepository: IPayment
 }
 
@@ -111,10 +108,6 @@ class ApplicationContainer(
 
     override val marketsRepository: IMarkets by lazy {
         MarketsRepository(copodGraphqlApiService)
-    }
-
-    override val postersRepository: IPosters by lazy {
-        PostersRepository(copodGraphqlApiService)
     }
 
     override val paymentRepository: IPayment by lazy {
