@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	vunoCache "github.com/elc49/copod/Server/src/cache"
+	copodCache "github.com/elc49/copod/Server/src/cache"
 	"github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/logger"
@@ -27,9 +27,10 @@ var (
 )
 
 type ipC struct {
-	client    *ipinfo.Client
-	log       *logrus.Logger
-	vunoCache vunoCache.Cache
+	client     *ipinfo.Client
+	log        *logrus.Logger
+	copodCache copodCache.Cache
+	httpClient http.Client
 }
 
 func NewIpinfoClient() {
@@ -41,12 +42,12 @@ func NewIpinfoClient() {
 		config.Configuration.Ipinfo.ApiKey,
 	)
 
-	ipClient = &ipC{client, logger.GetLogger(), vunoCache.GetCache()}
+	ipClient = &ipC{client, logger.GetLogger(), copodCache.GetCache(), http.Client{}}
 }
 
 func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	ipinfo := &model.Ipinfo{}
-	cacheValue, err := ipc.vunoCache.Get(context.Background(), vunoCache.IpCacheKey(ip), ipinfo)
+	cacheValue, err := ipc.copodCache.Get(context.Background(), copodCache.IpCacheKey(ip), ipinfo)
 	if err != nil {
 		return nil, err
 	} else if cacheValue != nil {
@@ -56,7 +57,6 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
 	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
 
-	ipApiClient := http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://ipapi.co/%s/json/", ip), nil)
 	req.Header.Set("User-Agent", "ipapi.co/#go-v1.5")
 	if err != nil {
@@ -64,7 +64,7 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 		return nil, err
 	}
 
-	res, err := ipApiClient.Do(req)
+	res, err := ipc.httpClient.Do(req)
 	if err != nil {
 		ipc.log.WithError(err).Error("ip: ipApiClient.Do")
 		return nil, err
@@ -92,7 +92,7 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 	ipinfo.Gps = secondaryIpinfo.Location
 
 	go func() {
-		if err := ipc.vunoCache.Set(context.Background(), vunoCache.IpCacheKey(ip), ipinfo, time.Hour*24); err != nil {
+		if err := ipc.copodCache.Set(context.Background(), copodCache.IpCacheKey(ip), ipinfo, time.Hour*24); err != nil {
 			ipc.log.WithFields(logrus.Fields{"value": ipinfo, "err": err}).Errorf("ip: cache ipinfo")
 			return
 		}
