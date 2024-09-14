@@ -1,6 +1,8 @@
 package com.lomolo.copod.data
 
 import com.lomolo.copod.R
+import com.lomolo.copod.type.MarketStatus
+import com.lomolo.copod.type.OrderStatus
 
 object Data {
     val marketTags = listOf(
@@ -33,5 +35,11 @@ object Data {
         "services/cultivation" to R.drawable.cultivation,
         "services/crop disease" to R.drawable.bad_leaf,
         "services/animal feed" to R.drawable.animal_feed,
+    )
+
+    val orderStatuses = listOf(
+        OrderStatus.PENDING,
+        OrderStatus.CONFIRMED,
+        OrderStatus.DELIVERED,
     )
 }
