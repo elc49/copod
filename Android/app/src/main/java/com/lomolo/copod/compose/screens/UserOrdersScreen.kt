@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -61,22 +62,23 @@ fun UserOrdersScreen(
 ) {
     val orders by viewModel.userOrders.collectAsState()
 
-    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = {
-            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                Text(
-                    stringResource(UserOrdersScreenDestination.title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-            }, navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+        TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+            Text(
+                stringResource(UserOrdersScreenDestination.title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
+        }, navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    Icons.AutoMirrored.TwoTone.ArrowBack, contentDescription = stringResource(
                         id = R.string.go_back
-                    ))
-                }
-            })
-        }) { innerPadding ->
+                    )
+                )
+            }
+        })
+    }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
@@ -117,41 +119,45 @@ fun UserOrdersScreen(
                             }
                         }
                         itemsIndexed(orders) { index, item ->
-                            val statusColor: Color = when(item.status) {
+                            val statusColor: Color = when (item.status) {
                                 OrderStatus.PENDING -> surfaceContainerLight
                                 OrderStatus.DELIVERED -> primaryContainerLight
                                 OrderStatus.CANCELLED -> errorContainerLight
                                 OrderStatus.CONFIRMED -> secondaryContainerLight
                                 else -> MaterialTheme.colorScheme.primaryContainer
                             }
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                TableCell(text = "${index.plus(1)}", weight = .1f)
-                                TableCell(text = item.market.name, weight = .2f)
-                                TableCell(text = "${item.volume} ${item.market.unit}", weight = .2f)
-                                TableCell(
-                                    text = Util.formatCurrency(
-                                        currency = item.currency, amount = item.toBePaid
-                                    ), weight = .2f
-                                )
-                                Box(
-                                    Modifier
-                                        .weight(.2f)
-                                        .background(
-                                            statusColor,
-                                            MaterialTheme.shapes.small,
-                                        )
-                                        .padding(4.dp)
-                                        .wrapContentSize(Alignment.Center),
+                            Column {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    Text(
-                                        item.status.toString(),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontWeight = FontWeight.Bold,
+                                    TableCell(text = "${index.plus(1)}", weight = .1f)
+                                    TableCell(text = item.market.name, weight = .2f)
+                                    TableCell(
+                                        text = "${item.volume} ${item.market.unit}", weight = .2f
                                     )
+                                    TableCell(
+                                        text = Util.formatCurrency(
+                                            currency = item.currency, amount = item.toBePaid
+                                        ), weight = .2f
+                                    )
+                                    Box(
+                                        Modifier
+                                            .weight(.2f)
+                                            .background(
+                                                statusColor,
+                                                MaterialTheme.shapes.small,
+                                            )
+                                            .padding(4.dp)
+                                            .wrapContentSize(Alignment.Center)
+                                    ) {
+                                        LinearProgressIndicator(
+                                            progress = {
+                                                Util.calculateOrderStatusProgress(item.status)
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
