@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -83,6 +85,13 @@ fun MarketCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+            CircularProgressIndicator(
+                progress = {
+                    (data.running_volume.div(data.volume)).times(100).toFloat().div(100)
+                },
+                Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+            )
         }
     }
 }

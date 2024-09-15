@@ -34,7 +34,7 @@ class MarketDetailsViewModel(
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
         MutableStateFlow(
             GetMarketDetailsQuery.GetMarketDetails(
-                "", "", "", "", MetricUnit.Kg, 0, MarketType.UNKNOWN__, "", GetMarketDetailsQuery.Farm("", ""), 0
+                "", "", "", "", MetricUnit.Kg, 0, 0, MarketType.UNKNOWN__, "", GetMarketDetailsQuery.Farm("", ""), 0
             )
         )
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()

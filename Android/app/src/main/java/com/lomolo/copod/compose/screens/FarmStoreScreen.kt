@@ -70,6 +70,7 @@ import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
@@ -167,27 +168,44 @@ private fun MarketCard(
                 id = R.string.product
             )
         )
-        Column(
-            Modifier.padding(4.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+        Row(
+            Modifier.fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                market.name,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                overflow = TextOverflow.Clip,
-            )
-            Text(
-                "${
-                    Util.formatCurrency(
-                        currency = currencyLocale, amount = market.pricePerUnit
-                    )
-                } / ${market.unit}",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Clip,
-            )
+            Column(
+                Modifier.padding(4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    market.name,
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Clip,
+                )
+                Text(
+                    "${
+                        Util.formatCurrency(
+                            currency = currencyLocale, amount = market.pricePerUnit
+                        )
+                    } / ${market.unit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Clip,
+                )
+            }
+            when(market.type) {
+                MarketType.MACHINERY -> {}
+                else -> CircularProgressIndicator(
+                    progress = {
+                        (market.running_volume.div(market.volume)).times(100).toFloat().div(100)
+                    },
+                    Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                )
+            }
         }
     }
 }
@@ -200,7 +218,7 @@ private fun OrderDate(
     country: String,
 ) {
     Text(
-        Util.copodDataFormat(date, language, country),
+        Util.copodDateFormat(date, language, country),
         style = MaterialTheme.typography.bodySmall,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier,

@@ -16,7 +16,7 @@ import java.util.Locale
 import kotlin.math.round
 
 object Util {
-    fun copodDataFormat(date: String, language: String, country: String): String {
+    fun copodDateFormat(date: String, language: String, country: String): String {
         val cYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
         val dateTime = Instant.parse(date).toLocalDateTime(TimeZone.currentSystemDefault())
         val displayDate = if (cYear > dateTime.year) {
