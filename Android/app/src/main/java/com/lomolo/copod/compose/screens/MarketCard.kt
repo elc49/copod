@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -29,6 +31,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.R
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.util.Util
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -81,6 +84,16 @@ fun MarketCard(
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+            when(data.type) {
+                MarketType.MACHINERY -> {}
+                else -> CircularProgressIndicator(
+                    progress = {
+                        (data.running_volume.div(data.volume)).times(100).toFloat().div(100)
+                    },
+                    Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
                 )
             }
         }

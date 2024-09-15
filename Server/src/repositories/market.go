@@ -120,6 +120,7 @@ func (r *MarketRepository) GetLocalizedMarkets(ctx context.Context, userID uuid.
 			Unit:          model.MetricUnit(item.Unit),
 			Volume:        int(item.Volume),
 			Details:       item.Details,
+			Type:          model.MarketType(item.Type),
 			RunningVolume: int(item.RunningVolume),
 			CanOrder:      farmOwner != userID.String(),
 			FarmID:        item.FarmID,
