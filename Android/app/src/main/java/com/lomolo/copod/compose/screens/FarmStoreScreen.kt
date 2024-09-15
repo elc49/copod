@@ -70,6 +70,7 @@ import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
+import com.lomolo.copod.type.MarketStatus
 import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
@@ -146,6 +147,12 @@ private fun MarketCard(
     market: GetFarmMarketsQuery.GetFarmMarket,
     currencyLocale: String,
 ) {
+    val statusColor: Color = when (market.status) {
+        MarketStatus.CLOSED -> surfaceContainerLight
+        MarketStatus.BOOKED -> primaryContainerLight
+        MarketStatus.OPEN -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
 
     Card(
         modifier = modifier.wrapContentHeight(),
@@ -169,7 +176,8 @@ private fun MarketCard(
             )
         )
         Row(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -195,10 +203,25 @@ private fun MarketCard(
                     textAlign = TextAlign.Start,
                     overflow = TextOverflow.Clip,
                 )
+                if (market.type == MarketType.MACHINERY) {
+                    Box(
+                        Modifier
+                            .background(
+                                statusColor,
+                                MaterialTheme.shapes.extraSmall,
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Text(
+                            market.status.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
             }
-            when(market.type) {
-                MarketType.MACHINERY -> {}
-                else -> CircularProgressIndicator(
+            if (market.type != MarketType.MACHINERY && market.running_volume > 0) {
+                CircularProgressIndicator(
                     progress = {
                         (market.running_volume.div(market.volume)).times(100).toFloat().div(100)
                     },
@@ -481,7 +504,7 @@ fun FarmStoreScreen(
                             ) else BorderStroke(0.dp, MaterialTheme.colorScheme.background),
                             MaterialTheme.shapes.extraSmall,
                         )
-                        .padding(if(selected) 2.dp else 0.dp),
+                        .padding(if (selected) 2.dp else 0.dp),
                     text = {
                         Text(
                             title,
