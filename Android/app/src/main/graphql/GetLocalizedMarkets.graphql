@@ -3,6 +3,7 @@ query GetLocalizedMarkets($input: GetLocalizedMarketsInput!) {
         id
         name
         image
+        type
         canOrder
         status
         volume

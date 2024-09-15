@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.R
+import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.util.Util
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -85,13 +86,16 @@ fun MarketCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            CircularProgressIndicator(
-                progress = {
-                    (data.running_volume.div(data.volume)).times(100).toFloat().div(100)
-                },
-                Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-            )
+            when(data.type) {
+                MarketType.MACHINERY -> {}
+                else -> CircularProgressIndicator(
+                    progress = {
+                        (data.running_volume.div(data.volume)).times(100).toFloat().div(100)
+                    },
+                    Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                )
+            }
         }
     }
 }
