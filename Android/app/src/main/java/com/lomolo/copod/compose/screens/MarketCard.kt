@@ -90,10 +90,9 @@ fun MarketCard(
                 MarketType.MACHINERY -> {}
                 else -> CircularProgressIndicator(
                     progress = {
-                        (data.running_volume.div(data.volume)).times(100).toFloat().div(100)
+                        data.running_volume/data.volume.toFloat()
                     },
                     Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
                 )
             }
         }

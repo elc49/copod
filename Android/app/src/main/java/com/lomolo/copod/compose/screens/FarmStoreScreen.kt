@@ -223,10 +223,9 @@ private fun MarketCard(
             if (market.type != MarketType.MACHINERY && market.running_volume > 0) {
                 CircularProgressIndicator(
                     progress = {
-                        (market.running_volume.div(market.volume)).times(100).toFloat().div(100)
+                        market.running_volume/market.volume.toFloat()
                     },
                     Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
                 )
             }
         }
