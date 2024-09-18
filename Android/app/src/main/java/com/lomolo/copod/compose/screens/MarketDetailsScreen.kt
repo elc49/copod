@@ -113,7 +113,7 @@ fun MarketDetailsScreen(
                     }
                 }, actions = {
                     IconButton(
-                        onClick = { onGoToFarmProfile(FarmProfileScreenDestination.route) },
+                        onClick = { onGoToFarmProfile(market.farmId.toString()) },
                     ) {
                         Icon(
                             Icons.TwoTone.Info,

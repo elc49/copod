@@ -292,13 +292,20 @@ fun NavGraphBuilder.addDashboardGraph(
                 onGoBack = {
                     navHostController.popBackStack()
                 },
-                onGoToFarmProfile = { navHostController.navigate(it) },
+                onGoToFarmProfile = { profileId ->
+                    navHostController.navigate("${FarmProfileScreenDestination.route}/${profileId}")
+                },
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
                 copodSnackbarHost = copodSnackbarHost,
             )
         }
-        composable(route = FarmProfileScreenDestination.route) {
+        composable(
+            route = FarmProfileScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmProfileScreenDestination.profileIdArg) {
+                type = NavType.StringType
+            })
+        ) {
             FarmProfileScreen(
                 onGoBack = {
                     navHostController.popBackStack()
