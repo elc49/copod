@@ -194,6 +194,7 @@ object CopodViewModelProvider {
             farmProfileViewModel = FarmProfileViewModel(
                 vunoApplication().container.farmRepository,
                 vunoApplication().container.marketsRepository,
+                this.createSavedStateHandle(),
             )
             farmProfileViewModel
         }
