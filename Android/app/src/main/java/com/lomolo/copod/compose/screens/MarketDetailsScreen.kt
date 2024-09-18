@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -66,6 +67,7 @@ object MarketDetailsScreenDestination : Navigation {
 fun MarketDetailsScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit,
+    onGoToFarmProfile: (String) -> Unit,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
     copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
@@ -107,6 +109,15 @@ fun MarketDetailsScreen(
                         Icon(
                             Icons.AutoMirrored.TwoTone.ArrowBack,
                             contentDescription = null,
+                        )
+                    }
+                }, actions = {
+                    IconButton(
+                        onClick = { onGoToFarmProfile(FarmProfileScreenDestination.route) },
+                    ) {
+                        Icon(
+                            Icons.TwoTone.Info,
+                            contentDescription = stringResource(R.string.info),
                         )
                     }
                 })

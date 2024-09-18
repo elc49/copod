@@ -11,6 +11,7 @@ import com.lomolo.copod.compose.screens.AccountViewModel
 import com.lomolo.copod.compose.screens.AddFarmMarketViewModel
 import com.lomolo.copod.compose.screens.CartViewModel
 import com.lomolo.copod.compose.screens.CreateFarmViewModel
+import com.lomolo.copod.compose.screens.FarmProfileViewModel
 import com.lomolo.copod.compose.screens.FarmSettingsViewModel
 import com.lomolo.copod.compose.screens.FarmStoreViewModel
 import com.lomolo.copod.compose.screens.FarmViewModel
@@ -43,6 +44,7 @@ object CopodViewModelProvider {
         lateinit var seedsViewModel: SeedsViewModel
         lateinit var seedlingsViewModel: SeedlingsViewModel
         lateinit var machineryViewModel: MachineryViewModel
+        lateinit var farmProfileViewModel: FarmProfileViewModel
 
         initializer {
             mainViewModel = MainViewModel(vunoApplication().container.copodRestApiService)
@@ -186,6 +188,14 @@ object CopodViewModelProvider {
                 mainViewModel = mainViewModel,
             )
             machineryViewModel
+        }
+
+        initializer {
+            farmProfileViewModel = FarmProfileViewModel(
+                vunoApplication().container.farmRepository,
+                vunoApplication().container.marketsRepository,
+            )
+            farmProfileViewModel
         }
     }
 }

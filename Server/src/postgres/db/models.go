@@ -82,6 +82,17 @@ type Payment struct {
 	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
+type Rating struct {
+	ID        uuid.UUID      `json:"id"`
+	Rate      int32          `json:"rate"`
+	Comment   sql.NullString `json:"comment"`
+	UserID    uuid.NullUUID  `json:"user_id"`
+	MarketID  uuid.NullUUID  `json:"market_id"`
+	FarmID    uuid.NullUUID  `json:"farm_id"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+}
+
 type User struct {
 	ID               uuid.UUID      `json:"id"`
 	Phone            string         `json:"phone"`
