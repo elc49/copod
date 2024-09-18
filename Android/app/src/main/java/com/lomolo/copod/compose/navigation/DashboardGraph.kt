@@ -39,6 +39,8 @@ import com.lomolo.copod.compose.screens.CreateFarmScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
 import com.lomolo.copod.compose.screens.ExploreScreen
 import com.lomolo.copod.compose.screens.ExploreScreenDestination
+import com.lomolo.copod.compose.screens.FarmProfileScreen
+import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
 import com.lomolo.copod.compose.screens.FarmScreenDestination
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
@@ -54,7 +56,6 @@ import com.lomolo.copod.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.UserOrdersScreen
 import com.lomolo.copod.compose.screens.UserOrdersScreenDestination
 import com.lomolo.copod.model.DeviceDetails
-import com.lomolo.copod.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -291,9 +292,17 @@ fun NavGraphBuilder.addDashboardGraph(
                 onGoBack = {
                     navHostController.popBackStack()
                 },
+                onGoToFarmProfile = { navHostController.navigate(it) },
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
                 copodSnackbarHost = copodSnackbarHost,
+            )
+        }
+        composable(route = FarmProfileScreenDestination.route) {
+            FarmProfileScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                }
             )
         }
     }

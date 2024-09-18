@@ -2,6 +2,7 @@ package com.lomolo.copod.repository
 
 import com.apollographql.apollo3.api.ApolloResponse
 import com.lomolo.copod.CreateFarmMutation
+import com.lomolo.copod.GetFarmByIdQuery
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.UpdateFarmDetailsMutation
 import com.lomolo.copod.network.ICopodGraphqlApi
@@ -13,6 +14,7 @@ interface IFarm {
     suspend fun getFarmsBelongingToUser(): Flow<ApolloResponse<GetFarmsBelongingToUserQuery.Data>>
     suspend fun createFarm(input: Farm): ApolloResponse<CreateFarmMutation.Data>
     suspend fun updateFarmDetails(input: UpdateFarmDetailsInput): ApolloResponse<UpdateFarmDetailsMutation.Data>
+    suspend fun getFarmById(id: String): ApolloResponse<GetFarmByIdQuery.Data>
 }
 
 class FarmRepository(
@@ -22,4 +24,5 @@ class FarmRepository(
     override suspend fun createFarm(input: Farm) = copodGraphqlApi
         .createFarm(input)
     override suspend fun updateFarmDetails(input: UpdateFarmDetailsInput) = copodGraphqlApi.updateFarmDetails(input)
+    override suspend fun getFarmById(id: String) = copodGraphqlApi.getFarm(id)
 }
