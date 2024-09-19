@@ -80,6 +80,7 @@ fun FarmProfileScreen(
 ) {
     val farm by viewModel.farm.collectAsState()
     val seasonalHarvests by viewModel.seasonalHarvests.collectAsState()
+    val seeds by viewModel.seeds.collectAsState()
 
     Scaffold(contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), topBar = {
         TopAppBar(title = {},
@@ -301,6 +302,43 @@ fun FarmProfileScreen(
                                     Icons.AutoMirrored.TwoTone.ArrowForward,
                                     contentDescription = stringResource(R.string.go_forward),
                                 )
+                            }
+                        }
+                        LazyHorizontalGrid(
+                            modifier = Modifier.height(180.dp),
+                            rows = GridCells.Fixed(1),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            when (viewModel.gettingSeedsMarket) {
+                                GettingSeedsMarket.Success -> items(seeds) { seed ->
+                                    Market(
+                                        data = seed,
+                                        currencyLocale = deviceDetails.currency,
+                                        onNavigateToMarketDetails = {
+                                            onNavigateToMarketDetails(
+                                                seed.id.toString()
+                                            )
+                                        },
+                                    )
+                                }
+
+                                GettingSeedsMarket.Loading -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        CircularProgressIndicator(
+                                            Modifier.size(20.dp),
+                                        )
+                                    }
+                                }
+
+                                is GettingSeedsMarket.Error -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            color = MaterialTheme.colorScheme.error,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

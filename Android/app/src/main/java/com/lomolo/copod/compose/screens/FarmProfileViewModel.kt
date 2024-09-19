@@ -73,9 +73,35 @@ class FarmProfileViewModel(
         }
     }
 
+    private val _seeds: MutableStateFlow<List<GetFarmMarketsQuery.GetFarmMarket>>  = MutableStateFlow(
+        listOf()
+    )
+    val seeds: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _seeds.asStateFlow()
+    var gettingSeedsMarket: GettingSeedsMarket by mutableStateOf(GettingSeedsMarket.Success)
+        private set
+
+    private fun getSeedsMarket() {
+        if (gettingSeedsMarket !is GettingSeedsMarket.Loading) {
+            gettingSeedsMarket = GettingSeedsMarket.Loading
+            viewModelScope.launch {
+                gettingSeedsMarket = try {
+                    val res = marketsRepository.getMarketsBelongingToFarm(
+                        GetFarmMarketsInput(profileId, MarketType.SEEDS)
+                    ).dataOrThrow()
+                    _seeds.update { res.getFarmMarkets }
+                    GettingSeedsMarket.Success
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    GettingSeedsMarket.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
     init {
         getFarm()
         getSeasonalHarvest()
+        getSeedsMarket()
     }
 }
 
@@ -89,4 +115,10 @@ interface GettingSeasonalHarvest {
     data object Success: GettingSeasonalHarvest
     data object Loading: GettingSeasonalHarvest
     data class Error(val msg: String?): GettingSeasonalHarvest
+}
+
+interface GettingSeedsMarket {
+    data object Success: GettingSeedsMarket
+    data object Loading: GettingSeedsMarket
+    data class Error(val msg: String?): GettingSeedsMarket
 }
