@@ -70,6 +70,7 @@ interface ICopodGraphqlApi {
     suspend fun updateFarmDetails(input: UpdateFarmDetailsInput): ApolloResponse<UpdateFarmDetailsMutation.Data>
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
+    suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
 
 }
 
@@ -213,5 +214,9 @@ class CopodGraphqlApi(
     override suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput) = apolloClient
         .query(GetLocalizedMachineryMarketsQuery(input))
         .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
+
+    override suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput) = apolloClient
+        .query(GetFarmMarketsQuery(input))
         .execute()
 }

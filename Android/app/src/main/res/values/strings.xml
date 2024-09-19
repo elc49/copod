@@ -123,4 +123,6 @@
     <string name="completed_orders">Completed orders</string>
     <string name="farm_location">Farm location</string>
     <string name="reviews">%1$s Reviews</string>
+    <string name="seasonal_harvest">Seasonal harvest</string>
+    <string name="go_forward">Go forward</string>
 </resources>

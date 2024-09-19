@@ -126,7 +126,6 @@ fun MarketScreen(
                                 currencyLocale = deviceDetails.currency,
                                 onNavigateToMarketDetails = onNavigateToMarketDetails,
                                 data = market,
-                                language = deviceDetails.languages,
                             )
                         }
                     }
