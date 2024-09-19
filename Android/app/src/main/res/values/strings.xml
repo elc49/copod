@@ -120,4 +120,7 @@
     <string name="no_seedlings">No seedlings</string>
     <string name="no_machinery">No machinery</string>
     <string name="info">info</string>
+    <string name="completed_orders">Completed orders</string>
+    <string name="farm_location">Farm location</string>
+    <string name="reviews">%1$s Reviews</string>
 </resources>

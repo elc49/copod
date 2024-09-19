@@ -91,6 +91,7 @@ object CopodViewModelProvider {
                 vunoApplication().container.apolloClient.apolloStore,
                 vunoApplication().container.copodRestApiService,
                 vunoApplication().container.farmRepository,
+                mainViewModel,
             )
             createFarmViewModel
         }

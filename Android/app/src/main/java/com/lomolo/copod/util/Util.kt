@@ -71,4 +71,21 @@ object Util {
 
         return (round(progress) / 100).toFloat()
     }
+
+    fun statistic(
+        language: String,
+        v: Int,
+    ): String {
+        val languageCode = language.split("-")
+        val numberFormat =
+            NumberFormat.getNumberInstance(Locale(languageCode[0], languageCode[1]))
+        numberFormat.maximumFractionDigits = 0
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            NumberFormatter.with().notation(Notation.compactShort())
+                .precision(Precision.maxFraction(0)).locale(Locale.US).format(v).toString()
+        } else {
+            numberFormat.format(v)
+        }
+    }
 }

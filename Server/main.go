@@ -3,8 +3,9 @@ package main
 
 import (
 	"embed"
-	"github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/server"

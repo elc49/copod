@@ -43,6 +43,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Cart() CartResolver
+	Farm() FarmResolver
 	Market() MarketResolver
 	Mutation() MutationResolver
 	Order() OrderResolver
@@ -72,15 +73,19 @@ type ComplexityRoot struct {
 	}
 
 	Farm struct {
-		About       func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		DateStarted func(childComplexity int) int
-		DeletedAt   func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Thumbnail   func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
-		UserID      func(childComplexity int) int
+		About           func(childComplexity int) int
+		AddressString   func(childComplexity int) int
+		CompletedOrders func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		DateStarted     func(childComplexity int) int
+		DeletedAt       func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Name            func(childComplexity int) int
+		Rating          func(childComplexity int) int
+		Reviewers       func(childComplexity int) int
+		Thumbnail       func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		UserID          func(childComplexity int) int
 	}
 
 	Gps struct {
@@ -189,6 +194,11 @@ type CartResolver interface {
 	Farm(ctx context.Context, obj *model.Cart) (*model.Farm, error)
 
 	Market(ctx context.Context, obj *model.Cart) (*model.Market, error)
+}
+type FarmResolver interface {
+	Rating(ctx context.Context, obj *model.Farm) (float64, error)
+	Reviewers(ctx context.Context, obj *model.Farm) (int, error)
+	CompletedOrders(ctx context.Context, obj *model.Farm) (int, error)
 }
 type MarketResolver interface {
 	Farm(ctx context.Context, obj *model.Market) (*model.Farm, error)
@@ -331,6 +341,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Farm.About(childComplexity), true
 
+	case "Farm.address_string":
+		if e.complexity.Farm.AddressString == nil {
+			break
+		}
+
+		return e.complexity.Farm.AddressString(childComplexity), true
+
+	case "Farm.completed_orders":
+		if e.complexity.Farm.CompletedOrders == nil {
+			break
+		}
+
+		return e.complexity.Farm.CompletedOrders(childComplexity), true
+
 	case "Farm.created_at":
 		if e.complexity.Farm.CreatedAt == nil {
 			break
@@ -365,6 +389,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Farm.Name(childComplexity), true
+
+	case "Farm.rating":
+		if e.complexity.Farm.Rating == nil {
+			break
+		}
+
+		return e.complexity.Farm.Rating(childComplexity), true
+
+	case "Farm.reviewers":
+		if e.complexity.Farm.Reviewers == nil {
+			break
+		}
+
+		return e.complexity.Farm.Reviewers(childComplexity), true
 
 	case "Farm.thumbnail":
 		if e.complexity.Farm.Thumbnail == nil {
@@ -1728,6 +1766,14 @@ func (ec *executionContext) fieldContext_Cart_farm(_ context.Context, field grap
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -2249,6 +2295,182 @@ func (ec *executionContext) fieldContext_Farm_userId(_ context.Context, field gr
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Farm_rating(ctx context.Context, field graphql.CollectedField, obj *model.Farm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Farm_rating(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Farm().Rating(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Farm_rating(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Farm",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Farm_reviewers(ctx context.Context, field graphql.CollectedField, obj *model.Farm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Farm_reviewers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Farm().Reviewers(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Farm_reviewers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Farm",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Farm_completed_orders(ctx context.Context, field graphql.CollectedField, obj *model.Farm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Farm_completed_orders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Farm().CompletedOrders(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Farm_completed_orders(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Farm",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Farm_address_string(ctx context.Context, field graphql.CollectedField, obj *model.Farm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Farm_address_string(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressString, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Farm_address_string(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Farm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2918,6 +3140,14 @@ func (ec *executionContext) fieldContext_Market_farm(_ context.Context, field gr
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -3202,6 +3432,14 @@ func (ec *executionContext) fieldContext_Mutation_createFarm(ctx context.Context
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -3776,6 +4014,14 @@ func (ec *executionContext) fieldContext_Mutation_updateFarmDetails(ctx context.
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -4955,6 +5201,14 @@ func (ec *executionContext) fieldContext_Query_getFarmsBelongingToUser(_ context
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -5166,6 +5420,14 @@ func (ec *executionContext) fieldContext_Query_getFarmById(ctx context.Context, 
 				return ec.fieldContext_Farm_dateStarted(ctx, field)
 			case "userId":
 				return ec.fieldContext_Farm_userId(ctx, field)
+			case "rating":
+				return ec.fieldContext_Farm_rating(ctx, field)
+			case "reviewers":
+				return ec.fieldContext_Farm_reviewers(ctx, field)
+			case "completed_orders":
+				return ec.fieldContext_Farm_completed_orders(ctx, field)
+			case "address_string":
+				return ec.fieldContext_Farm_address_string(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Farm_created_at(ctx, field)
 			case "updated_at":
@@ -8307,7 +8569,7 @@ func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "about", "dateStarted", "thumbnail"}
+	fieldsInOrder := [...]string{"name", "about", "location", "dateStarted", "thumbnail"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8328,6 +8590,13 @@ func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.About = data
+		case "location":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			data, err := ec.unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Location = data
 		case "dateStarted":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateStarted"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -8912,39 +9181,152 @@ func (ec *executionContext) _Farm(ctx context.Context, sel ast.SelectionSet, obj
 		case "id":
 			out.Values[i] = ec._Farm_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Farm_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "thumbnail":
 			out.Values[i] = ec._Farm_thumbnail(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "about":
 			out.Values[i] = ec._Farm_about(ctx, field, obj)
 		case "dateStarted":
 			out.Values[i] = ec._Farm_dateStarted(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "userId":
 			out.Values[i] = ec._Farm_userId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rating":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Farm_rating(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "reviewers":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Farm_reviewers(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "completed_orders":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Farm_completed_orders(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "address_string":
+			out.Values[i] = ec._Farm_address_string(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "created_at":
 			out.Values[i] = ec._Farm_created_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "updated_at":
 			out.Values[i] = ec._Farm_updated_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "deleted_at":
 			out.Values[i] = ec._Farm_deleted_at(ctx, field, obj)

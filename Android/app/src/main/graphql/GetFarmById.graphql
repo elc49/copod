@@ -3,7 +3,11 @@ query GetFarmById($id: UUID!) {
         id
         name
         about
+        rating
+        reviewers
+        completed_orders
         dateStarted
         thumbnail
+        address_string
     }
 }

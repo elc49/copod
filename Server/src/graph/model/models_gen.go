@@ -35,15 +35,19 @@ type Cart struct {
 }
 
 type Farm struct {
-	ID          uuid.UUID  `json:"id"`
-	Name        string     `json:"name"`
-	Thumbnail   string     `json:"thumbnail"`
-	About       *string    `json:"about,omitempty"`
-	DateStarted time.Time  `json:"dateStarted"`
-	UserID      uuid.UUID  `json:"userId"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
+	ID              uuid.UUID  `json:"id"`
+	Name            string     `json:"name"`
+	Thumbnail       string     `json:"thumbnail"`
+	About           *string    `json:"about,omitempty"`
+	DateStarted     time.Time  `json:"dateStarted"`
+	UserID          uuid.UUID  `json:"userId"`
+	Rating          float64    `json:"rating"`
+	Reviewers       int        `json:"reviewers"`
+	CompletedOrders int        `json:"completed_orders"`
+	AddressString   string     `json:"address_string"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+	DeletedAt       *time.Time `json:"deleted_at,omitempty"`
 }
 
 type GetFarmMarketsInput struct {
@@ -87,10 +91,11 @@ type Mutation struct {
 }
 
 type NewFarmInput struct {
-	Name        string `json:"name"`
-	About       string `json:"about"`
-	DateStarted string `json:"dateStarted"`
-	Thumbnail   string `json:"thumbnail"`
+	Name        string    `json:"name"`
+	About       string    `json:"about"`
+	Location    *GpsInput `json:"location"`
+	DateStarted string    `json:"dateStarted"`
+	Thumbnail   string    `json:"thumbnail"`
 }
 
 type NewFarmMarketInput struct {

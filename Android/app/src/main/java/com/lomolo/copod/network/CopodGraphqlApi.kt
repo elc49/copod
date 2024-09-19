@@ -86,6 +86,7 @@ class CopodGraphqlApi(
                 name = input.name,
                 about = input.about,
                 dateStarted = input.dateStarted,
+                location = input.location,
                 thumbnail = input.image,
             )
         ))
@@ -97,6 +98,7 @@ class CopodGraphqlApi(
 
     override suspend fun getFarm(id: String) = apolloClient
         .query(GetFarmByIdQuery(id))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .execute()
 
     override suspend fun getFarmMarkets(input: GetFarmMarketsInput) = apolloClient

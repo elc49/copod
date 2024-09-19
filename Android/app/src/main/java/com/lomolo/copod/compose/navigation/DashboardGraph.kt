@@ -307,6 +307,7 @@ fun NavGraphBuilder.addDashboardGraph(
             })
         ) {
             FarmProfileScreen(
+                deviceDetails = deviceDetails,
                 onGoBack = {
                     navHostController.popBackStack()
                 }

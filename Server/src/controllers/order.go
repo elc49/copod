@@ -69,3 +69,12 @@ func (c *OrderController) GetUserOrdersCount(ctx context.Context, userID uuid.UU
 func (c *OrderController) UpdateOrderStatus(ctx context.Context, args db.UpdateOrderStatusParams) (*model.Order, error) {
 	return c.r.UpdateOrderStatus(ctx, args)
 }
+
+func (c *OrderController) CompletedFarmOrders(ctx context.Context, args db.CompletedFarmOrdersParams) (int, error) {
+	count, err := c.r.CompletedFarmOrders(ctx, args)
+	if err != nil {
+		return 0, err
+	}
+
+	return *count, nil
+}

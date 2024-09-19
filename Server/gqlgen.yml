@@ -108,3 +108,11 @@ models:
     fields:
       farm:
         resolver: true
+  Farm:
+    fields:
+      completed_orders:
+        resolver: true
+      rating:
+        resolver: true
+      reviewers:
+        resolver: true

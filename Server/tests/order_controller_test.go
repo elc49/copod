@@ -17,9 +17,11 @@ func TestOrderController(t *testing.T) {
 	user, _ := signinC.CreateUserByPhone(ctx, phone, avatar)
 	farmC := farmController()
 	farm, _ := farmC.CreateFarm(ctx, db.CreateFarmParams{
-		Name:      "Agro-dealers",
-		Thumbnail: avatar,
-		UserID:    user.ID,
+		Name:          "Agro-dealers",
+		Thumbnail:     avatar,
+		UserID:        user.ID,
+		AddressString: "Kajiado",
+		Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 	})
 	marketC := marketController()
 	market, _ := marketC.CreateFarmMarket(ctx, db.CreateFarmMarketParams{

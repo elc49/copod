@@ -180,3 +180,14 @@ func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateO
 		UpdatedAt: o.UpdatedAt,
 	}, nil
 }
+
+func (r *OrderRepository) CompletedFarmOrders(ctx context.Context, args db.CompletedFarmOrdersParams) (*int, error) {
+	count := 0
+	c, err := r.store.StoreReader.CompletedFarmOrders(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	count = int(c)
+
+	return &count, nil
+}

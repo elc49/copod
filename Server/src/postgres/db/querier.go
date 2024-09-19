@@ -19,12 +19,15 @@ type Querier interface {
 	ClearTestMarkets(ctx context.Context) error
 	ClearTestOrders(ctx context.Context) error
 	ClearTestUsers(ctx context.Context) error
+	CompletedFarmOrders(ctx context.Context, arg CompletedFarmOrdersParams) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error)
 	CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	DeleteCartItem(ctx context.Context, marketID uuid.UUID) error
+	FarmRating(ctx context.Context, farmID uuid.NullUUID) (int64, error)
+	FarmReviewers(ctx context.Context, farmID uuid.NullUUID) (int64, error)
 	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
 	GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
