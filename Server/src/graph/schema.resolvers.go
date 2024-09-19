@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/nominatim"
 	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/elc49/copod/Server/src/subscription"
 	"github.com/elc49/copod/Server/src/util"
@@ -28,6 +29,30 @@ func (r *cartResolver) Market(ctx context.Context, obj *model.Cart) (*model.Mark
 	return r.marketController.GetMarketByID(ctx, obj.MarketID)
 }
 
+// Rating is the resolver for the rating field.
+func (r *farmResolver) Rating(ctx context.Context, obj *model.Farm) (float64, error) {
+	return r.reviewController.FarmRating(ctx, obj.ID)
+}
+
+// Reviewers is the resolver for the reviewers field.
+func (r *farmResolver) Reviewers(ctx context.Context, obj *model.Farm) (int, error) {
+	return r.reviewController.FarmReviewers(ctx, obj.ID)
+}
+
+// CompletedOrders is the resolver for the completed_orders field.
+func (r *farmResolver) CompletedOrders(ctx context.Context, obj *model.Farm) (int, error) {
+	args := db.CompletedFarmOrdersParams{
+		FarmID: obj.ID,
+		Status: model.OrderStatusDelivered.String(),
+	}
+	c, err := r.orderController.CompletedFarmOrders(ctx, args)
+	if err != nil {
+		return 0, err
+	}
+
+	return c, nil
+}
+
 // Farm is the resolver for the farm field.
 func (r *marketResolver) Farm(ctx context.Context, obj *model.Market) (*model.Farm, error) {
 	return r.farmController.GetFarmByID(ctx, obj.FarmID)
@@ -41,12 +66,19 @@ func (r *mutationResolver) CreateFarm(ctx context.Context, input model.NewFarmIn
 		return nil, err
 	}
 
+	address, err := nominatim.ReverseGeocode(model.Gps{Lat: input.Location.Lat, Lng: input.Location.Lng})
+	if err != nil {
+		return nil, err
+	}
+
 	args := db.CreateFarmParams{
-		Name:        input.Name,
-		About:       input.About,
-		DateStarted: d,
-		Thumbnail:   input.Thumbnail,
-		UserID:      userId,
+		Name:          input.Name,
+		About:         input.About,
+		AddressString: address.AddressString,
+		DateStarted:   d,
+		Thumbnail:     input.Thumbnail,
+		Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", address.Coords.Lng, address.Coords.Lat),
+		UserID:        userId,
 	}
 
 	return r.farmController.CreateFarm(ctx, args)
@@ -249,6 +281,9 @@ func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UU
 // Cart returns CartResolver implementation.
 func (r *Resolver) Cart() CartResolver { return &cartResolver{r} }
 
+// Farm returns FarmResolver implementation.
+func (r *Resolver) Farm() FarmResolver { return &farmResolver{r} }
+
 // Market returns MarketResolver implementation.
 func (r *Resolver) Market() MarketResolver { return &marketResolver{r} }
 
@@ -265,6 +300,7 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
 
 type cartResolver struct{ *Resolver }
+type farmResolver struct{ *Resolver }
 type marketResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }

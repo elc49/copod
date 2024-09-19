@@ -27,5 +27,9 @@ UPDATE orders SET status = $1
 WHERE id = $2 AND deleted_at IS NULL
 RETURNING *;
 
+-- name: CompletedFarmOrders :one
+SELECT COUNT(*) FROM orders
+WHERE farm_id = $1 AND status = $2;
+
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

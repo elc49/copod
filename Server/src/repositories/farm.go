@@ -63,11 +63,14 @@ func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.
 	}
 
 	return &model.Farm{
-		ID:          farm.ID,
-		Name:        farm.Name,
-		About:       &farm.About,
-		DateStarted: farm.DateStarted,
-		Thumbnail:   farm.Thumbnail,
+		ID:            farm.ID,
+		Name:          farm.Name,
+		About:         &farm.About,
+		AddressString: farm.AddressString,
+		DateStarted:   farm.DateStarted,
+		Thumbnail:     farm.Thumbnail,
+		CreatedAt:     farm.CreatedAt,
+		UpdatedAt:     farm.UpdatedAt,
 	}, nil
 }
 

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -24,11 +25,13 @@ func TestFarmController(t *testing.T) {
 
 	t.Run("create_farm", func(t *testing.T) {
 		farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-			Name:        "Agro-dealers",
-			About:       "Fresh from farm",
-			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
-			Thumbnail:   avatar,
-			UserID:      user.ID,
+			Name:          "Agro-dealers",
+			About:         "Fresh from farm",
+			DateStarted:   time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:     avatar,
+			AddressString: "Kajiado",
+			Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			UserID:        user.ID,
 		})
 		assert.Nil(t, err)
 		assert.NotNil(t, farm)
@@ -43,10 +46,12 @@ func TestFarmController(t *testing.T) {
 	t.Run("get_farm_by_its_id", func(t *testing.T) {
 		store.StoreWriter.ClearTestFarms(ctx)
 		f, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-			Name:        "Agro-dealers",
-			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
-			Thumbnail:   avatar,
-			UserID:      user.ID,
+			Name:          "Agro-dealers",
+			DateStarted:   time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:     avatar,
+			UserID:        user.ID,
+			AddressString: "Kajiado",
+			Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
 		})
 		assert.Nil(t, err)
 
@@ -58,10 +63,12 @@ func TestFarmController(t *testing.T) {
 
 	t.Run("update_farm_details", func(t *testing.T) {
 		farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-			Name:        "Agro-dealers",
-			DateStarted: time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
-			Thumbnail:   avatar,
-			UserID:      user.ID,
+			Name:          "Agro-dealers",
+			DateStarted:   time.Date(2014, time.September, 21, 23, 0, 0, 0, time.UTC),
+			Thumbnail:     avatar,
+			AddressString: "Kajiado",
+			Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+			UserID:        user.ID,
 		})
 		assert.Nil(t, err)
 

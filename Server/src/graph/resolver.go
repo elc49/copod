@@ -19,6 +19,7 @@ type Resolver struct {
 	paymentController      controllers.PaymentController
 	subscriptionController controllers.PaystackController
 	cartController         controllers.CartController
+	reviewController       controllers.ReviewsController
 	redis                  *redis.Client
 }
 
@@ -35,6 +36,8 @@ func New(store postgres.Store, signinController controllers.SigninController) Co
 	subscriptionController.Init(store)
 	cartController := controllers.CartController{}
 	cartController.Init(store)
+	reviewController := controllers.ReviewsController{}
+	reviewController.Init(store)
 
 	resolver := &Resolver{
 		farmController,
@@ -44,6 +47,7 @@ func New(store postgres.Store, signinController controllers.SigninController) Co
 		paymentController,
 		subscriptionController,
 		cartController,
+		reviewController,
 		cache.GetCache().GetRedis(),
 	}
 

@@ -40,6 +40,10 @@ class FarmStoreViewModel(
             "",
             "",
             "",
+            0.0,
+            0,
+            0,
+            "",
             "",
             "",
         )

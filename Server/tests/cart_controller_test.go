@@ -20,9 +20,11 @@ func TestCartController(t *testing.T) {
 
 	farmC := farmController()
 	farm, err := farmC.CreateFarm(ctx, db.CreateFarmParams{
-		Name:      "Agro-dealers",
-		Thumbnail: avatar,
-		UserID:    user.ID,
+		Name:          "Agro-dealers",
+		Thumbnail:     avatar,
+		AddressString: "Kajiado",
+		Location:      fmt.Sprintf("SRID=4326;POINT(%.8f %.8f)", 36.1809, -1.2748),
+		UserID:        user.ID,
 	})
 	marketC := marketController()
 	cartC := cartController()

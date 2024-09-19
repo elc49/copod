@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
+import com.lomolo.copod.MainViewModel
 import com.lomolo.copod.network.ICopodRestApi
 import com.lomolo.copod.repository.IFarm
+import com.lomolo.copod.type.GpsInput
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +27,9 @@ class CreateFarmViewModel(
     private val apolloStore: ApolloStore,
     private val giggyRestApi: ICopodRestApi,
     private val farmRepository: IFarm,
+    mainViewModel: MainViewModel,
 ): ViewModel() {
+    private val validGps = mainViewModel.getValidDeviceGps()
     private val _farmInput = MutableStateFlow(Farm())
     val farmUiState: StateFlow<Farm> = _farmInput.asStateFlow()
 
@@ -71,6 +75,9 @@ class CreateFarmViewModel(
             createFarmState = CreateFarmState.Loading
             viewModelScope.launch {
                 createFarmState = try {
+                    _farmInput.update {
+                        it.copy(location = GpsInput(validGps.latitude, validGps.longitude))
+                    }
                     val res = farmRepository.createFarm(_farmInput.value).dataOrThrow()
                     try {
                         val updatedCachedData = apolloStore.readOperation(
@@ -138,6 +145,7 @@ data class Farm(
     val name: String = "",
     val image: String = "",
     val about: String = "",
+    val location: GpsInput = GpsInput(0.0, 0.0),
     val dateStarted: String = ""
 )
 

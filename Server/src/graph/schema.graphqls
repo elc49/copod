@@ -68,6 +68,10 @@ type Farm {
   about: String
   dateStarted: Time!
   userId: UUID!
+  rating: Float!
+  reviewers: Int!
+  completed_orders: Int!
+  address_string: String!
   created_at: Time!
   updated_at: Time!
   deleted_at: Time
@@ -161,6 +165,7 @@ input NewPostInput {
 input NewFarmInput {
   name: String!
   about: String!
+  location: GpsInput!
   dateStarted: String!
   thumbnail: String!
 }

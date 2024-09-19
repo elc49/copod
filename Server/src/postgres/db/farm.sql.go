@@ -23,18 +23,20 @@ func (q *Queries) ClearTestFarms(ctx context.Context) error {
 
 const createFarm = `-- name: CreateFarm :one
 INSERT INTO farms (
-  name, about, date_started, thumbnail, user_id
+  name, about, date_started, address_string, thumbnail, user_id, location
 ) VALUES (
-  $1, $2, $3, $4, $5
-) RETURNING id, name, thumbnail, about, date_started, user_id, created_at, updated_at, deleted_at
+  $1, $2, $3, $4, $5, $6, $7
+) RETURNING id, name, thumbnail, about, address_string, location, date_started, user_id, created_at, updated_at, deleted_at
 `
 
 type CreateFarmParams struct {
-	Name        string    `json:"name"`
-	About       string    `json:"about"`
-	DateStarted time.Time `json:"date_started"`
-	Thumbnail   string    `json:"thumbnail"`
-	UserID      uuid.UUID `json:"user_id"`
+	Name          string      `json:"name"`
+	About         string      `json:"about"`
+	DateStarted   time.Time   `json:"date_started"`
+	AddressString string      `json:"address_string"`
+	Thumbnail     string      `json:"thumbnail"`
+	UserID        uuid.UUID   `json:"user_id"`
+	Location      interface{} `json:"location"`
 }
 
 func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error) {
@@ -42,8 +44,10 @@ func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, e
 		arg.Name,
 		arg.About,
 		arg.DateStarted,
+		arg.AddressString,
 		arg.Thumbnail,
 		arg.UserID,
+		arg.Location,
 	)
 	var i Farm
 	err := row.Scan(
@@ -51,6 +55,8 @@ func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, e
 		&i.Name,
 		&i.Thumbnail,
 		&i.About,
+		&i.AddressString,
+		&i.Location,
 		&i.DateStarted,
 		&i.UserID,
 		&i.CreatedAt,
@@ -61,18 +67,19 @@ func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, e
 }
 
 const getFarmByID = `-- name: GetFarmByID :one
-SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
+SELECT id, name, about, address_string, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetFarmByIDRow struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	About       string    `json:"about"`
-	DateStarted time.Time `json:"date_started"`
-	Thumbnail   string    `json:"thumbnail"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	About         string    `json:"about"`
+	AddressString string    `json:"address_string"`
+	DateStarted   time.Time `json:"date_started"`
+	Thumbnail     string    `json:"thumbnail"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error) {
@@ -82,6 +89,7 @@ func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow
 		&i.ID,
 		&i.Name,
 		&i.About,
+		&i.AddressString,
 		&i.DateStarted,
 		&i.Thumbnail,
 		&i.CreatedAt,
@@ -139,7 +147,7 @@ func (q *Queries) GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID)
 const updateFarmDetails = `-- name: UpdateFarmDetails :one
 UPDATE farms SET about = $1, thumbnail = $2
 WHERE id = $3
-RETURNING id, name, thumbnail, about, date_started, user_id, created_at, updated_at, deleted_at
+RETURNING id, name, thumbnail, about, address_string, location, date_started, user_id, created_at, updated_at, deleted_at
 `
 
 type UpdateFarmDetailsParams struct {
@@ -156,6 +164,8 @@ func (q *Queries) UpdateFarmDetails(ctx context.Context, arg UpdateFarmDetailsPa
 		&i.Name,
 		&i.Thumbnail,
 		&i.About,
+		&i.AddressString,
+		&i.Location,
 		&i.DateStarted,
 		&i.UserID,
 		&i.CreatedAt,

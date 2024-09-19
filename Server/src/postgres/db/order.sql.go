@@ -20,6 +20,23 @@ func (q *Queries) ClearTestOrders(ctx context.Context) error {
 	return err
 }
 
+const completedFarmOrders = `-- name: CompletedFarmOrders :one
+SELECT COUNT(*) FROM orders
+WHERE farm_id = $1 AND status = $2
+`
+
+type CompletedFarmOrdersParams struct {
+	FarmID uuid.UUID `json:"farm_id"`
+	Status string    `json:"status"`
+}
+
+func (q *Queries) CompletedFarmOrders(ctx context.Context, arg CompletedFarmOrdersParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, completedFarmOrders, arg.FarmID, arg.Status)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createOrder = `-- name: CreateOrder :one
 INSERT INTO orders (
   volume, to_be_paid, currency, customer_id, market_id, farm_id

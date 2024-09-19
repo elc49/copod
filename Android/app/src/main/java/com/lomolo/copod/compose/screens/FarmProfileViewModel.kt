@@ -23,7 +23,7 @@ class FarmProfileViewModel(
 ): ViewModel() {
     private val profileId: String = checkNotNull(savedStateHandle[FarmProfileScreenDestination.profileIdArg])
     private val _farm: MutableStateFlow<GetFarmByIdQuery.GetFarmById> = MutableStateFlow(
-        GetFarmByIdQuery.GetFarmById("", "", "", "", "")
+        GetFarmByIdQuery.GetFarmById("", "", "", 0.0, 0, 0, "", "", "")
     )
     val farm: StateFlow<GetFarmByIdQuery.GetFarmById> = _farm.asStateFlow()
     var gettingFarmHeader: GettingFarmHeader by mutableStateOf(GettingFarmHeader.Success)
