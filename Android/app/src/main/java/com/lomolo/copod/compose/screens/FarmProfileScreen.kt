@@ -81,6 +81,7 @@ fun FarmProfileScreen(
     val farm by viewModel.farm.collectAsState()
     val seasonalHarvests by viewModel.seasonalHarvests.collectAsState()
     val seeds by viewModel.seeds.collectAsState()
+    val seedlings by viewModel.seedlings.collectAsState()
 
     Scaffold(contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), topBar = {
         TopAppBar(title = {},
@@ -332,6 +333,69 @@ fun FarmProfileScreen(
                                 }
 
                                 is GettingSeedsMarket.Error -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            color = MaterialTheme.colorScheme.error,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                stringResource(R.string.seedlings),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            IconButton(
+                                onClick = {},
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowForward,
+                                    contentDescription = stringResource(R.string.go_forward),
+                                )
+                            }
+                        }
+                        LazyHorizontalGrid(
+                            modifier = Modifier.height(180.dp),
+                            rows = GridCells.Fixed(1),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            when (viewModel.gettingSeedlingsMarket) {
+                                GettingSeedlingsMarket.Success -> if (seedlings.isNotEmpty()) {
+                                    items(seedlings) { seedling ->
+                                            Market(
+                                                data = seedling,
+                                                currencyLocale = deviceDetails.currency,
+                                                onNavigateToMarketDetails = {
+                                                    onNavigateToMarketDetails(
+                                                        seedling.id.toString()
+                                                    )
+                                                },
+                                            )
+                                        }
+                                    } else {
+                                        item {
+                                            Row(Modifier.fillMaxWidth()) {
+                                                Text("No seedlings")
+                                            }
+                                        }
+                                    }
+
+                                GettingSeedlingsMarket.Loading -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        CircularProgressIndicator(
+                                            Modifier.size(20.dp),
+                                        )
+                                    }
+                                }
+
+                                is GettingSeedlingsMarket.Error -> item {
                                     Row(Modifier.fillMaxWidth()) {
                                         Text(
                                             stringResource(R.string.something_went_wrong),
