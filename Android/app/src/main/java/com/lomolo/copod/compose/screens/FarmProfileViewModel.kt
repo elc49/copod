@@ -123,11 +123,37 @@ class FarmProfileViewModel(
         }
     }
 
+    private val _machinery: MutableStateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = MutableStateFlow(
+        listOf()
+    )
+    val machinery: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _machinery.asStateFlow()
+    var gettingMachineryMarket: GettingMachineryMarket by mutableStateOf(GettingMachineryMarket.Success)
+        private set
+
+    private fun getMachineryMarket() {
+        if (gettingMachineryMarket !is GettingMachineryMarket.Loading) {
+            gettingMachineryMarket = GettingMachineryMarket.Loading
+            viewModelScope.launch {
+                gettingMachineryMarket = try {
+                    val res = marketsRepository.getMarketsBelongingToFarm(
+                        GetFarmMarketsInput(profileId, MarketType.MACHINERY)
+                    ).dataOrThrow()
+                    _machinery.update { res.getFarmMarkets }
+                    GettingMachineryMarket.Success
+                } catch (e: ApolloException) {
+                    e.printStackTrace()
+                    GettingMachineryMarket.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
     init {
         getFarm()
         getSeasonalHarvest()
         getSeedsMarket()
         getSeedlingsMarket()
+        getMachineryMarket()
     }
 }
 
@@ -153,4 +179,10 @@ interface GettingSeedlingsMarket {
     data object Success: GettingSeedlingsMarket
     data object Loading: GettingSeedlingsMarket
     data class Error(val msg: String?): GettingSeedlingsMarket
+}
+
+interface GettingMachineryMarket {
+    data object Success: GettingMachineryMarket
+    data object Loading: GettingMachineryMarket
+    data class Error(val msg: String?): GettingMachineryMarket
 }

@@ -82,6 +82,7 @@ fun FarmProfileScreen(
     val seasonalHarvests by viewModel.seasonalHarvests.collectAsState()
     val seeds by viewModel.seeds.collectAsState()
     val seedlings by viewModel.seedlings.collectAsState()
+    val machinery by viewModel.machinery.collectAsState()
 
     Scaffold(contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), topBar = {
         TopAppBar(title = {},
@@ -382,7 +383,7 @@ fun FarmProfileScreen(
                                     } else {
                                         item {
                                             Row(Modifier.fillMaxWidth()) {
-                                                Text("No seedlings")
+                                                Text(stringResource(R.string.no_seedlings))
                                             }
                                         }
                                     }
@@ -396,6 +397,69 @@ fun FarmProfileScreen(
                                 }
 
                                 is GettingSeedlingsMarket.Error -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            color = MaterialTheme.colorScheme.error,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                stringResource(R.string.machinery),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            IconButton(
+                                onClick = {},
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.TwoTone.ArrowForward,
+                                    contentDescription = stringResource(R.string.go_forward),
+                                )
+                            }
+                        }
+                        LazyHorizontalGrid(
+                            modifier = Modifier.height(180.dp),
+                            rows = GridCells.Fixed(1),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            when (viewModel.gettingMachineryMarket) {
+                                GettingMachineryMarket.Success -> if (machinery.isNotEmpty()) {
+                                    items(machinery) { machine ->
+                                        Market(
+                                            data = machine,
+                                            currencyLocale = deviceDetails.currency,
+                                            onNavigateToMarketDetails = {
+                                                onNavigateToMarketDetails(
+                                                    machine.id.toString()
+                                                )
+                                            },
+                                        )
+                                    }
+                                } else {
+                                    item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            Text(stringResource(R.string.no_machinery))
+                                        }
+                                    }
+                                }
+
+                                GettingMachineryMarket.Loading -> item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        CircularProgressIndicator(
+                                            Modifier.size(20.dp),
+                                        )
+                                    }
+                                }
+
+                                is GettingMachineryMarket.Error -> item {
                                     Row(Modifier.fillMaxWidth()) {
                                         Text(
                                             stringResource(R.string.something_went_wrong),
