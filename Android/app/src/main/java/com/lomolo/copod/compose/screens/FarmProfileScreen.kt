@@ -1,5 +1,6 @@
 package com.lomolo.copod.compose.screens
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -91,6 +93,7 @@ fun FarmProfileScreen(
                 ) {
                     FarmHeader(farm = farm)
                     Row(
+                        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
@@ -115,7 +118,8 @@ fun FarmProfileScreen(
                         VerticalDivider(
                             Modifier
                                 .height(32.dp)
-                                .padding(4.dp))
+                                .padding(4.dp)
+                        )
                         Box(
                             Modifier.weight(.25f),
                             contentAlignment = Alignment.Center
@@ -139,7 +143,8 @@ fun FarmProfileScreen(
                         VerticalDivider(
                             Modifier
                                 .height(32.dp)
-                                .padding(4.dp))
+                                .padding(4.dp)
+                        )
                         Box(
                             Modifier.weight(.25f),
                             contentAlignment = Alignment.Center
@@ -149,7 +154,11 @@ fun FarmProfileScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    Util.copodDateFormat(farm.dateStarted.toString(), deviceDetails.languages, deviceDetails.countryCode),
+                                    Util.copodDateFormat(
+                                        farm.dateStarted.toString(),
+                                        deviceDetails.languages,
+                                        deviceDetails.countryCode
+                                    ),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                                 Text(
@@ -162,7 +171,8 @@ fun FarmProfileScreen(
                         VerticalDivider(
                             Modifier
                                 .height(32.dp)
-                                .padding(4.dp))
+                                .padding(4.dp)
+                        )
                         Box(
                             Modifier.weight(.25f),
                             contentAlignment = Alignment.Center
@@ -183,6 +193,19 @@ fun FarmProfileScreen(
                                 )
                             }
                         }
+                    }
+                    Column(
+                        Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(
+                            stringResource(R.string.details),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            farm.about ?: "",
+                        )
                     }
                 }
 
