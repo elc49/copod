@@ -310,7 +310,12 @@ fun NavGraphBuilder.addDashboardGraph(
                 deviceDetails = deviceDetails,
                 onGoBack = {
                     navHostController.popBackStack()
-                }
+                },
+                onNavigateToMarketDetails = { marketId ->
+                    navHostController.navigate(
+                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                    )
+                },
             )
         }
     }

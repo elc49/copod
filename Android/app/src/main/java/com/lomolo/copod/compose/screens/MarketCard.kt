@@ -40,7 +40,6 @@ fun MarketCard(
     modifier: Modifier = Modifier,
     data: GetLocalizedMarketsQuery.GetLocalizedMarket,
     currencyLocale: String,
-    language: String,
     onNavigateToMarketDetails: (String) -> Unit,
 ) {
 

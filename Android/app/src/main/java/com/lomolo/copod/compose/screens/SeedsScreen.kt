@@ -133,7 +133,6 @@ fun SeedsScreen(
                                 currencyLocale = deviceDetails.currency,
                                 onNavigateToMarketDetails = onNavigateToMarketDetails,
                                 data = market,
-                                language = deviceDetails.languages,
                             )
                         }
                     }
