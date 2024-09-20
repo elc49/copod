@@ -107,7 +107,9 @@ fun FarmProfileScreen(
         ) {
             when (viewModel.gettingFarmHeader) {
                 GettingFarmHeader.Success -> Column(
-                    Modifier.padding(8.dp).verticalScroll(rememberScrollState()),
+                    Modifier
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     FarmHeader(farm = farm)
@@ -233,206 +235,207 @@ fun FarmProfileScreen(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                stringResource(R.string.seasonal_harvest),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            IconButton(
-                                onClick = {},
-                            ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowForward,
-                                    contentDescription = stringResource(R.string.go_forward),
-                                )
-                            }
+                        if (seasonalHarvests.isEmpty() && seeds.isEmpty() && seedlings.isEmpty() && machinery.isEmpty()) {
+                            Text(stringResource(R.string.no_markets))
                         }
-                        LazyHorizontalGrid(
-                            modifier = Modifier.height(180.dp),
-                            rows = GridCells.Fixed(1),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            when (viewModel.gettingSeasonalHarvest) {
-                                GettingSeasonalHarvest.Success -> items(seasonalHarvests) { market ->
-                                    Market(
-                                        data = market,
-                                        currencyLocale = deviceDetails.currency,
-                                        onNavigateToMarketDetails = {
-                                            onNavigateToMarketDetails(
-                                                market.id.toString()
-                                            )
-                                        },
+                        if (seasonalHarvests.isNotEmpty()) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    stringResource(R.string.seasonal_harvest),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                IconButton(
+                                    onClick = {},
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.TwoTone.ArrowForward,
+                                        contentDescription = stringResource(R.string.go_forward),
                                     )
                                 }
-
-                                GettingSeasonalHarvest.Loading -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        CircularProgressIndicator(
-                                            Modifier.size(20.dp),
-                                        )
-                                    }
-                                }
-
-                                is GettingSeasonalHarvest.Error -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        Text(
-                                            stringResource(R.string.something_went_wrong),
-                                            color = MaterialTheme.colorScheme.error,
-                                        )
-                                    }
-                                }
                             }
-                        }
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                stringResource(R.string.seeds),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            IconButton(
-                                onClick = {},
+                            LazyHorizontalGrid(
+                                modifier = Modifier.height(180.dp),
+                                rows = GridCells.Fixed(1),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
                             ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowForward,
-                                    contentDescription = stringResource(R.string.go_forward),
-                                )
-                            }
-                        }
-                        LazyHorizontalGrid(
-                            modifier = Modifier.height(180.dp),
-                            rows = GridCells.Fixed(1),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            when (viewModel.gettingSeedsMarket) {
-                                GettingSeedsMarket.Success -> items(seeds) { seed ->
-                                    Market(
-                                        data = seed,
-                                        currencyLocale = deviceDetails.currency,
-                                        onNavigateToMarketDetails = {
-                                            onNavigateToMarketDetails(
-                                                seed.id.toString()
-                                            )
-                                        },
-                                    )
-                                }
-
-                                GettingSeedsMarket.Loading -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        CircularProgressIndicator(
-                                            Modifier.size(20.dp),
+                                when (viewModel.gettingSeasonalHarvest) {
+                                    GettingSeasonalHarvest.Success -> items(seasonalHarvests) { market ->
+                                        Market(
+                                            data = market,
+                                            currencyLocale = deviceDetails.currency,
+                                            onNavigateToMarketDetails = {
+                                                onNavigateToMarketDetails(
+                                                    market.id.toString()
+                                                )
+                                            },
                                         )
                                     }
-                                }
 
-                                is GettingSeedsMarket.Error -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        Text(
-                                            stringResource(R.string.something_went_wrong),
-                                            color = MaterialTheme.colorScheme.error,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                stringResource(R.string.seedlings),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            IconButton(
-                                onClick = {},
-                            ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowForward,
-                                    contentDescription = stringResource(R.string.go_forward),
-                                )
-                            }
-                        }
-                        LazyHorizontalGrid(
-                            modifier = Modifier.height(180.dp),
-                            rows = GridCells.Fixed(1),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            when (viewModel.gettingSeedlingsMarket) {
-                                GettingSeedlingsMarket.Success -> if (seedlings.isNotEmpty()) {
-                                    items(seedlings) { seedling ->
-                                            Market(
-                                                data = seedling,
-                                                currencyLocale = deviceDetails.currency,
-                                                onNavigateToMarketDetails = {
-                                                    onNavigateToMarketDetails(
-                                                        seedling.id.toString()
-                                                    )
-                                                },
+                                    GettingSeasonalHarvest.Loading -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            CircularProgressIndicator(
+                                                Modifier.size(20.dp),
                                             )
-                                        }
-                                    } else {
-                                        item {
-                                            Row(Modifier.fillMaxWidth()) {
-                                                Text(stringResource(R.string.no_seedlings))
-                                            }
                                         }
                                     }
 
-                                GettingSeedlingsMarket.Loading -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        CircularProgressIndicator(
-                                            Modifier.size(20.dp),
-                                        )
-                                    }
-                                }
-
-                                is GettingSeedlingsMarket.Error -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        Text(
-                                            stringResource(R.string.something_went_wrong),
-                                            color = MaterialTheme.colorScheme.error,
-                                        )
+                                    is GettingSeasonalHarvest.Error -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            Text(
+                                                stringResource(R.string.something_went_wrong),
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                stringResource(R.string.machinery),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            IconButton(
-                                onClick = {},
+                        if (seeds.isNotEmpty()) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                Icon(
-                                    Icons.AutoMirrored.TwoTone.ArrowForward,
-                                    contentDescription = stringResource(R.string.go_forward),
+                                Text(
+                                    stringResource(R.string.seeds),
+                                    style = MaterialTheme.typography.titleMedium,
                                 )
+                                IconButton(
+                                    onClick = {},
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.TwoTone.ArrowForward,
+                                        contentDescription = stringResource(R.string.go_forward),
+                                    )
+                                }
+                            }
+                            LazyHorizontalGrid(
+                                modifier = Modifier.height(180.dp),
+                                rows = GridCells.Fixed(1),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                when (viewModel.gettingSeedsMarket) {
+                                    GettingSeedsMarket.Success -> items(seeds) { seed ->
+                                        Market(
+                                            data = seed,
+                                            currencyLocale = deviceDetails.currency,
+                                            onNavigateToMarketDetails = {
+                                                onNavigateToMarketDetails(
+                                                    seed.id.toString()
+                                                )
+                                            },
+                                        )
+                                    }
+
+                                    GettingSeedsMarket.Loading -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            CircularProgressIndicator(
+                                                Modifier.size(20.dp),
+                                            )
+                                        }
+                                    }
+
+                                    is GettingSeedsMarket.Error -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            Text(
+                                                stringResource(R.string.something_went_wrong),
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
-                        LazyHorizontalGrid(
-                            modifier = Modifier.height(180.dp),
-                            rows = GridCells.Fixed(1),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            when (viewModel.gettingMachineryMarket) {
-                                GettingMachineryMarket.Success -> if (machinery.isNotEmpty()) {
-                                    items(machinery) { machine ->
+                        if (seedlings.isNotEmpty()) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    stringResource(R.string.seedlings),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                IconButton(
+                                    onClick = {},
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.TwoTone.ArrowForward,
+                                        contentDescription = stringResource(R.string.go_forward),
+                                    )
+                                }
+                            }
+                            LazyHorizontalGrid(
+                                modifier = Modifier.height(180.dp),
+                                rows = GridCells.Fixed(1),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                when (viewModel.gettingSeedlingsMarket) {
+                                    GettingSeedlingsMarket.Success -> items(seedlings) { seedling ->
+                                        Market(
+                                            data = seedling,
+                                            currencyLocale = deviceDetails.currency,
+                                            onNavigateToMarketDetails = {
+                                                onNavigateToMarketDetails(
+                                                    seedling.id.toString()
+                                                )
+                                            },
+                                        )
+                                    }
+
+                                    GettingSeedlingsMarket.Loading -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            CircularProgressIndicator(
+                                                Modifier.size(20.dp),
+                                            )
+                                        }
+                                    }
+
+                                    is GettingSeedlingsMarket.Error -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            Text(
+                                                stringResource(R.string.something_went_wrong),
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (machinery.isNotEmpty()) {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    stringResource(R.string.machinery),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                IconButton(
+                                    onClick = {},
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.TwoTone.ArrowForward,
+                                        contentDescription = stringResource(R.string.go_forward),
+                                    )
+                                }
+                            }
+                            LazyHorizontalGrid(
+                                modifier = Modifier.height(180.dp),
+                                rows = GridCells.Fixed(1),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                when (viewModel.gettingMachineryMarket) {
+                                    GettingMachineryMarket.Success -> items(machinery) { machine ->
                                         Market(
                                             data = machine,
                                             currencyLocale = deviceDetails.currency,
@@ -443,28 +446,22 @@ fun FarmProfileScreen(
                                             },
                                         )
                                     }
-                                } else {
-                                    item {
+
+                                    GettingMachineryMarket.Loading -> item {
                                         Row(Modifier.fillMaxWidth()) {
-                                            Text(stringResource(R.string.no_machinery))
+                                            CircularProgressIndicator(
+                                                Modifier.size(20.dp),
+                                            )
                                         }
                                     }
-                                }
 
-                                GettingMachineryMarket.Loading -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        CircularProgressIndicator(
-                                            Modifier.size(20.dp),
-                                        )
-                                    }
-                                }
-
-                                is GettingMachineryMarket.Error -> item {
-                                    Row(Modifier.fillMaxWidth()) {
-                                        Text(
-                                            stringResource(R.string.something_went_wrong),
-                                            color = MaterialTheme.colorScheme.error,
-                                        )
+                                    is GettingMachineryMarket.Error -> item {
+                                        Row(Modifier.fillMaxWidth()) {
+                                            Text(
+                                                stringResource(R.string.something_went_wrong),
+                                                color = MaterialTheme.colorScheme.error,
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -515,12 +512,6 @@ private fun FarmHeader(
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold
-            )
-            Text(
-                Util.capitalize(farm?.about ?: ""),
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }
