@@ -236,7 +236,7 @@ fun FarmProfileScreen(
                             fontWeight = FontWeight.Bold,
                         )
                         if (seasonalHarvests.isEmpty() && seeds.isEmpty() && seedlings.isEmpty() && machinery.isEmpty()) {
-                            Text("No markets")
+                            Text(stringResource(R.string.no_markets))
                         }
                         if (seasonalHarvests.isNotEmpty()) {
                             Row(
