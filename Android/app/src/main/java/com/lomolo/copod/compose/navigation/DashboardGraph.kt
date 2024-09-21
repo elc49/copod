@@ -33,6 +33,8 @@ import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.screens.AccountScreen
 import com.lomolo.copod.compose.screens.AccountScreenDestination
+import com.lomolo.copod.compose.screens.AllMarketsScreen
+import com.lomolo.copod.compose.screens.AllMarketsScreenDestination
 import com.lomolo.copod.compose.screens.CartScreen
 import com.lomolo.copod.compose.screens.CartScreenDestination
 import com.lomolo.copod.compose.screens.CreateFarmScreen
@@ -249,6 +251,7 @@ fun NavGraphBuilder.addDashboardGraph(
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
+                    // TODO can i reuse one component for all reason and just switch layouts/logic based on reason
                     MpesaPaymentScreen(
                         onNavigateTo = {
                             when (reason) {
@@ -302,7 +305,7 @@ fun NavGraphBuilder.addDashboardGraph(
         }
         composable(
             route = FarmProfileScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmProfileScreenDestination.profileIdArg) {
+            arguments = listOf(navArgument(FarmProfileScreenDestination.PROFILE_ID_ARG) {
                 type = NavType.StringType
             })
         ) {
@@ -316,6 +319,31 @@ fun NavGraphBuilder.addDashboardGraph(
                         "${MarketDetailsScreenDestination.route}/${marketId}"
                     )
                 },
+                onNavigateToAllMarkets = { marketType, marketId ->
+                    navHostController.navigate(
+                        "${AllMarketsScreenDestination.route}/${marketType}/${marketId}"
+                    )
+                }
+            )
+        }
+        composable(
+            route = AllMarketsScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(AllMarketsScreenDestination.MARKET_TYPE_ARG) {
+                type = NavType.StringType
+            }, navArgument(AllMarketsScreenDestination.PROFILE_ID_ARG) {
+                type = NavType.StringType
+            })
+        ) {
+            AllMarketsScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                },
+                deviceDetails = deviceDetails,
+                onNavigateToMarketDetails = { marketId ->
+                    navHostController.navigate(
+                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                    )
+                }
             )
         }
     }

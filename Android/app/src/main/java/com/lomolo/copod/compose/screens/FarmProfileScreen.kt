@@ -64,8 +64,8 @@ import com.lomolo.copod.util.Util
 object FarmProfileScreenDestination : Navigation {
     override val title = null
     override val route = "dashboard/farm-profile"
-    const val profileIdArg = "profileId"
-    val routeWithArgs = "$route/{$profileIdArg}"
+    const val PROFILE_ID_ARG = "profileId"
+    val routeWithArgs = "$route/{$PROFILE_ID_ARG}"
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -76,6 +76,7 @@ fun FarmProfileScreen(
     deviceDetails: DeviceDetails,
     onGoBack: () -> Unit,
     onNavigateToMarketDetails: (String) -> Unit,
+    onNavigateToAllMarkets: (String, String) -> Unit,
     viewModel: FarmProfileViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val farm by viewModel.farm.collectAsState()
@@ -249,7 +250,7 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = {},
+                                    onClick = { onNavigateToAllMarkets(MarketType.HARVEST.toString(), viewModel.getProfileId()) },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -306,7 +307,7 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = {},
+                                    onClick = { onNavigateToAllMarkets(MarketType.SEEDS.toString(), viewModel.getProfileId()) },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -363,7 +364,7 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = {},
+                                    onClick = { onNavigateToAllMarkets(MarketType.SEEDLINGS.toString(), viewModel.getProfileId()) },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -420,7 +421,7 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = {},
+                                    onClick = { onNavigateToAllMarkets(MarketType.MACHINERY.toString(), viewModel.getProfileId()) },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,

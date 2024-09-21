@@ -24,13 +24,15 @@ class FarmProfileViewModel(
     private val marketsRepository: IMarkets,
     savedStateHandle: SavedStateHandle,
 ): ViewModel() {
-    private val profileId: String = checkNotNull(savedStateHandle[FarmProfileScreenDestination.profileIdArg])
+    private val profileId: String = checkNotNull(savedStateHandle[FarmProfileScreenDestination.PROFILE_ID_ARG])
     private val _farm: MutableStateFlow<GetFarmByIdQuery.GetFarmById> = MutableStateFlow(
         GetFarmByIdQuery.GetFarmById("", "", "", 0.0, 0, 0, "", "", "")
     )
     val farm: StateFlow<GetFarmByIdQuery.GetFarmById> = _farm.asStateFlow()
     var gettingFarmHeader: GettingFarmHeader by mutableStateOf(GettingFarmHeader.Success)
         private set
+
+    fun getProfileId(): String = profileId
 
     private fun getFarm() {
         if (gettingFarmHeader !is GettingFarmHeader.Loading) {
