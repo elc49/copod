@@ -29,12 +29,25 @@ class MarketDetailsViewModel(
     private val apolloStore: ApolloStore,
 ) : ViewModel() {
     private val marketId: String =
-        checkNotNull(savedStateHandle[MarketDetailsScreenDestination.marketIdArg])
+        checkNotNull(savedStateHandle[MarketDetailsScreenDestination.MARKET_ID_ARG])
+    private val _goToFarm: Boolean =
+        checkNotNull(savedStateHandle[MarketDetailsScreenDestination.GOTO_FARM_ARG])
+    fun goToFarm(): Boolean = _goToFarm
 
     private val _market: MutableStateFlow<GetMarketDetailsQuery.GetMarketDetails> =
         MutableStateFlow(
             GetMarketDetailsQuery.GetMarketDetails(
-                "", "", "", "", MetricUnit.Kg, 0, 0, MarketType.UNKNOWN__, "", GetMarketDetailsQuery.Farm("", ""), 0
+                "",
+                "",
+                "",
+                "",
+                MetricUnit.Kg,
+                0,
+                0,
+                MarketType.UNKNOWN__,
+                "",
+                GetMarketDetailsQuery.Farm("", ""),
+                0
             )
         )
     val market: StateFlow<GetMarketDetailsQuery.GetMarketDetails> = _market.asStateFlow()

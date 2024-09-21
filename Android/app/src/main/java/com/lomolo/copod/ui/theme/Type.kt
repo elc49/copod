@@ -17,7 +17,6 @@ val bodyFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("IBM Plex Sans"),
         fontProvider = provider,
-        weight = FontWeight.Medium,
     )
 )
 
