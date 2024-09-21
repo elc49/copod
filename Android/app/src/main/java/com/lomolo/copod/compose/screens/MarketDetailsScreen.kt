@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,8 +57,9 @@ import kotlinx.coroutines.launch
 object MarketDetailsScreenDestination : Navigation {
     override val title = null
     override val route = "market/details"
-    const val marketIdArg = "marketId"
-    val routeWithArgs = "$route/{$marketIdArg}"
+    const val MARKET_ID_ARG = "marketId"
+    const val GOTO_FARM_ARG = "goToFarm"
+    val routeWithArgs = "$route/{$MARKET_ID_ARG}/?go_to_farm={$GOTO_FARM_ARG}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,13 +112,16 @@ fun MarketDetailsScreen(
                         )
                     }
                 }, actions = {
-                    IconButton(
-                        onClick = { onGoToFarmProfile(market.farmId.toString()) },
-                    ) {
-                        Icon(
-                            Icons.TwoTone.Info,
-                            contentDescription = stringResource(R.string.info),
-                        )
+                    if (viewModel.goToFarm()) {
+                        IconButton(
+                            onClick = { onGoToFarmProfile(market.farmId.toString()) },
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.farm),
+                                modifier = Modifier.size(24.dp),
+                                contentDescription = stringResource(R.string.info),
+                            )
+                        }
                     }
                 })
 

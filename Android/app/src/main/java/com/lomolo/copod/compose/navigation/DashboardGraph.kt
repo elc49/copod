@@ -105,7 +105,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 },
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${true}"
                     )
                 },
             )
@@ -287,8 +287,10 @@ fun NavGraphBuilder.addDashboardGraph(
         }
         composable(
             route = MarketDetailsScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(MarketDetailsScreenDestination.marketIdArg) {
+            arguments = listOf(navArgument(MarketDetailsScreenDestination.MARKET_ID_ARG) {
                 type = NavType.StringType
+            }, navArgument(MarketDetailsScreenDestination.GOTO_FARM_ARG) {
+                type = NavType.BoolType
             })
         ) {
             MarketDetailsScreen(
@@ -316,7 +318,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 },
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${false}"
                     )
                 },
                 onNavigateToAllMarkets = { marketType, marketId ->
@@ -341,7 +343,7 @@ fun NavGraphBuilder.addDashboardGraph(
                 deviceDetails = deviceDetails,
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${false}"
                     )
                 }
             )
