@@ -9,6 +9,7 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.lomolo.copod.common.BottomNavBarViewModel
 import com.lomolo.copod.compose.screens.AccountViewModel
 import com.lomolo.copod.compose.screens.AddFarmMarketViewModel
+import com.lomolo.copod.compose.screens.AllMarketsViewModel
 import com.lomolo.copod.compose.screens.CartViewModel
 import com.lomolo.copod.compose.screens.CreateFarmViewModel
 import com.lomolo.copod.compose.screens.FarmProfileViewModel
@@ -45,23 +46,24 @@ object CopodViewModelProvider {
         lateinit var seedlingsViewModel: SeedlingsViewModel
         lateinit var machineryViewModel: MachineryViewModel
         lateinit var farmProfileViewModel: FarmProfileViewModel
+        lateinit var allMarketsViewModel: AllMarketsViewModel
 
         initializer {
-            mainViewModel = MainViewModel(vunoApplication().container.copodRestApiService)
+            mainViewModel = MainViewModel(copodApplication().container.copodRestApiService)
             mainViewModel
         }
 
         initializer {
             sessionViewModel = SessionViewModel(
-                vunoApplication().container.sessionRepository,
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.sessionRepository,
+                copodApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel
         }
 
         initializer {
             storeViewModel = FarmViewModel(
-                vunoApplication().container.farmRepository,
+                copodApplication().container.farmRepository,
             )
             storeViewModel
         }
@@ -69,18 +71,18 @@ object CopodViewModelProvider {
         initializer {
             farmStoreViewModel = FarmStoreViewModel(
                 this.createSavedStateHandle(),
-                vunoApplication().container.copodGraphqlApiService,
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.copodGraphqlApiService,
+                copodApplication().container.apolloClient.apolloStore,
             )
             farmStoreViewModel
         }
 
         initializer {
             addFarmMarketViewModel = AddFarmMarketViewModel(
-                vunoApplication().container.copodRestApiService,
+                copodApplication().container.copodRestApiService,
                 farmStoreViewModel,
-                vunoApplication().container.copodGraphqlApiService,
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.copodGraphqlApiService,
+                copodApplication().container.apolloClient.apolloStore,
                 mainViewModel,
             )
             addFarmMarketViewModel
@@ -88,9 +90,9 @@ object CopodViewModelProvider {
 
         initializer {
             createFarmViewModel = CreateFarmViewModel(
-                vunoApplication().container.apolloClient.apolloStore,
-                vunoApplication().container.copodRestApiService,
-                vunoApplication().container.farmRepository,
+                copodApplication().container.apolloClient.apolloStore,
+                copodApplication().container.copodRestApiService,
+                copodApplication().container.farmRepository,
                 mainViewModel,
             )
             createFarmViewModel
@@ -98,21 +100,21 @@ object CopodViewModelProvider {
 
         initializer {
             accountViewModel = AccountViewModel(
-                vunoApplication().container.copodGraphqlApiService,
+                copodApplication().container.copodGraphqlApiService,
             )
             accountViewModel
         }
 
         initializer {
             signinViewModel = SigninViewModel(
-                vunoApplication().container.sessionRepository, mainViewModel
+                copodApplication().container.sessionRepository, mainViewModel
             )
             signinViewModel
         }
 
         initializer {
             marketsViewModel = MarketsViewModel(
-                vunoApplication().container.marketsRepository,
+                copodApplication().container.marketsRepository,
                 mainViewModel,
             )
             marketsViewModel
@@ -120,7 +122,7 @@ object CopodViewModelProvider {
 
         initializer {
             paymentViewModel = PaymentViewModel(
-                vunoApplication().container.paymentRepository,
+                copodApplication().container.paymentRepository,
                 sessionViewModel = sessionViewModel,
                 this.createSavedStateHandle(),
             )
@@ -129,25 +131,25 @@ object CopodViewModelProvider {
 
         initializer {
             cartViewModel = CartViewModel(
-                vunoApplication().container.marketsRepository,
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.marketsRepository,
+                copodApplication().container.apolloClient.apolloStore,
             )
             cartViewModel
         }
 
         initializer {
             userOrdersViewModel = UserOrdersViewModel(
-                vunoApplication().container.marketsRepository,
+                copodApplication().container.marketsRepository,
             )
             userOrdersViewModel
         }
 
         initializer {
             farmSettingsViewModel = FarmSettingsViewModel(
-                vunoApplication().container.copodGraphqlApiService,
-                vunoApplication().container.copodRestApiService,
+                copodApplication().container.copodGraphqlApiService,
+                copodApplication().container.copodRestApiService,
                 this.createSavedStateHandle(),
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.apolloClient.apolloStore,
             )
             farmSettingsViewModel
         }
@@ -155,29 +157,29 @@ object CopodViewModelProvider {
         initializer {
             marketDetailsViewModel = MarketDetailsViewModel(
                 this.createSavedStateHandle(),
-                vunoApplication().container.marketsRepository,
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.marketsRepository,
+                copodApplication().container.apolloClient.apolloStore,
             )
             marketDetailsViewModel
         }
 
         initializer {
             bottomNavBarViewModel = BottomNavBarViewModel(
-                vunoApplication().container.apolloClient.apolloStore,
+                copodApplication().container.apolloClient.apolloStore,
             )
             bottomNavBarViewModel
         }
 
         initializer {
             seedsViewModel = SeedsViewModel(
-                vunoApplication().container.marketsRepository, mainViewModel
+                copodApplication().container.marketsRepository, mainViewModel
             )
             seedsViewModel
         }
 
         initializer {
             seedlingsViewModel = SeedlingsViewModel(
-                vunoApplication().container.marketsRepository,
+                copodApplication().container.marketsRepository,
                 mainViewModel = mainViewModel,
             )
             seedlingsViewModel
@@ -185,7 +187,7 @@ object CopodViewModelProvider {
 
         initializer {
             machineryViewModel = MachineryViewModel(
-                vunoApplication().container.marketsRepository,
+                copodApplication().container.marketsRepository,
                 mainViewModel = mainViewModel,
             )
             machineryViewModel
@@ -193,15 +195,23 @@ object CopodViewModelProvider {
 
         initializer {
             farmProfileViewModel = FarmProfileViewModel(
-                vunoApplication().container.farmRepository,
-                vunoApplication().container.marketsRepository,
+                copodApplication().container.farmRepository,
+                copodApplication().container.marketsRepository,
                 this.createSavedStateHandle(),
             )
             farmProfileViewModel
+        }
+
+        initializer {
+            allMarketsViewModel = AllMarketsViewModel(
+                copodApplication().container.farmRepository,
+                this.createSavedStateHandle(),
+            )
+            allMarketsViewModel
         }
     }
 }
 
 /* Instance of Vuno App */
-fun CreationExtras.vunoApplication(): CopodApp =
+fun CreationExtras.copodApplication(): CopodApp =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as CopodApp)
