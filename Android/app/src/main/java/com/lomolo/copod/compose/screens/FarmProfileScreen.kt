@@ -135,6 +135,7 @@ fun FarmProfileScreen(
                                     stringResource(R.string.reviews, farm.reviewers),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -159,6 +160,7 @@ fun FarmProfileScreen(
                                     stringResource(R.string.completed_orders),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -186,6 +188,7 @@ fun FarmProfileScreen(
                                     stringResource(R.string.date_started),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -210,6 +213,7 @@ fun FarmProfileScreen(
                                     stringResource(R.string.farm_location),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
