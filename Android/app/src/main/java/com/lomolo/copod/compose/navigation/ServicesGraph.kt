@@ -37,7 +37,7 @@ fun NavGraphBuilder.addServicesGraph(
                 navHostController = navHostController,
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${true}"
                     )
                 },
                 bottomNav = {
@@ -54,7 +54,7 @@ fun NavGraphBuilder.addServicesGraph(
                 navHostController = navHostController,
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${true}"
                     )
                 },
                 bottomNav = {
@@ -71,7 +71,7 @@ fun NavGraphBuilder.addServicesGraph(
                 navHostController = navHostController,
                 onNavigateToMarketDetails = { marketId ->
                     navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}"
+                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${true}"
                     )
                 },
                 bottomNav = {

@@ -116,12 +116,6 @@ private fun FarmHeader(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.ExtraBold
             )
-            Text(
-                Util.capitalize(farm?.about ?: ""),
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-            )
             OutlinedIconButton(
                 onClick = {
                     if (farm != null) {
