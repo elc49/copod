@@ -18,5 +18,13 @@ UPDATE farms SET about = $1, thumbnail = $2
 WHERE id = $3
 RETURNING *;
 
+-- name: FarmRatingPoints :one
+SELECT rate FROM ratings
+WHERE farm_id = $1;
+
+-- name: CountFarmReviewers :one
+SELECT COUNT(*) FROM ratings
+WHERE farm_id = $1;
+
 -- name: ClearTestFarms :exec
 DELETE FROM farms;

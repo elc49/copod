@@ -21,6 +21,18 @@ func (q *Queries) ClearTestFarms(ctx context.Context) error {
 	return err
 }
 
+const countFarmReviewers = `-- name: CountFarmReviewers :one
+SELECT COUNT(*) FROM ratings
+WHERE farm_id = $1
+`
+
+func (q *Queries) CountFarmReviewers(ctx context.Context, farmID uuid.NullUUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countFarmReviewers, farmID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createFarm = `-- name: CreateFarm :one
 INSERT INTO farms (
   name, about, date_started, address_string, thumbnail, user_id, location
@@ -64,6 +76,18 @@ func (q *Queries) CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, e
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const farmRatingPoints = `-- name: FarmRatingPoints :one
+SELECT rate FROM ratings
+WHERE farm_id = $1
+`
+
+func (q *Queries) FarmRatingPoints(ctx context.Context, farmID uuid.NullUUID) (int32, error) {
+	row := q.db.QueryRowContext(ctx, farmRatingPoints, farmID)
+	var rate int32
+	err := row.Scan(&rate)
+	return rate, err
 }
 
 const getFarmByID = `-- name: GetFarmByID :one
