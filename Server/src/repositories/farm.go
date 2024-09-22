@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"strconv"
 
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/postgres"
@@ -62,12 +63,18 @@ func (r *FarmRepository) GetFarmByID(ctx context.Context, id uuid.UUID) (*model.
 		return nil, err
 	}
 
+	rate, err := r.reviewFarm(ctx, farm.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &model.Farm{
 		ID:            farm.ID,
 		Name:          farm.Name,
 		About:         &farm.About,
 		AddressString: farm.AddressString,
 		DateStarted:   farm.DateStarted,
+		Rating:        rate,
 		Thumbnail:     farm.Thumbnail,
 		CreatedAt:     farm.CreatedAt,
 		UpdatedAt:     farm.UpdatedAt,
@@ -85,4 +92,27 @@ func (r *FarmRepository) UpdateFarmDetails(ctx context.Context, args db.UpdateFa
 		About:     &f.About,
 		Thumbnail: f.Thumbnail,
 	}, nil
+}
+
+func (r *FarmRepository) reviewFarm(ctx context.Context, farmID uuid.UUID) (float64, error) {
+	points, err := r.store.StoreReader.FarmRatingPoints(ctx, uuid.NullUUID{UUID: farmID, Valid: true})
+	if err != nil && err == sql.ErrNoRows {
+		return 0.0, nil
+	} else if err != nil {
+		return 0.0, err
+	}
+
+	reviewers, err := r.store.StoreReader.CountFarmReviewers(ctx, uuid.NullUUID{UUID: farmID, Valid: true})
+	if err != nil && err == sql.ErrNoRows {
+		return 0.0, nil
+	} else if err != nil {
+		return 0.0, err
+	}
+
+	rating, err := strconv.ParseFloat(strconv.FormatInt(int64(points)/reviewers, 10), 64)
+	if err != nil {
+		return 0.0, err
+	}
+
+	return rating, nil
 }
