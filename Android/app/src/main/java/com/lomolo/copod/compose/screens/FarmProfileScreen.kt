@@ -223,7 +223,7 @@ fun FarmProfileScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         Text(
-                            stringResource(R.string.details),
+                            stringResource(R.string.farm_details),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )

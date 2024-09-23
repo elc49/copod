@@ -125,4 +125,5 @@
     <string name="reviews">%1$s Reviews</string>
     <string name="seasonal_harvest">Seasonal harvest</string>
     <string name="go_forward">Go forward</string>
+    <string name="farm_details">About farm</string>
 </resources>
