@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -40,17 +39,11 @@ func ImageUploader() http.Handler {
 			return
 		}
 
-		res, err := json.Marshal(struct {
+		if err := writeJSON(w, struct {
 			ImageUri string `json:"image_uri"`
-		}{ImageUri: url})
-		if err != nil {
-			log.WithError(err).Error("handlers: json.Marshal() response")
+		}{ImageUri: url}, http.StatusCreated); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		w.Write(res)
 	})
 }

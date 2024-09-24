@@ -62,7 +62,7 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		res.HasFarmingRights = user.HasFarmingRights
 		res.HasPosterRights = user.HasPosterRights
 
-		if err := renderJSON(w, res, http.StatusOK); err != nil {
+		if err := writeJSON(w, res, http.StatusOK); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

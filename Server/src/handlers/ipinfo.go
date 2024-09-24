@@ -14,7 +14,7 @@ func Ip() http.Handler {
 			return
 		}
 
-		err = renderJSON(w, ipinfo, http.StatusOK)
+		err = writeJSON(w, ipinfo, http.StatusOK)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

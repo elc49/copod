@@ -34,7 +34,7 @@ func RefreshToken(signinController controllers.SigninController) http.Handler {
 		res.HasFarmingRights = user.HasFarmingRights
 		res.HasPosterRights = user.HasPosterRights
 
-		if err := renderJSON(w, res, http.StatusCreated); err != nil {
+		if err := writeJSON(w, res, http.StatusCreated); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
