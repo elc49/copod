@@ -13,3 +13,6 @@ WHERE order_id = $1;
 -- name: CountOrderItems :one
 SELECT COUNT(*) FROM order_items
 WHERE order_id = $1;
+
+-- name: ClearTestOrderItems :exec
+DELETE FROM order_items;

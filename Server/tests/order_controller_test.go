@@ -51,6 +51,7 @@ func TestOrderController(t *testing.T) {
 		store.StoreWriter.ClearTestFarms(ctx)
 		store.StoreWriter.ClearTestMarkets(ctx)
 		store.StoreWriter.ClearTestOrders(ctx)
+		store.StoreWriter.ClearTestOrderItems(ctx)
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {

@@ -17,6 +17,7 @@ type Querier interface {
 	ClearTestCarts(ctx context.Context) error
 	ClearTestFarms(ctx context.Context) error
 	ClearTestMarkets(ctx context.Context) error
+	ClearTestOrderItems(ctx context.Context) error
 	ClearTestOrders(ctx context.Context) error
 	ClearTestUsers(ctx context.Context) error
 	CompletedFarmOrders(ctx context.Context, arg CompletedFarmOrdersParams) (int64, error)

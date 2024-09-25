@@ -11,6 +11,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearTestOrderItems = `-- name: ClearTestOrderItems :exec
+DELETE FROM order_items
+`
+
+func (q *Queries) ClearTestOrderItems(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearTestOrderItems)
+	return err
+}
+
 const countOrderItems = `-- name: CountOrderItems :one
 SELECT COUNT(*) FROM order_items
 WHERE order_id = $1
