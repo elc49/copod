@@ -216,7 +216,8 @@ fun MarketDetailsScreen(
                             Text(
                                 stringResource(R.string.available_in_stock),
                                 color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.ExtraBold,
                             )
                         }
                         Column(

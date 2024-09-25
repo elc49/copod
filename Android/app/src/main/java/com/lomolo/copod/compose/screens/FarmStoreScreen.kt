@@ -240,7 +240,6 @@ private fun OrderCard(
     country: String,
     goToOrderDetails: () -> Unit,
 ) {
-    val context = LocalContext.current
     val statusColor: Color = when (order.status) {
         OrderStatus.PENDING -> surfaceContainerLight
         OrderStatus.DELIVERED -> primaryContainerLight

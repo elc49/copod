@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.CalendarLocale
@@ -58,8 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import kotlinx.coroutines.launch
@@ -160,7 +160,7 @@ fun CreateFarmScreen(
         }, navigationIcon = {
             IconButton(onClick = onNavigateBack) {
                 Icon(
-                    Icons.TwoTone.Close,
+                    Icons.AutoMirrored.TwoTone.ArrowBack,
                     contentDescription = stringResource(R.string.close),
                 )
             }
