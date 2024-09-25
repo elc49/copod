@@ -7,6 +7,7 @@ import (
 
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/postgres/db"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,6 +46,7 @@ func TestOrderController(t *testing.T) {
 		Type:         model.MarketTypeMachinery.String(),
 	})
 	cartC := cartController()
+	var order *model.Order
 
 	defer func() {
 		store.StoreWriter.ClearTestUsers(ctx)
@@ -55,7 +57,6 @@ func TestOrderController(t *testing.T) {
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {
-		var order *model.Order
 		cart, _ := cartC.AddToCart(ctx, db.AddToCartParams{
 			Volume:   4,
 			UserID:   user.ID,
@@ -139,5 +140,17 @@ func TestOrderController(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, len(orders), 1)
+	})
+
+	t.Run("get_order_by_id", func(t *testing.T) {
+		o, err := orderC.GetOrderByID(ctx, order.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, o.Status, model.OrderStatusPending)
+	})
+
+	t.Run("should_get_non_existent_order", func(t *testing.T) {
+		o, err := orderC.GetOrderByID(ctx, uuid.New())
+		assert.Nil(t, err)
+		assert.Nil(t, o)
 	})
 }
