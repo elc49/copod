@@ -79,7 +79,7 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 		}
 	}
 	// Cleanup blank order blocks
-	if c.r.OrderHasItems(ctx, order.ID) {
+	if !c.r.OrderHasItems(ctx, order.ID) {
 		c.r.DeleteOrder(ctx, order.ID)
 	}
 
