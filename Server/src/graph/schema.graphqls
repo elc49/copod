@@ -103,6 +103,7 @@ type Order {
   currency: String!
   customerId: UUID!
   short_id: String!
+  farmId: UUID!
   status: OrderStatus!
   customer: User!
   items: [OrderItem!]!

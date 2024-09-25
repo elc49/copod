@@ -17,6 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.twotone.Check
+import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -71,20 +74,113 @@ fun FarmOrderScreen(
     val order by viewModel.order.collectAsState()
 
     Scaffold(contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), topBar = {
-        TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
-            title = {
-                Text(stringResource(FarmOrderScreenDestination.title))
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = onGoBack,
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = stringResource(R.string.go_back),
+        TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
+            Text(stringResource(FarmOrderScreenDestination.title))
+        }, navigationIcon = {
+            IconButton(
+                onClick = onGoBack,
+            ) {
+                Icon(
+                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                    contentDescription = stringResource(R.string.go_back),
+                )
+            }
+        })
+    }, bottomBar = {
+        when (order.status) {
+            OrderStatus.PENDING -> Button(
+                onClick = {
+                    viewModel.updateOrderStatus(
+                        order.id.toString(), order.farmId.toString(), OrderStatus.CONFIRMED
+                    )
+                },
+                Modifier.fillMaxWidth().padding(2.dp),
+                contentPadding = PaddingValues(12.dp),
+                shape = MaterialTheme.shapes.extraSmall,
+            ) {
+                when (viewModel.updatingOrderState) {
+                    UpdateOrderState.Success -> Text(
+                        stringResource(R.string.confirm),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    UpdateOrderState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        MaterialTheme.colorScheme.onPrimary,
+                    )
+
+                    is UpdateOrderState.Error -> Text(
+                        stringResource(R.string.something_went_wrong)
                     )
                 }
-            })
+            }
+
+            OrderStatus.CONFIRMED -> Button(
+                onClick = {
+                    viewModel.updateOrderStatus(
+                        order.id.toString(), order.farmId.toString(), OrderStatus.DELIVERED
+                    )
+                },
+                Modifier.fillMaxWidth().padding(2.dp),
+                contentPadding = PaddingValues(12.dp),
+                shape = MaterialTheme.shapes.extraSmall,
+            ) {
+                when (viewModel.updatingOrderState) {
+                    UpdateOrderState.Success -> Text(
+                        stringResource(R.string.deliver),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    UpdateOrderState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        MaterialTheme.colorScheme.onPrimary,
+                    )
+
+                    is UpdateOrderState.Error -> Text(
+                        stringResource(R.string.something_went_wrong)
+                    )
+                }
+            }
+
+            OrderStatus.CANCELLED -> {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        Icons.TwoTone.Close,
+                        contentDescription = stringResource(R.string.closed),
+                        tint = MaterialTheme.colorScheme.onError,
+                    )
+                }
+            }
+
+            OrderStatus.DELIVERED -> {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        Icons.TwoTone.Check,
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.shapes.small,
+                            )
+                            .padding(2.dp)
+                            .size(20.dp),
+                        contentDescription = stringResource(R.string.success),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+            }
+
+            else -> {}
+        }
     }) { innerPadding ->
         Surface(
             modifier = modifier
@@ -132,6 +228,7 @@ private fun OrderDetails(
     }
 
     LazyColumn(
+        modifier = modifier,
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {

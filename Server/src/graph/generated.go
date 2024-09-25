@@ -129,6 +129,7 @@ type ComplexityRoot struct {
 		Currency   func(childComplexity int) int
 		Customer   func(childComplexity int) int
 		CustomerID func(childComplexity int) int
+		FarmID     func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Items      func(childComplexity int) int
 		ShortID    func(childComplexity int) int
@@ -691,6 +692,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.CustomerID(childComplexity), true
+
+	case "Order.farmId":
+		if e.complexity.Order.FarmID == nil {
+			break
+		}
+
+		return e.complexity.Order.FarmID(childComplexity), true
 
 	case "Order.id":
 		if e.complexity.Order.ID == nil {
@@ -3857,6 +3865,8 @@ func (ec *executionContext) fieldContext_Mutation_sendOrderToFarm(ctx context.Co
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "short_id":
 				return ec.fieldContext_Order_short_id(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Order_farmId(ctx, field)
 			case "status":
 				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
@@ -3934,6 +3944,8 @@ func (ec *executionContext) fieldContext_Mutation_updateOrderStatus(ctx context.
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "short_id":
 				return ec.fieldContext_Order_short_id(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Order_farmId(ctx, field)
 			case "status":
 				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
@@ -4347,6 +4359,50 @@ func (ec *executionContext) fieldContext_Order_short_id(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Order_farmId(ctx context.Context, field graphql.CollectedField, obj *model.Order) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Order_farmId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FarmID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Order_farmId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Order",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5864,6 +5920,8 @@ func (ec *executionContext) fieldContext_Query_getFarmOrders(ctx context.Context
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "short_id":
 				return ec.fieldContext_Order_short_id(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Order_farmId(ctx, field)
 			case "status":
 				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
@@ -6141,6 +6199,8 @@ func (ec *executionContext) fieldContext_Query_getOrdersBelongingToUser(_ contex
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "short_id":
 				return ec.fieldContext_Order_short_id(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Order_farmId(ctx, field)
 			case "status":
 				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
@@ -6425,6 +6485,8 @@ func (ec *executionContext) fieldContext_Query_getOrderDetails(ctx context.Conte
 				return ec.fieldContext_Order_customerId(ctx, field)
 			case "short_id":
 				return ec.fieldContext_Order_short_id(ctx, field)
+			case "farmId":
+				return ec.fieldContext_Order_farmId(ctx, field)
 			case "status":
 				return ec.fieldContext_Order_status(ctx, field)
 			case "customer":
@@ -10047,6 +10109,11 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "short_id":
 			out.Values[i] = ec._Order_short_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "farmId":
+			out.Values[i] = ec._Order_farmId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

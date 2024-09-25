@@ -225,6 +225,8 @@ type Order {
 
   short_id: String!
 
+  farmId: UUID!
+
   status: OrderStatus!
 
   customer: User!

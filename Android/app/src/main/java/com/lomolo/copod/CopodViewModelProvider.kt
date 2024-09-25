@@ -74,7 +74,6 @@ object CopodViewModelProvider {
             farmStoreViewModel = FarmStoreViewModel(
                 this.createSavedStateHandle(),
                 copodApplication().container.copodGraphqlApiService,
-                copodApplication().container.apolloClient.apolloStore,
             )
             farmStoreViewModel
         }
@@ -216,6 +215,7 @@ object CopodViewModelProvider {
             farmOrderViewModel = FarmOrderViewModel(
                 copodApplication().container.copodGraphqlApiService,
                 this.createSavedStateHandle(),
+                copodApplication().container.apolloClient.apolloStore,
             )
             farmOrderViewModel
         }

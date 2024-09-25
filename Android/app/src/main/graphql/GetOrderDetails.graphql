@@ -5,6 +5,7 @@ query GetOrderDetails($id: UUID!) {
         status
         toBePaid
         currency
+        farmId
         items {
             id
             market {

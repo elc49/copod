@@ -264,6 +264,7 @@ func (r *OrderRepository) GetOrderByID(ctx context.Context, orderID uuid.UUID) (
 		ToBePaid:   int(o.ToBePaid),
 		ShortID:    o.ShortID,
 		Currency:   o.Currency,
+		FarmID:     o.FarmID,
 		Status:     model.OrderStatus(o.Status),
 		CustomerID: o.CustomerID,
 		CreatedAt:  o.CreatedAt,

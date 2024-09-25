@@ -1,10 +1,7 @@
 package com.lomolo.copod.compose.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,10 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.automirrored.twotone.ArrowForward
 import androidx.compose.material.icons.twotone.Add
-import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material.icons.twotone.Check
-import androidx.compose.material.icons.twotone.Close
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -47,7 +39,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -214,30 +205,9 @@ private fun MarketCard(
 }
 
 @Composable
-private fun OrderDate(
-    modifier: Modifier = Modifier,
-    date: String,
-    language: String,
-    country: String,
-) {
-    Text(
-        Util.copodDateFormat(date, language, country),
-        style = MaterialTheme.typography.bodySmall,
-        fontWeight = FontWeight.SemiBold,
-        modifier = modifier,
-    )
-}
-
-@Composable
 private fun OrderCard(
     modifier: Modifier = Modifier,
     order: GetFarmOrdersQuery.GetFarmOrder,
-    index: Int,
-    orderStatus: UpdateOrderState,
-    changingOrderId: String,
-    updateOrderStatus: (String, OrderStatus) -> Unit,
-    language: String,
-    country: String,
     goToOrderDetails: () -> Unit,
 ) {
     val statusColor: Color = when (order.status) {
@@ -249,7 +219,7 @@ private fun OrderCard(
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -287,152 +257,6 @@ private fun OrderCard(
             )
         }
     }
-    /*
-    OutlinedCard(
-        shape = MaterialTheme.shapes.small,
-    ) {
-        Column(
-            modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-
-                Column(Modifier.padding(4.dp)) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            "#${index.plus(1)} - ${order.market.name}",
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        OrderDate(
-                            date = order.created_at.toString(),
-                            language = language,
-                            country = country,
-                        )
-                        Text(
-                            "${order.volume} ${order.market.unit}",
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-            }
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                if (orderStatus is UpdateOrderState.Loading && changingOrderId == order.id.toString()) {
-                    CircularProgressIndicator(
-                        Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Row {
-                        when (order.status) {
-                            OrderStatus.PENDING -> TextButton(
-                                onClick = {
-                                    updateOrderStatus(
-                                        order.id.toString(), OrderStatus.CONFIRMED
-                                    )
-                                },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                ),
-                                contentPadding = PaddingValues(2.dp),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text(
-                                    stringResource(R.string.confirm),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-
-                            OrderStatus.CONFIRMED -> TextButton(
-                                onClick = {
-                                    updateOrderStatus(
-                                        order.id.toString(), OrderStatus.DELIVERED
-                                    )
-                                },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                ),
-                                contentPadding = PaddingValues(2.dp),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text(
-                                    stringResource(R.string.deliver),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-
-                            OrderStatus.CANCELLED -> {
-                                Icon(
-                                    Icons.TwoTone.Close,
-                                    contentDescription = stringResource(R.string.closed),
-                                    tint = MaterialTheme.colorScheme.onError,
-                                )
-                            }
-
-                            OrderStatus.DELIVERED -> {
-                                Icon(
-                                    Icons.TwoTone.Check,
-                                    modifier = Modifier
-                                        .background(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.shapes.small,
-                                        )
-                                        .padding(2.dp)
-                                        .size(20.dp),
-                                    contentDescription = stringResource(R.string.success),
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                )
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    TextButton(onClick = {
-                        val u = Uri.parse(context.getString(R.string.tel) + order.customer.phone)
-                        val intent = Intent(Intent.ACTION_DIAL, u)
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Call,
-                            contentDescription = stringResource(id = R.string.call),
-                        )
-                    }
-                }
-            }
-        }
-    }
-     */
 }
 
 @ExperimentalMaterial3Api
@@ -586,21 +410,11 @@ fun FarmStoreScreen(
                                         )
                                     }
                                 } else {
-                                    itemsIndexed(orders) { index, item ->
+                                    itemsIndexed(orders) { _, item ->
                                         OrderCard(
                                             order = item,
-                                            index = index,
-                                            orderStatus = viewModel.updatingOrderState,
-                                            changingOrderId = viewModel.updatingOrderId,
-                                            language = deviceDetails.languages,
-                                            country = deviceDetails.countryCode,
-                                            updateOrderStatus = { id: String, status: OrderStatus ->
-                                                viewModel.updateOrderStatus(
-                                                    id, status
-                                                )
-                                            },
                                             goToOrderDetails = {
-                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id.toString()}")
+                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}")
                                             }
                                         )
                                     }

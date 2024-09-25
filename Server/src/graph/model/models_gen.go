@@ -124,6 +124,7 @@ type Order struct {
 	Currency   string       `json:"currency"`
 	CustomerID uuid.UUID    `json:"customerId"`
 	ShortID    string       `json:"short_id"`
+	FarmID     uuid.UUID    `json:"farmId"`
 	Status     OrderStatus  `json:"status"`
 	Customer   *User        `json:"customer"`
 	Items      []*OrderItem `json:"items"`
