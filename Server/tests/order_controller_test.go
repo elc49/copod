@@ -54,6 +54,7 @@ func TestOrderController(t *testing.T) {
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {
+		var order *model.Order
 		cart, _ := cartC.AddToCart(ctx, db.AddToCartParams{
 			Volume:   4,
 			UserID:   user.ID,
@@ -83,14 +84,17 @@ func TestOrderController(t *testing.T) {
 				},
 			},
 		}
-		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
-
-		assert.Nil(t, err)
+		order, _ = orderC.SendOrderToFarm(ctx, user.ID, orders)
+		assert.Equal(t, order.ToBePaid, 2200)
+		assert.Equal(t, order.Status, model.OrderStatusPending)
 
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
 		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
 		m, _ = marketC.GetMarketByID(ctx, machineryMarket.ID)
 		assert.Equal(t, m.Status, model.MarketStatusBooked)
+
+		orderItems, _ := orderC.GetOrderItems(ctx, order.ID)
+		assert.Equal(t, len(orderItems), 2)
 	})
 
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
