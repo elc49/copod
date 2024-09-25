@@ -49,7 +49,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetFarmMarketsQuery
-import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
@@ -57,7 +56,7 @@ import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.util.Util
 
 object AllMarketsScreenDestination: Navigation {
-    override val title = null
+    override val title = R.string.all_markets
     override val route = "dashboard/all-markets"
     const val MARKET_TYPE_ARG = "marketType"
     const val PROFILE_ID_ARG = "profileId"
@@ -81,7 +80,9 @@ fun AllMarketsScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
-                title = {}, navigationIcon = {
+                title = {
+                    Text(stringResource(AllMarketsScreenDestination.title))
+                }, navigationIcon = {
                 IconButton(onClick = onGoBack) {
                     Icon(
                         Icons.AutoMirrored.TwoTone.ArrowBack,

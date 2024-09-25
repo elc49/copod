@@ -95,11 +95,7 @@ fun MarketDetailsScreen(
                 GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
                     0.dp, 0.dp, 0.dp, 0.dp
                 ), title = {
-                    Text(
-                        market.farm.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    Text(market.farm.name)
                 }, navigationIcon = {
                     IconButton(
                         onClick = {
@@ -139,6 +135,7 @@ fun MarketDetailsScreen(
                             }
                         }
                     },
+                    shape = MaterialTheme.shapes.extraSmall,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(4.dp),

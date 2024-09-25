@@ -143,6 +143,7 @@ class FarmStoreViewModel(
                         updatedCacheData[where] = GetFarmOrdersQuery.GetFarmOrder(
                             res.updateOrderStatus.id,
                             updatedCacheData[where].currency,
+                            res.updateOrderStatus.short_id,
                             res.updateOrderStatus.items.map {
                                 GetFarmOrdersQuery.Item(
                                     it.id,

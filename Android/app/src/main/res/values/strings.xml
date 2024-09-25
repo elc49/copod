@@ -126,4 +126,5 @@
     <string name="seasonal_harvest">Seasonal harvest</string>
     <string name="go_forward">Go forward</string>
     <string name="farm_details">About farm</string>
+    <string name="all_markets">All Markets</string>
 </resources>

@@ -116,11 +116,7 @@ private fun FarmHeader(
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                text = Util.capitalize(farm?.name ?: ""),
-                textAlign = TextAlign.Start,
-                fontWeight = FontWeight.Bold
-            )
+            Text(Util.capitalize(farm?.name ?: ""))
         }
     }
 }

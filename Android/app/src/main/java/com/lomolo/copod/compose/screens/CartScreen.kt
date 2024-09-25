@@ -115,11 +115,7 @@ fun CartScreen(
 
     Scaffold(snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
-            Text(
-                stringResource(id = CartScreenDestination.title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            Text(stringResource(id = CartScreenDestination.title))
         }, actions = {
             IconButton(onClick = { dropMenuExpanded = true }) {
                 Icon(
