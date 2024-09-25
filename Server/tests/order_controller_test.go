@@ -44,6 +44,7 @@ func TestOrderController(t *testing.T) {
 		FarmID:       farm.ID,
 		Type:         model.MarketTypeMachinery.String(),
 	})
+	cartC := cartController()
 
 	defer func() {
 		store.StoreWriter.ClearTestUsers(ctx)
@@ -53,34 +54,38 @@ func TestOrderController(t *testing.T) {
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {
-		orders := []*model.SendOrderToFarmInput{
-			{
-				ToBePaid: 200,
-				Currency: "KES",
-				FarmID:   farm.ID,
-				OrderItems: []*model.OrderItemInput{
-					{
-						Volume:   2,
-						MarketID: market.ID,
-					},
+		cart, _ := cartC.AddToCart(ctx, db.AddToCartParams{
+			Volume:   4,
+			UserID:   user.ID,
+			MarketID: market.ID,
+			FarmID:   farm.ID,
+		})
+		cart2, _ := cartC.AddToCart(ctx, db.AddToCartParams{
+			UserID:   user.ID,
+			MarketID: machineryMarket.ID,
+			FarmID:   farm.ID,
+		})
+		orders := model.SendOrderToFarmInput{
+			ToBePaid: 2200,
+			Currency: "KES",
+			OrderItems: []*model.OrderItemInput{
+				{
+					CartID:   cart.ID,
+					FarmID:   farm.ID,
+					Volume:   2,
+					MarketID: market.ID,
 				},
-			},
-			{
-				ToBePaid: 2000,
-				Currency: "KES",
-				OrderItems: []*model.OrderItemInput{
-					{
-						Volume:   2,
-						MarketID: machineryMarket.ID,
-					},
+				{
+					Volume:   2,
+					MarketID: machineryMarket.ID,
+					FarmID:   farm.ID,
+					CartID:   cart2.ID,
 				},
-				FarmID: farm.ID,
 			},
 		}
-		b, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
+		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
 
 		assert.Nil(t, err)
-		assert.True(t, b)
 
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
 		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
@@ -89,53 +94,45 @@ func TestOrderController(t *testing.T) {
 	})
 
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
-		orders := []*model.SendOrderToFarmInput{
-			{
-				ToBePaid: 200,
-				Currency: "KES",
-				OrderItems: []*model.OrderItemInput{
-					{
-						Volume:   120,
-						MarketID: market.ID,
-					},
+		order := model.SendOrderToFarmInput{
+			ToBePaid: 200,
+			Currency: "KES",
+			OrderItems: []*model.OrderItemInput{
+				{
+					Volume:   120,
+					MarketID: market.ID,
+					FarmID:   farm.ID,
 				},
-				FarmID: farm.ID,
-			},
-			{
-				ToBePaid: 2000,
-				Currency: "KES",
-				OrderItems: []*model.OrderItemInput{
-					{
-						Volume:   2,
-						MarketID: machineryMarket.ID,
-					},
+				{
+					Volume:   2,
+					MarketID: machineryMarket.ID,
+					FarmID:   farm.ID,
 				},
-				FarmID: farm.ID,
 			},
 		}
-		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
+		_, err := orderC.SendOrderToFarm(ctx, user.ID, order)
 		assert.Nil(t, err)
 
 		o, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(o), 2)
+		assert.Equal(t, len(o), 1)
 	})
 
 	t.Run("get_orders_belonging_to_user", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 2)
+		assert.Equal(t, len(orders), 1)
 	})
 
 	t.Run("get_user_orders_count", func(t *testing.T) {
 		c, err := orderC.GetUserOrdersCount(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, c, 2)
+		assert.Equal(t, c, 1)
 	})
 
 	t.Run("get_farm_orders", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 2)
+		assert.Equal(t, len(orders), 1)
 	})
 }
