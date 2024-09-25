@@ -3,14 +3,18 @@ package com.lomolo.copod.compose.navigation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.copod.compose.screens.CreateFarmMarketDestination
 import com.lomolo.copod.compose.screens.CreateFarmMarketScreen
+import com.lomolo.copod.compose.screens.FarmOrderScreen
+import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
 import com.lomolo.copod.compose.screens.FarmSettingsScreen
 import com.lomolo.copod.compose.screens.FarmSettingsScreenDestination
 import com.lomolo.copod.compose.screens.FarmStoreScreen
@@ -37,7 +41,7 @@ fun NavGraphBuilder.addFarmGraph(
     ) {
         composable(
             route = FarmStoreScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmStoreScreenDestination.farmIdArg) {
+            arguments = listOf(navArgument(FarmStoreScreenDestination.FARM_ID_ARG) {
                 type = NavType.StringType
             })
         ) {
@@ -73,6 +77,19 @@ fun NavGraphBuilder.addFarmGraph(
                     }
                 },
                 currencyLocale = deviceDetails.currency,
+            )
+        }
+        dialog(
+            route = FarmOrderScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(FarmOrderScreenDestination.ORDER_ID_ARG) {
+                type = NavType.StringType
+            }),
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            FarmOrderScreen(
+                onGoBack = {
+                    navHostController.popBackStack()
+                }
             )
         }
     }

@@ -106,3 +106,7 @@ func (c *OrderController) CompletedFarmOrders(ctx context.Context, args db.Compl
 func (c *OrderController) GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]*model.OrderItem, error) {
 	return c.r.GetOrderItems(ctx, orderID)
 }
+
+func (c *OrderController) GetOrderByID(ctx context.Context, orderID uuid.UUID) (*model.Order, error) {
+	return c.r.GetOrderByID(ctx, orderID)
+}

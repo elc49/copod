@@ -260,6 +260,7 @@ type Query {
   getUserOrdersCount: Int!
   getMarketDetails(id: UUID!): Market!
   getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
+  getOrderDetails(id: UUID!): Order!
 }
 
 type Mutation {

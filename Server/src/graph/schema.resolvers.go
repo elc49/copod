@@ -261,6 +261,11 @@ func (r *queryResolver) GetLocalizedMachineryMarkets(ctx context.Context, input 
 	return r.marketController.GetLocalizedMachineryMarkets(ctx, userId, args)
 }
 
+// GetOrderDetails is the resolver for the getOrderDetails field.
+func (r *queryResolver) GetOrderDetails(ctx context.Context, id uuid.UUID) (*model.Order, error) {
+	return r.orderController.GetOrderByID(ctx, id)
+}
+
 // PaymentUpdate is the resolver for the paymentUpdate field.
 func (r *subscriptionResolver) PaymentUpdate(ctx context.Context, userID uuid.UUID) (<-chan *model.PaystackPaymentUpdate, error) {
 	ch := make(chan *model.PaystackPaymentUpdate)

@@ -29,7 +29,7 @@ class FarmStoreViewModel(
     private val apolloStore: ApolloStore,
 ) : ViewModel() {
     private val storeId: String =
-        checkNotNull(savedStateHandle[FarmStoreScreenDestination.farmIdArg])
+        checkNotNull(savedStateHandle[FarmStoreScreenDestination.FARM_ID_ARG])
 
     fun getFarmId(): String {
         return storeId

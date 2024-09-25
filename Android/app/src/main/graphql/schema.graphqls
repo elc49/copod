@@ -336,6 +336,8 @@ type Query {
   getMarketDetails(id: UUID!): Market!
 
   getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
+
+  getOrderDetails(id: UUID!): Order!
 }
 
 input SendOrderToFarmInput {

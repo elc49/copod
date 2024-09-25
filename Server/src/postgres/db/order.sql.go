@@ -85,13 +85,13 @@ func (q *Queries) DeleteOrder(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getOrderById = `-- name: GetOrderById :one
+const getOrderByID = `-- name: GetOrderByID :one
 SELECT id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
 WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error) {
-	row := q.db.QueryRowContext(ctx, getOrderById, id)
+func (q *Queries) GetOrderByID(ctx context.Context, id uuid.UUID) (Order, error) {
+	row := q.db.QueryRowContext(ctx, getOrderByID, id)
 	var i Order
 	err := row.Scan(
 		&i.ID,

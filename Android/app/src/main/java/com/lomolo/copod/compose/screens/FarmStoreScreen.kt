@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.automirrored.twotone.ArrowForward
 import androidx.compose.material.icons.twotone.Add
 import androidx.compose.material.icons.twotone.Call
 import androidx.compose.material.icons.twotone.Check
@@ -89,8 +90,8 @@ import com.lomolo.copod.util.Util
 object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
     override val route = "dashboard-market"
-    const val farmIdArg = "farmId"
-    val routeWithArgs = "$route/{$farmIdArg}"
+    const val FARM_ID_ARG = "farmId"
+    val routeWithArgs = "$route/{$FARM_ID_ARG}"
 }
 
 @Composable
@@ -237,9 +238,57 @@ private fun OrderCard(
     updateOrderStatus: (String, OrderStatus) -> Unit,
     language: String,
     country: String,
+    goToOrderDetails: () -> Unit,
 ) {
     val context = LocalContext.current
+    val statusColor: Color = when (order.status) {
+        OrderStatus.PENDING -> surfaceContainerLight
+        OrderStatus.DELIVERED -> primaryContainerLight
+        OrderStatus.CANCELLED -> errorContainerLight
+        OrderStatus.CONFIRMED -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
 
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            "#${order.short_id}",
+            fontWeight = FontWeight.Bold,
+        )
+        Box(
+            Modifier
+                .background(
+                    statusColor,
+                    MaterialTheme.shapes.small,
+                )
+                .padding(4.dp)
+                .wrapContentSize(Alignment.Center),
+        ) {
+            Text(
+                order.status.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        Text(
+            "${order.currency} ${order.toBePaid}",
+            fontWeight = FontWeight.Bold,
+        )
+        IconButton(
+            onClick = goToOrderDetails,
+        ) {
+            Icon(
+                Icons.AutoMirrored.TwoTone.ArrowForward,
+                contentDescription = stringResource(R.string.go_forward),
+            )
+        }
+    }
+    /*
     OutlinedCard(
         shape = MaterialTheme.shapes.small,
     ) {
@@ -249,33 +298,12 @@ private fun OrderCard(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            /*
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                val statusColor: Color = when (order.status) {
-                    OrderStatus.PENDING -> surfaceContainerLight
-                    OrderStatus.DELIVERED -> primaryContainerLight
-                    OrderStatus.CANCELLED -> errorContainerLight
-                    OrderStatus.CONFIRMED -> secondaryContainerLight
-                    else -> MaterialTheme.colorScheme.primaryContainer
-                }
 
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
-                        .crossfade(true).build(),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(MaterialTheme.shapes.small),
-                    placeholder = painterResource(R.drawable.loading_img),
-                    error = painterResource(R.drawable.ic_broken_image),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = stringResource(
-                        id = R.string.product
-                    )
-                )
                 Column(Modifier.padding(4.dp)) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -284,21 +312,6 @@ private fun OrderCard(
                             "#${index.plus(1)} - ${order.market.name}",
                             fontWeight = FontWeight.Bold,
                         )
-                        Box(
-                            Modifier
-                                .background(
-                                    statusColor,
-                                    MaterialTheme.shapes.small,
-                                )
-                                .padding(4.dp)
-                                .wrapContentSize(Alignment.Center),
-                        ) {
-                            Text(
-                                order.status.toString(),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -307,13 +320,6 @@ private fun OrderCard(
                             date = order.created_at.toString(),
                             language = language,
                             country = country,
-                        )
-                        Icon(
-                            painterResource(id = R.drawable.dot),
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(32.dp),
-                            contentDescription = stringResource(R.string.dot),
                         )
                         Text(
                             "${order.volume} ${order.market.unit}",
@@ -425,9 +431,9 @@ private fun OrderCard(
                     }
                 }
             }
-            */
         }
     }
+     */
 }
 
 @ExperimentalMaterial3Api
@@ -594,6 +600,9 @@ fun FarmStoreScreen(
                                                     id, status
                                                 )
                                             },
+                                            goToOrderDetails = {
+                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id.toString()}")
+                                            }
                                         )
                                     }
                                 }

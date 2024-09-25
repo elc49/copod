@@ -17,6 +17,7 @@ import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.GetLocalizedMachineryMarketsQuery
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.GetMarketDetailsQuery
+import com.lomolo.copod.GetOrderDetailsQuery
 import com.lomolo.copod.GetOrdersBelongingToUserQuery
 import com.lomolo.copod.GetPaystackPaymentVerificationQuery
 import com.lomolo.copod.GetUserCartItemsQuery
@@ -70,7 +71,7 @@ interface ICopodGraphqlApi {
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
-
+    suspend fun getOrderDetails(id: String): ApolloResponse<GetOrderDetailsQuery.Data>
 }
 
 class CopodGraphqlApi(
@@ -184,4 +185,10 @@ class CopodGraphqlApi(
 
     override suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput) =
         apolloClient.query(GetFarmMarketsQuery(input)).execute()
+
+    override suspend fun getOrderDetails(id: String) = apolloClient.query(
+        GetOrderDetailsQuery(id)
+    )
+        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .execute()
 }

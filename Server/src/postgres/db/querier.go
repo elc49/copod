@@ -43,7 +43,7 @@ type Querier interface {
 	GetMarketByID(ctx context.Context, id uuid.UUID) (Market, error)
 	// noinspection SqlNoDataSourceInspectionForFile
 	GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]Market, error)
-	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
+	GetOrderByID(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]OrderItem, error)
 	GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error)
 	GetOrdersBelongingToUser(ctx context.Context, customerID uuid.UUID) ([]Order, error)

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 	"sync"
 
 	"github.com/elc49/copod/Server/src/graph/model"
@@ -248,4 +249,24 @@ func (r *OrderRepository) GetOrderItems(ctx context.Context, orderID uuid.UUID) 
 	}
 
 	return orderItems, nil
+}
+
+func (r *OrderRepository) GetOrderByID(ctx context.Context, orderID uuid.UUID) (*model.Order, error) {
+	o, err := r.store.StoreReader.GetOrderByID(ctx, orderID)
+	if err != nil && err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &model.Order{
+		ID:         o.ID,
+		ToBePaid:   int(o.ToBePaid),
+		ShortID:    o.ShortID,
+		Currency:   o.Currency,
+		Status:     model.OrderStatus(o.Status),
+		CustomerID: o.CustomerID,
+		CreatedAt:  o.CreatedAt,
+		UpdatedAt:  o.UpdatedAt,
+	}, nil
 }

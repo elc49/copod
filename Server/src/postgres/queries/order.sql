@@ -2,7 +2,7 @@
 SELECT * FROM orders
 WHERE farm_id = $1 AND deleted_at IS NULL;
 
--- name: GetOrderById :one
+-- name: GetOrderByID :one
 SELECT * FROM orders
 WHERE id = $1 AND deleted_at IS NULL;
 

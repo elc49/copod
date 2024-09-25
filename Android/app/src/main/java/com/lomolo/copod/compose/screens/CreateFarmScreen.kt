@@ -131,6 +131,7 @@ fun CreateFarmScreen(
                     viewModel.discardFarmInput()
                 }
             },
+            shape = MaterialTheme.shapes.extraSmall,
             contentPadding = PaddingValues(12.dp),
             modifier = Modifier
                 .fillMaxWidth()

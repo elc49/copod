@@ -1,0 +1,19 @@
+query GetOrderDetails($id: UUID!) {
+    getOrderDetails(id: $id) {
+        id
+        short_id
+        status
+        toBePaid
+        currency
+        items {
+            id
+            market {
+                image
+                name
+                unit
+                type
+            }
+            volume
+        }
+    }
+}
