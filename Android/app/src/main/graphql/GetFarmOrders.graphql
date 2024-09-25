@@ -2,14 +2,18 @@ query GetFarmOrders($id: UUID!) {
     getFarmOrders(id: $id) {
         id
         currency
-        volume
-        toBePaid
-        market {
+        items {
             id
-            name
-            image
-            unit
+            volume
+            market {
+                id
+                name
+                image
+                unit
+            }
+            market_id
         }
+        toBePaid
         customer {
             id
             phone

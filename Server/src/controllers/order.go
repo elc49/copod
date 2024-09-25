@@ -34,29 +34,48 @@ func (c *OrderController) GetOrdersBelongingToUser(ctx context.Context, userID u
 
 func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID, orders []*model.SendOrderToFarmInput) (bool, error) {
 	for _, item := range orders {
-		if supplyExists := c.r.MarketHasSupply(ctx, item.MarketID, item.Volume); !supplyExists {
-			continue
-		}
-		_, err := c.createOrder(ctx, db.CreateOrderParams{
-			Volume:     int32(item.Volume),
+		// Create order
+		order, err := c.createOrder(ctx, db.CreateOrderParams{
 			ToBePaid:   int32(item.ToBePaid),
 			Currency:   item.Currency,
 			CustomerID: userID,
-			MarketID:   item.MarketID,
 			FarmID:     item.FarmID,
 		})
 		if err != nil {
 			return false, err
 		}
-		if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
-			ID:            item.MarketID,
-			RunningVolume: int32(item.Volume),
-		}); err != nil {
-			return false, err
-		}
 
-		if b := c.r.DeleteCartItemFromOrder(ctx, item.MarketID); !b {
-			return false, errors.New("order: delete cart item from order")
+		for _, orderItem := range item.OrderItems {
+			// Does supply exist to cover order
+			if supplyExists := c.r.MarketHasSupply(ctx, orderItem.MarketID, orderItem.Volume); !supplyExists {
+				continue
+			}
+			// Create order item
+			orderItemArgs := db.CreateOrderItemParams{
+				OrderID:  order.ID,
+				MarketID: orderItem.MarketID,
+				Volume:   int32(orderItem.Volume),
+			}
+			if _, err := c.r.CreateOrderItem(ctx, orderItemArgs); err != nil {
+				return false, err
+			}
+
+			// Update product market supply
+			if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
+				ID:            orderItem.MarketID,
+				RunningVolume: int32(orderItem.Volume),
+			}); err != nil {
+				return false, err
+			}
+
+			// Delete item from cart
+			if b := c.r.DeleteOrderFromCart(ctx, orderItem.MarketID); !b {
+				return false, errors.New("order: delete cart item from order")
+			}
+		}
+		// Cleanup blank orders
+		if c.r.OrderHasItems(ctx, order.ID) {
+			c.r.DeleteOrder(ctx, order.ID)
 		}
 	}
 	return true, nil
@@ -77,4 +96,8 @@ func (c *OrderController) CompletedFarmOrders(ctx context.Context, args db.Compl
 	}
 
 	return *count, nil
+}
+
+func (c *OrderController) GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]*model.OrderItem, error) {
+	return c.r.GetOrderItems(ctx, orderID)
 }

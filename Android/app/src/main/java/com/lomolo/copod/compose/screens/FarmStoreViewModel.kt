@@ -143,9 +143,20 @@ class FarmStoreViewModel(
                         updatedCacheData[where] = GetFarmOrdersQuery.GetFarmOrder(
                             res.updateOrderStatus.id,
                             updatedCacheData[where].currency,
-                            updatedCacheData[where].volume,
+                            res.updateOrderStatus.items.map {
+                                GetFarmOrdersQuery.Item(
+                                    it.id,
+                                    it.volume,
+                                    GetFarmOrdersQuery.Market(
+                                        it.market.id,
+                                        it.market.name,
+                                        it.market.image,
+                                        it.market.unit,
+                                    ),
+                                    it.market_id,
+                                )
+                            },
                             updatedCacheData[where].toBePaid,
-                            updatedCacheData[where].market,
                             updatedCacheData[where].customer,
                             res.updateOrderStatus.status,
                             updatedCacheData[where].created_at,

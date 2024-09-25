@@ -51,6 +51,8 @@ import com.lomolo.copod.R
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
+import com.lomolo.copod.type.OrderItemInput
+import com.lomolo.copod.type.SendOrderToFarmInput
 import com.lomolo.copod.util.Util
 import kotlinx.coroutines.launch
 
@@ -259,13 +261,14 @@ fun CartScreen(
                                     Button(
                                         onClick = {
                                             viewModel.sendOrderToFarm(key, value.map {
-                                                SendOrderToFarm(
+                                                SendOrderToFarmInput(
                                                     it.id.toString(),
-                                                    it.volume,
-                                                    deviceDetails.currency,
-                                                    it.market_id.toString(),
-                                                    it.farm_id.toString(),
                                                     it.volume.times(it.market.pricePerUnit),
+                                                    deviceDetails.currency,
+                                                    listOf(
+                                                        OrderItemInput(it.volume, it.market_id),
+                                                    ),
+                                                    it.farm_id.toString(),
                                                 )
                                             }) { showToast("Sent. Waiting confirmation.") }
                                         },

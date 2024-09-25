@@ -263,6 +263,7 @@ private fun OrderCard(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
+            /*
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -438,6 +439,7 @@ private fun OrderCard(
                     }
                 }
             }
+            */
         }
     }
 }

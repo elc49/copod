@@ -99,15 +99,23 @@ type Market {
 # Order
 type Order {
   id: UUID!
-  volume: Int!
   toBePaid: Int!
   currency: String!
   customerId: UUID!
-  marketId: UUID!
-  trackingId: UUID!
-  market: Market!
+  short_id: String!
   status: OrderStatus!
   customer: User!
+  items: [OrderItem!]!
+  created_at: Time!
+  updated_at: Time!
+}
+
+# OrderItem
+type OrderItem {
+  id: UUID!
+  volume: Int!
+  market_id: UUID!
+  market: Market!
   created_at: Time!
   updated_at: Time!
 }
@@ -195,12 +203,16 @@ input AddToCartInput {
   farmId: UUID!
 }
 
+input OrderItemInput {
+  volume: Int!
+  marketId: UUID!
+}
+
 input SendOrderToFarmInput {
   cartId: UUID!
-  volume: Int!
   toBePaid: Int!
   currency: String!
-  marketId: UUID!
+  order_items: [OrderItemInput!]!
   farmId: UUID!
 }
 

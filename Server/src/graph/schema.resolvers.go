@@ -161,14 +161,19 @@ func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.Up
 	})
 }
 
-// Market is the resolver for the market field.
-func (r *orderResolver) Market(ctx context.Context, obj *model.Order) (*model.Market, error) {
-	return r.marketController.GetMarketByID(ctx, obj.MarketID)
-}
-
 // Customer is the resolver for the customer field.
 func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, obj.CustomerID)
+}
+
+// Items is the resolver for the items field.
+func (r *orderResolver) Items(ctx context.Context, obj *model.Order) ([]*model.OrderItem, error) {
+	return r.orderController.GetOrderItems(ctx, obj.ID)
+}
+
+// Market is the resolver for the market field.
+func (r *orderItemResolver) Market(ctx context.Context, obj *model.OrderItem) (*model.Market, error) {
+	return r.marketController.GetMarketByID(ctx, obj.MarketID)
 }
 
 // GetFarmsBelongingToUser is the resolver for the getFarmsBelongingToUser field.
@@ -293,6 +298,9 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Order returns OrderResolver implementation.
 func (r *Resolver) Order() OrderResolver { return &orderResolver{r} }
 
+// OrderItem returns OrderItemResolver implementation.
+func (r *Resolver) OrderItem() OrderItemResolver { return &orderItemResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
@@ -304,5 +312,6 @@ type farmResolver struct{ *Resolver }
 type marketResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type orderResolver struct{ *Resolver }
+type orderItemResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }

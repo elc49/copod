@@ -127,6 +127,7 @@ fun UserOrdersScreen(
                                 else -> MaterialTheme.colorScheme.primaryContainer
                             }
                             Column {
+                                /*
                                 Row(
                                     Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
@@ -159,6 +160,7 @@ fun UserOrdersScreen(
                                         )
                                     }
                                 }
+                                */
                             }
                         }
                     }

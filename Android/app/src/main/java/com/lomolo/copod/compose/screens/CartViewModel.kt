@@ -10,6 +10,7 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.copod.GetUserCartItemsQuery
 import com.lomolo.copod.GetUserOrdersCountQuery
 import com.lomolo.copod.repository.IMarkets
+import com.lomolo.copod.type.SendOrderToFarmInput
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -64,20 +65,20 @@ class CartViewModel(
     var sendToFarmState: SendToFarmState by mutableStateOf(SendToFarmState.Success)
         private set
 
-    fun sendOrderToFarm(key: String, order: List<SendOrderToFarm>, cb: () -> Unit) {
+    fun sendOrderToFarm(key: String, value: List<SendOrderToFarmInput>, cb: () -> Unit) {
         if (sendToFarmState !is SendToFarmState.Loading) {
             sendingKey = key
             sendToFarmState = SendToFarmState.Loading
             viewModelScope.launch {
                 sendToFarmState = try {
-                    marketsRepository.sendOrderToFarm(order)
-                    order.forEach { item ->
+                    marketsRepository.sendOrderToFarm(value)
+                    value.forEach { item ->
                         try {
                             val updatedCacheData = apolloStore.readOperation(
                                 GetUserCartItemsQuery()
                             ).getUserCartItems.toMutableList()
                             val where =
-                                updatedCacheData.indexOfFirst { it.id.toString() == item.id }
+                                updatedCacheData.indexOfFirst { it.id.toString() == item.cartId.toString() }
                             updatedCacheData.removeAt(where)
                             apolloStore.writeOperation(
                                 GetUserCartItemsQuery(),
@@ -132,15 +133,6 @@ class CartViewModel(
         getUserCartItems()
     }
 }
-
-data class SendOrderToFarm(
-    val id: String = "",
-    val volume: Int = 0,
-    val currency: String = "",
-    val marketId: String = "",
-    val farmId: String = "",
-    val toBePaid: Int = 0,
-)
 
 interface SendToFarmState {
     data object Loading : SendToFarmState
