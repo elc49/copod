@@ -12,6 +12,7 @@ import com.lomolo.copod.compose.screens.AddFarmMarketViewModel
 import com.lomolo.copod.compose.screens.AllMarketsViewModel
 import com.lomolo.copod.compose.screens.CartViewModel
 import com.lomolo.copod.compose.screens.CreateFarmViewModel
+import com.lomolo.copod.compose.screens.FarmOrderViewModel
 import com.lomolo.copod.compose.screens.FarmProfileViewModel
 import com.lomolo.copod.compose.screens.FarmSettingsViewModel
 import com.lomolo.copod.compose.screens.FarmStoreViewModel
@@ -47,6 +48,7 @@ object CopodViewModelProvider {
         lateinit var machineryViewModel: MachineryViewModel
         lateinit var farmProfileViewModel: FarmProfileViewModel
         lateinit var allMarketsViewModel: AllMarketsViewModel
+        lateinit var farmOrderViewModel: FarmOrderViewModel
 
         initializer {
             mainViewModel = MainViewModel(copodApplication().container.copodRestApiService)
@@ -72,7 +74,6 @@ object CopodViewModelProvider {
             farmStoreViewModel = FarmStoreViewModel(
                 this.createSavedStateHandle(),
                 copodApplication().container.copodGraphqlApiService,
-                copodApplication().container.apolloClient.apolloStore,
             )
             farmStoreViewModel
         }
@@ -208,6 +209,15 @@ object CopodViewModelProvider {
                 this.createSavedStateHandle(),
             )
             allMarketsViewModel
+        }
+
+        initializer {
+            farmOrderViewModel = FarmOrderViewModel(
+                copodApplication().container.copodGraphqlApiService,
+                this.createSavedStateHandle(),
+                copodApplication().container.apolloClient.apolloStore,
+            )
+            farmOrderViewModel
         }
     }
 }

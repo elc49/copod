@@ -7,6 +7,7 @@ import (
 
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/postgres/db"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,82 +45,112 @@ func TestOrderController(t *testing.T) {
 		FarmID:       farm.ID,
 		Type:         model.MarketTypeMachinery.String(),
 	})
+	cartC := cartController()
+	var order *model.Order
 
 	defer func() {
 		store.StoreWriter.ClearTestUsers(ctx)
 		store.StoreWriter.ClearTestFarms(ctx)
 		store.StoreWriter.ClearTestMarkets(ctx)
 		store.StoreWriter.ClearTestOrders(ctx)
+		store.StoreWriter.ClearTestOrderItems(ctx)
 	}()
 
 	t.Run("send_order_to_farm", func(t *testing.T) {
-		orders := []*model.SendOrderToFarmInput{
-			{
-				Volume:   2,
-				ToBePaid: 200,
-				Currency: "KES",
-				MarketID: market.ID,
-				FarmID:   farm.ID,
-			},
-			{
-				Volume:   2,
-				ToBePaid: 2000,
-				Currency: "KES",
-				MarketID: machineryMarket.ID,
-				FarmID:   farm.ID,
+		cart, _ := cartC.AddToCart(ctx, db.AddToCartParams{
+			Volume:   4,
+			UserID:   user.ID,
+			MarketID: market.ID,
+			FarmID:   farm.ID,
+		})
+		cart2, _ := cartC.AddToCart(ctx, db.AddToCartParams{
+			UserID:   user.ID,
+			MarketID: machineryMarket.ID,
+			FarmID:   farm.ID,
+		})
+		orders := model.SendOrderToFarmInput{
+			ToBePaid: 2200,
+			Currency: "KES",
+			OrderItems: []*model.OrderItemInput{
+				{
+					CartID:   cart.ID,
+					FarmID:   farm.ID,
+					Volume:   2,
+					MarketID: market.ID,
+				},
+				{
+					Volume:   2,
+					MarketID: machineryMarket.ID,
+					FarmID:   farm.ID,
+					CartID:   cart2.ID,
+				},
 			},
 		}
-		b, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
-
-		assert.Nil(t, err)
-		assert.True(t, b)
+		order, _ = orderC.SendOrderToFarm(ctx, user.ID, orders)
+		assert.Equal(t, order.ToBePaid, 2200)
+		assert.Equal(t, order.Status, model.OrderStatusPending)
 
 		m, _ := marketC.GetMarketByID(ctx, market.ID)
 		assert.NotEqual(t, market.RunningVolume, m.RunningVolume)
 		m, _ = marketC.GetMarketByID(ctx, machineryMarket.ID)
 		assert.Equal(t, m.Status, model.MarketStatusBooked)
+
+		orderItems, _ := orderC.GetOrderItems(ctx, order.ID)
+		assert.Equal(t, len(orderItems), 2)
 	})
 
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
-		orders := []*model.SendOrderToFarmInput{
-			{
-				Volume:   120,
-				ToBePaid: 200,
-				Currency: "KES",
-				MarketID: market.ID,
-				FarmID:   farm.ID,
-			},
-			{
-				Volume:   2,
-				ToBePaid: 2000,
-				Currency: "KES",
-				MarketID: machineryMarket.ID,
-				FarmID:   farm.ID,
+		order := model.SendOrderToFarmInput{
+			ToBePaid: 200,
+			Currency: "KES",
+			OrderItems: []*model.OrderItemInput{
+				{
+					Volume:   120,
+					MarketID: market.ID,
+					FarmID:   farm.ID,
+				},
+				{
+					Volume:   2,
+					MarketID: machineryMarket.ID,
+					FarmID:   farm.ID,
+				},
 			},
 		}
-		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
+		_, err := orderC.SendOrderToFarm(ctx, user.ID, order)
 		assert.Nil(t, err)
 
 		o, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(o), 2)
+		assert.Equal(t, len(o), 1)
 	})
 
 	t.Run("get_orders_belonging_to_user", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToUser(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 2)
+		assert.Equal(t, len(orders), 1)
 	})
 
 	t.Run("get_user_orders_count", func(t *testing.T) {
 		c, err := orderC.GetUserOrdersCount(ctx, user.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, c, 2)
+		assert.Equal(t, c, 1)
 	})
 
 	t.Run("get_farm_orders", func(t *testing.T) {
 		orders, err := orderC.GetOrdersBelongingToFarm(ctx, farm.ID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(orders), 2)
+		assert.Equal(t, len(orders), 1)
+	})
+
+	t.Run("get_order_by_id", func(t *testing.T) {
+		o, err := orderC.GetOrderByID(ctx, order.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, o.Status, model.OrderStatusPending)
+	})
+
+	t.Run("should_get_non_existent_order", func(t *testing.T) {
+		o, err := orderC.GetOrderByID(ctx, uuid.New())
+		assert.Nil(t, err)
+		assert.Nil(t, o)
 	})
 }

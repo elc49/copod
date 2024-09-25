@@ -51,6 +51,8 @@ import com.lomolo.copod.R
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
+import com.lomolo.copod.type.OrderItemInput
+import com.lomolo.copod.type.SendOrderToFarmInput
 import com.lomolo.copod.util.Util
 import kotlinx.coroutines.launch
 
@@ -113,11 +115,7 @@ fun CartScreen(
 
     Scaffold(snackbarHost = { copodSnackbarHost(snackbarHostState) }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), title = {
-            Text(
-                stringResource(id = CartScreenDestination.title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            Text(stringResource(id = CartScreenDestination.title))
         }, actions = {
             IconButton(onClick = { dropMenuExpanded = true }) {
                 Icon(
@@ -125,7 +123,8 @@ fun CartScreen(
                     contentDescription = stringResource(R.string.menu),
                 )
             }
-            DropdownMenu(expanded = dropMenuExpanded, onDismissRequest = { dropMenuExpanded = false }) {
+            DropdownMenu(expanded = dropMenuExpanded,
+                onDismissRequest = { dropMenuExpanded = false }) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.orders)) },
                     onClick = {
@@ -156,7 +155,7 @@ fun CartScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when(viewModel.gettingCartItems) {
+            when (viewModel.gettingCartItems) {
                 GettingCartItemsState.Success -> {
                     if (cartItems.isEmpty()) {
                         Column(
@@ -238,7 +237,11 @@ fun CartScreen(
                                                         modifier = Modifier.size(20.dp)
                                                     )
                                                 } else {
-                                                    IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                    IconButton(onClick = {
+                                                        viewModel.deleteCartItem(
+                                                            item.id.toString()
+                                                        )
+                                                    }) {
                                                         Icon(
                                                             painterResource(id = R.drawable.bin),
                                                             modifier = Modifier.size(32.dp),
@@ -252,22 +255,25 @@ fun CartScreen(
                                 }
                                 item {
                                     val total = value.fold(0) { sum, element ->
-                                        val itemTotal = element.volume.times(element.market.pricePerUnit)
+                                        val itemTotal =
+                                            element.volume.times(element.market.pricePerUnit)
                                         sum + itemTotal
                                     }
 
                                     Button(
                                         onClick = {
-                                            viewModel.sendOrderToFarm(key, value.map {
-                                                SendOrderToFarm(
-                                                    it.id.toString(),
-                                                    it.volume,
-                                                    deviceDetails.currency,
-                                                    it.market_id.toString(),
-                                                    it.farm_id.toString(),
-                                                    it.volume.times(it.market.pricePerUnit),
-                                                )
-                                            }) { showToast("Sent. Waiting confirmation.") }
+                                            viewModel.sendOrderToFarm(
+                                                key, SendOrderToFarmInput(toBePaid = total,
+                                                    currency = deviceDetails.currency,
+                                                    order_items = value.map {
+                                                        OrderItemInput(
+                                                            it.id.toString(),
+                                                            it.farm_id,
+                                                            it.volume,
+                                                            it.market_id
+                                                        )
+                                                    })
+                                            ) { showToast("Sent. Waiting confirmation.") }
                                         },
                                         Modifier.fillMaxWidth(),
                                         contentPadding = PaddingValues(12.dp),

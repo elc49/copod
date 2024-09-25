@@ -1,19 +1,20 @@
-query GetOrdersBelongingToUser {
-    getOrdersBelongingToUser {
+query GetOrderDetails($id: UUID!) {
+    getOrderDetails(id: $id) {
         id
+        short_id
+        status
+        toBePaid
         currency
+        farmId
         items {
             id
-            volume
             market {
-                id
                 image
                 name
                 unit
+                type
             }
-            market_id
+            volume
         }
-        status
-        toBePaid
     }
 }

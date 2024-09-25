@@ -2,15 +2,15 @@
 SELECT * FROM orders
 WHERE farm_id = $1 AND deleted_at IS NULL;
 
--- name: GetOrderById :one
+-- name: GetOrderByID :one
 SELECT * FROM orders
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: CreateOrder :one
 INSERT INTO orders (
-  volume, to_be_paid, currency, customer_id, market_id, farm_id
+  to_be_paid, currency, customer_id, farm_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4
 )
 RETURNING *;
 
@@ -19,7 +19,7 @@ SELECT * FROM orders
 WHERE customer_id = $1 AND deleted_at IS NULL;
 
 -- name: GetUserOrdersCount :one
-SELECT count(*) FROM orders
+SELECT COUNT(*) FROM orders
 WHERE customer_id = $1 AND status = 'PENDING' AND deleted_at IS NULL;
 
 -- name: UpdateOrderStatus :one
@@ -30,6 +30,9 @@ RETURNING *;
 -- name: CompletedFarmOrders :one
 SELECT COUNT(*) FROM orders
 WHERE farm_id = $1 AND status = $2;
+
+-- name: DeleteOrder :exec
+DELETE FROM orders WHERE id = $1;
 
 -- name: ClearTestOrders :exec
 DELETE FROM orders;

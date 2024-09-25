@@ -52,11 +52,7 @@ fun AccountScreen(
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text(
-                    text = stringResource(R.string.account_details),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleLarge,
-                )
+                Text(stringResource(R.string.account_details))
             }, windowInsets = WindowInsets(0, 0, 0, 0))
         }, contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = bottomNav
     ) { innerPadding ->

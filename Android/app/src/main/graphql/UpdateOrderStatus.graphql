@@ -2,5 +2,17 @@ mutation UpdateOrderStatus($input: UpdateOrderStatusInput!) {
     updateOrderStatus(input: $input) {
         id
         status
+        short_id
+        items {
+            id
+            volume
+            market {
+                id
+                name
+                image
+                unit
+            }
+            market_id
+        }
     }
 }

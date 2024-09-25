@@ -65,11 +65,7 @@ fun SeedlingsScreen(
 
     Scaffold(topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-            Text(
-                stringResource(R.string.seedlings),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            Text(stringResource(R.string.seedlings))
         }, navigationIcon = {
             IconButton(onClick = { navHostController.popBackStack() }) {
                 Icon(

@@ -17,16 +17,20 @@ type Querier interface {
 	ClearTestCarts(ctx context.Context) error
 	ClearTestFarms(ctx context.Context) error
 	ClearTestMarkets(ctx context.Context) error
+	ClearTestOrderItems(ctx context.Context) error
 	ClearTestOrders(ctx context.Context) error
 	ClearTestUsers(ctx context.Context) error
 	CompletedFarmOrders(ctx context.Context, arg CompletedFarmOrdersParams) (int64, error)
 	CountFarmReviewers(ctx context.Context, farmID uuid.NullUUID) (int64, error)
+	CountOrderItems(ctx context.Context, orderID uuid.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFarm(ctx context.Context, arg CreateFarmParams) (Farm, error)
 	CreateFarmMarket(ctx context.Context, arg CreateFarmMarketParams) (Market, error)
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
+	CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (OrderItem, error)
 	CreateUserByPhone(ctx context.Context, arg CreateUserByPhoneParams) (User, error)
 	DeleteCartItem(ctx context.Context, marketID uuid.UUID) error
+	DeleteOrder(ctx context.Context, id uuid.UUID) error
 	FarmRating(ctx context.Context, farmID uuid.NullUUID) (int64, error)
 	FarmRatingPoints(ctx context.Context, farmID uuid.NullUUID) (int32, error)
 	FarmReviewers(ctx context.Context, farmID uuid.NullUUID) (int64, error)
@@ -39,7 +43,8 @@ type Querier interface {
 	GetMarketByID(ctx context.Context, id uuid.UUID) (Market, error)
 	// noinspection SqlNoDataSourceInspectionForFile
 	GetMarketsBelongingToFarm(ctx context.Context, arg GetMarketsBelongingToFarmParams) ([]Market, error)
-	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
+	GetOrderByID(ctx context.Context, id uuid.UUID) (Order, error)
+	GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]OrderItem, error)
 	GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID) ([]Order, error)
 	GetOrdersBelongingToUser(ctx context.Context, customerID uuid.UUID) ([]Order, error)
 	GetPaymentsBelongingToFarm(ctx context.Context, farmID uuid.NullUUID) ([]GetPaymentsBelongingToFarmRow, error)

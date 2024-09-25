@@ -2,22 +2,27 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 	"sync"
 
 	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/logger"
 	"github.com/elc49/copod/Server/src/postgres"
 	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type OrderRepository struct {
-	store postgres.Store
-	mu    sync.Mutex
+	store  postgres.Store
+	mu     sync.Mutex
+	logger *logrus.Logger
 }
 
 func (r *OrderRepository) Init(db postgres.Store) {
 	r.store = db
 	r.mu = sync.Mutex{}
+	r.logger = logger.GetLogger()
 }
 
 func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
@@ -30,12 +35,11 @@ func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 	for _, item := range os {
 		order := &model.Order{
 			ID:         item.ID,
-			Volume:     int(item.Volume),
 			ToBePaid:   int(item.ToBePaid),
+			ShortID:    item.ShortID,
 			Currency:   item.Currency,
 			Status:     model.OrderStatus(item.Status),
 			CustomerID: item.CustomerID,
-			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
 			UpdatedAt:  item.UpdatedAt,
 		}
@@ -56,10 +60,8 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, args db.CreateOrderPa
 		ID:         order.ID,
 		ToBePaid:   int(order.ToBePaid),
 		Currency:   order.Currency,
-		Volume:     int(order.Volume),
 		CustomerID: order.CustomerID,
 		Status:     model.OrderStatus(order.Status),
-		MarketID:   order.MarketID,
 		CreatedAt:  order.CreatedAt,
 		UpdatedAt:  order.UpdatedAt,
 	}, nil
@@ -75,12 +77,10 @@ func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID u
 	for _, item := range o {
 		order := &model.Order{
 			ID:         item.ID,
-			Volume:     int(item.Volume),
 			ToBePaid:   int(item.ToBePaid),
 			Currency:   item.Currency,
 			CustomerID: item.CustomerID,
 			Status:     model.OrderStatus(item.Status),
-			MarketID:   item.MarketID,
 			CreatedAt:  item.CreatedAt,
 			UpdatedAt:  item.UpdatedAt,
 		}
@@ -100,11 +100,11 @@ func (r *OrderRepository) UpdateMarketSupply(ctx context.Context, args db.Update
 		return nil, err
 	}
 
-	switch model.MarketType(market.Type) {
+	switch market.Type {
 	// Book equipment
-	case model.MarketTypeMachinery:
+	case model.MarketTypeMachinery.String():
 		m, err := r.store.StoreWriter.SetMarketStatus(ctx, db.SetMarketStatusParams{
-			ID:     args.ID,
+			ID:     market.ID,
 			Status: model.MarketStatusBooked.String(),
 		})
 		if err != nil {
@@ -150,7 +150,7 @@ func (r *OrderRepository) MarketHasSupply(ctx context.Context, marketID uuid.UUI
 	}
 }
 
-func (r *OrderRepository) DeleteCartItemFromOrder(ctx context.Context, marketID uuid.UUID) bool {
+func (r *OrderRepository) DeleteOrderFromCart(ctx context.Context, marketID uuid.UUID) bool {
 	if err := r.store.StoreWriter.DeleteCartItem(ctx, marketID); err != nil {
 		return false
 	}
@@ -174,10 +174,14 @@ func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateO
 	}
 
 	return &model.Order{
-		ID:        o.ID,
-		Status:    model.OrderStatus(o.Status),
-		CreatedAt: o.CreatedAt,
-		UpdatedAt: o.UpdatedAt,
+		ID:         o.ID,
+		ToBePaid:   int(o.ToBePaid),
+		ShortID:    o.ShortID,
+		Currency:   o.Currency,
+		Status:     model.OrderStatus(o.Status),
+		CustomerID: o.CustomerID,
+		CreatedAt:  o.CreatedAt,
+		UpdatedAt:  o.UpdatedAt,
 	}, nil
 }
 
@@ -190,4 +194,80 @@ func (r *OrderRepository) CompletedFarmOrders(ctx context.Context, args db.Compl
 	count = int(c)
 
 	return &count, nil
+}
+
+func (r *OrderRepository) CreateOrderItem(ctx context.Context, args db.CreateOrderItemParams) (*model.OrderItem, error) {
+	o, err := r.store.StoreWriter.CreateOrderItem(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.OrderItem{
+		ID:        o.ID,
+		Volume:    int(o.Volume),
+		MarketID:  o.MarketID,
+		CreatedAt: o.CreatedAt,
+		UpdatedAt: o.UpdatedAt,
+	}, nil
+}
+
+func (r *OrderRepository) DeleteOrder(ctx context.Context, orderID uuid.UUID) error {
+	err := r.store.StoreWriter.DeleteOrder(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *OrderRepository) OrderHasItems(ctx context.Context, orderID uuid.UUID) bool {
+	c, err := r.store.StoreReader.CountOrderItems(ctx, orderID)
+	if err != nil {
+		r.logger.WithFields(logrus.Fields{"OrderID": orderID}).WithError(err).Errorf("OrderHasItems")
+		return false
+	}
+
+	return c > 0
+}
+
+func (r *OrderRepository) GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]*model.OrderItem, error) {
+	var orderItems []*model.OrderItem
+	items, err := r.store.StoreReader.GetOrderItems(ctx, orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range items {
+		orderItem := &model.OrderItem{
+			ID:        item.ID,
+			Volume:    int(item.Volume),
+			MarketID:  item.MarketID,
+			CreatedAt: item.CreatedAt,
+			UpdatedAt: item.UpdatedAt,
+		}
+		orderItems = append(orderItems, orderItem)
+	}
+
+	return orderItems, nil
+}
+
+func (r *OrderRepository) GetOrderByID(ctx context.Context, orderID uuid.UUID) (*model.Order, error) {
+	o, err := r.store.StoreReader.GetOrderByID(ctx, orderID)
+	if err != nil && err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &model.Order{
+		ID:         o.ID,
+		ToBePaid:   int(o.ToBePaid),
+		ShortID:    o.ShortID,
+		Currency:   o.Currency,
+		FarmID:     o.FarmID,
+		Status:     model.OrderStatus(o.Status),
+		CustomerID: o.CustomerID,
+		CreatedAt:  o.CreatedAt,
+		UpdatedAt:  o.UpdatedAt,
+	}, nil
 }

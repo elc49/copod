@@ -99,15 +99,24 @@ type Market {
 # Order
 type Order {
   id: UUID!
-  volume: Int!
   toBePaid: Int!
   currency: String!
   customerId: UUID!
-  marketId: UUID!
-  trackingId: UUID!
-  market: Market!
+  short_id: String!
+  farmId: UUID!
   status: OrderStatus!
   customer: User!
+  items: [OrderItem!]!
+  created_at: Time!
+  updated_at: Time!
+}
+
+# OrderItem
+type OrderItem {
+  id: UUID!
+  volume: Int!
+  market_id: UUID!
+  market: Market!
   created_at: Time!
   updated_at: Time!
 }
@@ -195,13 +204,17 @@ input AddToCartInput {
   farmId: UUID!
 }
 
-input SendOrderToFarmInput {
+input OrderItemInput {
   cartId: UUID!
+  farmId: UUID!
   volume: Int!
+  marketId: UUID!
+}
+
+input SendOrderToFarmInput {
   toBePaid: Int!
   currency: String!
-  marketId: UUID!
-  farmId: UUID!
+  order_items: [OrderItemInput!]!
 }
 
 input UpdateOrderStatusInput {
@@ -248,6 +261,7 @@ type Query {
   getUserOrdersCount: Int!
   getMarketDetails(id: UUID!): Market!
   getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
+  getOrderDetails(id: UUID!): Order!
 }
 
 type Mutation {
@@ -256,7 +270,7 @@ type Mutation {
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
   addToCart(input: AddToCartInput!): Cart!
   deleteCartItem(id: UUID!): Boolean!
-  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+  sendOrderToFarm(input: SendOrderToFarmInput!): Order!
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   setMarketStatus(input: SetMarketStatusInput!): Market!
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!

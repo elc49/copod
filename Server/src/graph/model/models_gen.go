@@ -119,18 +119,33 @@ type NewPostInput struct {
 }
 
 type Order struct {
-	ID         uuid.UUID   `json:"id"`
-	Volume     int         `json:"volume"`
-	ToBePaid   int         `json:"toBePaid"`
-	Currency   string      `json:"currency"`
-	CustomerID uuid.UUID   `json:"customerId"`
-	MarketID   uuid.UUID   `json:"marketId"`
-	TrackingID uuid.UUID   `json:"trackingId"`
-	Market     *Market     `json:"market"`
-	Status     OrderStatus `json:"status"`
-	Customer   *User       `json:"customer"`
-	CreatedAt  time.Time   `json:"created_at"`
-	UpdatedAt  time.Time   `json:"updated_at"`
+	ID         uuid.UUID    `json:"id"`
+	ToBePaid   int          `json:"toBePaid"`
+	Currency   string       `json:"currency"`
+	CustomerID uuid.UUID    `json:"customerId"`
+	ShortID    string       `json:"short_id"`
+	FarmID     uuid.UUID    `json:"farmId"`
+	Status     OrderStatus  `json:"status"`
+	Customer   *User        `json:"customer"`
+	Items      []*OrderItem `json:"items"`
+	CreatedAt  time.Time    `json:"created_at"`
+	UpdatedAt  time.Time    `json:"updated_at"`
+}
+
+type OrderItem struct {
+	ID        uuid.UUID `json:"id"`
+	Volume    int       `json:"volume"`
+	MarketID  uuid.UUID `json:"market_id"`
+	Market    *Market   `json:"market"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type OrderItemInput struct {
+	CartID   uuid.UUID `json:"cartId"`
+	FarmID   uuid.UUID `json:"farmId"`
+	Volume   int       `json:"volume"`
+	MarketID uuid.UUID `json:"marketId"`
 }
 
 type PayWithMpesa struct {
@@ -165,12 +180,9 @@ type Query struct {
 }
 
 type SendOrderToFarmInput struct {
-	CartID   uuid.UUID `json:"cartId"`
-	Volume   int       `json:"volume"`
-	ToBePaid int       `json:"toBePaid"`
-	Currency string    `json:"currency"`
-	MarketID uuid.UUID `json:"marketId"`
-	FarmID   uuid.UUID `json:"farmId"`
+	ToBePaid   int               `json:"toBePaid"`
+	Currency   string            `json:"currency"`
+	OrderItems []*OrderItemInput `json:"order_items"`
 }
 
 type SetMarketStatusInput struct {

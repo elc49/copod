@@ -161,7 +161,7 @@ type Mutation {
 
   deleteCartItem(id: UUID!): Boolean!
 
-  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+  sendOrderToFarm(input: SendOrderToFarmInput!): Order!
 
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 
@@ -217,27 +217,49 @@ input NewPostInput {
 type Order {
   id: UUID!
 
-  volume: Int!
-
   toBePaid: Int!
 
   currency: String!
 
   customerId: UUID!
 
-  marketId: UUID!
+  short_id: String!
 
-  trackingId: UUID!
-
-  market: Market!
+  farmId: UUID!
 
   status: OrderStatus!
 
   customer: User!
 
+  items: [OrderItem!]!
+
   created_at: Time!
 
   updated_at: Time!
+}
+
+type OrderItem {
+  id: UUID!
+
+  volume: Int!
+
+  market_id: UUID!
+
+  market: Market!
+
+  created_at: Time!
+
+  updated_at: Time!
+}
+
+input OrderItemInput {
+  cartId: UUID!
+
+  farmId: UUID!
+
+  volume: Int!
+
+  marketId: UUID!
 }
 
 enum OrderStatus {
@@ -316,20 +338,16 @@ type Query {
   getMarketDetails(id: UUID!): Market!
 
   getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput!): [Market!]!
+
+  getOrderDetails(id: UUID!): Order!
 }
 
 input SendOrderToFarmInput {
-  cartId: UUID!
-
-  volume: Int!
-
   toBePaid: Int!
 
   currency: String!
 
-  marketId: UUID!
-
-  farmId: UUID!
+  order_items: [OrderItemInput!]!
 }
 
 input SetMarketStatusInput {

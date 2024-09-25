@@ -1,3 +1,5 @@
-mutation SendOrderToFarm($input: [SendOrderToFarmInput!]!) {
-    sendOrderToFarm(input: $input)
+mutation SendOrderToFarm($input: SendOrderToFarmInput!) {
+    sendOrderToFarm(input: $input) {
+        id
+    }
 }

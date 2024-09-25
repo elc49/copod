@@ -17,6 +17,7 @@ import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.GetLocalizedMachineryMarketsQuery
 import com.lomolo.copod.GetLocalizedMarketsQuery
 import com.lomolo.copod.GetMarketDetailsQuery
+import com.lomolo.copod.GetOrderDetailsQuery
 import com.lomolo.copod.GetOrdersBelongingToUserQuery
 import com.lomolo.copod.GetPaystackPaymentVerificationQuery
 import com.lomolo.copod.GetUserCartItemsQuery
@@ -30,7 +31,6 @@ import com.lomolo.copod.UpdateFarmDetailsMutation
 import com.lomolo.copod.UpdateOrderStatusMutation
 import com.lomolo.copod.compose.screens.Farm
 import com.lomolo.copod.compose.screens.Market
-import com.lomolo.copod.compose.screens.SendOrderToFarm
 import com.lomolo.copod.compose.screens.UpdateOrderStatus
 import com.lomolo.copod.type.AddToCartInput
 import com.lomolo.copod.type.GetFarmMarketsInput
@@ -62,7 +62,7 @@ interface ICopodGraphqlApi {
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
-    suspend fun sendOrderToFarm(input: List<SendOrderToFarm>): ApolloResponse<SendOrderToFarmMutation.Data>
+    suspend fun sendOrderToFarm(input: SendOrderToFarmInput): ApolloResponse<SendOrderToFarmMutation.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
     suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
@@ -71,18 +71,17 @@ interface ICopodGraphqlApi {
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
-
+    suspend fun getOrderDetails(id: String): ApolloResponse<GetOrderDetailsQuery.Data>
 }
 
 class CopodGraphqlApi(
     private val apolloClient: ApolloClient,
-): ICopodGraphqlApi {
-    override suspend fun getFarmsBelongingToUser() = apolloClient
-        .query(GetFarmsBelongingToUserQuery())
-        .watch()
+) : ICopodGraphqlApi {
+    override suspend fun getFarmsBelongingToUser() =
+        apolloClient.query(GetFarmsBelongingToUserQuery()).watch()
 
-    override suspend fun createFarm(input: Farm) = apolloClient
-        .mutation(CreateFarmMutation(
+    override suspend fun createFarm(input: Farm) = apolloClient.mutation(
+        CreateFarmMutation(
             NewFarmInput(
                 name = input.name,
                 about = input.about,
@@ -90,34 +89,25 @@ class CopodGraphqlApi(
                 location = input.location,
                 thumbnail = input.image,
             )
-        ))
-        .execute()
+        )
+    ).execute()
 
-    override suspend fun getUser() = apolloClient
-        .query(GetUserQuery())
-        .execute()
+    override suspend fun getUser() = apolloClient.query(GetUserQuery()).execute()
 
-    override suspend fun getFarm(id: String) = apolloClient
-        .query(GetFarmByIdQuery(id))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+    override suspend fun getFarm(id: String) =
+        apolloClient.query(GetFarmByIdQuery(id)).fetchPolicy(FetchPolicy.NetworkFirst).execute()
 
-    override suspend fun getFarmMarkets(input: GetFarmMarketsInput) = apolloClient
-        .query(GetFarmMarketsQuery(input))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .watch()
+    override suspend fun getFarmMarkets(input: GetFarmMarketsInput) =
+        apolloClient.query(GetFarmMarketsQuery(input)).fetchPolicy(FetchPolicy.NetworkFirst).watch()
 
-    override suspend fun getFarmOrders(id: String) = apolloClient
-        .query(GetFarmOrdersQuery(id))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .watch()
+    override suspend fun getFarmOrders(id: String) =
+        apolloClient.query(GetFarmOrdersQuery(id)).fetchPolicy(FetchPolicy.NetworkFirst).watch()
 
-    override suspend fun getFarmPayments(id: String) = apolloClient
-        .query(GetFarmPaymentsQuery(id))
-        .execute()
+    override suspend fun getFarmPayments(id: String) =
+        apolloClient.query(GetFarmPaymentsQuery(id)).execute()
 
-    override suspend fun createFarmMarket(input: Market) = apolloClient
-        .mutation(CreateFarmMarketMutation(
+    override suspend fun createFarmMarket(input: Market) = apolloClient.mutation(
+        CreateFarmMarketMutation(
             NewFarmMarketInput(
                 farmId = input.storeId,
                 product = input.name,
@@ -129,94 +119,76 @@ class CopodGraphqlApi(
                 type = input.type!!,
                 volume = input.volume.toInt(),
             )
-        ))
-        .execute()
+        )
+    ).execute()
 
-    override suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput) = apolloClient
-        .query(GetLocalizedMarketsQuery(
+    override suspend fun getLocalizedMarkets(input: GetLocalizedMarketsInput) = apolloClient.query(
+        GetLocalizedMarketsQuery(
             input
-        ))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+        )
+    ).fetchPolicy(FetchPolicy.NetworkFirst).execute()
 
-    override suspend fun payWithMpesa(input: PayWithMpesaInput) = apolloClient
-        .mutation(PayWithMpesaMutation(input))
-        .execute()
+    override suspend fun payWithMpesa(input: PayWithMpesaInput) =
+        apolloClient.mutation(PayWithMpesaMutation(input)).execute()
 
-    override suspend fun getPaystackPaymentVerification(referenceId: String) = apolloClient
-        .query(GetPaystackPaymentVerificationQuery(referenceId = referenceId))
-        .execute()
+    override suspend fun getPaystackPaymentVerification(referenceId: String) =
+        apolloClient.query(GetPaystackPaymentVerificationQuery(referenceId = referenceId)).execute()
 
-    override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> = apolloClient
-        .query(GetUserCartItemsQuery())
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .watch()
+    override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> =
+        apolloClient.query(GetUserCartItemsQuery()).fetchPolicy(FetchPolicy.NetworkFirst).watch()
 
-    override suspend fun addToCart(input: AddToCartInput) = apolloClient
-        .mutation(AddToCartMutation(input))
-        .execute()
+    override suspend fun addToCart(input: AddToCartInput) =
+        apolloClient.mutation(AddToCartMutation(input)).execute()
 
-    override suspend fun deleteCartItem(id: String) = apolloClient
-        .mutation(DeleteCartItemMutation(id))
-        .execute()
+    override suspend fun deleteCartItem(id: String) =
+        apolloClient.mutation(DeleteCartItemMutation(id)).execute()
 
-    override suspend fun getOrdersBelongingToUser() = apolloClient
-        .query(GetOrdersBelongingToUserQuery())
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+    override suspend fun getOrdersBelongingToUser() =
+        apolloClient.query(GetOrdersBelongingToUserQuery()).fetchPolicy(FetchPolicy.NetworkFirst)
+            .execute()
 
-    override suspend fun sendOrderToFarm(input: List<SendOrderToFarm>) = apolloClient
-        .mutation(SendOrderToFarmMutation(
-            input.map {
-                SendOrderToFarmInput(
-                    it.id,
-                    it.volume,
-                    it.toBePaid,
-                    it.currency,
-                    it.marketId,
-                    it.farmId,
-                )
-            }
-        ))
-        .execute()
+    override suspend fun sendOrderToFarm(input: SendOrderToFarmInput) = apolloClient.mutation(
+        SendOrderToFarmMutation(
+            input
+        )
+    ).execute()
 
-    override fun paymentUpdate(sessionId: String) = apolloClient
-        .subscription(PaymentUpdateSubscription(sessionId))
-        .toFlow()
+    override fun paymentUpdate(sessionId: String) =
+        apolloClient.subscription(PaymentUpdateSubscription(sessionId)).toFlow()
 
     override suspend fun getUserOrdersCount() = apolloClient
 
-        .query(GetUserOrdersCountQuery())
-        .watch()
+        .query(GetUserOrdersCountQuery()).watch()
 
-    override suspend fun updateOrderStatus(input: UpdateOrderStatus) = apolloClient
-        .mutation(UpdateOrderStatusMutation(
+    override suspend fun updateOrderStatus(input: UpdateOrderStatus) = apolloClient.mutation(
+        UpdateOrderStatusMutation(
             UpdateOrderStatusInput(
                 input.id,
                 input.status,
             )
-        ))
-        .execute()
+        )
+    ).execute()
 
-    override suspend fun setMarketStatus(input: SetMarketStatusInput) = apolloClient
-        .mutation(SetMarketStatusMutation(input))
-        .execute()
+    override suspend fun setMarketStatus(input: SetMarketStatusInput) =
+        apolloClient.mutation(SetMarketStatusMutation(input)).execute()
 
-    override suspend fun updateFarmDetails(input: UpdateFarmDetailsInput) = apolloClient
-        .mutation(UpdateFarmDetailsMutation(input))
-        .execute()
+    override suspend fun updateFarmDetails(input: UpdateFarmDetailsInput) =
+        apolloClient.mutation(UpdateFarmDetailsMutation(input)).execute()
 
-    override suspend fun getMarketDetails(id: String) = apolloClient
-        .query(GetMarketDetailsQuery(id))
+    override suspend fun getMarketDetails(id: String) =
+        apolloClient.query(GetMarketDetailsQuery(id)).fetchPolicy(FetchPolicy.NetworkFirst)
+            .execute()
+
+    override suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput) =
+        apolloClient.query(GetLocalizedMachineryMarketsQuery(input))
+            .fetchPolicy(FetchPolicy.NetworkFirst).execute()
+
+    override suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput) =
+        apolloClient.query(GetFarmMarketsQuery(input)).execute()
+
+    override suspend fun getOrderDetails(id: String) = apolloClient.query(
+        GetOrderDetailsQuery(id)
+    )
         .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
-
-    override suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput) = apolloClient
-        .query(GetLocalizedMachineryMarketsQuery(input))
-        .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
-
-    override suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput) = apolloClient
-        .query(GetFarmMarketsQuery(input))
         .execute()
 }

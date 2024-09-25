@@ -1,15 +1,13 @@
 package com.lomolo.copod.compose.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,23 +22,24 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.automirrored.twotone.ArrowForward
 import androidx.compose.material.icons.twotone.Add
-import androidx.compose.material.icons.twotone.Call
-import androidx.compose.material.icons.twotone.Check
-import androidx.compose.material.icons.twotone.Close
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,14 +81,13 @@ import com.lomolo.copod.util.Util
 object FarmStoreScreenDestination : Navigation {
     override val title = R.string.farm_store
     override val route = "dashboard-market"
-    const val farmIdArg = "farmId"
-    val routeWithArgs = "$route/{$farmIdArg}"
+    const val FARM_ID_ARG = "farmId"
+    val routeWithArgs = "$route/{$FARM_ID_ARG}"
 }
 
 @Composable
 private fun FarmHeader(
     farm: GetFarmByIdQuery.GetFarmById?,
-    onNavigateToCreateMarket: (String) -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -100,7 +98,7 @@ private fun FarmHeader(
                 .build(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(120.dp)
+                .size(52.dp)
                 .padding(8.dp)
                 .clip(MaterialTheme.shapes.small),
             error = painterResource(R.drawable.ic_broken_image),
@@ -110,27 +108,7 @@ private fun FarmHeader(
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                text = Util.capitalize(farm?.name ?: ""),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
-            OutlinedIconButton(
-                onClick = {
-                    if (farm != null) {
-                        onNavigateToCreateMarket(farm.id.toString())
-                    }
-                },
-                modifier = Modifier.size(24.dp),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-            ) {
-                Icon(
-                    Icons.TwoTone.Add,
-                    contentDescription = stringResource(R.string.settings),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            Text(Util.capitalize(farm?.name ?: ""))
         }
     }
 }
@@ -217,7 +195,7 @@ private fun MarketCard(
             if (market.type != MarketType.MACHINERY && market.running_volume > 0) {
                 CircularProgressIndicator(
                     progress = {
-                        market.running_volume/market.volume.toFloat()
+                        market.running_volume / market.volume.toFloat()
                     },
                     Modifier.size(20.dp),
                 )
@@ -227,217 +205,56 @@ private fun MarketCard(
 }
 
 @Composable
-private fun OrderDate(
-    modifier: Modifier = Modifier,
-    date: String,
-    language: String,
-    country: String,
-) {
-    Text(
-        Util.copodDateFormat(date, language, country),
-        style = MaterialTheme.typography.bodySmall,
-        fontWeight = FontWeight.SemiBold,
-        modifier = modifier,
-    )
-}
-
-@Composable
 private fun OrderCard(
     modifier: Modifier = Modifier,
     order: GetFarmOrdersQuery.GetFarmOrder,
-    index: Int,
-    orderStatus: UpdateOrderState,
-    changingOrderId: String,
-    updateOrderStatus: (String, OrderStatus) -> Unit,
-    language: String,
-    country: String,
+    goToOrderDetails: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val statusColor: Color = when (order.status) {
+        OrderStatus.PENDING -> surfaceContainerLight
+        OrderStatus.DELIVERED -> primaryContainerLight
+        OrderStatus.CANCELLED -> errorContainerLight
+        OrderStatus.CONFIRMED -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
 
-    OutlinedCard(
-        shape = MaterialTheme.shapes.small,
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(
-            modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                val statusColor: Color = when (order.status) {
-                    OrderStatus.PENDING -> surfaceContainerLight
-                    OrderStatus.DELIVERED -> primaryContainerLight
-                    OrderStatus.CANCELLED -> errorContainerLight
-                    OrderStatus.CONFIRMED -> secondaryContainerLight
-                    else -> MaterialTheme.colorScheme.primaryContainer
-                }
-
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(order.market.image)
-                        .crossfade(true).build(),
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(MaterialTheme.shapes.small),
-                    placeholder = painterResource(R.drawable.loading_img),
-                    error = painterResource(R.drawable.ic_broken_image),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = stringResource(
-                        id = R.string.product
-                    )
+        Text(
+            "#${order.short_id}",
+            fontWeight = FontWeight.Bold,
+        )
+        Box(
+            Modifier
+                .background(
+                    statusColor,
+                    MaterialTheme.shapes.small,
                 )
-                Column(Modifier.padding(4.dp)) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            "#${index.plus(1)} - ${order.market.name}",
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Box(
-                            Modifier
-                                .background(
-                                    statusColor,
-                                    MaterialTheme.shapes.small,
-                                )
-                                .padding(4.dp)
-                                .wrapContentSize(Alignment.Center),
-                        ) {
-                            Text(
-                                order.status.toString(),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        OrderDate(
-                            date = order.created_at.toString(),
-                            language = language,
-                            country = country,
-                        )
-                        Icon(
-                            painterResource(id = R.drawable.dot),
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .size(32.dp),
-                            contentDescription = stringResource(R.string.dot),
-                        )
-                        Text(
-                            "${order.volume} ${order.market.unit}",
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-            }
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                if (orderStatus is UpdateOrderState.Loading && changingOrderId == order.id.toString()) {
-                    CircularProgressIndicator(
-                        Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Row {
-                        when (order.status) {
-                            OrderStatus.PENDING -> TextButton(
-                                onClick = {
-                                    updateOrderStatus(
-                                        order.id.toString(), OrderStatus.CONFIRMED
-                                    )
-                                },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                ),
-                                contentPadding = PaddingValues(2.dp),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text(
-                                    stringResource(R.string.confirm),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-
-                            OrderStatus.CONFIRMED -> TextButton(
-                                onClick = {
-                                    updateOrderStatus(
-                                        order.id.toString(), OrderStatus.DELIVERED
-                                    )
-                                },
-                                colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                ),
-                                contentPadding = PaddingValues(2.dp),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text(
-                                    stringResource(R.string.deliver),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            }
-
-                            OrderStatus.CANCELLED -> {
-                                Icon(
-                                    Icons.TwoTone.Close,
-                                    contentDescription = stringResource(R.string.closed),
-                                    tint = MaterialTheme.colorScheme.onError,
-                                )
-                            }
-
-                            OrderStatus.DELIVERED -> {
-                                Icon(
-                                    Icons.TwoTone.Check,
-                                    modifier = Modifier
-                                        .background(
-                                            MaterialTheme.colorScheme.primary,
-                                            MaterialTheme.shapes.small,
-                                        )
-                                        .padding(2.dp)
-                                        .size(20.dp),
-                                    contentDescription = stringResource(R.string.success),
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                )
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    TextButton(onClick = {
-                        val u = Uri.parse(context.getString(R.string.tel) + order.customer.phone)
-                        val intent = Intent(Intent.ACTION_DIAL, u)
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }) {
-                        Icon(
-                            Icons.TwoTone.Call,
-                            contentDescription = stringResource(id = R.string.call),
-                        )
-                    }
-                }
-            }
+                .padding(4.dp)
+                .wrapContentSize(Alignment.Center),
+        ) {
+            Text(
+                order.status.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        Text(
+            "${order.currency} ${order.toBePaid}",
+            fontWeight = FontWeight.Bold,
+        )
+        IconButton(
+            onClick = goToOrderDetails,
+        ) {
+            Icon(
+                Icons.AutoMirrored.TwoTone.ArrowForward,
+                contentDescription = stringResource(R.string.go_forward),
+            )
         }
     }
 }
@@ -448,6 +265,8 @@ fun FarmStoreScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
     navHostController: NavHostController,
+    copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
+    snackbarHostState: SnackbarHostState,
     viewModel: FarmStoreViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val titles = listOf("Harvests", "Orders", "Seeds", "Seedlings", "Machinery")
@@ -461,293 +280,306 @@ fun FarmStoreScreen(
     val seedlings by viewModel.seedlings.collectAsState()
     val machinery by viewModel.machinery.collectAsState()
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        when (viewModel.gettingFarmState) {
-            GetFarmState.Success -> FarmHeader(farm = farm, onNavigateToCreateMarket = {
-                navHostController.navigate(CreateFarmMarketDestination.route)
-            })
+    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { copodSnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
+                title = {
+                    when (viewModel.gettingFarmState) {
+                        GetFarmState.Success -> FarmHeader(farm = farm)
 
-            GetFarmState.Loading -> Row(
-                Modifier
-                    .height(68.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                CircularProgressIndicator(
-                    Modifier.size(20.dp)
-                )
-            }
-        }
-
-        ScrollableTabRow(divider = {}, edgePadding = 4.dp, selectedTabIndex = state) {
-            titles.forEachIndexed { index, title ->
-                val selected = state == index
-                Tab(
-                    selected = selected,
-                    onClick = { state = index },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            if (selected) BorderStroke(
-                                1.dp, MaterialTheme.colorScheme.primary
-                            ) else BorderStroke(0.dp, MaterialTheme.colorScheme.background),
-                            MaterialTheme.shapes.extraSmall,
+                        GetFarmState.Loading -> CircularProgressIndicator(
+                            Modifier.size(20.dp)
                         )
-                        .padding(if (selected) 2.dp else 0.dp),
-                    text = {
-                        Text(
-                            title,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navHostController.popBackStack()
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = stringResource(id = R.string.go_back),
                         )
-                    },
-                )
-            }
-        }
-        when (state) {
-            0 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    }
+                }, actions = {
+                    OutlinedIconButton(
+                        onClick = {
+                            navHostController.navigate(CreateFarmMarketDestination.route)
+                        },
+                        modifier = Modifier.size(20.dp),
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+                    ) {
+                        Icon(
+                            Icons.TwoTone.Add,
+                            contentDescription = stringResource(R.string.settings),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                })
+        }) { innerPadding ->
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                when (viewModel.gettingFarmMarketsState) {
-                    GetFarmMarketsState.Success -> {
-                        if (markets.isEmpty()) {
-                            item {
+                ScrollableTabRow(divider = {}, edgePadding = 4.dp, selectedTabIndex = state) {
+                    titles.forEachIndexed { index, title ->
+                        val selected = state == index
+                        Tab(
+                            selected = selected,
+                            onClick = { state = index },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = {
                                 Text(
-                                    stringResource(R.string.no_harvest),
+                                    title,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
                                 )
-                            }
-                        } else {
-                            items(markets) {
-                                MarketCard(
-                                    currencyLocale = deviceDetails.currency,
-                                    market = it,
-                                )
-                            }
-                        }
-                    }
-
-                    GetFarmMarketsState.Loading -> item {
-                        Row(Modifier.fillMaxWidth()) {
-                            CircularProgressIndicator(Modifier.size(20.dp))
-                        }
-                    }
-
-                    is GetFarmMarketsState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
-                            }
-                        }
+                            },
+                        )
                     }
                 }
-            }
-
-            1 -> LazyColumn(
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                when (viewModel.gettingFarmOrdersState) {
-                    GetFarmOrdersState.Success -> {
-                        if (orders.isEmpty()) {
-                            item {
-                                Text(
-                                    stringResource(R.string.no_orders),
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                            }
-                        } else {
-                            itemsIndexed(orders) { index, item ->
-                                OrderCard(
-                                    order = item,
-                                    index = index,
-                                    orderStatus = viewModel.updatingOrderState,
-                                    changingOrderId = viewModel.updatingOrderId,
-                                    language = deviceDetails.languages,
-                                    country = deviceDetails.countryCode,
-                                    updateOrderStatus = { id: String, status: OrderStatus ->
-                                        viewModel.updateOrderStatus(
-                                            id, status
+                when (state) {
+                    0 -> LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (viewModel.gettingFarmMarketsState) {
+                            GetFarmMarketsState.Success -> {
+                                if (markets.isEmpty()) {
+                                    item {
+                                        Text(
+                                            stringResource(R.string.no_harvest),
+                                            style = MaterialTheme.typography.titleMedium,
                                         )
-                                    },
-                                )
+                                    }
+                                } else {
+                                    items(markets) {
+                                        MarketCard(
+                                            currencyLocale = deviceDetails.currency,
+                                            market = it,
+                                        )
+                                    }
+                                }
+                            }
+
+                            GetFarmMarketsState.Loading -> item {
+                                Row(Modifier.fillMaxWidth()) {
+                                    CircularProgressIndicator(Modifier.size(20.dp))
+                                }
+                            }
+
+                            is GetFarmMarketsState.Error -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
 
-                    GetFarmOrdersState.Loading -> {
-                        item {
-                            Row(Modifier.fillMaxWidth()) {
-                                CircularProgressIndicator(Modifier.size(20.dp))
+                    1 -> LazyColumn(
+                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (viewModel.gettingFarmOrdersState) {
+                            GetFarmOrdersState.Success -> {
+                                if (orders.isEmpty()) {
+                                    item {
+                                        Text(
+                                            stringResource(R.string.no_orders),
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    }
+                                } else {
+                                    itemsIndexed(orders) { _, item ->
+                                        OrderCard(
+                                            order = item,
+                                            goToOrderDetails = {
+                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}")
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            GetFarmOrdersState.Loading -> {
+                                item {
+                                    Row(Modifier.fillMaxWidth()) {
+                                        CircularProgressIndicator(Modifier.size(20.dp))
+                                    }
+                                }
+                            }
+
+                            is GetFarmOrdersState.Error -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
 
-                    is GetFarmOrdersState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
+                    2 -> LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (viewModel.gettingFarmSeeds) {
+                            GetFarmSeedsState.Success -> if (seeds.isEmpty()) {
+                                item {
+                                    Text(
+                                        stringResource(R.string.no_seeds),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                            } else {
+                                items(seeds) {
+                                    MarketCard(
+                                        currencyLocale = deviceDetails.currency,
+                                        market = it,
+                                    )
+                                }
+                            }
+
+                            GetFarmSeedsState.Loading -> item {
+                                Row(Modifier.fillMaxWidth()) {
+                                    CircularProgressIndicator(Modifier.size(20.dp))
+                                }
+                            }
+
+                            is GetFarmSeedsState.Error -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            2 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                when (viewModel.gettingFarmSeeds) {
-                    GetFarmSeedsState.Success -> if (seeds.isEmpty()) {
-                        item {
-                            Text(
-                                stringResource(R.string.no_seeds),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                    } else {
-                        items(seeds) {
-                            MarketCard(
-                                currencyLocale = deviceDetails.currency,
-                                market = it,
-                            )
-                        }
-                    }
+                    3 -> LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (viewModel.gettingFarmSeedlingsState) {
+                            GetFarmSeedlingsState.Success -> if (seedlings.isEmpty()) {
+                                item {
+                                    Text(
+                                        stringResource(R.string.no_seedlings),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                            } else {
+                                items(seedlings) {
+                                    MarketCard(
+                                        currencyLocale = deviceDetails.currency,
+                                        market = it,
+                                    )
+                                }
+                            }
 
-                    GetFarmSeedsState.Loading -> item {
-                        Row(Modifier.fillMaxWidth()) {
-                            CircularProgressIndicator(Modifier.size(20.dp))
-                        }
-                    }
+                            GetFarmSeedlingsState.Loading -> item {
+                                Row(Modifier.fillMaxWidth()) {
+                                    CircularProgressIndicator(Modifier.size(20.dp))
+                                }
+                            }
 
-                    is GetFarmSeedsState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
+                            is GetFarmSeedlingsState.Error -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
-            3 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                when (viewModel.gettingFarmSeedlingsState) {
-                    GetFarmSeedlingsState.Success -> if (seedlings.isEmpty()) {
-                        item {
-                            Text(
-                                stringResource(R.string.no_seedlings),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                    } else {
-                        items(seedlings) {
-                            MarketCard(
-                                currencyLocale = deviceDetails.currency,
-                                market = it,
-                            )
-                        }
-                    }
-
-                    GetFarmSeedlingsState.Loading -> item {
-                        Row(Modifier.fillMaxWidth()) {
-                            CircularProgressIndicator(Modifier.size(20.dp))
-                        }
-                    }
-
-                    is GetFarmSeedlingsState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
+                    4 -> LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (viewModel.gettingFarmMachineryState) {
+                            GetFarmMachineryState.Success -> if (machinery.isEmpty()) {
+                                item {
+                                    Text(
+                                        stringResource(R.string.no_machinery),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                            } else {
+                                items(machinery) {
+                                    MarketCard(
+                                        currencyLocale = deviceDetails.currency,
+                                        market = it,
+                                    )
+                                }
                             }
-                        }
-                    }
-                }
-            }
 
-            4 -> LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                when (viewModel.gettingFarmMachineryState) {
-                    GetFarmMachineryState.Success -> if (machinery.isEmpty()) {
-                        item {
-                            Text(
-                                stringResource(R.string.no_machinery),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                    } else {
-                        items(machinery) {
-                            MarketCard(
-                                currencyLocale = deviceDetails.currency,
-                                market = it,
-                            )
-                        }
-                    }
+                            GetFarmMachineryState.Loading -> item {
+                                Row(Modifier.fillMaxWidth()) {
+                                    CircularProgressIndicator(Modifier.size(20.dp))
+                                }
+                            }
 
-                    GetFarmMachineryState.Loading -> item {
-                        Row(Modifier.fillMaxWidth()) {
-                            CircularProgressIndicator(Modifier.size(20.dp))
-                        }
-                    }
-
-                    is GetFarmMachineryState.Error -> {
-                        item {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    stringResource(R.string.something_went_wrong),
-                                    style = MaterialTheme.typography.labelMedium,
-                                )
+                            is GetFarmMachineryState.Error -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.something_went_wrong),
+                                            style = MaterialTheme.typography.labelMedium,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

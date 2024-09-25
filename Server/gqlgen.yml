@@ -94,9 +94,9 @@ models:
         resolver: true
   Order:
     fields:
-      market:
-        resolver: true
       customer:
+        resolver: true
+      items:
         resolver: true
   Cart:
     fields:
@@ -115,4 +115,8 @@ models:
       rating:
         resolver: true
       reviewers:
+        resolver: true
+  OrderItem:
+    fields:
+      market:
         resolver: true
