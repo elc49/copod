@@ -55,18 +55,26 @@ func TestOrderController(t *testing.T) {
 	t.Run("send_order_to_farm", func(t *testing.T) {
 		orders := []*model.SendOrderToFarmInput{
 			{
-				Volume:   2,
 				ToBePaid: 200,
 				Currency: "KES",
-				MarketID: market.ID,
 				FarmID:   farm.ID,
+				OrderItems: []*model.OrderItemInput{
+					{
+						Volume:   2,
+						MarketID: market.ID,
+					},
+				},
 			},
 			{
-				Volume:   2,
 				ToBePaid: 2000,
 				Currency: "KES",
-				MarketID: machineryMarket.ID,
-				FarmID:   farm.ID,
+				OrderItems: []*model.OrderItemInput{
+					{
+						Volume:   2,
+						MarketID: machineryMarket.ID,
+					},
+				},
+				FarmID: farm.ID,
 			},
 		}
 		b, err := orderC.SendOrderToFarm(ctx, user.ID, orders)
@@ -83,18 +91,26 @@ func TestOrderController(t *testing.T) {
 	t.Run("should_not_accept_order_volume_supply_can't_cover", func(t *testing.T) {
 		orders := []*model.SendOrderToFarmInput{
 			{
-				Volume:   120,
 				ToBePaid: 200,
 				Currency: "KES",
-				MarketID: market.ID,
-				FarmID:   farm.ID,
+				OrderItems: []*model.OrderItemInput{
+					{
+						Volume:   120,
+						MarketID: market.ID,
+					},
+				},
+				FarmID: farm.ID,
 			},
 			{
-				Volume:   2,
 				ToBePaid: 2000,
 				Currency: "KES",
-				MarketID: machineryMarket.ID,
-				FarmID:   farm.ID,
+				OrderItems: []*model.OrderItemInput{
+					{
+						Volume:   2,
+						MarketID: machineryMarket.ID,
+					},
+				},
+				FarmID: farm.ID,
 			},
 		}
 		_, err := orderC.SendOrderToFarm(ctx, user.ID, orders)

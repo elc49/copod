@@ -117,10 +117,14 @@ func TestMarketController(t *testing.T) {
 		order := []*model.SendOrderToFarmInput{
 			{
 				CartID:   cart.ID,
-				Volume:   120,
 				ToBePaid: 200,
+				OrderItems: []*model.OrderItemInput{
+					{
+						Volume:   120,
+						MarketID: mrkts[0].ID,
+					},
+				},
 				Currency: "KES",
-				MarketID: mrkts[0].ID,
 				FarmID:   farm.ID,
 			},
 		}
