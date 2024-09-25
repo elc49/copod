@@ -173,10 +173,14 @@ func (r *OrderRepository) UpdateOrderStatus(ctx context.Context, args db.UpdateO
 	}
 
 	return &model.Order{
-		ID:        o.ID,
-		Status:    model.OrderStatus(o.Status),
-		CreatedAt: o.CreatedAt,
-		UpdatedAt: o.UpdatedAt,
+		ID:         o.ID,
+		ToBePaid:   int(o.ToBePaid),
+		ShortID:    o.ShortID,
+		Currency:   o.Currency,
+		Status:     model.OrderStatus(o.Status),
+		CustomerID: o.CustomerID,
+		CreatedAt:  o.CreatedAt,
+		UpdatedAt:  o.UpdatedAt,
 	}, nil
 }
 
