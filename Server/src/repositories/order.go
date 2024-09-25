@@ -35,6 +35,7 @@ func (r *OrderRepository) GetOrdersBelongingToFarm(ctx context.Context, id uuid.
 		order := &model.Order{
 			ID:         item.ID,
 			ToBePaid:   int(item.ToBePaid),
+			ShortID:    item.ShortID,
 			Currency:   item.Currency,
 			Status:     model.OrderStatus(item.Status),
 			CustomerID: item.CustomerID,

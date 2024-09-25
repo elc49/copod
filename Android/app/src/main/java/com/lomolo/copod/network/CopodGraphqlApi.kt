@@ -61,7 +61,7 @@ interface ICopodGraphqlApi {
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
-    suspend fun sendOrderToFarm(input: List<SendOrderToFarmInput>): ApolloResponse<SendOrderToFarmMutation.Data>
+    suspend fun sendOrderToFarm(input: SendOrderToFarmInput): ApolloResponse<SendOrderToFarmMutation.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
     suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun updateOrderStatus(input: UpdateOrderStatus): ApolloResponse<UpdateOrderStatusMutation.Data>
@@ -146,7 +146,7 @@ class CopodGraphqlApi(
         apolloClient.query(GetOrdersBelongingToUserQuery()).fetchPolicy(FetchPolicy.NetworkFirst)
             .execute()
 
-    override suspend fun sendOrderToFarm(input: List<SendOrderToFarmInput>) = apolloClient.mutation(
+    override suspend fun sendOrderToFarm(input: SendOrderToFarmInput) = apolloClient.mutation(
         SendOrderToFarmMutation(
             input
         )

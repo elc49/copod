@@ -121,9 +121,6 @@ private fun FarmHeader(
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Bold
             )
-            /*
-
-             */
         }
     }
 }

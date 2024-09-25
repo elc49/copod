@@ -130,7 +130,7 @@ func (r *mutationResolver) DeleteCartItem(ctx context.Context, id uuid.UUID) (bo
 }
 
 // SendOrderToFarm is the resolver for the sendOrderToFarm field.
-func (r *mutationResolver) SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error) {
+func (r *mutationResolver) SendOrderToFarm(ctx context.Context, input model.SendOrderToFarmInput) (*model.Order, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
 	return r.orderController.SendOrderToFarm(ctx, userId, input)
 }

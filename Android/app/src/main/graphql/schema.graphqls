@@ -161,7 +161,7 @@ type Mutation {
 
   deleteCartItem(id: UUID!): Boolean!
 
-  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+  sendOrderToFarm(input: SendOrderToFarmInput!): Order!
 
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
 
@@ -251,6 +251,10 @@ type OrderItem {
 }
 
 input OrderItemInput {
+  cartId: UUID!
+
+  farmId: UUID!
+
   volume: Int!
 
   marketId: UUID!
@@ -335,15 +339,11 @@ type Query {
 }
 
 input SendOrderToFarmInput {
-  cartId: UUID!
-
   toBePaid: Int!
 
   currency: String!
 
   order_items: [OrderItemInput!]!
-
-  farmId: UUID!
 }
 
 input SetMarketStatusInput {

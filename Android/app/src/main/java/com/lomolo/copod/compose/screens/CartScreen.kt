@@ -127,7 +127,8 @@ fun CartScreen(
                     contentDescription = stringResource(R.string.menu),
                 )
             }
-            DropdownMenu(expanded = dropMenuExpanded, onDismissRequest = { dropMenuExpanded = false }) {
+            DropdownMenu(expanded = dropMenuExpanded,
+                onDismissRequest = { dropMenuExpanded = false }) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.orders)) },
                     onClick = {
@@ -158,7 +159,7 @@ fun CartScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when(viewModel.gettingCartItems) {
+            when (viewModel.gettingCartItems) {
                 GettingCartItemsState.Success -> {
                     if (cartItems.isEmpty()) {
                         Column(
@@ -240,7 +241,11 @@ fun CartScreen(
                                                         modifier = Modifier.size(20.dp)
                                                     )
                                                 } else {
-                                                    IconButton(onClick = { viewModel.deleteCartItem(item.id.toString()) }) {
+                                                    IconButton(onClick = {
+                                                        viewModel.deleteCartItem(
+                                                            item.id.toString()
+                                                        )
+                                                    }) {
                                                         Icon(
                                                             painterResource(id = R.drawable.bin),
                                                             modifier = Modifier.size(32.dp),
@@ -254,23 +259,25 @@ fun CartScreen(
                                 }
                                 item {
                                     val total = value.fold(0) { sum, element ->
-                                        val itemTotal = element.volume.times(element.market.pricePerUnit)
+                                        val itemTotal =
+                                            element.volume.times(element.market.pricePerUnit)
                                         sum + itemTotal
                                     }
 
                                     Button(
                                         onClick = {
-                                            viewModel.sendOrderToFarm(key, value.map {
-                                                SendOrderToFarmInput(
-                                                    it.id.toString(),
-                                                    it.volume.times(it.market.pricePerUnit),
-                                                    deviceDetails.currency,
-                                                    listOf(
-                                                        OrderItemInput(it.volume, it.market_id),
-                                                    ),
-                                                    it.farm_id.toString(),
-                                                )
-                                            }) { showToast("Sent. Waiting confirmation.") }
+                                            viewModel.sendOrderToFarm(
+                                                key, SendOrderToFarmInput(toBePaid = total,
+                                                    currency = deviceDetails.currency,
+                                                    order_items = value.map {
+                                                        OrderItemInput(
+                                                            it.id.toString(),
+                                                            it.farm_id,
+                                                            it.volume,
+                                                            it.market_id
+                                                        )
+                                                    })
+                                            ) { showToast("Sent. Waiting confirmation.") }
                                         },
                                         Modifier.fillMaxWidth(),
                                         contentPadding = PaddingValues(12.dp),

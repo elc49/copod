@@ -118,7 +118,7 @@ type ComplexityRoot struct {
 		CreateFarmMarket  func(childComplexity int, input model.NewFarmMarketInput) int
 		DeleteCartItem    func(childComplexity int, id uuid.UUID) int
 		PayWithMpesa      func(childComplexity int, input model.PayWithMpesaInput) int
-		SendOrderToFarm   func(childComplexity int, input []*model.SendOrderToFarmInput) int
+		SendOrderToFarm   func(childComplexity int, input model.SendOrderToFarmInput) int
 		SetMarketStatus   func(childComplexity int, input model.SetMarketStatusInput) int
 		UpdateFarmDetails func(childComplexity int, input model.UpdateFarmDetailsInput) int
 		UpdateOrderStatus func(childComplexity int, input model.UpdateOrderStatusInput) int
@@ -217,7 +217,7 @@ type MutationResolver interface {
 	PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error)
 	AddToCart(ctx context.Context, input model.AddToCartInput) (*model.Cart, error)
 	DeleteCartItem(ctx context.Context, id uuid.UUID) (bool, error)
-	SendOrderToFarm(ctx context.Context, input []*model.SendOrderToFarmInput) (bool, error)
+	SendOrderToFarm(ctx context.Context, input model.SendOrderToFarmInput) (*model.Order, error)
 	UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error)
 	SetMarketStatus(ctx context.Context, input model.SetMarketStatusInput) (*model.Market, error)
 	UpdateFarmDetails(ctx context.Context, input model.UpdateFarmDetailsInput) (*model.Farm, error)
@@ -624,7 +624,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SendOrderToFarm(childComplexity, args["input"].([]*model.SendOrderToFarmInput)), true
+		return e.complexity.Mutation.SendOrderToFarm(childComplexity, args["input"].(model.SendOrderToFarmInput)), true
 
 	case "Mutation.setMarketStatus":
 		if e.complexity.Mutation.SetMarketStatus == nil {
@@ -1283,10 +1283,10 @@ func (ec *executionContext) field_Mutation_payWithMpesa_args(ctx context.Context
 func (ec *executionContext) field_Mutation_sendOrderToFarm_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*model.SendOrderToFarmInput
+	var arg0 model.SendOrderToFarmInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNSendOrderToFarmInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3793,7 +3793,7 @@ func (ec *executionContext) _Mutation_sendOrderToFarm(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SendOrderToFarm(rctx, fc.Args["input"].([]*model.SendOrderToFarmInput))
+		return ec.resolvers.Mutation().SendOrderToFarm(rctx, fc.Args["input"].(model.SendOrderToFarmInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3805,9 +3805,9 @@ func (ec *executionContext) _Mutation_sendOrderToFarm(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*model.Order)
 	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNOrder2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐOrder(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_sendOrderToFarm(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3817,7 +3817,29 @@ func (ec *executionContext) fieldContext_Mutation_sendOrderToFarm(ctx context.Co
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Order_id(ctx, field)
+			case "toBePaid":
+				return ec.fieldContext_Order_toBePaid(ctx, field)
+			case "currency":
+				return ec.fieldContext_Order_currency(ctx, field)
+			case "customerId":
+				return ec.fieldContext_Order_customerId(ctx, field)
+			case "short_id":
+				return ec.fieldContext_Order_short_id(ctx, field)
+			case "status":
+				return ec.fieldContext_Order_status(ctx, field)
+			case "customer":
+				return ec.fieldContext_Order_customer(ctx, field)
+			case "items":
+				return ec.fieldContext_Order_items(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Order_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Order_updated_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Order", field.Name)
 		},
 	}
 	defer func() {
@@ -8979,13 +9001,27 @@ func (ec *executionContext) unmarshalInputOrderItemInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"volume", "marketId"}
+	fieldsInOrder := [...]string{"cartId", "farmId", "volume", "marketId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "cartId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cartId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CartID = data
+		case "farmId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("farmId"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FarmID = data
 		case "volume":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("volume"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -9061,20 +9097,13 @@ func (ec *executionContext) unmarshalInputSendOrderToFarmInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"cartId", "toBePaid", "currency", "order_items", "farmId"}
+	fieldsInOrder := [...]string{"toBePaid", "currency", "order_items"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "cartId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cartId"))
-			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CartID = data
 		case "toBePaid":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toBePaid"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -9096,13 +9125,6 @@ func (ec *executionContext) unmarshalInputSendOrderToFarmInput(ctx context.Conte
 				return it, err
 			}
 			it.OrderItems = data
-		case "farmId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("farmId"))
-			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.FarmID = data
 		}
 	}
 
@@ -11562,26 +11584,9 @@ func (ec *executionContext) marshalNPaystackPaymentUpdate2ᚖgithubᚗcomᚋelc4
 	return ec._PaystackPaymentUpdate(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚕᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInputᚄ(ctx context.Context, v interface{}) ([]*model.SendOrderToFarmInput, error) {
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]*model.SendOrderToFarmInput, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) unmarshalNSendOrderToFarmInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (*model.SendOrderToFarmInput, error) {
+func (ec *executionContext) unmarshalNSendOrderToFarmInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSendOrderToFarmInput(ctx context.Context, v interface{}) (model.SendOrderToFarmInput, error) {
 	res, err := ec.unmarshalInputSendOrderToFarmInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNSetMarketStatusInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐSetMarketStatusInput(ctx context.Context, v interface{}) (model.SetMarketStatusInput, error) {

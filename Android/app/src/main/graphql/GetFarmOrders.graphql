@@ -2,6 +2,7 @@ query GetFarmOrders($id: UUID!) {
     getFarmOrders(id: $id) {
         id
         currency
+        short_id
         items {
             id
             volume

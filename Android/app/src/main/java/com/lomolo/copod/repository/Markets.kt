@@ -25,7 +25,7 @@ interface IMarkets {
     suspend fun addToCart(input: AddToCartInput): ApolloResponse<AddToCartMutation.Data>
     suspend fun deleteCartItem(id: String): ApolloResponse<DeleteCartItemMutation.Data>
     suspend fun getOrdersBelongingToUser(): ApolloResponse<GetOrdersBelongingToUserQuery.Data>
-    suspend fun sendOrderToFarm(input: List<SendOrderToFarmInput>): ApolloResponse<SendOrderToFarmMutation.Data>
+    suspend fun sendOrderToFarm(input: SendOrderToFarmInput): ApolloResponse<SendOrderToFarmMutation.Data>
     suspend fun getUserOrdersCount(): Flow<ApolloResponse<GetUserOrdersCountQuery.Data>>
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
@@ -40,7 +40,7 @@ class MarketsRepository(
     override suspend fun addToCart(input: AddToCartInput) = copodGraphqlApi.addToCart(input)
     override suspend fun deleteCartItem(id: String) = copodGraphqlApi.deleteCartItem(id)
     override suspend fun getOrdersBelongingToUser() = copodGraphqlApi.getOrdersBelongingToUser()
-    override suspend fun sendOrderToFarm(input: List<SendOrderToFarmInput>) = copodGraphqlApi.sendOrderToFarm(input)
+    override suspend fun sendOrderToFarm(input: SendOrderToFarmInput) = copodGraphqlApi.sendOrderToFarm(input)
     override suspend fun getUserOrdersCount() = copodGraphqlApi.getUserOrdersCount()
     override suspend fun getMarketDetails(id: String) = copodGraphqlApi.getMarketDetails(id)
     override suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput) = copodGraphqlApi.getLocalizedMachineryMarkets(input)

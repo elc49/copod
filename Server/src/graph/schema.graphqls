@@ -204,16 +204,16 @@ input AddToCartInput {
 }
 
 input OrderItemInput {
+  cartId: UUID!
+  farmId: UUID!
   volume: Int!
   marketId: UUID!
 }
 
 input SendOrderToFarmInput {
-  cartId: UUID!
   toBePaid: Int!
   currency: String!
   order_items: [OrderItemInput!]!
-  farmId: UUID!
 }
 
 input UpdateOrderStatusInput {
@@ -268,7 +268,7 @@ type Mutation {
   payWithMpesa(input: PayWithMpesaInput!): PayWithMpesa!
   addToCart(input: AddToCartInput!): Cart!
   deleteCartItem(id: UUID!): Boolean!
-  sendOrderToFarm(input: [SendOrderToFarmInput!]!): Boolean!
+  sendOrderToFarm(input: SendOrderToFarmInput!): Order!
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   setMarketStatus(input: SetMarketStatusInput!): Market!
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!

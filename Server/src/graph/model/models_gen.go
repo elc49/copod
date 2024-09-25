@@ -141,6 +141,8 @@ type OrderItem struct {
 }
 
 type OrderItemInput struct {
+	CartID   uuid.UUID `json:"cartId"`
+	FarmID   uuid.UUID `json:"farmId"`
 	Volume   int       `json:"volume"`
 	MarketID uuid.UUID `json:"marketId"`
 }
@@ -177,11 +179,9 @@ type Query struct {
 }
 
 type SendOrderToFarmInput struct {
-	CartID     uuid.UUID         `json:"cartId"`
 	ToBePaid   int               `json:"toBePaid"`
 	Currency   string            `json:"currency"`
 	OrderItems []*OrderItemInput `json:"order_items"`
-	FarmID     uuid.UUID         `json:"farmId"`
 }
 
 type SetMarketStatusInput struct {

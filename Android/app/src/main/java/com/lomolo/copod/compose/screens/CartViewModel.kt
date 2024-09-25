@@ -65,14 +65,14 @@ class CartViewModel(
     var sendToFarmState: SendToFarmState by mutableStateOf(SendToFarmState.Success)
         private set
 
-    fun sendOrderToFarm(key: String, value: List<SendOrderToFarmInput>, cb: () -> Unit) {
+    fun sendOrderToFarm(key: String, value: SendOrderToFarmInput, cb: () -> Unit) {
         if (sendToFarmState !is SendToFarmState.Loading) {
             sendingKey = key
             sendToFarmState = SendToFarmState.Loading
             viewModelScope.launch {
                 sendToFarmState = try {
                     marketsRepository.sendOrderToFarm(value)
-                    value.forEach { item ->
+                    value.order_items.forEach { item ->
                         try {
                             val updatedCacheData = apolloStore.readOperation(
                                 GetUserCartItemsQuery()
@@ -97,6 +97,7 @@ class CartViewModel(
                         }
                     }
                     SendToFarmState.Success.also { cb() }
+                    SendToFarmState.Success
                 } catch (e: IOException) {
                     e.printStackTrace()
                     SendToFarmState.Error(e.localizedMessage)

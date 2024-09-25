@@ -32,53 +32,58 @@ func (c *OrderController) GetOrdersBelongingToUser(ctx context.Context, userID u
 	return c.r.GetOrdersBelongingToUser(ctx, userID)
 }
 
-func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID, orders []*model.SendOrderToFarmInput) (bool, error) {
-	for _, item := range orders {
-		// Create order
-		order, err := c.createOrder(ctx, db.CreateOrderParams{
-			ToBePaid:   int32(item.ToBePaid),
-			Currency:   item.Currency,
-			CustomerID: userID,
-			FarmID:     item.FarmID,
-		})
-		if err != nil {
-			return false, err
+func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID, orderInput model.SendOrderToFarmInput) (*model.Order, error) {
+	// Create order
+	var order *model.Order
+	var err error
+	orderCreated := false
+
+	for _, orderItem := range orderInput.OrderItems {
+		if !orderCreated {
+			order, err = c.createOrder(ctx, db.CreateOrderParams{
+				ToBePaid:   int32(orderInput.ToBePaid),
+				Currency:   orderInput.Currency,
+				CustomerID: userID,
+				FarmID:     orderItem.FarmID,
+			})
+			if err != nil {
+				return nil, err
+			}
+			orderCreated = true
+		}
+		// Does supply exist to cover order
+		if supplyExists := c.r.MarketHasSupply(ctx, orderItem.MarketID, orderItem.Volume); !supplyExists {
+			continue
+		}
+		// Create order item
+		orderItemArgs := db.CreateOrderItemParams{
+			OrderID:  order.ID,
+			MarketID: orderItem.MarketID,
+			Volume:   int32(orderItem.Volume),
+		}
+		if _, err := c.r.CreateOrderItem(ctx, orderItemArgs); err != nil {
+			return nil, err
 		}
 
-		for _, orderItem := range item.OrderItems {
-			// Does supply exist to cover order
-			if supplyExists := c.r.MarketHasSupply(ctx, orderItem.MarketID, orderItem.Volume); !supplyExists {
-				continue
-			}
-			// Create order item
-			orderItemArgs := db.CreateOrderItemParams{
-				OrderID:  order.ID,
-				MarketID: orderItem.MarketID,
-				Volume:   int32(orderItem.Volume),
-			}
-			if _, err := c.r.CreateOrderItem(ctx, orderItemArgs); err != nil {
-				return false, err
-			}
-
-			// Update product market supply
-			if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
-				ID:            orderItem.MarketID,
-				RunningVolume: int32(orderItem.Volume),
-			}); err != nil {
-				return false, err
-			}
-
-			// Delete item from cart
-			if b := c.r.DeleteOrderFromCart(ctx, orderItem.MarketID); !b {
-				return false, errors.New("order: delete cart item from order")
-			}
+		// Update product market supply
+		if _, err := c.r.UpdateMarketSupply(ctx, db.UpdateMarketVolumeParams{
+			ID:            orderItem.MarketID,
+			RunningVolume: int32(orderItem.Volume),
+		}); err != nil {
+			return nil, err
 		}
-		// Cleanup blank orders
-		if c.r.OrderHasItems(ctx, order.ID) {
-			c.r.DeleteOrder(ctx, order.ID)
+
+		// Delete item from cart
+		if b := c.r.DeleteOrderFromCart(ctx, orderItem.MarketID); !b {
+			return nil, errors.New("order: delete cart item from order")
 		}
 	}
-	return true, nil
+	// Cleanup blank order blocks
+	if c.r.OrderHasItems(ctx, order.ID) {
+		c.r.DeleteOrder(ctx, order.ID)
+	}
+
+	return order, nil
 }
 
 func (c *OrderController) GetUserOrdersCount(ctx context.Context, userID uuid.UUID) (int, error) {
