@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -224,9 +223,24 @@ fun FarmStoreScreen(
                     ) {
                         when (viewModel.gettingFarmOrdersState) {
                             GetFarmOrdersState.Success -> {
+                                item {
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                    ) {
+                                        TableHeader(text = "#order id", weight = .25f)
+                                        TableHeader(text = "status", weight = .25f)
+                                        TableHeader(text = "cost", weight = .25f)
+                                        TableHeader(text = "", weight = .25f)
+                                    }
+                                }
                                 if (orders.isEmpty()) {
                                     item {
-                                        Text(stringResource(R.string.no_orders))
+                                        Text(
+                                            stringResource(R.string.no_orders),
+                                            modifier = Modifier.weight(.25f).padding(8.dp),
+                                        )
                                     }
                                 } else {
                                     itemsIndexed(orders) { _, item ->
@@ -254,6 +268,7 @@ fun FarmStoreScreen(
                                     ) {
                                         Text(
                                             stringResource(R.string.something_went_wrong),
+                                            modifier = Modifier.weight(.25f).padding(8.dp),
                                             style = MaterialTheme.typography.labelMedium,
                                         )
                                     }
@@ -531,13 +546,13 @@ private fun OrderCard(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             "#${order.short_id}",
+            modifier = Modifier.weight(.25f).padding(8.dp),
             fontWeight = FontWeight.Bold,
         )
         Box(
@@ -546,21 +561,24 @@ private fun OrderCard(
                     statusColor,
                     MaterialTheme.shapes.small,
                 )
-                .padding(4.dp)
+                .padding(8.dp)
+                .weight(.25f)
                 .wrapContentSize(Alignment.Center),
         ) {
             LinearProgressIndicator(
                 progress = {
                     Util.calculateOrderStatusProgress(order.status)
-                }, modifier = Modifier.width(40.dp)
+                },
             )
         }
         Text(
             "${order.currency} ${order.toBePaid}",
+            modifier = Modifier.weight(.25f).padding(8.dp),
             fontWeight = FontWeight.Bold,
         )
         IconButton(
             onClick = goToOrderDetails,
+            modifier = Modifier.padding(8.dp).weight(.25f),
         ) {
             Icon(
                 Icons.AutoMirrored.TwoTone.ArrowForward,
