@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -58,6 +60,7 @@ import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
 import com.lomolo.copod.ui.theme.secondaryContainerLight
 import com.lomolo.copod.ui.theme.surfaceContainerLight
+import com.lomolo.copod.util.Util
 
 object FarmOrderScreenDestination : Navigation {
     override val title = R.string.order_details
@@ -254,10 +257,10 @@ private fun OrderDetails(
                         .padding(4.dp)
                         .wrapContentSize(Alignment.Center),
                 ) {
-                    Text(
-                        order.status.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
+                    LinearProgressIndicator(
+                        progress = {
+                            Util.calculateOrderStatusProgress(order.status)
+                        }, modifier = Modifier.width(40.dp)
                     )
                 }
                 Text(
@@ -291,13 +294,14 @@ private fun OrderDetails(
                     overflow = TextOverflow.Clip,
                 )
                 Text("${item.volume} ${item.market.unit}")
-                when(order.status) {
+                when (order.status) {
                     OrderStatus.DELIVERED -> {
                         Icon(
                             Icons.TwoTone.Check,
                             contentDescription = stringResource(R.string.check_mark),
                         )
                     }
+
                     else -> {}
                 }
             }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -109,38 +111,36 @@ fun FarmStoreScreen(
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { copodSnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-                title = {
-                    when (viewModel.gettingFarmState) {
-                        GetFarmState.Success -> FarmHeader(farm = farm)
+            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+                when (viewModel.gettingFarmState) {
+                    GetFarmState.Success -> FarmHeader(farm = farm)
 
-                        GetFarmState.Loading -> CircularProgressIndicator(
-                            Modifier.size(20.dp)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navHostController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
-                    }
-                }, actions = {
-                    IconButton(
-                        onClick = {
-                            navHostController.navigate(CreateFarmMarketDestination.route)
-                        },
-                    ) {
-                        Icon(
-                            Icons.TwoTone.Add,
-                            contentDescription = stringResource(R.string.settings),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                })
+                    GetFarmState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp)
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    navHostController.popBackStack()
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = stringResource(id = R.string.go_back),
+                    )
+                }
+            }, actions = {
+                IconButton(
+                    onClick = {
+                        navHostController.navigate(CreateFarmMarketDestination.route)
+                    },
+                ) {
+                    Icon(
+                        Icons.TwoTone.Add,
+                        contentDescription = stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            })
         }) { innerPadding ->
         Surface(
             modifier = modifier
@@ -157,8 +157,7 @@ fun FarmStoreScreen(
                         Tab(
                             selected = selected,
                             onClick = { state = index },
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             text = {
                                 Text(
                                     title,
@@ -234,12 +233,9 @@ fun FarmStoreScreen(
                                     }
                                 } else {
                                     itemsIndexed(orders) { _, item ->
-                                        OrderCard(
-                                            order = item,
-                                            goToOrderDetails = {
-                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}/?entity=${Entity.FARM.name}")
-                                            }
-                                        )
+                                        OrderCard(order = item, goToOrderDetails = {
+                                            navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}/?entity=${Entity.FARM.name}")
+                                        })
                                     }
                                 }
                             }
@@ -565,10 +561,10 @@ private fun OrderCard(
                 .padding(4.dp)
                 .wrapContentSize(Alignment.Center),
         ) {
-            Text(
-                order.status.toString(),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
+            LinearProgressIndicator(
+                progress = {
+                    Util.calculateOrderStatusProgress(order.status)
+                }, modifier = Modifier.width(40.dp)
             )
         }
         Text(
