@@ -128,4 +128,7 @@
     <string name="farm_details">About farm</string>
     <string name="all_markets">All Markets</string>
     <string name="order_details">Order details</string>
+    <string name="since">Since %1$s</string>
+    <string name="completed_farm_orders">Completed %1$s orders</string>
+    <string name="rating_star">Rating star</string>
 </resources>
