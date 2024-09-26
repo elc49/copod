@@ -77,6 +77,7 @@ fun FarmProfileScreen(
     deviceDetails: DeviceDetails,
     onGoBack: () -> Unit,
     onNavigateToMarketDetails: (String) -> Unit,
+    bottomNav: @Composable () -> Unit,
     onNavigateToAllMarkets: (String, String) -> Unit,
     viewModel: FarmProfileViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
@@ -86,20 +87,22 @@ fun FarmProfileScreen(
     val seedlings by viewModel.seedlings.collectAsState()
     val machinery by viewModel.machinery.collectAsState()
 
-    Scaffold(contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp), topBar = {
-        TopAppBar(title = {},
-            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
-            navigationIcon = {
-                IconButton(
-                    onClick = onGoBack,
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.TwoTone.ArrowBack,
-                        contentDescription = stringResource(R.string.go_back),
-                    )
-                }
-            })
-    }) { innerPadding ->
+    Scaffold(bottomBar = bottomNav,
+        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
+        topBar = {
+            TopAppBar(title = {},
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
+                navigationIcon = {
+                    IconButton(
+                        onClick = onGoBack,
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.TwoTone.ArrowBack,
+                            contentDescription = stringResource(R.string.go_back),
+                        )
+                    }
+                })
+        }) { innerPadding ->
         Surface(
             modifier = modifier
                 .fillMaxSize()
