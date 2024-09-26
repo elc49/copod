@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +32,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SnackbarHostState
@@ -86,180 +87,6 @@ object FarmStoreScreenDestination : Navigation {
     val routeWithArgs = "$route/{$FARM_ID_ARG}"
 }
 
-@Composable
-private fun FarmHeader(
-    farm: GetFarmByIdQuery.GetFarmById?,
-) {
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
-                .build(),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(52.dp)
-                .padding(8.dp)
-                .clip(MaterialTheme.shapes.small),
-            error = painterResource(R.drawable.ic_broken_image),
-            placeholder = painterResource(id = R.drawable.loading_img),
-            contentDescription = null
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(Util.capitalize(farm?.name ?: ""))
-        }
-    }
-}
-
-@Composable
-private fun MarketCard(
-    modifier: Modifier = Modifier,
-    market: GetFarmMarketsQuery.GetFarmMarket,
-    currencyLocale: String,
-) {
-    val statusColor: Color = when (market.status) {
-        MarketStatus.CLOSED -> surfaceContainerLight
-        MarketStatus.BOOKED -> primaryContainerLight
-        MarketStatus.OPEN -> secondaryContainerLight
-        else -> MaterialTheme.colorScheme.primaryContainer
-    }
-
-    Card(
-        modifier = modifier.wrapContentHeight(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-        shape = MaterialTheme.shapes.small,
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary),
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current).data(market.image).crossfade(true)
-                .build(),
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(R.drawable.loading_img),
-            error = painterResource(R.drawable.ic_broken_image),
-            modifier = Modifier
-                .height(80.dp)
-                .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)),
-            contentDescription = stringResource(
-                id = R.string.product
-            )
-        )
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column(
-                Modifier.padding(4.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    market.name,
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Clip,
-                )
-                Text(
-                    "${
-                        Util.formatCurrency(
-                            currency = currencyLocale, amount = market.pricePerUnit
-                        )
-                    } / ${market.unit}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Clip,
-                )
-                if (market.type == MarketType.MACHINERY) {
-                    Box(
-                        Modifier
-                            .background(
-                                statusColor,
-                                MaterialTheme.shapes.extraSmall,
-                            )
-                            .padding(4.dp)
-                    ) {
-                        Text(
-                            market.status.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                }
-            }
-            if (market.type != MarketType.MACHINERY && market.running_volume > 0) {
-                CircularProgressIndicator(
-                    progress = {
-                        market.running_volume / market.volume.toFloat()
-                    },
-                    Modifier.size(20.dp),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun OrderCard(
-    modifier: Modifier = Modifier,
-    order: GetFarmOrdersQuery.GetFarmOrder,
-    goToOrderDetails: () -> Unit,
-) {
-    val statusColor: Color = when (order.status) {
-        OrderStatus.PENDING -> surfaceContainerLight
-        OrderStatus.DELIVERED -> primaryContainerLight
-        OrderStatus.CANCELLED -> errorContainerLight
-        OrderStatus.CONFIRMED -> secondaryContainerLight
-        else -> MaterialTheme.colorScheme.primaryContainer
-    }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            "#${order.short_id}",
-            fontWeight = FontWeight.Bold,
-        )
-        Box(
-            Modifier
-                .background(
-                    statusColor,
-                    MaterialTheme.shapes.small,
-                )
-                .padding(4.dp)
-                .wrapContentSize(Alignment.Center),
-        ) {
-            Text(
-                order.status.toString(),
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-        Text(
-            "${order.currency} ${order.toBePaid}",
-            fontWeight = FontWeight.Bold,
-        )
-        IconButton(
-            onClick = goToOrderDetails,
-        ) {
-            Icon(
-                Icons.AutoMirrored.TwoTone.ArrowForward,
-                contentDescription = stringResource(R.string.go_forward),
-            )
-        }
-    }
-}
-
 @ExperimentalMaterial3Api
 @Composable
 fun FarmStoreScreen(
@@ -284,40 +111,36 @@ fun FarmStoreScreen(
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { copodSnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0),
-                title = {
-                    when (viewModel.gettingFarmState) {
-                        GetFarmState.Success -> FarmHeader(farm = farm)
+            TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+                when (viewModel.gettingFarmState) {
+                    GetFarmState.Success -> FarmHeader(farm = farm)
 
-                        GetFarmState.Loading -> CircularProgressIndicator(
-                            Modifier.size(20.dp)
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navHostController.popBackStack()
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
-                    }
-                }, actions = {
-                    OutlinedIconButton(
-                        onClick = {
-                            navHostController.navigate(CreateFarmMarketDestination.route)
-                        },
-                        modifier = Modifier.size(20.dp),
-                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                    ) {
-                        Icon(
-                            Icons.TwoTone.Add,
-                            contentDescription = stringResource(R.string.settings),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                })
+                    GetFarmState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp)
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    navHostController.popBackStack()
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                        contentDescription = stringResource(id = R.string.go_back),
+                    )
+                }
+            }, actions = {
+                IconButton(
+                    onClick = {
+                        navHostController.navigate(CreateFarmMarketDestination.route)
+                    },
+                ) {
+                    Icon(
+                        Icons.TwoTone.Add,
+                        contentDescription = stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            })
         }) { innerPadding ->
         Surface(
             modifier = modifier
@@ -334,15 +157,13 @@ fun FarmStoreScreen(
                         Tab(
                             selected = selected,
                             onClick = { state = index },
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             text = {
                                 Text(
                                     title,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleSmall,
                                 )
                             },
                         )
@@ -412,12 +233,9 @@ fun FarmStoreScreen(
                                     }
                                 } else {
                                     itemsIndexed(orders) { _, item ->
-                                        OrderCard(
-                                            order = item,
-                                            goToOrderDetails = {
-                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}/?entity=${Entity.FARM.name}")
-                                            }
-                                        )
+                                        OrderCard(order = item, goToOrderDetails = {
+                                            navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}/?entity=${Entity.FARM.name}")
+                                        })
                                     }
                                 }
                             }
@@ -586,6 +404,180 @@ fun FarmStoreScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun FarmHeader(
+    farm: GetFarmByIdQuery.GetFarmById?,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(farm?.thumbnail).crossfade(true)
+                .build(),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(52.dp)
+                .padding(8.dp)
+                .clip(MaterialTheme.shapes.small),
+            error = painterResource(R.drawable.ic_broken_image),
+            placeholder = painterResource(id = R.drawable.loading_img),
+            contentDescription = null
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(Util.capitalize(farm?.name ?: ""))
+        }
+    }
+}
+
+@Composable
+private fun MarketCard(
+    modifier: Modifier = Modifier,
+    market: GetFarmMarketsQuery.GetFarmMarket,
+    currencyLocale: String,
+) {
+    val statusColor: Color = when (market.status) {
+        MarketStatus.CLOSED -> surfaceContainerLight
+        MarketStatus.BOOKED -> primaryContainerLight
+        MarketStatus.OPEN -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+
+    Card(
+        modifier = modifier.wrapContentHeight(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary),
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(market.image).crossfade(true)
+                .build(),
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.loading_img),
+            error = painterResource(R.drawable.ic_broken_image),
+            modifier = Modifier
+                .height(80.dp)
+                .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)),
+            contentDescription = stringResource(
+                id = R.string.product
+            )
+        )
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(
+                Modifier.padding(4.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    market.name,
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Clip,
+                )
+                Text(
+                    "${
+                        Util.formatCurrency(
+                            currency = currencyLocale, amount = market.pricePerUnit
+                        )
+                    } / ${market.unit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Clip,
+                )
+                if (market.type == MarketType.MACHINERY) {
+                    Box(
+                        Modifier
+                            .background(
+                                statusColor,
+                                MaterialTheme.shapes.extraSmall,
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Text(
+                            market.status.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+            if (market.type != MarketType.MACHINERY && market.running_volume > 0) {
+                CircularProgressIndicator(
+                    progress = {
+                        market.running_volume / market.volume.toFloat()
+                    },
+                    Modifier.size(20.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrderCard(
+    modifier: Modifier = Modifier,
+    order: GetFarmOrdersQuery.GetFarmOrder,
+    goToOrderDetails: () -> Unit,
+) {
+    val statusColor: Color = when (order.status) {
+        OrderStatus.PENDING -> surfaceContainerLight
+        OrderStatus.DELIVERED -> primaryContainerLight
+        OrderStatus.CANCELLED -> errorContainerLight
+        OrderStatus.CONFIRMED -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            "#${order.short_id}",
+            fontWeight = FontWeight.Bold,
+        )
+        Box(
+            Modifier
+                .background(
+                    statusColor,
+                    MaterialTheme.shapes.small,
+                )
+                .padding(4.dp)
+                .wrapContentSize(Alignment.Center),
+        ) {
+            LinearProgressIndicator(
+                progress = {
+                    Util.calculateOrderStatusProgress(order.status)
+                }, modifier = Modifier.width(40.dp)
+            )
+        }
+        Text(
+            "${order.currency} ${order.toBePaid}",
+            fontWeight = FontWeight.Bold,
+        )
+        IconButton(
+            onClick = goToOrderDetails,
+        ) {
+            Icon(
+                Icons.AutoMirrored.TwoTone.ArrowForward,
+                contentDescription = stringResource(R.string.go_forward),
+            )
         }
     }
 }

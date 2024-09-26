@@ -190,11 +190,7 @@ fun CreateFarmMarketScreen(
         }
     }, topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-            Text(
-                stringResource(R.string.add_market),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            Text(stringResource(R.string.add_market))
         }, navigationIcon = {
             IconButton(onClick = { onGoBack() }) {
                 Icon(
