@@ -105,6 +105,17 @@ fun UserOrdersScreen(
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
+                            } else {
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    TableHeader(text = "#order id", weight = .25f)
+                                    TableHeader(text = "status", weight = .25f)
+                                    TableHeader(text = "cost", weight = .25f)
+                                    TableHeader(text = "", weight = .25f)
+                                }
                             }
                         }
                         items(orders) { item ->
@@ -148,13 +159,13 @@ private fun OrderCard(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             "#${order.short_id}",
+            modifier = Modifier.weight(.25f).padding(8.dp),
             fontWeight = FontWeight.Bold,
         )
         Box(
@@ -163,7 +174,8 @@ private fun OrderCard(
                     statusColor,
                     MaterialTheme.shapes.small,
                 )
-                .padding(4.dp)
+                .padding(8.dp)
+                .weight(.25f)
                 .wrapContentSize(Alignment.Center),
         ) {
             LinearProgressIndicator(
@@ -174,10 +186,12 @@ private fun OrderCard(
         }
         Text(
             "${order.currency} ${order.toBePaid}",
+            modifier = Modifier.weight(.25f).padding(8.dp),
             fontWeight = FontWeight.Bold,
         )
         IconButton(
             onClick = { goToOrderDetails(order.id.toString()) },
+            modifier = Modifier.weight(.25f).padding(8.dp),
         ) {
             Icon(
                 Icons.AutoMirrored.TwoTone.ArrowForward,
