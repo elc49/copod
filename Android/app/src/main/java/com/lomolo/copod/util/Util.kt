@@ -4,8 +4,6 @@ import android.icu.number.Notation
 import android.icu.number.NumberFormatter
 import android.icu.number.Precision
 import android.os.Build
-import com.lomolo.copod.data.Data
-import com.lomolo.copod.type.OrderStatus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -13,7 +11,6 @@ import kotlinx.datetime.toLocalDateTime
 import java.text.NumberFormat
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.math.round
 
 object Util {
     fun copodDateFormat(date: String, language: String, country: String): String {
@@ -55,21 +52,6 @@ object Util {
         } else {
             numberFormat.format(amount)
         }
-    }
-
-    fun calculateOrderStatusProgress(status: OrderStatus): Float {
-        val oM = emptyMap<OrderStatus, Float>().toMutableMap()
-        var progress = 0.0
-        for (s in Data.orderStatuses) {
-            oM[s] = "%.1f".format(100.0.div(Data.orderStatuses.size)).toFloat()
-        }
-
-        for (k in oM.keys) {
-            progress += oM[k]!!
-            if (status == k) break
-        }
-
-        return (round(progress) / 100).toFloat()
     }
 
     fun statistic(

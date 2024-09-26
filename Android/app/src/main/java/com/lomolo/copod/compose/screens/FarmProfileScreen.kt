@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.automirrored.twotone.ArrowForward
+import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -117,7 +118,8 @@ fun FarmProfileScreen(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
+                            .horizontalScroll(rememberScrollState())
+                            .padding(top = 12.dp, bottom = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
@@ -127,10 +129,18 @@ fun FarmProfileScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                Text(
-                                    "${farm.rating}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        "${farm.rating}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Icon(
+                                        Icons.TwoTone.Star,
+                                        modifier = Modifier.size(16.dp),
+                                        contentDescription = stringResource(R.string.rating_star),
+                                    )
+                                }
                                 Text(
                                     stringResource(R.string.reviews, farm.reviewers),
                                     textAlign = TextAlign.Center,
@@ -152,12 +162,11 @@ fun FarmProfileScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    Util.statistic(deviceDetails.languages, farm.completed_orders),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                                Text(
-                                    stringResource(R.string.completed_orders),
+                                    stringResource(
+                                        R.string.completed_farm_orders, Util.statistic(
+                                            deviceDetails.languages, farm.completed_orders
+                                        )
+                                    ),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
@@ -177,15 +186,13 @@ fun FarmProfileScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 Text(
-                                    Util.copodDateFormat(
-                                        farm.dateStarted.toString(),
-                                        deviceDetails.languages,
-                                        deviceDetails.countryCode
+                                    stringResource(
+                                        R.string.since, Util.copodDateFormat(
+                                            farm.dateStarted.toString(),
+                                            deviceDetails.languages,
+                                            deviceDetails.countryCode,
+                                        )
                                     ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                                Text(
-                                    stringResource(R.string.date_started),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
@@ -206,11 +213,6 @@ fun FarmProfileScreen(
                             ) {
                                 Text(
                                     farm.address_string,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                )
-                                Text(
-                                    stringResource(R.string.farm_location),
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
@@ -254,7 +256,11 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = { onNavigateToAllMarkets(MarketType.HARVEST.toString(), viewModel.getProfileId()) },
+                                    onClick = {
+                                        onNavigateToAllMarkets(
+                                            MarketType.HARVEST.toString(), viewModel.getProfileId()
+                                        )
+                                    },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -311,7 +317,11 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = { onNavigateToAllMarkets(MarketType.SEEDS.toString(), viewModel.getProfileId()) },
+                                    onClick = {
+                                        onNavigateToAllMarkets(
+                                            MarketType.SEEDS.toString(), viewModel.getProfileId()
+                                        )
+                                    },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -368,7 +378,12 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = { onNavigateToAllMarkets(MarketType.SEEDLINGS.toString(), viewModel.getProfileId()) },
+                                    onClick = {
+                                        onNavigateToAllMarkets(
+                                            MarketType.SEEDLINGS.toString(),
+                                            viewModel.getProfileId()
+                                        )
+                                    },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
@@ -425,7 +440,12 @@ fun FarmProfileScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 IconButton(
-                                    onClick = { onNavigateToAllMarkets(MarketType.MACHINERY.toString(), viewModel.getProfileId()) },
+                                    onClick = {
+                                        onNavigateToAllMarkets(
+                                            MarketType.MACHINERY.toString(),
+                                            viewModel.getProfileId()
+                                        )
+                                    },
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.TwoTone.ArrowForward,
