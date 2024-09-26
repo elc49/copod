@@ -61,12 +61,13 @@ object UserOrdersScreenDestination : Navigation {
 fun UserOrdersScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
+    bottomNav: @Composable () -> Unit,
     goToOrderDetails: (String) -> Unit,
     viewModel: UserOrdersViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val orders by viewModel.userOrders.collectAsState()
 
-    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+    Scaffold(bottomBar = bottomNav, contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
         TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
             Text(stringResource(UserOrdersScreenDestination.title))
         }, navigationIcon = {

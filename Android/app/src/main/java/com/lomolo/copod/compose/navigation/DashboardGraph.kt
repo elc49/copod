@@ -20,12 +20,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.copod.R
@@ -38,17 +36,11 @@ import com.lomolo.copod.compose.screens.AllMarketsScreen
 import com.lomolo.copod.compose.screens.AllMarketsScreenDestination
 import com.lomolo.copod.compose.screens.CartScreen
 import com.lomolo.copod.compose.screens.CartScreenDestination
-import com.lomolo.copod.compose.screens.CreateFarmScreen
-import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
 import com.lomolo.copod.compose.screens.ExploreScreen
 import com.lomolo.copod.compose.screens.ExploreScreenDestination
 import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
-import com.lomolo.copod.compose.screens.FarmProfileScreen
 import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
 import com.lomolo.copod.compose.screens.FarmScreenDestination
-import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
-import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
-import com.lomolo.copod.compose.screens.FarmsScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.copod.compose.screens.MarketScreen
@@ -60,8 +52,6 @@ import com.lomolo.copod.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.UserOrdersScreen
 import com.lomolo.copod.compose.screens.UserOrdersScreenDestination
 import com.lomolo.copod.model.DeviceDetails
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 object DashboardDestination : Navigation {
     override val title = null
@@ -75,13 +65,12 @@ fun NavGraphBuilder.addDashboardGraph(
     navHostController: NavHostController,
     sessionViewModel: SessionViewModel,
     deviceDetails: DeviceDetails,
-    scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     onNavigateTo: (String) -> Unit,
 ) {
     navigation(
-        startDestination = FarmScreenDestination.route,
+        startDestination = ExploreScreenDestination.route,
         route = DashboardDestination.route,
     ) {
         composable(route = ExploreScreenDestination.route) {
@@ -112,21 +101,6 @@ fun NavGraphBuilder.addDashboardGraph(
                 },
             )
         }
-        composable(route = FarmScreenDestination.route) {
-            val currentDestination = it.destination
-
-            FarmsScreen(snackbarHostState = snackbarHostState,
-                navHostController = navHostController,
-                sessionViewModel = sessionViewModel,
-                copodSnackbarHost = copodSnackbarHost,
-                bottomNav = {
-                    BottomNavBar(
-                        modifier = modifier,
-                        currentDestination = currentDestination,
-                        onNavigateTo = onNavigateTo,
-                    )
-                })
-        }
         composable(route = AccountScreenDestination.route) {
             AccountScreen(
                 bottomNav = {
@@ -148,20 +122,6 @@ fun NavGraphBuilder.addDashboardGraph(
                     }
                 },
             )
-        }
-        dialog(
-            route = CreateFarmScreenDestination.route,
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
-            CreateFarmScreen(onNavigateBack = {
-                navHostController.popBackStack()
-            }, deviceDetails = deviceDetails, showToast = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        "Farm created.", withDismissAction = true
-                    )
-                }
-            })
         }
         composable(route = PosterSubscriptionScreenDestination.route) {
             Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
@@ -185,36 +145,6 @@ fun NavGraphBuilder.addDashboardGraph(
                         .padding(innerPadding)
                 ) {
                     PosterSubscriptionScreen(
-                        deviceDetails = deviceDetails,
-                        onNavigateTo = { reason ->
-                            navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
-                        },
-                    )
-                }
-            }
-        }
-        composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-                LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                    Text(
-                        stringResource(id = FarmSubscriptionScreenDestination.title),
-                        style = MaterialTheme.typography.displaySmall,
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
-                    }
-                })
-            }) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    FarmSubscriptionScreen(
                         deviceDetails = deviceDetails,
                         onNavigateTo = { reason ->
                             navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
@@ -287,6 +217,12 @@ fun NavGraphBuilder.addDashboardGraph(
                 onNavigateBack = { navHostController.popBackStack() },
                 goToOrderDetails = { orderId ->
                     navHostController.navigate("${FarmOrderScreenDestination.route}/${orderId}/?entity=${Entity.USER.name}") },
+                bottomNav = {
+                    BottomNavBar(
+                        currentDestination = it.destination,
+                        onNavigateTo = onNavigateTo,
+                    )
+                }
             )
         }
         composable(
@@ -307,29 +243,6 @@ fun NavGraphBuilder.addDashboardGraph(
                 deviceDetails = deviceDetails,
                 snackbarHostState = snackbarHostState,
                 copodSnackbarHost = copodSnackbarHost,
-            )
-        }
-        composable(
-            route = FarmProfileScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(FarmProfileScreenDestination.PROFILE_ID_ARG) {
-                type = NavType.StringType
-            })
-        ) {
-            FarmProfileScreen(
-                deviceDetails = deviceDetails,
-                onGoBack = {
-                    navHostController.popBackStack()
-                },
-                onNavigateToMarketDetails = { marketId ->
-                    navHostController.navigate(
-                        "${MarketDetailsScreenDestination.route}/${marketId}/?go_to_farm=${false}"
-                    )
-                },
-                onNavigateToAllMarkets = { marketType, marketId ->
-                    navHostController.navigate(
-                        "${AllMarketsScreenDestination.route}/${marketType}/${marketId}"
-                    )
-                }
             )
         }
         composable(

@@ -18,8 +18,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.lomolo.copod.R
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.R
+import com.lomolo.copod.compose.navigation.ServicesGraph
+import com.lomolo.copod.compose.screens.AccountScreenDestination
+import com.lomolo.copod.compose.screens.CartScreenDestination
+import com.lomolo.copod.compose.screens.ExploreScreenDestination
+import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
+import com.lomolo.copod.compose.screens.FarmScreenDestination
+import com.lomolo.copod.compose.screens.FarmStoreScreenDestination
+import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
+import com.lomolo.copod.compose.screens.MarketScreenDestination
+import com.lomolo.copod.compose.screens.UserOrdersScreenDestination
 
 sealed class Screen(
     val name: Int,
@@ -35,7 +45,12 @@ sealed class Screen(
         R.drawable.explore_filled,
         "dashboard/explore",
         false,
-        listOf("services/machinery", "services/seeds", "services/seedlings"),
+        listOf(
+            ExploreScreenDestination.route,
+            "${ServicesGraph.route}/machinery",
+            "${ServicesGraph.route}/seeds",
+            "${ServicesGraph.route}/seedlings",
+        ),
     )
 
     data object Market : Screen(
@@ -43,6 +58,10 @@ sealed class Screen(
         R.drawable.cart_outlined,
         R.drawable.cart_filled,
         "dashboard/market",
+        false,
+        listOf(
+            MarketScreenDestination.route,
+        )
     )
 
     data object Farm : Screen(
@@ -50,6 +69,13 @@ sealed class Screen(
         R.drawable.farm_outlined,
         R.drawable.farm_filled,
         "dashboard/farm",
+        false,
+        listOf(
+            FarmScreenDestination.route,
+            FarmSubscriptionScreenDestination.route,
+            "${FarmStoreScreenDestination.route}/{${FarmStoreScreenDestination.FARM_ID_ARG}}",
+            "${FarmProfileScreenDestination.route}/{${FarmProfileScreenDestination.PROFILE_ID_ARG}}",
+        ),
     )
 
     data object Account : Screen(
@@ -57,6 +83,8 @@ sealed class Screen(
         R.drawable.account_outlined,
         R.drawable.account_filled,
         "dashboard/account",
+        false,
+        listOf(AccountScreenDestination.route),
     )
 
     data object Cart : Screen(
@@ -64,6 +92,11 @@ sealed class Screen(
         R.drawable.basket_outlined,
         R.drawable.basket_filled,
         "dashboard/cart",
+        false,
+        listOf(
+            CartScreenDestination.route,
+            UserOrdersScreenDestination.route,
+        ),
     )
 }
 
@@ -85,7 +118,9 @@ fun BottomNavBar(
     ) {
         navItems.forEachIndexed { _, item ->
             val isNavItemActive =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true || item.childRoute.contains(currentDestination?.route)
+                currentDestination?.hierarchy?.any { it.route == item.route } == true || item.childRoute.contains(
+                    currentDestination?.route
+                )
 
             NavigationBarItem(selected = isNavItemActive, onClick = {
                 onNavigateTo(item.route)

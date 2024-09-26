@@ -70,7 +70,6 @@ private fun MachineryCard(
     modifier: Modifier = Modifier,
     data: GetLocalizedMachineryMarketsQuery.GetLocalizedMachineryMarket,
     currencyLocale: String,
-    language: String,
     onNavigateToMarketDetails: (String) -> Unit,
 ) {
 
@@ -199,7 +198,6 @@ fun MachineryScreen(
                                 currencyLocale = deviceDetails.currency,
                                 onNavigateToMarketDetails = onNavigateToMarketDetails,
                                 data = market,
-                                language = deviceDetails.languages,
                             )
                         }
                     }

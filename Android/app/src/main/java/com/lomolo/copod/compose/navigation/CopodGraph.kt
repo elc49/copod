@@ -86,7 +86,7 @@ fun CopodNavigationHost(
         else -> {
             NavHost(
                 navController = navHostController,
-                startDestination = if (session.token.isBlank()) HomeDestination.route else DashboardDestination.route,
+                startDestination = if (session.token.isBlank()) HomeDestination.route else FarmDestination.route,
                 route = RootNavigation.route,
             ) {
                 addHomeGraph(
@@ -97,7 +97,6 @@ fun CopodNavigationHost(
                     modifier = modifier,
                     navHostController = navHostController,
                     sessionViewModel = sessionViewModel,
-                    scope = scope,
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
                     copodSnackbarHost = copodSnackbarHost,
@@ -116,6 +115,8 @@ fun CopodNavigationHost(
                     snackbarHostState = snackbarHostState,
                     copodSnackbarHost = copodSnackbarHost,
                     scope = scope,
+                    onNavigateTo = onNavigateTo,
+                    sessionViewModel = sessionViewModel,
                 )
                 addServicesGraph(
                     navHostController = navHostController,

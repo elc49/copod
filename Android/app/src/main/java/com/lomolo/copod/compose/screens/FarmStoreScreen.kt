@@ -95,6 +95,7 @@ fun FarmStoreScreen(
     navHostController: NavHostController,
     copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     snackbarHostState: SnackbarHostState,
+    bottomNav: @Composable () -> Unit,
     viewModel: FarmStoreViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val titles = listOf("Harvests", "Orders", "Seeds", "Seedlings", "Machinery")
@@ -108,7 +109,9 @@ fun FarmStoreScreen(
     val seedlings by viewModel.seedlings.collectAsState()
     val machinery by viewModel.machinery.collectAsState()
 
-    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    Scaffold(
+        bottomBar = bottomNav,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { copodSnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
