@@ -2,6 +2,9 @@ query GetOrdersBelongingToUser {
     getOrdersBelongingToUser {
         id
         currency
+        short_id
+        status
+        toBePaid
         items {
             id
             volume
@@ -13,7 +16,5 @@ query GetOrdersBelongingToUser {
             }
             market_id
         }
-        status
-        toBePaid
     }
 }

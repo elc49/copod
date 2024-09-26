@@ -26,6 +26,11 @@ class FarmOrderViewModel(
 ): ViewModel() {
     private val orderId: String =
         checkNotNull(savedStateHandle[FarmOrderScreenDestination.ORDER_ID_ARG])
+    private val entityType: String =
+        checkNotNull(savedStateHandle[FarmOrderScreenDestination.ENTITY_TYPE])
+
+    fun getEntity(): String = entityType
+
     private val _order: MutableStateFlow<GetOrderDetailsQuery.GetOrderDetails> = MutableStateFlow(
         GetOrderDetailsQuery.GetOrderDetails("", "", OrderStatus.UNKNOWN__, 0, "", "", listOf())
     )

@@ -14,14 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.automirrored.twotone.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lomolo.copod.CopodViewModelProvider
+import com.lomolo.copod.GetOrdersBelongingToUserQuery
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.type.OrderStatus
@@ -45,7 +46,6 @@ import com.lomolo.copod.ui.theme.errorContainerLight
 import com.lomolo.copod.ui.theme.primaryContainerLight
 import com.lomolo.copod.ui.theme.secondaryContainerLight
 import com.lomolo.copod.ui.theme.surfaceContainerLight
-import com.lomolo.copod.util.Util
 
 object UserOrdersScreenDestination : Navigation {
     override val title = R.string.your_orders
@@ -58,6 +58,7 @@ object UserOrdersScreenDestination : Navigation {
 fun UserOrdersScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
+    goToOrderDetails: (String) -> Unit,
     viewModel: UserOrdersViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
     val orders by viewModel.userOrders.collectAsState()
@@ -96,68 +97,17 @@ fun UserOrdersScreen(
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
                                     Text(
-                                        "No orders",
+                                        stringResource(R.string.no_orders),
                                         style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
-                            } else {
-                                Row(
-                                    Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    TableHeader(text = "#", weight = .1f)
-                                    TableHeader(text = "Product", weight = .2f)
-                                    TableHeader(text = "Volume", weight = .2f)
-                                    TableHeader(text = "Cost", weight = .2f)
-                                    TableHeader(text = "", weight = .2f)
-                                }
                             }
                         }
-                        itemsIndexed(orders) { index, item ->
-                            val statusColor: Color = when (item.status) {
-                                OrderStatus.PENDING -> surfaceContainerLight
-                                OrderStatus.DELIVERED -> primaryContainerLight
-                                OrderStatus.CANCELLED -> errorContainerLight
-                                OrderStatus.CONFIRMED -> secondaryContainerLight
-                                else -> MaterialTheme.colorScheme.primaryContainer
-                            }
-                            Column {
-                                /*
-                                Row(
-                                    Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    TableCell(text = "${index.plus(1)}", weight = .1f)
-                                    TableCell(text = item.market.name, weight = .2f)
-                                    TableCell(
-                                        text = "${item.volume} ${item.market.unit}", weight = .2f
-                                    )
-                                    TableCell(
-                                        text = Util.formatCurrency(
-                                            currency = item.currency, amount = item.toBePaid
-                                        ), weight = .2f
-                                    )
-                                    Box(
-                                        Modifier
-                                            .weight(.2f)
-                                            .background(
-                                                statusColor,
-                                                MaterialTheme.shapes.small,
-                                            )
-                                            .padding(4.dp)
-                                            .wrapContentSize(Alignment.Center)
-                                    ) {
-                                        LinearProgressIndicator(
-                                            progress = {
-                                                Util.calculateOrderStatusProgress(item.status)
-                                            },
-                                        )
-                                    }
-                                }
-                                */
-                            }
+                        items(orders) { item ->
+                            OrderCard(
+                                order = item,
+                                goToOrderDetails = goToOrderDetails,
+                            )
                         }
                     }
                 }
@@ -174,6 +124,61 @@ fun UserOrdersScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun OrderCard(
+    modifier: Modifier = Modifier,
+    order: GetOrdersBelongingToUserQuery.GetOrdersBelongingToUser,
+    goToOrderDetails: (String) -> Unit,
+) {
+    val statusColor: Color = when (order.status) {
+        OrderStatus.PENDING -> surfaceContainerLight
+        OrderStatus.DELIVERED -> primaryContainerLight
+        OrderStatus.CANCELLED -> errorContainerLight
+        OrderStatus.CONFIRMED -> secondaryContainerLight
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            "#${order.short_id}",
+            fontWeight = FontWeight.Bold,
+        )
+        Box(
+            Modifier
+                .background(
+                    statusColor,
+                    MaterialTheme.shapes.small,
+                )
+                .padding(4.dp)
+                .wrapContentSize(Alignment.Center),
+        ) {
+            Text(
+                order.status.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        Text(
+            "${order.currency} ${order.toBePaid}",
+            fontWeight = FontWeight.Bold,
+        )
+        IconButton(
+            onClick = { goToOrderDetails(order.id.toString()) },
+        ) {
+            Icon(
+                Icons.AutoMirrored.TwoTone.ArrowForward,
+                contentDescription = stringResource(R.string.go_forward),
+            )
         }
     }
 }

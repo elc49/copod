@@ -79,6 +79,7 @@ func (r *OrderRepository) GetOrdersBelongingToUser(ctx context.Context, userID u
 			ID:         item.ID,
 			ToBePaid:   int(item.ToBePaid),
 			Currency:   item.Currency,
+			ShortID:    item.ShortID,
 			CustomerID: item.CustomerID,
 			Status:     model.OrderStatus(item.Status),
 			CreatedAt:  item.CreatedAt,

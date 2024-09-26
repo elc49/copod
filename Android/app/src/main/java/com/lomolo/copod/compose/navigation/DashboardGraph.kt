@@ -31,6 +31,7 @@ import androidx.navigation.navigation
 import com.lomolo.copod.R
 import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.common.BottomNavBar
+import com.lomolo.copod.common.Entity
 import com.lomolo.copod.compose.screens.AccountScreen
 import com.lomolo.copod.compose.screens.AccountScreenDestination
 import com.lomolo.copod.compose.screens.AllMarketsScreen
@@ -41,6 +42,7 @@ import com.lomolo.copod.compose.screens.CreateFarmScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
 import com.lomolo.copod.compose.screens.ExploreScreen
 import com.lomolo.copod.compose.screens.ExploreScreenDestination
+import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
 import com.lomolo.copod.compose.screens.FarmProfileScreen
 import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
 import com.lomolo.copod.compose.screens.FarmScreenDestination
@@ -283,6 +285,8 @@ fun NavGraphBuilder.addDashboardGraph(
             UserOrdersScreen(
                 modifier = modifier,
                 onNavigateBack = { navHostController.popBackStack() },
+                goToOrderDetails = { orderId ->
+                    navHostController.navigate("${FarmOrderScreenDestination.route}/${orderId}/?entity=${Entity.USER.name}") },
             )
         }
         composable(

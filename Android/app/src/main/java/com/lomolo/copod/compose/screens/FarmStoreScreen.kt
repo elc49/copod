@@ -67,6 +67,7 @@ import com.lomolo.copod.GetFarmByIdQuery
 import com.lomolo.copod.GetFarmMarketsQuery
 import com.lomolo.copod.GetFarmOrdersQuery
 import com.lomolo.copod.R
+import com.lomolo.copod.common.Entity
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.type.MarketStatus
@@ -414,7 +415,7 @@ fun FarmStoreScreen(
                                         OrderCard(
                                             order = item,
                                             goToOrderDetails = {
-                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}")
+                                                navHostController.navigate("${FarmOrderScreenDestination.route}/${item.id}/?entity=${Entity.FARM.name}")
                                             }
                                         )
                                     }
