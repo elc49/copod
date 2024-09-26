@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material.icons.twotone.Check
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
@@ -290,6 +291,15 @@ private fun OrderDetails(
                     overflow = TextOverflow.Clip,
                 )
                 Text("${item.volume} ${item.market.unit}")
+                when(order.status) {
+                    OrderStatus.DELIVERED -> {
+                        Icon(
+                            Icons.TwoTone.Check,
+                            contentDescription = stringResource(R.string.check_mark),
+                        )
+                    }
+                    else -> {}
+                }
             }
         }
     }
