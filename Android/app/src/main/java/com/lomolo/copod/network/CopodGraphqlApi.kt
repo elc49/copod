@@ -71,7 +71,7 @@ interface ICopodGraphqlApi {
     suspend fun getMarketDetails(id: String): ApolloResponse<GetMarketDetailsQuery.Data>
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
-    suspend fun getOrderDetails(id: String): ApolloResponse<GetOrderDetailsQuery.Data>
+    suspend fun getOrderDetails(id: String): Flow<ApolloResponse<GetOrderDetailsQuery.Data>>
 }
 
 class CopodGraphqlApi(
@@ -157,7 +157,6 @@ class CopodGraphqlApi(
         apolloClient.subscription(PaymentUpdateSubscription(sessionId)).toFlow()
 
     override suspend fun getUserOrdersCount() = apolloClient
-
         .query(GetUserOrdersCountQuery()).watch()
 
     override suspend fun updateOrderStatus(input: UpdateOrderStatus) = apolloClient.mutation(
@@ -190,5 +189,5 @@ class CopodGraphqlApi(
         GetOrderDetailsQuery(id)
     )
         .fetchPolicy(FetchPolicy.NetworkFirst)
-        .execute()
+        .watch()
 }

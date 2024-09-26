@@ -23,7 +23,7 @@ class FarmOrderViewModel(
     private val copodGraphqlApi: ICopodGraphqlApi,
     savedStateHandle: SavedStateHandle,
     private val apolloStore: ApolloStore,
-): ViewModel() {
+) : ViewModel() {
     private val orderId: String =
         checkNotNull(savedStateHandle[FarmOrderScreenDestination.ORDER_ID_ARG])
     private val entityType: String =
@@ -42,13 +42,18 @@ class FarmOrderViewModel(
         if (gettingOrderDetails !is GettingOrderDetails.Loading) {
             gettingOrderDetails = GettingOrderDetails.Loading
             viewModelScope.launch {
-                gettingOrderDetails = try {
-                    val res = copodGraphqlApi.getOrderDetails(orderId).dataOrThrow()
-                    _order.update { res.getOrderDetails }
-                    GettingOrderDetails.Success
+                try {
+                    copodGraphqlApi.getOrderDetails(orderId).collect { res ->
+                        _order.update {
+                            res.data?.getOrderDetails ?: GetOrderDetailsQuery.GetOrderDetails(
+                                "", "", OrderStatus.UNKNOWN__, 0, "", "", listOf()
+                            )
+                        }
+                        gettingOrderDetails = GettingOrderDetails.Success
+                    }
                 } catch (e: ApolloException) {
                     e.printStackTrace()
-                    GettingOrderDetails.Error(e.localizedMessage)
+                    gettingOrderDetails = GettingOrderDetails.Error(e.localizedMessage)
                 }
             }
         }
@@ -65,6 +70,7 @@ class FarmOrderViewModel(
                     val res = copodGraphqlApi.updateOrderStatus(UpdateOrderStatus(id, status))
                         .dataOrThrow()
                     try {
+                        // Update farm store orders optimistically
                         val updatedCacheData = apolloStore.readOperation(
                             GetFarmOrdersQuery(storeId)
                         ).getFarmOrders.toMutableList()
@@ -96,6 +102,14 @@ class FarmOrderViewModel(
                             GetFarmOrdersQuery(storeId),
                             GetFarmOrdersQuery.Data(updatedCacheData),
                         )
+                        // Update order details cache optimistically
+                        val updateOrderCache = apolloStore.readOperation(
+                            GetOrderDetailsQuery(orderId)
+                        ).getOrderDetails.copy(status = res.updateOrderStatus.status)
+                        apolloStore.writeOperation(
+                            GetOrderDetailsQuery(orderId),
+                            GetOrderDetailsQuery.Data(updateOrderCache)
+                        )
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -114,9 +128,9 @@ class FarmOrderViewModel(
 }
 
 interface GettingOrderDetails {
-    data object Success: GettingOrderDetails
-    data object Loading: GettingOrderDetails
-    data class Error(val msg: String?): GettingOrderDetails
+    data object Success : GettingOrderDetails
+    data object Loading : GettingOrderDetails
+    data class Error(val msg: String?) : GettingOrderDetails
 }
 
 interface UpdateOrderState {
