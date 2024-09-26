@@ -5,6 +5,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.DateRange
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.CircularProgressIndicator
@@ -123,31 +125,39 @@ fun CreateFarmScreen(
     val openDialog = remember { mutableStateOf(false) }
 
     Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), bottomBar = {
-        Button(
-            onClick = {
-                viewModel.saveFarm {
-                    showToast()
-                    onNavigateBack()
-                    viewModel.discardFarmInput()
-                }
-            },
-            shape = MaterialTheme.shapes.extraSmall,
-            contentPadding = PaddingValues(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
+        BottomAppBar(
+            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         ) {
             when (viewModel.createFarmState) {
-                CreateFarmState.Success -> Text(
-                    stringResource(R.string.create),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                CreateFarmState.Success -> Button(
+                    onClick = {
+                        viewModel.saveFarm {
+                            showToast()
+                            onNavigateBack()
+                            viewModel.discardFarmInput()
+                        }
+                    },
+                    shape = MaterialTheme.shapes.extraSmall,
+                    contentPadding = PaddingValues(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.create),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
 
-                CreateFarmState.Loading -> CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(20.dp),
-                )
+                CreateFarmState.Loading -> Box(
+                    Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }, topBar = {

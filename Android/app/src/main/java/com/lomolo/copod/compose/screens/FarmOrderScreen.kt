@@ -17,8 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material.icons.twotone.Check
-import androidx.compose.material.icons.twotone.Close
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,99 +87,98 @@ fun FarmOrderScreen(
             }
         })
     }, bottomBar = {
-        when (order.status) {
-            OrderStatus.PENDING -> Button(
-                onClick = {
-                    viewModel.updateOrderStatus(
-                        order.id.toString(), order.farmId.toString(), OrderStatus.CONFIRMED
-                    )
-                },
-                Modifier.fillMaxWidth().padding(2.dp),
-                contentPadding = PaddingValues(12.dp),
-                shape = MaterialTheme.shapes.extraSmall,
+        val containerColor = when (order.status) {
+            OrderStatus.DELIVERED -> MaterialTheme.colorScheme.primaryContainer
+            OrderStatus.CANCELLED -> MaterialTheme.colorScheme.errorContainer
+            else -> BottomAppBarDefaults.containerColor
+        }
+
+        if (viewModel.gettingOrderDetails !is GettingOrderDetails.Loading) {
+            BottomAppBar(
+                containerColor = containerColor,
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
             ) {
                 when (viewModel.updatingOrderState) {
-                    UpdateOrderState.Success -> Text(
-                        stringResource(R.string.confirm),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-
-                    UpdateOrderState.Loading -> CircularProgressIndicator(
-                        Modifier.size(20.dp),
-                        MaterialTheme.colorScheme.onPrimary,
-                    )
-
-                    is UpdateOrderState.Error -> Text(
-                        stringResource(R.string.something_went_wrong)
-                    )
-                }
-            }
-
-            OrderStatus.CONFIRMED -> Button(
-                onClick = {
-                    viewModel.updateOrderStatus(
-                        order.id.toString(), order.farmId.toString(), OrderStatus.DELIVERED
-                    )
-                },
-                Modifier.fillMaxWidth().padding(2.dp),
-                contentPadding = PaddingValues(12.dp),
-                shape = MaterialTheme.shapes.extraSmall,
-            ) {
-                when (viewModel.updatingOrderState) {
-                    UpdateOrderState.Success -> Text(
-                        stringResource(R.string.deliver),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-
-                    UpdateOrderState.Loading -> CircularProgressIndicator(
-                        Modifier.size(20.dp),
-                        MaterialTheme.colorScheme.onPrimary,
-                    )
-
-                    is UpdateOrderState.Error -> Text(
-                        stringResource(R.string.something_went_wrong)
-                    )
-                }
-            }
-
-            OrderStatus.CANCELLED -> {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        Icons.TwoTone.Close,
-                        contentDescription = stringResource(R.string.closed),
-                        tint = MaterialTheme.colorScheme.onError,
-                    )
-                }
-            }
-
-            OrderStatus.DELIVERED -> {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        Icons.TwoTone.Check,
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.shapes.small,
+                    UpdateOrderState.Success -> when (order.status) {
+                        OrderStatus.PENDING -> Button(
+                            onClick = {
+                                viewModel.updateOrderStatus(
+                                    order.id.toString(),
+                                    order.farmId.toString(),
+                                    OrderStatus.CONFIRMED
+                                )
+                            },
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(2.dp),
+                            contentPadding = PaddingValues(12.dp),
+                            shape = MaterialTheme.shapes.extraSmall,
+                        ) {
+                            Text(
+                                stringResource(R.string.confirm),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
                             )
-                            .padding(2.dp)
-                            .size(20.dp),
-                        contentDescription = stringResource(R.string.success),
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                    )
+                        }
+
+                        OrderStatus.CONFIRMED -> Button(
+                            onClick = {
+                                viewModel.updateOrderStatus(
+                                    order.id.toString(),
+                                    order.farmId.toString(),
+                                    OrderStatus.DELIVERED
+                                )
+                            },
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(2.dp),
+                            contentPadding = PaddingValues(12.dp),
+                            shape = MaterialTheme.shapes.extraSmall,
+                        ) {
+                            Text(
+                                stringResource(R.string.delivered),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+
+                        OrderStatus.CANCELLED -> {
+                            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    stringResource(R.string.cancelled),
+                                    style = MaterialTheme.typography.displayMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                )
+                            }
+                        }
+
+                        OrderStatus.DELIVERED -> {
+                            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                Text(
+                                    stringResource(R.string.delivered),
+                                    style = MaterialTheme.typography.displayMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                )
+                            }
+                        }
+
+                        else -> {}
+                    }
+
+                    UpdateOrderState.Loading -> Box(
+                        Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
-
-            else -> {}
         }
     }) { innerPadding ->
         Surface(
