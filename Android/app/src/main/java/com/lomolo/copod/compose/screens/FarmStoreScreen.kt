@@ -183,10 +183,7 @@ fun FarmStoreScreen(
                             GetFarmMarketsState.Success -> {
                                 if (markets.isEmpty()) {
                                     item {
-                                        Text(
-                                            stringResource(R.string.no_harvest),
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
+                                        Text(stringResource(R.string.no_harvest))
                                     }
                                 } else {
                                     items(markets) {
@@ -229,10 +226,7 @@ fun FarmStoreScreen(
                             GetFarmOrdersState.Success -> {
                                 if (orders.isEmpty()) {
                                     item {
-                                        Text(
-                                            stringResource(R.string.no_orders),
-                                            style = MaterialTheme.typography.titleMedium,
-                                        )
+                                        Text(stringResource(R.string.no_orders))
                                     }
                                 } else {
                                     itemsIndexed(orders) { _, item ->
@@ -277,10 +271,7 @@ fun FarmStoreScreen(
                         when (viewModel.gettingFarmSeeds) {
                             GetFarmSeedsState.Success -> if (seeds.isEmpty()) {
                                 item {
-                                    Text(
-                                        stringResource(R.string.no_seeds),
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
+                                    Text(stringResource(R.string.no_seeds))
                                 }
                             } else {
                                 items(seeds) {
@@ -323,10 +314,7 @@ fun FarmStoreScreen(
                         when (viewModel.gettingFarmSeedlingsState) {
                             GetFarmSeedlingsState.Success -> if (seedlings.isEmpty()) {
                                 item {
-                                    Text(
-                                        stringResource(R.string.no_seedlings),
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
+                                    Text(stringResource(R.string.no_seedlings))
                                 }
                             } else {
                                 items(seedlings) {
@@ -369,10 +357,7 @@ fun FarmStoreScreen(
                         when (viewModel.gettingFarmMachineryState) {
                             GetFarmMachineryState.Success -> if (machinery.isEmpty()) {
                                 item {
-                                    Text(
-                                        stringResource(R.string.no_machinery),
-                                        style = MaterialTheme.typography.titleMedium,
-                                    )
+                                    Text(stringResource(R.string.no_machinery))
                                 }
                             } else {
                                 items(machinery) {
