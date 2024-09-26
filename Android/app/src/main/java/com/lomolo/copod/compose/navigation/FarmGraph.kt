@@ -13,7 +13,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.copod.compose.screens.CreateFarmMarketDestination
 import com.lomolo.copod.compose.screens.CreateFarmMarketScreen
-import com.lomolo.copod.compose.screens.FarmOrderScreen
+import com.lomolo.copod.compose.screens.OrderDetailsScreen
 import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
 import com.lomolo.copod.compose.screens.FarmSettingsScreen
 import com.lomolo.copod.compose.screens.FarmSettingsScreenDestination
@@ -83,10 +83,12 @@ fun NavGraphBuilder.addFarmGraph(
             route = FarmOrderScreenDestination.routeWithArgs,
             arguments = listOf(navArgument(FarmOrderScreenDestination.ORDER_ID_ARG) {
                 type = NavType.StringType
+            }, navArgument(FarmOrderScreenDestination.ENTITY_TYPE) {
+                type = NavType.StringType
             }),
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            FarmOrderScreen(
+            OrderDetailsScreen(
                 onGoBack = {
                     navHostController.popBackStack()
                 }

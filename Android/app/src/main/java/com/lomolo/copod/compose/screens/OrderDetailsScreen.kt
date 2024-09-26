@@ -50,6 +50,7 @@ import coil.request.ImageRequest
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetOrderDetailsQuery
 import com.lomolo.copod.R
+import com.lomolo.copod.common.Entity
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.type.OrderStatus
 import com.lomolo.copod.ui.theme.errorContainerLight
@@ -61,12 +62,13 @@ object FarmOrderScreenDestination : Navigation {
     override val title = R.string.order_details
     override val route = "farm-order"
     const val ORDER_ID_ARG = "orderIdArg"
-    val routeWithArgs = "$route/{$ORDER_ID_ARG}"
+    const val ENTITY_TYPE = "entityType"
+    val routeWithArgs = "$route/{$ORDER_ID_ARG}/?entity={$ENTITY_TYPE}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FarmOrderScreen(
+fun OrderDetailsScreen(
     modifier: Modifier = Modifier,
     onGoBack: () -> Unit,
     viewModel: FarmOrderViewModel = viewModel(factory = CopodViewModelProvider.Factory),
@@ -93,7 +95,7 @@ fun FarmOrderScreen(
             else -> BottomAppBarDefaults.containerColor
         }
 
-        if (viewModel.gettingOrderDetails !is GettingOrderDetails.Loading) {
+        if (viewModel.gettingOrderDetails !is GettingOrderDetails.Loading && viewModel.getEntity() == Entity.FARM.name) {
             BottomAppBar(
                 containerColor = containerColor,
                 windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
