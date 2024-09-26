@@ -5,6 +5,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Check
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -152,30 +154,36 @@ fun CreateFarmMarketScreen(
 
 
     Scaffold(bottomBar = {
-        Button(
-            onClick = {
-                viewModel.addMarket {
-                    onGoBack()
-                    viewModel.resetMarketState()
-                    showToast()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            contentPadding = PaddingValues(12.dp),
+        BottomAppBar(
+            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         ) {
             when (viewModel.addingFarmMarketState) {
-                AddFarmMarketState.Success -> Text(
-                    stringResource(R.string.add),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                AddFarmMarketState.Success -> Button(
+                    onClick = {
+                        viewModel.addMarket {
+                            onGoBack()
+                            viewModel.resetMarketState()
+                            showToast()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(12.dp),
+                    shape = MaterialTheme.shapes.extraSmall,
+                ) {
+                    Text(
+                        stringResource(R.string.add),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
 
-                AddFarmMarketState.Loading -> {
+                AddFarmMarketState.Loading -> Box(
+                    Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp),
+                        Modifier.size(20.dp)
                     )
                 }
             }

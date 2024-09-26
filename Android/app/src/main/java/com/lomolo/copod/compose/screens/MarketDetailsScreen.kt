@@ -1,6 +1,7 @@
 package com.lomolo.copod.compose.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -126,23 +128,25 @@ fun MarketDetailsScreen(
         },
         bottomBar = {
             when (viewModel.gettingMarketState) {
-                GetMarketDetailsState.Success -> Button(
-                    onClick = {
-                        if (orders[market.id.toString()] != null) {
-                            viewModel.addToCart {
-                                showToast("Added to cart.")
-                                viewModel.removeOrder()
-                            }
-                        }
-                    },
-                    shape = MaterialTheme.shapes.extraSmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    contentPadding = PaddingValues(12.dp),
+                GetMarketDetailsState.Success -> BottomAppBar(
+                    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
                 ) {
-                    when (viewModel.addingToCart) {
-                        AddingToCartState.Success -> {
+                    when(viewModel.addingToCart) {
+                        AddingToCartState.Success -> Button(
+                            onClick = {
+                                if (orders[market.id.toString()] != null) {
+                                    viewModel.addToCart {
+                                        showToast("Added to cart.")
+                                        viewModel.removeOrder()
+                                    }
+                                }
+                            },
+                            shape = MaterialTheme.shapes.extraSmall,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            contentPadding = PaddingValues(12.dp),
+                        ) {
                             if (orders[market.id.toString()]?.volume != 0) {
                                 Text(
                                     "Add to Cart[${
@@ -163,12 +167,26 @@ fun MarketDetailsScreen(
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
+                            when (viewModel.addingToCart) {
+                                AddingToCartState.Success -> {
+
+                                }
+
+                                AddingToCartState.Loading -> CircularProgressIndicator(
+                                    Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+                            }
                         }
 
-                        AddingToCartState.Loading -> CircularProgressIndicator(
-                            Modifier.size(20.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                        )
+                        AddingToCartState.Loading -> Box(
+                            Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator(
+                                Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
 

@@ -276,6 +276,7 @@ fun CartScreen(
                                             ) { showToast("Sent. Waiting confirmation.") }
                                         },
                                         Modifier.fillMaxWidth(),
+                                        shape = MaterialTheme.shapes.extraSmall,
                                         contentPadding = PaddingValues(12.dp),
                                     ) {
                                         when (viewModel.sendToFarmState) {
