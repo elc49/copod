@@ -167,16 +167,6 @@ fun MarketDetailsScreen(
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
-                            when (viewModel.addingToCart) {
-                                AddingToCartState.Success -> {
-
-                                }
-
-                                AddingToCartState.Loading -> CircularProgressIndicator(
-                                    Modifier.size(20.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                )
-                            }
                         }
 
                         AddingToCartState.Loading -> Box(
