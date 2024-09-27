@@ -35,7 +35,6 @@ import com.lomolo.copod.compose.screens.CreateFarmMarketDestination
 import com.lomolo.copod.compose.screens.CreateFarmMarketScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreen
 import com.lomolo.copod.compose.screens.CreateFarmScreenDestination
-import com.lomolo.copod.compose.screens.OrderDetailsScreen
 import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
 import com.lomolo.copod.compose.screens.FarmProfileScreen
 import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
@@ -48,7 +47,7 @@ import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.FarmsScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
-import com.lomolo.copod.compose.screens.MpesaPaymentScreenDestination
+import com.lomolo.copod.compose.screens.OrderDetailsScreen
 import com.lomolo.copod.model.DeviceDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -124,9 +123,6 @@ fun NavGraphBuilder.addFarmGraph(
                 ) {
                     FarmSubscriptionScreen(
                         deviceDetails = deviceDetails,
-                        onNavigateTo = { reason ->
-                            navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
-                        },
                     )
                 }
             }

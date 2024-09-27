@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -7,6 +5,7 @@ plugins {
     id("com.apollographql.apollo3") version "4.0.0-alpha.3"
 
     id("io.sentry.android.gradle") version "4.10.0"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -24,26 +23,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        val keystoreFile = project.rootProject.file("api.properties")
-        val properties = Properties()
-        properties.load(keystoreFile.inputStream())
-
-        val localBaseApi = properties.getProperty("LOCAL_BASE_API")
-        val prodBaseApi = properties.getProperty("PROD_BASE_API")
-        val localWssApi = properties.getProperty("LOCAL_WSS_API")
-        val prodWssAPi = properties.getProperty("PROD_WSS_API")
-        val localEnv = properties.getProperty("ENV")
-        val stagingBaseApi = properties.getProperty("STAGING_BASE_API")
-        val stagingWssApi = properties.getProperty("STAGING_WSS_API")
-
-        buildConfigField(type="String", name="LOCAL_BASE_API", value=localBaseApi)
-        buildConfigField(type="String", name="PROD_BASE_API", value=prodBaseApi)
-        buildConfigField(type="String", name="LOCAL_WSS_API", value=localWssApi)
-        buildConfigField(type="String", name="PROD_WSS_API", value=prodWssAPi)
-        buildConfigField(type="String", name="ENV" , value=localEnv)
-        buildConfigField(type="String", name="STAGING_BASE_API", value=stagingBaseApi)
-        buildConfigField(type="String", name="STAGING_WSS_API", value=stagingWssApi)
     }
 
     buildTypes {
@@ -78,6 +57,7 @@ android {
 
 dependencies {
 
+    implementation(libs.paystack)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.runtime)
@@ -128,3 +108,17 @@ sentry {
     // disable if you don't want to expose your sources
     includeSourceContext.set(true)
 }
+
+secrets {
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
+}
+

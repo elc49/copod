@@ -49,6 +49,7 @@ object CopodViewModelProvider {
         lateinit var farmProfileViewModel: FarmProfileViewModel
         lateinit var allMarketsViewModel: AllMarketsViewModel
         lateinit var farmOrderViewModel: FarmOrderViewModel
+        lateinit var paystackViewModel: PaystackViewModel
 
         initializer {
             mainViewModel = MainViewModel(copodApplication().container.copodRestApiService)
@@ -218,6 +219,11 @@ object CopodViewModelProvider {
                 copodApplication().container.apolloClient.apolloStore,
             )
             farmOrderViewModel
+        }
+
+        initializer {
+            paystackViewModel = PaystackViewModel()
+            paystackViewModel
         }
     }
 }

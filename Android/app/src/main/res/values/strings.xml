@@ -131,4 +131,5 @@
     <string name="since">Since %1$s</string>
     <string name="completed_farm_orders">Completed %1$s orders</string>
     <string name="rating_star">Rating star</string>
+    <string name="title_activity_paystack">PaystackActivity</string>
 </resources>

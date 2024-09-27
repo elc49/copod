@@ -1,5 +1,6 @@
 package com.lomolo.copod.compose.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lomolo.copod.PaystackActivity
 import com.lomolo.copod.R
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
@@ -44,8 +47,17 @@ private val points = listOf(
 fun FarmSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
-    onNavigateTo: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val startPaystackActivity = {
+        val intent = Intent(context, PaystackActivity::class.java)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -81,8 +93,9 @@ fun FarmSubscriptionScreen(
         }
         Box(Modifier.padding(8.dp)) {
             Button(
-                onClick = { onNavigateTo("farming_rights") },
+                onClick = { startPaystackActivity() },
                 contentPadding = PaddingValues(12.dp),
+                shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
