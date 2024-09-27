@@ -1,6 +1,7 @@
 *.iml
 .gradle
 /release.properties
+/secrets.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -15,3 +16,4 @@
 .cxx
 # Sentry Config File
 sentry.properties
+secrets.properties
