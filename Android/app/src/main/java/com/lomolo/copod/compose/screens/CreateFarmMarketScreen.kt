@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,8 +18,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.twotone.ArrowBack
 import androidx.compose.material.icons.twotone.Check
+import androidx.compose.material.icons.twotone.Close
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -154,9 +153,7 @@ fun CreateFarmMarketScreen(
 
 
     Scaffold(bottomBar = {
-        BottomAppBar(
-            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
-        ) {
+        BottomAppBar {
             when (viewModel.addingFarmMarketState) {
                 AddFarmMarketState.Success -> Button(
                     onClick = {
@@ -189,12 +186,12 @@ fun CreateFarmMarketScreen(
             }
         }
     }, topBar = {
-        TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+        TopAppBar(title = {
             Text(stringResource(R.string.add_market))
         }, navigationIcon = {
             IconButton(onClick = { onGoBack() }) {
                 Icon(
-                    Icons.AutoMirrored.TwoTone.ArrowBack,
+                    Icons.TwoTone.Close,
                     contentDescription = null,
                 )
             }
