@@ -80,7 +80,7 @@ fun FarmsScreen(
             TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
                 Text(stringResource(id = R.string.your_farms))
             }, actions = {
-                if (!viewModel.hasFarm || BuildConfig.ENV == "dev" || BuildConfig.ENV == "staging") {
+                if (!viewModel.hasFarm || BuildConfig.DEBUG) {
                     IconButton(onClick = {
                         if (session.hasFarmingRights) {
                             navHostController.navigate(CreateFarmScreenDestination.route) {

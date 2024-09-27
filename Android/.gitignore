@@ -1,6 +1,7 @@
 *.iml
 .gradle
-/local.properties
+/release.properties
+/secrets.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -13,7 +14,6 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
-/api.properties
 # Sentry Config File
 sentry.properties
+secrets.properties

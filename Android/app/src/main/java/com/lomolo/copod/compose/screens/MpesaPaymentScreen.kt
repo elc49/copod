@@ -119,16 +119,19 @@ fun MpesaPaymentScreen(
                 )
             },
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
+            shape = MaterialTheme.shapes.extraSmall,
+            contentPadding = PaddingValues(12.dp),
         ) {
             when (viewModel.payingWithMpesaState) {
                 PayingWithMpesa.Default -> Text(
                     stringResource(R.string.pay),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
 
                 PayingWithMpesa.Failed -> Text(
                     stringResource(R.string.pay),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
 
@@ -139,11 +142,13 @@ fun MpesaPaymentScreen(
 
                 PayingWithMpesa.PayingOffline -> Text(
                     stringResource(R.string.complete_from_m_pesa),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
 
                 PayingWithMpesa.Refreshing -> Text(
                     stringResource(R.string.confirming_payment),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
             }
