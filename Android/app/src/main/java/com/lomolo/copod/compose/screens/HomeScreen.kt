@@ -45,8 +45,7 @@ fun HomeScreen(
             Text(
                 text = stringResource(R.string.we_farm),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.displaySmall,
             )
         }
         Row {
@@ -60,7 +59,6 @@ fun HomeScreen(
                     text = stringResource(R.string.learn_connect_share),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }
