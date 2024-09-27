@@ -127,6 +127,7 @@ fun SignInScreen(
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.extraSmall,
                 contentPadding = PaddingValues(12.dp),
                 onClick = {
                     keyboardController?.hide()
