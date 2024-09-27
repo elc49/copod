@@ -65,6 +65,7 @@ fun HomeScreen(
         Row {
             Button(
                 modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.extraSmall,
                 contentPadding = PaddingValues(12.dp),
                 onClick = { onNavigateTo(AuthDestination.route) },
             ) {
