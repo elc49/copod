@@ -161,8 +161,9 @@ fun NavGraphBuilder.addFarmGraph(
                     navHostController.popBackStack()
                 })
         }
-        composable(
+        dialog(
             route = CreateFarmMarketDestination.route,
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
             CreateFarmMarketScreen(
                 onGoBack = {

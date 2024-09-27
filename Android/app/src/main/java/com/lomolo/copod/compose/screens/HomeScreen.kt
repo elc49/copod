@@ -103,6 +103,8 @@ fun HomeErrorScreen(
         )
         Button(
             onClick = retry,
+            shape = MaterialTheme.shapes.extraSmall,
+            contentPadding = PaddingValues(12.dp),
         ) {
             if (loading) {
                 CircularProgressIndicator(
