@@ -130,42 +130,6 @@ class MarketDetailsViewModel(
         }
     }
 
-    var removingFromCart: RemoveFromCartState by mutableStateOf(RemoveFromCartState.Success)
-        private set
-
-    private fun deleteFromCart() {
-        if (removingFromCart !is RemoveFromCartState.Loading) {
-            removingFromCart = RemoveFromCartState.Loading
-            viewModelScope.launch {
-                removingFromCart = try {
-                    marketsRepository.deleteCartItem(marketId)
-                    try {
-                        val updatedCacheData = apolloStore.readOperation(
-                            GetUserCartItemsQuery()
-                        ).getUserCartItems.toMutableList()
-                        val where =
-                            updatedCacheData.indexOfFirst { it.market_id.toString() == marketId }
-                        if (where > 0) {
-                            updatedCacheData.removeAt(where)
-                            apolloStore.writeOperation(
-                                GetUserCartItemsQuery(),
-                                GetUserCartItemsQuery.Data(updatedCacheData)
-                            )
-                        }
-                    } catch (e: ApolloException) {
-                        e.printStackTrace()
-                    }
-                    RemoveFromCartState.Success
-                } catch (e: ApolloException) {
-                    e.printStackTrace()
-                    RemoveFromCartState.Error(e.localizedMessage)
-                } finally {
-                    removeOrder()
-                }
-            }
-        }
-    }
-
     private val _cartData: MutableStateFlow<List<GetUserCartItemsQuery.GetUserCartItem>> =
         MutableStateFlow(
             listOf()

@@ -24,12 +24,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -76,6 +79,8 @@ fun MarketDetailsScreen(
     viewModel: MarketDetailsViewModel = viewModel(factory = CopodViewModelProvider.Factory)
 ) {
     val market by viewModel.market.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
     LaunchedEffect(key1 = viewModel.gettingMarketState) {
         if (viewModel.gettingMarketState !is GetMarketDetailsState.Loading) {
             viewModel.getUserCartItems()
@@ -90,38 +95,43 @@ fun MarketDetailsScreen(
         }
     }
 
-    Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { copodSnackbarHost(snackbarHostState) },
         topBar = {
             when (viewModel.gettingMarketState) {
-                GetMarketDetailsState.Success -> TopAppBar(windowInsets = WindowInsets(
-                    0.dp, 0.dp, 0.dp, 0.dp
-                ), title = {
-                    Text(market.farm.name)
-                }, navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            onGoBack()
-                        },
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = null,
-                        )
-                    }
-                }, actions = {
-                    if (viewModel.goToFarm()) {
+                GetMarketDetailsState.Success -> MediumTopAppBar(scrollBehavior = scrollBehavior,
+                    windowInsets = WindowInsets(
+                        0.dp, 0.dp, 0.dp, 0.dp
+                    ),
+                    title = {
+                        Text(market.farm.name)
+                    },
+                    navigationIcon = {
                         IconButton(
-                            onClick = { onGoToFarmProfile(market.farmId.toString()) },
+                            onClick = {
+                                onGoBack()
+                            },
                         ) {
                             Icon(
-                                painterResource(R.drawable.farm),
-                                modifier = Modifier.size(24.dp),
-                                contentDescription = stringResource(R.string.info),
+                                Icons.AutoMirrored.TwoTone.ArrowBack,
+                                contentDescription = null,
                             )
                         }
-                    }
-                })
+                    },
+                    actions = {
+                        if (viewModel.goToFarm()) {
+                            IconButton(
+                                onClick = { onGoToFarmProfile(market.farmId.toString()) },
+                            ) {
+                                Icon(
+                                    painterResource(R.drawable.farm),
+                                    modifier = Modifier.size(24.dp),
+                                    contentDescription = stringResource(R.string.info),
+                                )
+                            }
+                        }
+                    })
 
                 else -> {}
             }
@@ -131,7 +141,7 @@ fun MarketDetailsScreen(
                 GetMarketDetailsState.Success -> BottomAppBar(
                     windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
                 ) {
-                    when(viewModel.addingToCart) {
+                    when (viewModel.addingToCart) {
                         AddingToCartState.Success -> Button(
                             onClick = {
                                 if (orders[market.id.toString()] != null) {
@@ -248,43 +258,35 @@ fun MarketDetailsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                             ) {
-                                when (viewModel.removingFromCart) {
-                                    RemoveFromCartState.Success -> {
-                                        TextButton(
-                                            onClick = { viewModel.decreaseOrderVolume() },
-                                            shape = CircleShape,
-                                            colors = ButtonDefaults.textButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            ),
-                                        ) {
-                                            Text(
-                                                stringResource(R.string.minus),
-                                                style = MaterialTheme.typography.bodyLarge,
-                                            )
-                                        }
-                                        Text(
-                                            "${orders[market.id.toString()]?.volume} ${market.unit}",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontWeight = FontWeight.SemiBold,
-                                        )
-                                        TextButton(
-                                            onClick = { viewModel.increaseOrderVolume(market.volume) },
-                                            shape = CircleShape,
-                                            colors = ButtonDefaults.textButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            ),
-                                        ) {
-                                            Text(
-                                                stringResource(R.string.plus),
-                                                style = MaterialTheme.typography.bodyLarge,
-                                            )
-                                        }
-                                    }
-
-                                    RemoveFromCartState.Loading -> CircularProgressIndicator(
-                                        Modifier.size(20.dp)
+                                TextButton(
+                                    onClick = { viewModel.decreaseOrderVolume() },
+                                    shape = CircleShape,
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ),
+                                ) {
+                                    Text(
+                                        stringResource(R.string.minus),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                }
+                                Text(
+                                    "${orders[market.id.toString()]?.volume} ${market.unit}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                TextButton(
+                                    onClick = { viewModel.increaseOrderVolume(market.volume) },
+                                    shape = CircleShape,
+                                    colors = ButtonDefaults.textButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ),
+                                ) {
+                                    Text(
+                                        stringResource(R.string.plus),
+                                        style = MaterialTheme.typography.bodyLarge,
                                     )
                                 }
                             }
