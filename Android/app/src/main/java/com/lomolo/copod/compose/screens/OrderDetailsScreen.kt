@@ -260,7 +260,7 @@ private fun OrderDetails(
                     LinearProgressIndicator(
                         progress = {
                             Util.calculateOrderStatusProgress(order.status)
-                        }, modifier = Modifier.width(40.dp)
+                        }, modifier = Modifier.width(100.dp)
                     )
                 }
                 Text(

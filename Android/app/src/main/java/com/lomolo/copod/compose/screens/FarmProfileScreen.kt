@@ -30,18 +30,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,7 +66,7 @@ import com.lomolo.copod.type.MarketType
 import com.lomolo.copod.util.Util
 
 object FarmProfileScreenDestination : Navigation {
-    override val title = null
+    override val title = R.string.farm
     override val route = "dashboard/farm-profile"
     const val PROFILE_ID_ARG = "profileId"
     val routeWithArgs = "$route/{$PROFILE_ID_ARG}"
@@ -86,11 +89,14 @@ fun FarmProfileScreen(
     val seeds by viewModel.seeds.collectAsState()
     val seedlings by viewModel.seedlings.collectAsState()
     val machinery by viewModel.machinery.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(bottomBar = bottomNav,
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        bottomBar = bottomNav,
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         topBar = {
-            TopAppBar(title = {},
+            MediumTopAppBar(scrollBehavior = scrollBehavior,
+                title = {Text(stringResource(FarmProfileScreenDestination.title))},
                 windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
                 navigationIcon = {
                     IconButton(
