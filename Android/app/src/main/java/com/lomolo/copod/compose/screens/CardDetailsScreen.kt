@@ -43,6 +43,10 @@ fun CardDetailsScreen(
     val card = when(cardData.cardType) {
         "Visa" -> R.drawable.visacard
         "MasterCard" -> R.drawable.mastercard
+        "Jcb" -> R.drawable.jcbcard
+        "Verve" -> R.drawable.vervecard
+        "Discover" -> R.drawable.discovercard
+        "AmericanExpress" -> R.drawable.cardamericalexpress
         else -> R.drawable.creditcard
     }
 
