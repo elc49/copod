@@ -132,4 +132,9 @@
     <string name="completed_farm_orders">Completed %1$s orders</string>
     <string name="rating_star">Rating star</string>
     <string name="title_activity_paystack">PaystackActivity</string>
+    <string name="cvv">CVV</string>
+    <string name="exp_date">Exp. date</string>
+    <string name="card_number">Card number</string>
+    <string name="card">Card</string>
+    <string name="add_card">Add card</string>
 </resources>
