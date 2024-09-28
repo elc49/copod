@@ -39,8 +39,12 @@ fun CardDetailsScreen(
     viewModel: PaystackViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val card = R.drawable.creditcard
     val cardData by viewModel.cardData.collectAsState()
+    val card = when(cardData.cardType) {
+        "Visa" -> R.drawable.visacard
+        "MasterCard" -> R.drawable.mastercard
+        else -> R.drawable.creditcard
+    }
 
     Surface {
         Column(
@@ -60,7 +64,7 @@ fun CardDetailsScreen(
                         leadingIcon = {
                             Icon(
                                 painterResource(card),
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(28.dp),
                                 contentDescription = stringResource(R.string.card),
                             )
                         },
@@ -82,7 +86,7 @@ fun CardDetailsScreen(
                             leadingIcon = {
                                 Icon(
                                     painterResource(R.drawable.creditcardexpdate),
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(28.dp),
                                     contentDescription = stringResource(R.string.exp_date),
                                 )
                             },
@@ -108,7 +112,7 @@ fun CardDetailsScreen(
                             leadingIcon = {
                                 Icon(
                                     painterResource(R.drawable.creditcardcvv),
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(28.dp),
                                     contentDescription = stringResource(R.string.cvv),
                                 )
                             },

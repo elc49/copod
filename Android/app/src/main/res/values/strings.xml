@@ -136,5 +136,5 @@
     <string name="exp_date">Exp. date</string>
     <string name="card_number">Card number</string>
     <string name="card">Card</string>
-    <string name="add_card">Add card</string>
+    <string name="card_payment">Card payment</string>
 </resources>

@@ -35,7 +35,7 @@ class PaystackActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = { Text(stringResource(R.string.add_card)) },
+                            title = { Text(stringResource(R.string.card_payment)) },
                             navigationIcon = {
                                 IconButton(
                                     onClick = { finish() }
