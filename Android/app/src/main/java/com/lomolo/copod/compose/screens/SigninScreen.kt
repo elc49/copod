@@ -72,10 +72,7 @@ fun SignInScreen(
         ) {
             OutlinedTextField(
                 label = {
-                    Text(
-                        stringResource(id = R.string.phone_number),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    Text(stringResource(id = R.string.phone_number))
                 },
                 isError = !signinPhoneValid && signinDetails.phone.isNotBlank(),
                 value = signinDetails.phone,
