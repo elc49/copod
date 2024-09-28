@@ -42,10 +42,10 @@ class ApplicationContainer(
     private val context: Context
 ): IApplicationContainer {
     private val okhttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.MINUTES)
-        .callTimeout(60, TimeUnit.MINUTES)
-        .readTimeout(60, TimeUnit.MINUTES)
-        .writeTimeout(60, TimeUnit.MINUTES)
+        .connectTimeout(5, TimeUnit.MINUTES)
+        .callTimeout(5, TimeUnit.MINUTES)
+        .readTimeout(5, TimeUnit.MINUTES)
+        .writeTimeout(5, TimeUnit.MINUTES)
         .build()
 
     private val moshi = Moshi.Builder()
