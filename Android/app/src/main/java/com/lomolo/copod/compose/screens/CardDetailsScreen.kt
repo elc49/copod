@@ -52,6 +52,7 @@ fun CardDetailsScreen(
             Box {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
+                        isError = cardData.cardNumber.isNotBlank() && !viewModel.isValidNumber(cardData),
                         value = cardData.cardNumber,
                         label = {
                             Text(stringResource(R.string.card_number))
@@ -73,6 +74,7 @@ fun CardDetailsScreen(
                     )
                     Row(Modifier.fillMaxWidth()) {
                         OutlinedTextField(
+                            isError = cardData.expDate.isNotBlank() && !viewModel.isValidExpDate(cardData),
                             value = cardData.expDate,
                             label = {
                                 Text(stringResource(R.string.exp_date))
@@ -96,6 +98,7 @@ fun CardDetailsScreen(
                         )
                         Spacer(modifier = Modifier.width(20.dp))
                         OutlinedTextField(
+                            isError = cardData.cvv.isNotBlank() && !viewModel.isValidCvv(cardData),
                             value = cardData.cvv,
                             onValueChange = { viewModel.setCardCvv(it) },
                             modifier = Modifier
@@ -124,7 +127,13 @@ fun CardDetailsScreen(
                 }
             }
             Button(
-                onClick = {},
+                onClick = {
+                    if (viewModel.isCardValid(cardData)) {
+                        println("valid")
+                    } else {
+                        println("invalid")
+                    }
+                },
                 contentPadding = PaddingValues(12.dp),
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),

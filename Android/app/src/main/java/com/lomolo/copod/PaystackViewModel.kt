@@ -1,6 +1,7 @@
 package com.lomolo.copod
 
 import androidx.lifecycle.ViewModel
+import co.paystack.android.model.Card
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,32 @@ class PaystackViewModel: ViewModel() {
 
     fun setCardCvv(v: String) {
         _card.update { it.copy(cvv = v) }
+    }
+
+    fun isValidNumber(uiState: CreditCard): Boolean {
+        return with(uiState) {
+            Card(cardNumber, 0, 0, "").validNumber()
+        }
+    }
+
+    fun isValidCvv(uiState: CreditCard): Boolean {
+        return with(uiState) {
+            Card("", 0, 0, cvv).validCVC()
+        }
+    }
+
+    fun isValidExpDate(uiState: CreditCard): Boolean {
+        return with(uiState) {
+            val regex = Regex("^\\d{2}/\\d{2}$")
+            regex.matches(expDate)
+        }
+    }
+
+    fun isCardValid(uiState: CreditCard): Boolean {
+        return with(uiState) {
+            val my = expDate.split("/")
+            Card(cardNumber, my[0].toInt(), my[1].toInt(), cvv).isValid
+        }
     }
 }
 
