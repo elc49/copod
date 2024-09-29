@@ -222,7 +222,10 @@ object CopodViewModelProvider {
         }
 
         initializer {
-            paystackViewModel = PaystackViewModel()
+            paystackViewModel = PaystackViewModel(
+                copodApplication().container.paymentRepository,
+                mainViewModel,
+            )
             paystackViewModel
         }
     }

@@ -247,6 +247,10 @@ input GetLocalizedMachineryMarketsInput {
   radius: GpsInput!
 }
 
+input InitializePaystackTransactionInput {
+  amount: Int!
+}
+
 type Query {
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
@@ -274,6 +278,7 @@ type Mutation {
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   setMarketStatus(input: SetMarketStatusInput!): Market!
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
+  initializePaystackTransaction(input: InitializePaystackTransactionInput!): String!
 }
 
 type Subscription {

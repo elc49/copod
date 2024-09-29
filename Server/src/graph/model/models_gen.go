@@ -69,6 +69,10 @@ type GpsInput struct {
 	Lng float64 `json:"lng"`
 }
 
+type InitializePaystackTransactionInput struct {
+	Amount int `json:"amount"`
+}
+
 type Market struct {
 	ID            uuid.UUID    `json:"id"`
 	Name          string       `json:"name"`

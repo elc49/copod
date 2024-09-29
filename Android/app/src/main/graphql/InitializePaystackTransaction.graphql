@@ -1,0 +1,3 @@
+mutation InitializePaystackTransaction($input: InitializePaystackTransactionInput!) {
+    initializePaystackTransaction(input: $input)
+}

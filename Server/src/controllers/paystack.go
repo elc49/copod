@@ -61,3 +61,7 @@ func (c *PaystackController) VerifyTransactionByReferenceID(ctx context.Context,
 
 	return &model.PaystackPaymentUpdate{Status: res.Data.Status, SessionID: payment.UserID}, nil
 }
+
+func (c *PaystackController) InitializeTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (*string, error) {
+	return c.paystack.InitializeTransaction(ctx, input)
+}

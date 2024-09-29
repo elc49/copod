@@ -88,6 +88,10 @@ input GpsInput {
   lng: Float!
 }
 
+input InitializePaystackTransactionInput {
+  amount: Int!
+}
+
 type Market {
   id: UUID!
 
@@ -168,6 +172,8 @@ type Mutation {
   setMarketStatus(input: SetMarketStatusInput!): Market!
 
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
+
+  initializePaystackTransaction(input: InitializePaystackTransactionInput!): String!
 }
 
 input NewFarmInput {

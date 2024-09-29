@@ -1,15 +1,24 @@
 package com.lomolo.copod
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.paystack.android.model.Card
+import com.apollographql.apollo3.exception.ApolloException
+import com.lomolo.copod.repository.IPayment
+import com.lomolo.copod.type.InitializePaystackTransactionInput
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class PaystackViewModel : ViewModel() {
-    private val _card: MutableStateFlow<CreditCard> = MutableStateFlow(CreditCard())
+class PaystackViewModel(
+    private val paymentRepository: IPayment,
+    mainViewModel: MainViewModel,
+): ViewModel() {
+    private val deviceDetails = mainViewModel.deviceDetailsState.value
+    private val _card: MutableStateFlow<CreditCard> = MutableStateFlow(CreditCard(currency = deviceDetails.currency))
     val cardData: StateFlow<CreditCard> = _card.asStateFlow()
 
     fun setCardNumber(c: String) {
@@ -85,6 +94,27 @@ class PaystackViewModel : ViewModel() {
             }
         }
     }
+
+    fun initializePaystackTransaction(): String {
+        var accessCode = ""
+        viewModelScope.launch {
+            try {
+                val res = paymentRepository.initializePaystackTransaction(
+                    InitializePaystackTransactionInput(deviceDetails.farmingRightsFee)
+                ).dataOrThrow()
+                accessCode = res.initializePaystackTransaction
+            } catch (e: ApolloException) {
+                Sentry.captureException(e)
+                e.printStackTrace()
+            }
+        }
+        return accessCode
+    }
+
+    fun getCard(): Card {
+        val mY = _card.value.expDate.split("/")
+        return Card(_card.value.cardNumber, mY[0].toInt(), mY[1].toInt(), _card.value.cvv)
+    }
 }
 
 data class CreditCard(
@@ -92,4 +122,5 @@ data class CreditCard(
     val expDate: String = "",
     val cvv: String = "",
     val cardType: String = "",
+    val currency: String = "",
 )

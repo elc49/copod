@@ -161,6 +161,16 @@ func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.Up
 	})
 }
 
+// InitializePaystackTransaction is the resolver for the initializePaystackTransaction field.
+func (r *mutationResolver) InitializePaystackTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (string, error) {
+	res, err := r.subscriptionController.InitializeTransaction(ctx, input)
+	if err != nil {
+		return "", nil
+	}
+
+	return *res, nil
+}
+
 // Customer is the resolver for the customer field.
 func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, obj.CustomerID)

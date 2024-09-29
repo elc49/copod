@@ -113,15 +113,16 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddToCart         func(childComplexity int, input model.AddToCartInput) int
-		CreateFarm        func(childComplexity int, input model.NewFarmInput) int
-		CreateFarmMarket  func(childComplexity int, input model.NewFarmMarketInput) int
-		DeleteCartItem    func(childComplexity int, id uuid.UUID) int
-		PayWithMpesa      func(childComplexity int, input model.PayWithMpesaInput) int
-		SendOrderToFarm   func(childComplexity int, input model.SendOrderToFarmInput) int
-		SetMarketStatus   func(childComplexity int, input model.SetMarketStatusInput) int
-		UpdateFarmDetails func(childComplexity int, input model.UpdateFarmDetailsInput) int
-		UpdateOrderStatus func(childComplexity int, input model.UpdateOrderStatusInput) int
+		AddToCart                     func(childComplexity int, input model.AddToCartInput) int
+		CreateFarm                    func(childComplexity int, input model.NewFarmInput) int
+		CreateFarmMarket              func(childComplexity int, input model.NewFarmMarketInput) int
+		DeleteCartItem                func(childComplexity int, id uuid.UUID) int
+		InitializePaystackTransaction func(childComplexity int, input model.InitializePaystackTransactionInput) int
+		PayWithMpesa                  func(childComplexity int, input model.PayWithMpesaInput) int
+		SendOrderToFarm               func(childComplexity int, input model.SendOrderToFarmInput) int
+		SetMarketStatus               func(childComplexity int, input model.SetMarketStatusInput) int
+		UpdateFarmDetails             func(childComplexity int, input model.UpdateFarmDetailsInput) int
+		UpdateOrderStatus             func(childComplexity int, input model.UpdateOrderStatusInput) int
 	}
 
 	Order struct {
@@ -223,6 +224,7 @@ type MutationResolver interface {
 	UpdateOrderStatus(ctx context.Context, input model.UpdateOrderStatusInput) (*model.Order, error)
 	SetMarketStatus(ctx context.Context, input model.SetMarketStatusInput) (*model.Market, error)
 	UpdateFarmDetails(ctx context.Context, input model.UpdateFarmDetailsInput) (*model.Farm, error)
+	InitializePaystackTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (string, error)
 }
 type OrderResolver interface {
 	Customer(ctx context.Context, obj *model.Order) (*model.User, error)
@@ -604,6 +606,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCartItem(childComplexity, args["id"].(uuid.UUID)), true
+
+	case "Mutation.initializePaystackTransaction":
+		if e.complexity.Mutation.InitializePaystackTransaction == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_initializePaystackTransaction_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.InitializePaystackTransaction(childComplexity, args["input"].(model.InitializePaystackTransactionInput)), true
 
 	case "Mutation.payWithMpesa":
 		if e.complexity.Mutation.PayWithMpesa == nil {
@@ -1085,6 +1099,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputGetLocalizedMachineryMarketsInput,
 		ec.unmarshalInputGetLocalizedMarketsInput,
 		ec.unmarshalInputGpsInput,
+		ec.unmarshalInputInitializePaystackTransactionInput,
 		ec.unmarshalInputNewFarmInput,
 		ec.unmarshalInputNewFarmMarketInput,
 		ec.unmarshalInputNewPostInput,
@@ -1284,6 +1299,21 @@ func (ec *executionContext) field_Mutation_deleteCartItem_args(ctx context.Conte
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_initializePaystackTransaction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InitializePaystackTransactionInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInitializePaystackTransactionInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐInitializePaystackTransactionInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -4138,6 +4168,61 @@ func (ec *executionContext) fieldContext_Mutation_updateFarmDetails(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateFarmDetails_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_initializePaystackTransaction(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_initializePaystackTransaction(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().InitializePaystackTransaction(rctx, fc.Args["input"].(model.InitializePaystackTransactionInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_initializePaystackTransaction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_initializePaystackTransaction_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8969,6 +9054,33 @@ func (ec *executionContext) unmarshalInputGpsInput(ctx context.Context, obj inte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInitializePaystackTransactionInput(ctx context.Context, obj interface{}) (model.InitializePaystackTransactionInput, error) {
+	var it model.InitializePaystackTransactionInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"amount"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "amount":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Amount = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewFarmInput(ctx context.Context, obj interface{}) (model.NewFarmInput, error) {
 	var it model.NewFarmInput
 	asMap := map[string]interface{}{}
@@ -10049,6 +10161,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateFarmDetails":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateFarmDetails(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "initializePaystackTransaction":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_initializePaystackTransaction(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -11433,6 +11552,11 @@ func (ec *executionContext) marshalNGps2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServer
 func (ec *executionContext) unmarshalNGpsInput2ᚖgithubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐGpsInput(ctx context.Context, v interface{}) (*model.GpsInput, error) {
 	res, err := ec.unmarshalInputGpsInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNInitializePaystackTransactionInput2githubᚗcomᚋelc49ᚋcopodᚋServerᚋsrcᚋgraphᚋmodelᚐInitializePaystackTransactionInput(ctx context.Context, v interface{}) (model.InitializePaystackTransactionInput, error) {
+	res, err := ec.unmarshalInputInitializePaystackTransactionInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
