@@ -24,7 +24,7 @@ type ChargeMpesaPhoneRes struct {
 	} `json:"data"`
 }
 
-type ChargeMpesaPhoneCallbackRes struct {
+type PaystackWebhook struct {
 	Event string `json:"event"`
 	Data  struct {
 		Status    string `json:"status"`

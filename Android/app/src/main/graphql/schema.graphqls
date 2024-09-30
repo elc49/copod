@@ -60,6 +60,14 @@ type Farm {
   deleted_at: Time
 }
 
+input FarmSubscriptionInput {
+  referenceId: String!
+
+  amount: Int!
+
+  currency: String!
+}
+
 input GetFarmMarketsInput {
   farmId: UUID!
 
@@ -86,10 +94,6 @@ input GpsInput {
   lat: Float!
 
   lng: Float!
-}
-
-input InitializePaystackTransactionInput {
-  amount: Int!
 }
 
 type Market {
@@ -173,7 +177,7 @@ type Mutation {
 
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
 
-  initializePaystackTransaction(input: InitializePaystackTransactionInput!): String!
+  initializeFarmSubscriptionPayment(input: FarmSubscriptionInput!): Payment!
 }
 
 input NewFarmInput {
@@ -308,6 +312,12 @@ type Payment {
   created_at: Time!
 
   updated_at: Time!
+}
+
+enum PaymentReason {
+  farming_rights
+
+  poster_rights
 }
 
 type PaystackPaymentUpdate {

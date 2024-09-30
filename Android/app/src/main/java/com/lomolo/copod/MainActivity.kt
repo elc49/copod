@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navHostController = rememberNavController()
             locationServices = LocationPermission
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             var shouldShowPermissionRationale by remember { mutableStateOf(false) }
@@ -260,7 +261,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         CopodApplication(
-                            rememberNavController(),
+                            navHostController,
                             snackbarHostState,
                             copodSnackbarHost,
                         )

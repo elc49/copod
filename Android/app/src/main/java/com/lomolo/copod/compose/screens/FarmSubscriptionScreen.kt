@@ -1,6 +1,7 @@
 package com.lomolo.copod.compose.screens
 
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,14 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lomolo.copod.PaystackActivity
 import com.lomolo.copod.R
-import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.util.Util
-
-object FarmSubscriptionScreenDestination : Navigation {
-    override val title = R.string.buy_farm_service
-    override val route = "dashboard_farm_subscribe"
-}
 
 private val points = listOf(
     R.string.one_time_purchase,
@@ -47,12 +42,13 @@ private val points = listOf(
 fun FarmSubscriptionScreen(
     modifier: Modifier = Modifier,
     deviceDetails: DeviceDetails,
+    activityLauncher: ActivityResultLauncher<Intent>,
 ) {
     val context = LocalContext.current
     val startPaystackActivity = {
         val intent = Intent(context, PaystackActivity::class.java)
         try {
-            context.startActivity(intent)
+            activityLauncher.launch(intent)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -99,7 +95,7 @@ fun FarmSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    Util.formatCurrency(deviceDetails.currency, deviceDetails.posterRightsFee),
+                    Util.formatCurrency(deviceDetails.currency, deviceDetails.farmingRightsFee),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )

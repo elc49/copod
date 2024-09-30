@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import okio.IOException
 
 class MainViewModel(
-    private val giggyRestApiService: ICopodRestApi
+    private val giggyRestApiService: ICopodRestApi,
 ): ViewModel() {
     private val _deviceDetails: MutableStateFlow<DeviceDetails> = MutableStateFlow(DeviceDetails())
     val deviceDetailsState = _deviceDetails.asStateFlow()

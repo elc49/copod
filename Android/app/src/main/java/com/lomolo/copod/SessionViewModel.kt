@@ -1,10 +1,14 @@
 package com.lomolo.copod
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.lomolo.copod.model.Session
 import com.lomolo.copod.repository.ISession
+import io.sentry.Sentry
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -37,11 +41,43 @@ class SessionViewModel(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    fun refreshSession(id: String) = viewModelScope.launch {
-        try {
-            sessionRepository.refreshSession(id)
-        } catch(e: IOException) {
-            e.printStackTrace()
+    var prefetchingSession: PrefetchSession by mutableStateOf(PrefetchSession.Success)
+        private set
+
+    fun refreshSession(id: String) {
+        if (prefetchingSession !is PrefetchSession.Loading) {
+            prefetchingSession = PrefetchSession.Loading
+            viewModelScope.launch {
+                prefetchingSession = try {
+                    sessionRepository.refreshSession(id)
+                    PrefetchSession.Success
+                } catch (e: IOException) {
+                    Sentry.captureException(e)
+                    e.printStackTrace()
+                    PrefetchSession.Success
+                }
+            }
+        }
+    }
+
+    fun updateFarmingRights() {
+        if (prefetchingSession !is PrefetchSession.Loading) {
+            prefetchingSession = PrefetchSession.Loading
+            viewModelScope.launch {
+                prefetchingSession = try {
+                    sessionRepository.updateSession(Session(
+                        sessionUiState.value.id,
+                        sessionUiState.value.token,
+                        hasFarmingRights = true,
+                        sessionUiState.value.hasPosterRights,
+                    ))
+                    PrefetchSession.Success
+                } catch (e: Exception) {
+                    Sentry.captureException(e)
+                    e.printStackTrace()
+                    PrefetchSession.Success
+                }
+            }
         }
     }
 
@@ -53,4 +89,9 @@ class SessionViewModel(
             }
         }
     }
+}
+
+interface PrefetchSession {
+    data object Success: PrefetchSession
+    data object Loading: PrefetchSession
 }

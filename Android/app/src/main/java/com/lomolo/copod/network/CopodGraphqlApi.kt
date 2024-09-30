@@ -23,7 +23,7 @@ import com.lomolo.copod.GetPaystackPaymentVerificationQuery
 import com.lomolo.copod.GetUserCartItemsQuery
 import com.lomolo.copod.GetUserOrdersCountQuery
 import com.lomolo.copod.GetUserQuery
-import com.lomolo.copod.InitializePaystackTransactionMutation
+import com.lomolo.copod.InitializeFarmSubscriptionPaymentMutation
 import com.lomolo.copod.PayWithMpesaMutation
 import com.lomolo.copod.PaymentUpdateSubscription
 import com.lomolo.copod.SendOrderToFarmMutation
@@ -34,11 +34,11 @@ import com.lomolo.copod.compose.screens.Farm
 import com.lomolo.copod.compose.screens.Market
 import com.lomolo.copod.compose.screens.UpdateOrderStatus
 import com.lomolo.copod.type.AddToCartInput
+import com.lomolo.copod.type.FarmSubscriptionInput
 import com.lomolo.copod.type.GetFarmMarketsInput
 import com.lomolo.copod.type.GetLocalizedMachineryMarketsInput
 import com.lomolo.copod.type.GetLocalizedMarketsInput
 import com.lomolo.copod.type.GpsInput
-import com.lomolo.copod.type.InitializePaystackTransactionInput
 import com.lomolo.copod.type.NewFarmInput
 import com.lomolo.copod.type.NewFarmMarketInput
 import com.lomolo.copod.type.PayWithMpesaInput
@@ -74,7 +74,7 @@ interface ICopodGraphqlApi {
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
     suspend fun getOrderDetails(id: String): Flow<ApolloResponse<GetOrderDetailsQuery.Data>>
-    suspend fun initializePaystackTransaction(input: InitializePaystackTransactionInput): ApolloResponse<InitializePaystackTransactionMutation.Data>
+    suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput): ApolloResponse<InitializeFarmSubscriptionPaymentMutation.Data>
 }
 
 class CopodGraphqlApi(
@@ -194,6 +194,6 @@ class CopodGraphqlApi(
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
 
-    override suspend fun initializePaystackTransaction(input: InitializePaystackTransactionInput) =
-        apolloClient.mutation(InitializePaystackTransactionMutation(input)).execute()
+    override suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput) =
+        apolloClient.mutation(InitializeFarmSubscriptionPaymentMutation(input)).execute()
 }

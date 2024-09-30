@@ -1,6 +1,9 @@
 package com.lomolo.copod
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -26,6 +29,7 @@ import co.paystack.android.model.Card
 import co.paystack.android.model.Charge
 import com.lomolo.copod.compose.screens.CardDetailsScreen
 import com.lomolo.copod.ui.theme.CopodTheme
+import io.sentry.Sentry
 
 class PaystackActivity : ComponentActivity() {
     private val paystackViewModel: PaystackViewModel by viewModels { CopodViewModelProvider.Factory }
@@ -33,17 +37,25 @@ class PaystackActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         fun chargeCard(card: Card) {
+            paystackViewModel.setPaystackState(PaystackState.Loading)
             val charge = Charge()
             charge.setCard(card)
-            val accessCode = paystackViewModel.initializePaystackTransaction()
+            charge.setAmount(paystackViewModel.deviceDetails.farmingRightsFee * 100)
             charge.setCurrency(paystackViewModel.cardData.value.currency)
-            charge.setAmount(2500*100)
             charge.setEmail("ex@copodap.com")
-            charge.setAccessCode(accessCode)
 
             PaystackSdk.chargeCard(this, charge, object : Paystack.TransactionCallback {
                 override fun onSuccess(transaction: Transaction?) {
-                    println(transaction)
+                    if (transaction != null) {
+                        paystackViewModel.initializeFarmSubscriptionPayment(transaction.reference)
+                    }
+                    paystackViewModel.setPaystackState(PaystackState.Success)
+                    // Go back where we came from
+                    val intent = Intent(applicationContext, MainActivity::class.java).apply {
+                        putExtra("prefetchSession", true)
+                    }
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
                 }
 
                 override fun beforeValidate(transaction: Transaction?) {
@@ -51,8 +63,9 @@ class PaystackActivity : ComponentActivity() {
                 }
 
                 override fun onError(error: Throwable?, transaction: Transaction?) {
-                    println(error)
-                    println(transaction)
+                    error?.let { Sentry.captureException(error) }
+                    paystackViewModel.setPaystackState(PaystackState.Success)
+                    Log.e("paystack", error?.message ?: "")
                 }
             })
         }

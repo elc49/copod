@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import co.paystack.android.model.Card
+import com.lomolo.copod.PaystackState
 import com.lomolo.copod.PaystackViewModel
 import com.lomolo.copod.R
 
@@ -142,7 +144,7 @@ fun CardDetailsScreen(
             }
             Button(
                 onClick = {
-                    if (viewModel.isCardValid(cardData)) {
+                    if (viewModel.isCardValid(cardData) && viewModel.paystackRequestState !is PaystackState.Loading) {
                         chargeCard(viewModel.getCard())
                     }
                 },
@@ -150,11 +152,18 @@ fun CardDetailsScreen(
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    stringResource(R.string.pay),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                when (viewModel.paystackRequestState) {
+                    PaystackState.Success -> Text(
+                        stringResource(R.string.pay),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    PaystackState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
         }
     }

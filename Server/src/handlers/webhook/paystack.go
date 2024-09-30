@@ -16,7 +16,7 @@ func Paystack() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := logger.GetLogger()
 		pS := paystack.GetPaystackService()
-		paystackRes := &model.ChargeMpesaPhoneCallbackRes{}
+		paystackRes := &model.PaystackWebhook{}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			logrus.WithError(err).Errorf("paystack webhook: io.ReadAll(r.Body)")
@@ -35,7 +35,7 @@ func Paystack() http.Handler {
 
 		go func() {
 			ctx := context.Background()
-			psErr := pS.ReconcileMpesaChargeCallback(ctx, *paystackRes)
+			psErr := pS.ReconcilePaystackCallback(ctx, *paystackRes)
 			if psErr != nil {
 				return
 			}

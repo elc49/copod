@@ -50,6 +50,13 @@ type Farm struct {
 	DeletedAt       *time.Time `json:"deleted_at,omitempty"`
 }
 
+type FarmSubscriptionInput struct {
+	ReferenceID string `json:"referenceId"`
+	Amount      int    `json:"amount"`
+	Reason      string `json:"reason"`
+	Currency    string `json:"currency"`
+}
+
 type GetFarmMarketsInput struct {
 	FarmID uuid.UUID  `json:"farmId"`
 	Market MarketType `json:"market"`
@@ -67,10 +74,6 @@ type GetLocalizedMarketsInput struct {
 type GpsInput struct {
 	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`
-}
-
-type InitializePaystackTransactionInput struct {
-	Amount int `json:"amount"`
 }
 
 type Market struct {
@@ -385,5 +388,46 @@ func (e *OrderStatus) UnmarshalGQL(v interface{}) error {
 }
 
 func (e OrderStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type PaymentReason string
+
+const (
+	PaymentReasonFarmingRights PaymentReason = "farming_rights"
+	PaymentReasonPosterRights  PaymentReason = "poster_rights"
+)
+
+var AllPaymentReason = []PaymentReason{
+	PaymentReasonFarmingRights,
+	PaymentReasonPosterRights,
+}
+
+func (e PaymentReason) IsValid() bool {
+	switch e {
+	case PaymentReasonFarmingRights, PaymentReasonPosterRights:
+		return true
+	}
+	return false
+}
+
+func (e PaymentReason) String() string {
+	return string(e)
+}
+
+func (e *PaymentReason) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = PaymentReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid PaymentReason", str)
+	}
+	return nil
+}
+
+func (e PaymentReason) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

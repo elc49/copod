@@ -2,11 +2,11 @@ package com.lomolo.copod.repository
 
 import com.apollographql.apollo3.api.ApolloResponse
 import com.lomolo.copod.GetPaystackPaymentVerificationQuery
-import com.lomolo.copod.InitializePaystackTransactionMutation
+import com.lomolo.copod.InitializeFarmSubscriptionPaymentMutation
 import com.lomolo.copod.PayWithMpesaMutation
 import com.lomolo.copod.PaymentUpdateSubscription
 import com.lomolo.copod.network.ICopodGraphqlApi
-import com.lomolo.copod.type.InitializePaystackTransactionInput
+import com.lomolo.copod.type.FarmSubscriptionInput
 import com.lomolo.copod.type.PayWithMpesaInput
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +14,7 @@ interface IPayment {
     suspend fun payWithMpesa(input: PayWithMpesaInput): ApolloResponse<PayWithMpesaMutation.Data>
     suspend fun getPaystackPaymentVerification(referenceId: String): ApolloResponse<GetPaystackPaymentVerificationQuery.Data>
     fun paymentUpdate(sessionId: String): Flow<ApolloResponse<PaymentUpdateSubscription.Data>>
-    suspend fun initializePaystackTransaction(input: InitializePaystackTransactionInput): ApolloResponse<InitializePaystackTransactionMutation.Data>
+    suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput): ApolloResponse<InitializeFarmSubscriptionPaymentMutation.Data>
 }
 
 class PaymentRepository(
@@ -23,5 +23,5 @@ class PaymentRepository(
     override suspend fun payWithMpesa(input: PayWithMpesaInput) = copodGraphqlApi.payWithMpesa(input)
     override suspend fun getPaystackPaymentVerification(referenceId: String) = copodGraphqlApi.getPaystackPaymentVerification(referenceId)
     override fun paymentUpdate(sessionId: String) = copodGraphqlApi.paymentUpdate(sessionId)
-    override suspend fun initializePaystackTransaction(input: InitializePaystackTransactionInput) = copodGraphqlApi.initializePaystackTransaction(input)
+    override suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput) = copodGraphqlApi.initializeFarmSubscriptionPayment(input)
 }

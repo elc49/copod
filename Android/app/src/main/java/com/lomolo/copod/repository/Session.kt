@@ -10,6 +10,7 @@ interface ISession {
     suspend fun signIn(phone: String)
     suspend fun signOut()
     suspend fun refreshSession(sessionId: String)
+    suspend fun updateSession(session: Session)
 }
 
 class SessionRepository(
@@ -42,6 +43,8 @@ class SessionRepository(
         )
         sessionDao.update(newS)
     }
+
+    override suspend fun updateSession(session: Session) = sessionDao.update(session)
 
     override suspend fun signOut() {
         sessionDao.delete()

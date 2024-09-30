@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -161,14 +162,23 @@ func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.Up
 	})
 }
 
-// InitializePaystackTransaction is the resolver for the initializePaystackTransaction field.
-func (r *mutationResolver) InitializePaystackTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (string, error) {
-	res, err := r.subscriptionController.InitializeTransaction(ctx, input)
+// InitializeFarmSubscriptionPayment is the resolver for the initializeFarmSubscriptionPayment field.
+func (r *mutationResolver) InitializeFarmSubscriptionPayment(ctx context.Context, input model.FarmSubscriptionInput) (*model.Payment, error) {
+	userID := util.StringToUUID(ctx.Value("userId").(string))
+	user, err := r.signinController.GetUserByID(ctx, userID)
 	if err != nil {
-		return "", nil
+		return nil, err
 	}
 
-	return *res, nil
+	args := db.BuyRightsParams{
+		ReferenceID: sql.NullString{String: input.ReferenceID, Valid: true},
+		Amount:      int32(input.Amount),
+		Reason:      model.PaymentReasonFarmingRights.String(),
+		Currency:    input.Currency,
+		Customer:    user.Phone,
+		UserID:      userID,
+	}
+	return r.paymentController.BuyRights(ctx, args)
 }
 
 // Customer is the resolver for the customer field.

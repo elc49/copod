@@ -16,7 +16,6 @@ import (
 	"github.com/elc49/copod/Server/src/postgres"
 	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/elc49/copod/Server/src/subscription"
-	"github.com/elc49/copod/Server/src/util"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
@@ -33,9 +32,8 @@ type paystack struct {
 
 type Paystack interface {
 	ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesaPhoneInput) (*model.ChargeMpesaPhoneRes, error)
-	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
+	ReconcilePaystackCallback(ctx context.Context, input model.PaystackWebhook) error
 	VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.MpesaTransactionVerification, error)
-	InitializeTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (*string, error)
 }
 
 func New(store postgres.Store) {
@@ -109,7 +107,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 	return chargeRes, nil
 }
 
-func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
+func (p *paystack) ReconcilePaystackCallback(ctx context.Context, input model.PaystackWebhook) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -194,46 +192,4 @@ func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, reference
 	}
 
 	return verifyRes, nil
-}
-
-func (p *paystack) InitializeTransaction(ctx context.Context, input model.InitializePaystackTransactionInput) (*string, error) {
-	var paystackRes struct {
-		Data struct {
-			AccessCode string `json:"access_code"`
-		} `json:"data"`
-	}
-	api := fmt.Sprintf("%s/transaction/initialize", p.config.BaseApi)
-
-	payload, err := json.Marshal(struct {
-		Email    string `json:"email"`
-		Amount   int    `json:"amount"`
-		Currency string `json:"currency"`
-	}{
-		Email:    fmt.Sprintf("%s@copodap.com", util.RandomStringByLength(5)),
-		Amount:   input.Amount * 100,
-		Currency: "KES",
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", api, bytes.NewBuffer(payload))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+p.config.SecretKey)
-
-	c := &http.Client{}
-	res, err := c.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if marshalErr := json.NewDecoder(res.Body).Decode(&paystackRes); marshalErr != nil {
-		p.log.WithError(marshalErr).Error("paystack: json.NewDecoder InitializeTransaction")
-		return nil, err
-	}
-
-	return &paystackRes.Data.AccessCode, nil
 }
