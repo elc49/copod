@@ -137,4 +137,5 @@ data class CreditCard(
 interface PaystackState {
     data object Success : PaystackState
     data object Loading : PaystackState
+    data class Error(val msg: String?): PaystackState
 }
