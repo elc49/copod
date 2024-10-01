@@ -23,6 +23,7 @@ import com.lomolo.copod.GetPaystackPaymentVerificationQuery
 import com.lomolo.copod.GetUserCartItemsQuery
 import com.lomolo.copod.GetUserOrdersCountQuery
 import com.lomolo.copod.GetUserQuery
+import com.lomolo.copod.InitializeFarmSubscriptionPaymentMutation
 import com.lomolo.copod.PayWithMpesaMutation
 import com.lomolo.copod.PaymentUpdateSubscription
 import com.lomolo.copod.SendOrderToFarmMutation
@@ -33,6 +34,7 @@ import com.lomolo.copod.compose.screens.Farm
 import com.lomolo.copod.compose.screens.Market
 import com.lomolo.copod.compose.screens.UpdateOrderStatus
 import com.lomolo.copod.type.AddToCartInput
+import com.lomolo.copod.type.FarmSubscriptionInput
 import com.lomolo.copod.type.GetFarmMarketsInput
 import com.lomolo.copod.type.GetLocalizedMachineryMarketsInput
 import com.lomolo.copod.type.GetLocalizedMarketsInput
@@ -72,6 +74,7 @@ interface ICopodGraphqlApi {
     suspend fun getLocalizedMachineryMarkets(input: GetLocalizedMachineryMarketsInput): ApolloResponse<GetLocalizedMachineryMarketsQuery.Data>
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
     suspend fun getOrderDetails(id: String): Flow<ApolloResponse<GetOrderDetailsQuery.Data>>
+    suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput): ApolloResponse<InitializeFarmSubscriptionPaymentMutation.Data>
 }
 
 class CopodGraphqlApi(
@@ -132,7 +135,10 @@ class CopodGraphqlApi(
         apolloClient.mutation(PayWithMpesaMutation(input)).execute()
 
     override suspend fun getPaystackPaymentVerification(referenceId: String) =
-        apolloClient.query(GetPaystackPaymentVerificationQuery(referenceId = referenceId)).execute()
+        apolloClient
+            .query(GetPaystackPaymentVerificationQuery(referenceId = referenceId))
+            .fetchPolicy(FetchPolicy.NetworkFirst)
+            .execute()
 
     override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> =
         apolloClient.query(GetUserCartItemsQuery()).fetchPolicy(FetchPolicy.NetworkFirst).watch()
@@ -190,4 +196,7 @@ class CopodGraphqlApi(
     )
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .watch()
+
+    override suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput) =
+        apolloClient.mutation(InitializeFarmSubscriptionPaymentMutation(input)).execute()
 }

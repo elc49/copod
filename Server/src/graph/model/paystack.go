@@ -24,7 +24,7 @@ type ChargeMpesaPhoneRes struct {
 	} `json:"data"`
 }
 
-type ChargeMpesaPhoneCallbackRes struct {
+type PaystackWebhook struct {
 	Event string `json:"event"`
 	Data  struct {
 		Status    string `json:"status"`
@@ -51,7 +51,7 @@ type ChargeMpesaPhoneCallbackRes struct {
 	} `json:"data"`
 }
 
-type MpesaTransactionVerification struct {
+type PaystackVerifyTransaction struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
 	Data    struct {

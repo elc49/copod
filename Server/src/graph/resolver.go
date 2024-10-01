@@ -12,15 +12,15 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	farmController         controllers.FarmController
-	signinController       controllers.SigninController
-	marketController       controllers.MarketController
-	orderController        controllers.OrderController
-	paymentController      controllers.PaymentController
-	subscriptionController controllers.PaystackController
-	cartController         controllers.CartController
-	reviewController       controllers.ReviewsController
-	redis                  *redis.Client
+	farmController     controllers.FarmController
+	signinController   controllers.SigninController
+	marketController   controllers.MarketController
+	orderController    controllers.OrderController
+	paymentController  controllers.PaymentController
+	paystackController controllers.PaystackController
+	cartController     controllers.CartController
+	reviewController   controllers.ReviewsController
+	redis              *redis.Client
 }
 
 func New(store postgres.Store, signinController controllers.SigninController) Config {
@@ -32,8 +32,8 @@ func New(store postgres.Store, signinController controllers.SigninController) Co
 	orderController.Init(store)
 	paymentController := controllers.PaymentController{}
 	paymentController.Init(store)
-	subscriptionController := controllers.PaystackController{}
-	subscriptionController.Init(store)
+	paystackController := controllers.PaystackController{}
+	paystackController.Init(store)
 	cartController := controllers.CartController{}
 	cartController.Init(store)
 	reviewController := controllers.ReviewsController{}
@@ -45,7 +45,7 @@ func New(store postgres.Store, signinController controllers.SigninController) Co
 		marketController,
 		orderController,
 		paymentController,
-		subscriptionController,
+		paystackController,
 		cartController,
 		reviewController,
 		cache.GetCache().GetRedis(),

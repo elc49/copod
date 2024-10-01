@@ -1,15 +1,30 @@
 package com.lomolo.copod
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.paystack.android.model.Card
+import com.apollographql.apollo3.exception.ApolloException
+import com.lomolo.copod.repository.IPayment
+import com.lomolo.copod.type.FarmSubscriptionInput
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class PaystackViewModel : ViewModel() {
-    private val _card: MutableStateFlow<CreditCard> = MutableStateFlow(CreditCard())
+class PaystackViewModel(
+    private val paymentRepository: IPayment,
+    mainViewModel: MainViewModel,
+) : ViewModel() {
+    var paystackRequestState: PaystackState by mutableStateOf(PaystackState.Success)
+        private set
+    val deviceDetails = mainViewModel.deviceDetailsState.value
+    private val _card: MutableStateFlow<CreditCard> =
+        MutableStateFlow(CreditCard(currency = deviceDetails.currency))
     val cardData: StateFlow<CreditCard> = _card.asStateFlow()
 
     fun setCardNumber(c: String) {
@@ -85,6 +100,30 @@ class PaystackViewModel : ViewModel() {
             }
         }
     }
+
+    fun getCard(): Card {
+        val mY = _card.value.expDate.split("/")
+        return Card(_card.value.cardNumber, mY[0].toInt(), mY[1].toInt(), _card.value.cvv)
+    }
+
+    fun setPaystackState(state: PaystackState) {
+        paystackRequestState = state
+    }
+
+    fun initializeFarmSubscriptionPayment(referenceId: String) {
+        viewModelScope.launch {
+            try {
+                paymentRepository.initializeFarmSubscriptionPayment(
+                    FarmSubscriptionInput(
+                        referenceId, deviceDetails.farmingRightsFee, deviceDetails.currency
+                    )
+                )
+            } catch (e: ApolloException) {
+                Sentry.captureException(e)
+                e.printStackTrace()
+            }
+        }
+    }
 }
 
 data class CreditCard(
@@ -92,4 +131,10 @@ data class CreditCard(
     val expDate: String = "",
     val cvv: String = "",
     val cardType: String = "",
+    val currency: String = "",
 )
+
+interface PaystackState {
+    data object Success : PaystackState
+    data object Loading : PaystackState
+}

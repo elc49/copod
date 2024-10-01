@@ -1,12 +1,19 @@
 package com.lomolo.copod.compose.navigation
 
+import android.app.Activity
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.twotone.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,8 +24,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -29,6 +44,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.lomolo.copod.R
 import com.lomolo.copod.SessionViewModel
+import com.lomolo.copod.VerifyPayment
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.screens.AllMarketsScreenDestination
 import com.lomolo.copod.compose.screens.CreateFarmMarketDestination
@@ -44,8 +60,8 @@ import com.lomolo.copod.compose.screens.FarmSettingsScreenDestination
 import com.lomolo.copod.compose.screens.FarmStoreScreen
 import com.lomolo.copod.compose.screens.FarmStoreScreenDestination
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
-import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.FarmsScreen
+import com.lomolo.copod.compose.screens.HomeErrorScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.copod.compose.screens.OrderDetailsScreen
 import com.lomolo.copod.model.DeviceDetails
@@ -76,7 +92,6 @@ fun NavGraphBuilder.addFarmGraph(
 
             FarmsScreen(snackbarHostState = snackbarHostState,
                 navHostController = navHostController,
-                sessionViewModel = sessionViewModel,
                 copodSnackbarHost = copodSnackbarHost,
                 bottomNav = {
                     BottomNavBar(
@@ -90,41 +105,79 @@ fun NavGraphBuilder.addFarmGraph(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            CreateFarmScreen(onNavigateBack = {
-                navHostController.popBackStack()
-            }, deviceDetails = deviceDetails, showToast = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        "Farm created.", withDismissAction = true
-                    )
-                }
-            })
-        }
-        composable(route = FarmSubscriptionScreenDestination.route) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-                LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                    Text(
-                        stringResource(id = FarmSubscriptionScreenDestination.title),
-                        style = MaterialTheme.typography.displaySmall,
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
+            var tx by rememberSaveable { mutableStateOf("") }
+            val sess by sessionViewModel.sessionUiState.collectAsState()
+            val activityLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val txRef = result.data?.getStringExtra("tx")
+                        if (txRef != null) {
+                            tx = txRef
+                        }
                     }
-                })
-            }) { innerPadding ->
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
+                }
+
+            LaunchedEffect(
+                key1 = tx,
+            ) {
+                if (tx.isNotBlank()) {
+                    sessionViewModel.verifyPayment(tx)
+                }
+            }
+
+            when (sessionViewModel.verifyingPayment) {
+                VerifyPayment.Success -> {
+                    if (sess.hasFarmingRights) {
+                        CreateFarmScreen(onNavigateBack = {
+                            navHostController.popBackStack()
+                        }, deviceDetails = deviceDetails, showToast = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    "Farm created.", withDismissAction = true
+                                )
+                            }
+                        })
+                    } else {
+                        Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
+                            LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
+                                Text(
+                                    stringResource(id = R.string.buy_farm_service),
+                                    style = MaterialTheme.typography.displaySmall,
+                                )
+                            }, navigationIcon = {
+                                IconButton(onClick = { navHostController.popBackStack() }) {
+                                    Icon(
+                                        Icons.AutoMirrored.TwoTone.ArrowBack,
+                                        contentDescription = stringResource(id = R.string.go_back),
+                                    )
+                                }
+                            })
+                        }) { innerPadding ->
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(innerPadding)
+                            ) {
+                                FarmSubscriptionScreen(
+                                    deviceDetails = deviceDetails,
+                                    activityLauncher = activityLauncher,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                VerifyPayment.Loading -> Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    FarmSubscriptionScreen(
-                        deviceDetails = deviceDetails,
+                    CircularProgressIndicator(
+                        Modifier.size(20.dp)
                     )
                 }
+
+                is VerifyPayment.Error -> HomeErrorScreen()
             }
         }
         composable(

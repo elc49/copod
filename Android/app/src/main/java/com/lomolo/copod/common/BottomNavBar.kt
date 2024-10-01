@@ -27,7 +27,6 @@ import com.lomolo.copod.compose.screens.ExploreScreenDestination
 import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
 import com.lomolo.copod.compose.screens.FarmScreenDestination
 import com.lomolo.copod.compose.screens.FarmStoreScreenDestination
-import com.lomolo.copod.compose.screens.FarmSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.MarketScreenDestination
 import com.lomolo.copod.compose.screens.UserOrdersScreenDestination
 
@@ -72,7 +71,6 @@ sealed class Screen(
         false,
         listOf(
             FarmScreenDestination.route,
-            FarmSubscriptionScreenDestination.route,
             "${FarmStoreScreenDestination.route}/{${FarmStoreScreenDestination.FARM_ID_ARG}}",
             "${FarmProfileScreenDestination.route}/{${FarmProfileScreenDestination.PROFILE_ID_ARG}}",
         ),

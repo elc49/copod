@@ -10,6 +10,7 @@ interface ISession {
     suspend fun signIn(phone: String)
     suspend fun signOut()
     suspend fun refreshSession(sessionId: String)
+    suspend fun updateSession(session: Session)
 }
 
 class SessionRepository(
@@ -39,6 +40,16 @@ class SessionRepository(
             token = res.token,
             hasFarmingRights = res.hasFarmingRights,
             hasPosterRights = res.hasPosterRights,
+        )
+        sessionDao.update(newS)
+    }
+
+    override suspend fun updateSession(session: Session) {
+        val newS = Session(
+            id = session.id,
+            token = session.token,
+            hasFarmingRights = true,
+            hasPosterRights = session.hasPosterRights,
         )
         sessionDao.update(newS)
     }

@@ -49,7 +49,6 @@ import com.lomolo.copod.BuildConfig
 import com.lomolo.copod.CopodViewModelProvider
 import com.lomolo.copod.GetFarmsBelongingToUserQuery
 import com.lomolo.copod.R
-import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.compose.navigation.Navigation
 import com.lomolo.copod.ui.theme.inverseOnSurfaceLight
 import com.lomolo.copod.util.Util
@@ -66,11 +65,9 @@ fun FarmsScreen(
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     copodSnackbarHost: @Composable (SnackbarHostState) -> Unit,
     bottomNav: @Composable () -> Unit = {},
-    sessionViewModel: SessionViewModel,
     navHostController: NavHostController,
     viewModel: FarmViewModel = viewModel(factory = CopodViewModelProvider.Factory),
 ) {
-    val session by sessionViewModel.sessionUiState.collectAsState()
     val farms by viewModel.farms.collectAsState()
 
     Scaffold(
@@ -82,14 +79,8 @@ fun FarmsScreen(
             }, actions = {
                 if (!viewModel.hasFarm || BuildConfig.DEBUG) {
                     IconButton(onClick = {
-                        if (session.hasFarmingRights) {
-                            navHostController.navigate(CreateFarmScreenDestination.route) {
-                                launchSingleTop = true
-                            }
-                        } else {
-                            navHostController.navigate(FarmSubscriptionScreenDestination.route) {
-                                launchSingleTop = true
-                            }
+                        navHostController.navigate(CreateFarmScreenDestination.route) {
+                            launchSingleTop = true
                         }
                     }) {
                         Icon(

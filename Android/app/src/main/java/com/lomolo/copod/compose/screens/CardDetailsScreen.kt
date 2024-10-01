@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,17 +31,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import co.paystack.android.model.Card
+import com.lomolo.copod.PaystackState
 import com.lomolo.copod.PaystackViewModel
 import com.lomolo.copod.R
 
 @Composable
 fun CardDetailsScreen(
     modifier: Modifier = Modifier,
+    chargeCard: (Card) -> Unit,
     viewModel: PaystackViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val cardData by viewModel.cardData.collectAsState()
-    val card = when(cardData.cardType) {
+    val card = when (cardData.cardType) {
         "Visa" -> R.drawable.visacard
         "MasterCard" -> R.drawable.mastercard
         "Jcb" -> R.drawable.jcbcard
@@ -60,7 +64,9 @@ fun CardDetailsScreen(
             Box {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
-                        isError = cardData.cardNumber.isNotBlank() && !viewModel.isValidNumber(cardData),
+                        isError = cardData.cardNumber.isNotBlank() && !viewModel.isValidNumber(
+                            cardData
+                        ),
                         value = cardData.cardNumber,
                         label = {
                             Text(stringResource(R.string.card_number))
@@ -82,7 +88,9 @@ fun CardDetailsScreen(
                     )
                     Row(Modifier.fillMaxWidth()) {
                         OutlinedTextField(
-                            isError = cardData.expDate.isNotBlank() && !viewModel.isValidExpDate(cardData),
+                            isError = cardData.expDate.isNotBlank() && !viewModel.isValidExpDate(
+                                cardData
+                            ),
                             value = cardData.expDate,
                             label = {
                                 Text(stringResource(R.string.exp_date))
@@ -136,21 +144,26 @@ fun CardDetailsScreen(
             }
             Button(
                 onClick = {
-                    if (viewModel.isCardValid(cardData)) {
-                        println("valid")
-                    } else {
-                        println("invalid")
+                    if (viewModel.isCardValid(cardData) && viewModel.paystackRequestState !is PaystackState.Loading) {
+                        chargeCard(viewModel.getCard())
                     }
                 },
                 contentPadding = PaddingValues(12.dp),
                 shape = MaterialTheme.shapes.extraSmall,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    stringResource(R.string.pay),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                when (viewModel.paystackRequestState) {
+                    PaystackState.Success -> Text(
+                        stringResource(R.string.pay),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    PaystackState.Loading -> CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
             }
         }
     }

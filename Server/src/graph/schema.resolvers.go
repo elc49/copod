@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -104,7 +105,7 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 // PayWithMpesa is the resolver for the payWithMpesa field.
 func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
-	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, userId, input)
+	res, err := r.paystackController.ChargeMpesaPhone(ctx, userId, input)
 	if err != nil {
 		return nil, err
 	}
@@ -159,6 +160,25 @@ func (r *mutationResolver) UpdateFarmDetails(ctx context.Context, input model.Up
 		About:     input.About,
 		Thumbnail: input.Thumbnail,
 	})
+}
+
+// InitializeFarmSubscriptionPayment is the resolver for the initializeFarmSubscriptionPayment field.
+func (r *mutationResolver) InitializeFarmSubscriptionPayment(ctx context.Context, input model.FarmSubscriptionInput) (*model.Payment, error) {
+	userID := util.StringToUUID(ctx.Value("userId").(string))
+	user, err := r.signinController.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	args := db.BuyRightsParams{
+		ReferenceID: sql.NullString{String: input.ReferenceID, Valid: true},
+		Amount:      int32(input.Amount),
+		Reason:      model.PaymentReasonFarmingRights.String(),
+		Currency:    input.Currency,
+		Customer:    user.Phone,
+		UserID:      userID,
+	}
+	return r.paymentController.BuyRights(ctx, args)
 }
 
 // Customer is the resolver for the customer field.
@@ -225,7 +245,7 @@ func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*m
 
 // GetPaystackPaymentVerification is the resolver for the getPaystackPaymentVerification field.
 func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentUpdate, error) {
-	return r.subscriptionController.VerifyTransactionByReferenceID(ctx, referenceID)
+	return r.paystackController.VerifyTransactionByReferenceID(ctx, referenceID)
 }
 
 // GetUserCartItems is the resolver for the getUserCartItems field.

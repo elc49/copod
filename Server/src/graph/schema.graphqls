@@ -37,6 +37,12 @@ enum MetricUnit {
   Piece
 }
 
+# Payment reason
+enum PaymentReason {
+  farming_rights
+  poster_rights
+}
+
 # Address
 type Address {
   addressString: String!
@@ -247,6 +253,12 @@ input GetLocalizedMachineryMarketsInput {
   radius: GpsInput!
 }
 
+input FarmSubscriptionInput {
+  referenceId: String!
+  amount: Int!
+  currency: String!
+}
+
 type Query {
   getFarmsBelongingToUser: [Farm!]!
   getUser: User!
@@ -274,6 +286,7 @@ type Mutation {
   updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   setMarketStatus(input: SetMarketStatusInput!): Market!
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
+  initializeFarmSubscriptionPayment(input: FarmSubscriptionInput!): Payment!
 }
 
 type Subscription {

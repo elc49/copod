@@ -1,0 +1,5 @@
+mutation InitializeFarmSubscriptionPayment($input: FarmSubscriptionInput!) {
+    initializeFarmSubscriptionPayment(input: $input) {
+        id
+    }
+}

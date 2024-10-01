@@ -32,8 +32,8 @@ type paystack struct {
 
 type Paystack interface {
 	ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesaPhoneInput) (*model.ChargeMpesaPhoneRes, error)
-	ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error
-	VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.MpesaTransactionVerification, error)
+	ReconcilePaystackCallback(ctx context.Context, input model.PaystackWebhook) error
+	VerifyTransactionByReferenceID(ctx context.Context, referenceId string) (*model.PaystackVerifyTransaction, error)
 }
 
 func New(store postgres.Store) {
@@ -107,7 +107,7 @@ func (p *paystack) ChargeMpesaPhone(ctx context.Context, input model.ChargeMpesa
 	return chargeRes, nil
 }
 
-func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model.ChargeMpesaPhoneCallbackRes) error {
+func (p *paystack) ReconcilePaystackCallback(ctx context.Context, input model.PaystackWebhook) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -168,8 +168,8 @@ func (p *paystack) ReconcileMpesaChargeCallback(ctx context.Context, input model
 	return nil
 }
 
-func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, referenceID string) (*model.MpesaTransactionVerification, error) {
-	verifyRes := new(model.MpesaTransactionVerification)
+func (p *paystack) VerifyTransactionByReferenceID(ctx context.Context, referenceID string) (*model.PaystackVerifyTransaction, error) {
+	verifyRes := new(model.PaystackVerifyTransaction)
 	verifyUrl := fmt.Sprintf("%s/transaction/verify/%s", p.config.BaseApi, referenceID)
 
 	req, err := http.NewRequest("GET", verifyUrl, nil)

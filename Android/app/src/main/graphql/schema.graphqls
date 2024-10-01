@@ -60,6 +60,14 @@ type Farm {
   deleted_at: Time
 }
 
+input FarmSubscriptionInput {
+  referenceId: String!
+
+  amount: Int!
+
+  currency: String!
+}
+
 input GetFarmMarketsInput {
   farmId: UUID!
 
@@ -168,6 +176,8 @@ type Mutation {
   setMarketStatus(input: SetMarketStatusInput!): Market!
 
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
+
+  initializeFarmSubscriptionPayment(input: FarmSubscriptionInput!): Payment!
 }
 
 input NewFarmInput {
@@ -302,6 +312,12 @@ type Payment {
   created_at: Time!
 
   updated_at: Time!
+}
+
+enum PaymentReason {
+  farming_rights
+
+  poster_rights
 }
 
 type PaystackPaymentUpdate {
