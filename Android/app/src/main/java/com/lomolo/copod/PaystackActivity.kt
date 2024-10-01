@@ -42,7 +42,7 @@ class PaystackActivity : ComponentActivity() {
             charge.setCard(card)
             charge.setAmount(paystackViewModel.deviceDetails.farmingRightsFee * 100)
             charge.setCurrency(paystackViewModel.cardData.value.currency)
-            charge.setEmail("ex@copodap.com")
+            charge.setEmail("customer@copodap.com")
 
             PaystackSdk.chargeCard(this, charge, object : Paystack.TransactionCallback {
                 override fun onSuccess(transaction: Transaction?) {
