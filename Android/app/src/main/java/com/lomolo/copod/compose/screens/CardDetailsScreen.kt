@@ -140,6 +140,16 @@ fun CardDetailsScreen(
                             })
                         )
                     }
+                    when (val s = viewModel.paystackRequestState) {
+                        is PaystackState.Error -> {
+                            Text(
+                                s.msg!!,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+
+                        else -> {}
+                    }
                 }
             }
             Button(
@@ -153,15 +163,15 @@ fun CardDetailsScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 when (viewModel.paystackRequestState) {
-                    PaystackState.Success -> Text(
-                        stringResource(R.string.pay),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-
                     PaystackState.Loading -> CircularProgressIndicator(
                         Modifier.size(20.dp),
                         MaterialTheme.colorScheme.onPrimary,
+                    )
+
+                    else -> Text(
+                        stringResource(R.string.pay),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }

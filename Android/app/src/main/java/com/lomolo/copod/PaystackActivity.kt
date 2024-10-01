@@ -64,7 +64,7 @@ class PaystackActivity : ComponentActivity() {
 
                 override fun onError(error: Throwable?, transaction: Transaction?) {
                     error?.let { Sentry.captureException(error) }
-                    paystackViewModel.setPaystackState(PaystackState.Success)
+                    paystackViewModel.setPaystackState(PaystackState.Error(error?.message))
                     Log.e("paystack", error?.message ?: "")
                 }
             })
