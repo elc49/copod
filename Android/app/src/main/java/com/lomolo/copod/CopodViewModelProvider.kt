@@ -59,6 +59,7 @@ object CopodViewModelProvider {
         initializer {
             sessionViewModel = SessionViewModel(
                 copodApplication().container.sessionRepository,
+                copodApplication().container.paymentRepository,
                 copodApplication().container.apolloClient.apolloStore,
             )
             sessionViewModel

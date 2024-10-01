@@ -52,7 +52,7 @@ class PaystackActivity : ComponentActivity() {
                     paystackViewModel.setPaystackState(PaystackState.Success)
                     // Go back where we came from
                     val intent = Intent(applicationContext, MainActivity::class.java).apply {
-                        putExtra("prefetchSession", true)
+                        putExtra("tx", transaction?.reference)
                     }
                     setResult(Activity.RESULT_OK, intent)
                     finish()

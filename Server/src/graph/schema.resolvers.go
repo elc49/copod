@@ -105,7 +105,7 @@ func (r *mutationResolver) CreateFarmMarket(ctx context.Context, input model.New
 // PayWithMpesa is the resolver for the payWithMpesa field.
 func (r *mutationResolver) PayWithMpesa(ctx context.Context, input model.PayWithMpesaInput) (*model.PayWithMpesa, error) {
 	userId := util.StringToUUID(ctx.Value("userId").(string))
-	res, err := r.subscriptionController.ChargeMpesaPhone(ctx, userId, input)
+	res, err := r.paystackController.ChargeMpesaPhone(ctx, userId, input)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +245,7 @@ func (r *queryResolver) GetFarmPayments(ctx context.Context, id uuid.UUID) ([]*m
 
 // GetPaystackPaymentVerification is the resolver for the getPaystackPaymentVerification field.
 func (r *queryResolver) GetPaystackPaymentVerification(ctx context.Context, referenceID string) (*model.PaystackPaymentUpdate, error) {
-	return r.subscriptionController.VerifyTransactionByReferenceID(ctx, referenceID)
+	return r.paystackController.VerifyTransactionByReferenceID(ctx, referenceID)
 }
 
 // GetUserCartItems is the resolver for the getUserCartItems field.

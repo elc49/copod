@@ -53,7 +53,6 @@ type Farm struct {
 type FarmSubscriptionInput struct {
 	ReferenceID string `json:"referenceId"`
 	Amount      int    `json:"amount"`
-	Reason      string `json:"reason"`
 	Currency    string `json:"currency"`
 }
 

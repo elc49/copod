@@ -8950,7 +8950,7 @@ func (ec *executionContext) unmarshalInputFarmSubscriptionInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"referenceId", "amount", "reason", "currency"}
+	fieldsInOrder := [...]string{"referenceId", "amount", "currency"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8971,13 +8971,6 @@ func (ec *executionContext) unmarshalInputFarmSubscriptionInput(ctx context.Cont
 				return it, err
 			}
 			it.Amount = data
-		case "reason":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reason"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Reason = data
 		case "currency":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currency"))
 			data, err := ec.unmarshalNString2string(ctx, v)

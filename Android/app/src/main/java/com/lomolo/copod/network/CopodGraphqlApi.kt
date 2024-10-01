@@ -135,7 +135,10 @@ class CopodGraphqlApi(
         apolloClient.mutation(PayWithMpesaMutation(input)).execute()
 
     override suspend fun getPaystackPaymentVerification(referenceId: String) =
-        apolloClient.query(GetPaystackPaymentVerificationQuery(referenceId = referenceId)).execute()
+        apolloClient
+            .query(GetPaystackPaymentVerificationQuery(referenceId = referenceId))
+            .fetchPolicy(FetchPolicy.NetworkFirst)
+            .execute()
 
     override suspend fun getUserCartItems(): Flow<ApolloResponse<GetUserCartItemsQuery.Data>> =
         apolloClient.query(GetUserCartItemsQuery()).fetchPolicy(FetchPolicy.NetworkFirst).watch()

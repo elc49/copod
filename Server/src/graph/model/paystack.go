@@ -51,7 +51,7 @@ type PaystackWebhook struct {
 	} `json:"data"`
 }
 
-type MpesaTransactionVerification struct {
+type PaystackVerifyTransaction struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
 	Data    struct {

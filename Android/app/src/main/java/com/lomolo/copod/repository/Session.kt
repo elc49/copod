@@ -44,7 +44,15 @@ class SessionRepository(
         sessionDao.update(newS)
     }
 
-    override suspend fun updateSession(session: Session) = sessionDao.update(session)
+    override suspend fun updateSession(session: Session) {
+        val newS = Session(
+            id = session.id,
+            token = session.token,
+            hasFarmingRights = true,
+            hasPosterRights = session.hasPosterRights,
+        )
+        sessionDao.update(newS)
+    }
 
     override suspend fun signOut() {
         sessionDao.delete()

@@ -24,6 +24,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,9 +42,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.lomolo.copod.PrefetchSession
 import com.lomolo.copod.R
 import com.lomolo.copod.SessionViewModel
+import com.lomolo.copod.VerifyPayment
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.compose.screens.AllMarketsScreenDestination
 import com.lomolo.copod.compose.screens.CreateFarmMarketDestination
@@ -55,10 +61,10 @@ import com.lomolo.copod.compose.screens.FarmStoreScreen
 import com.lomolo.copod.compose.screens.FarmStoreScreenDestination
 import com.lomolo.copod.compose.screens.FarmSubscriptionScreen
 import com.lomolo.copod.compose.screens.FarmsScreen
+import com.lomolo.copod.compose.screens.HomeErrorScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.copod.compose.screens.OrderDetailsScreen
 import com.lomolo.copod.model.DeviceDetails
-import com.lomolo.copod.model.Session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -70,7 +76,6 @@ object FarmDestination : Navigation {
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addFarmGraph(
-    session: Session,
     navHostController: NavHostController,
     deviceDetails: DeviceDetails,
     snackbarHostState: SnackbarHostState,
@@ -100,19 +105,29 @@ fun NavGraphBuilder.addFarmGraph(
             route = CreateFarmScreenDestination.route,
             dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
+            var tx by rememberSaveable { mutableStateOf("") }
+            val sess by sessionViewModel.sessionUiState.collectAsState()
             val activityLauncher =
                 rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                     if (result.resultCode == Activity.RESULT_OK) {
-                        val data = result.data?.getBooleanExtra("prefetchSession", false)
-                        if (data == true) {
-                            sessionViewModel.updateFarmingRights()
+                        val txRef = result.data?.getStringExtra("tx")
+                        if (txRef != null) {
+                            tx = txRef
                         }
                     }
                 }
 
-            when (sessionViewModel.prefetchingSession) {
-                PrefetchSession.Success -> {
-                    if (session.hasFarmingRights) {
+            LaunchedEffect(
+                key1 = tx,
+            ) {
+                if (tx.isNotBlank()) {
+                    sessionViewModel.verifyPayment(tx)
+                }
+            }
+
+            when (sessionViewModel.verifyingPayment) {
+                VerifyPayment.Success -> {
+                    if (sess.hasFarmingRights) {
                         CreateFarmScreen(onNavigateBack = {
                             navHostController.popBackStack()
                         }, deviceDetails = deviceDetails, showToast = {
@@ -152,7 +167,7 @@ fun NavGraphBuilder.addFarmGraph(
                     }
                 }
 
-                PrefetchSession.Loading -> Column(
+                VerifyPayment.Loading -> Column(
                     Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,6 +176,8 @@ fun NavGraphBuilder.addFarmGraph(
                         Modifier.size(20.dp)
                     )
                 }
+
+                is VerifyPayment.Error -> HomeErrorScreen()
             }
         }
         composable(

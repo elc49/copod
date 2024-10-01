@@ -110,7 +110,6 @@ fun CopodNavigationHost(
                     initializing = initializing,
                 )
                 addFarmGraph(
-                    session = session,
                     navHostController = navHostController,
                     deviceDetails = deviceDetails,
                     snackbarHostState = snackbarHostState,
