@@ -136,7 +136,7 @@ class PaystackViewModel(
             try {
                 paymentRepository.initializeFarmSubscriptionPayment(
                     FarmSubscriptionInput(
-                        referenceId, deviceDetails.farmingRightsFee, deviceDetails.currency
+                        referenceId, deviceDetails.farmingFeesByCurrency[deviceDetails.currency] ?: 0, deviceDetails.currency
                     )
                 )
             } catch (e: ApolloException) {

@@ -101,7 +101,7 @@ fun FarmSubscriptionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    Util.formatCurrency(deviceDetails.currency, deviceDetails.farmingRightsFee),
+                    Util.formatCurrency(deviceDetails.currency, deviceDetails.farmingFeesByCurrency[deviceDetails.currency] ?: 0),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium,
                 )

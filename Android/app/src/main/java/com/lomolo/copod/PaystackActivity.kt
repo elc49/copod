@@ -38,9 +38,10 @@ class PaystackActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         fun chargeCard(card: Card) {
             paystackViewModel.setPaystackState(PaystackState.Loading)
+            val amount = paystackViewModel.deviceDetails.farmingFeesByCurrency[paystackViewModel.deviceDetails.currency]!! * 100
             val charge = Charge()
             charge.setCard(card)
-            charge.setAmount(paystackViewModel.deviceDetails.farmingRightsFee * 100)
+            charge.setAmount(amount)
             charge.setCurrency(paystackViewModel.cardData.value.currency)
             charge.setEmail("customer@copodap.com")
 
