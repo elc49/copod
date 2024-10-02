@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.lomolo.copod" />
+                  <option name="mobileSdkAppId" value="1:260750230529:android:07b99aa1b7888c2d54ac00" />
+                  <option name="projectId" value="cl-tech-ade38" />
+                  <option name="projectNumber" value="260750230529" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
