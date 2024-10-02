@@ -2,31 +2,15 @@ package com.lomolo.copod.compose.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.twotone.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.lomolo.copod.R
 import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.common.BottomNavBar
 import com.lomolo.copod.common.Entity
@@ -40,15 +24,10 @@ import com.lomolo.copod.compose.screens.ExploreScreen
 import com.lomolo.copod.compose.screens.ExploreScreenDestination
 import com.lomolo.copod.compose.screens.FarmOrderScreenDestination
 import com.lomolo.copod.compose.screens.FarmProfileScreenDestination
-import com.lomolo.copod.compose.screens.FarmScreenDestination
 import com.lomolo.copod.compose.screens.MarketDetailsScreen
 import com.lomolo.copod.compose.screens.MarketDetailsScreenDestination
 import com.lomolo.copod.compose.screens.MarketScreen
 import com.lomolo.copod.compose.screens.MarketScreenDestination
-import com.lomolo.copod.compose.screens.MpesaPaymentScreen
-import com.lomolo.copod.compose.screens.MpesaPaymentScreenDestination
-import com.lomolo.copod.compose.screens.PosterSubscriptionScreen
-import com.lomolo.copod.compose.screens.PosterSubscriptionScreenDestination
 import com.lomolo.copod.compose.screens.UserOrdersScreen
 import com.lomolo.copod.compose.screens.UserOrdersScreenDestination
 import com.lomolo.copod.model.DeviceDetails
@@ -59,7 +38,6 @@ object DashboardDestination : Navigation {
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.addDashboardGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
@@ -122,84 +100,6 @@ fun NavGraphBuilder.addDashboardGraph(
                     }
                 },
             )
-        }
-        composable(route = PosterSubscriptionScreenDestination.route) {
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-                LargeTopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                    Text(
-                        stringResource(id = PosterSubscriptionScreenDestination.title),
-                        style = MaterialTheme.typography.displaySmall,
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(id = R.string.go_back),
-                        )
-                    }
-                })
-            }) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    PosterSubscriptionScreen(
-                        deviceDetails = deviceDetails,
-                        onNavigateTo = { reason ->
-                            navHostController.navigate("${MpesaPaymentScreenDestination.route}/${reason}")
-                        },
-                    )
-                }
-            }
-        }
-        composable(
-            route = MpesaPaymentScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(MpesaPaymentScreenDestination.paymentReason) {
-                type = NavType.StringType
-            })
-        ) {
-            val reason = it.arguments?.getString("paymentReason")
-
-            Scaffold(contentWindowInsets = WindowInsets(0, 0, 0, 0), topBar = {
-                TopAppBar(windowInsets = WindowInsets(0, 0, 0, 0), title = {
-                    Text(
-                        stringResource(id = MpesaPaymentScreenDestination.title),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }, navigationIcon = {
-                    IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(
-                            Icons.AutoMirrored.TwoTone.ArrowBack,
-                            contentDescription = stringResource(
-                                R.string.go_back
-                            )
-                        )
-                    }
-                })
-            }) { innerPadding ->
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    // TODO can i reuse one component for all reason and just switch layouts/logic based on reason
-                    MpesaPaymentScreen(
-                        onNavigateTo = {
-                            when (reason) {
-                                "poster_rights" -> {
-                                    onNavigateTo(ExploreScreenDestination.route)
-                                }
-
-                                "farming_rights" -> {
-                                    onNavigateTo(FarmScreenDestination.route)
-                                }
-                            }
-                        },
-                        deviceDetails = deviceDetails,
-                    )
-                }
-            }
         }
         composable(route = CartScreenDestination.route) {
             CartScreen(

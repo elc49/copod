@@ -20,7 +20,6 @@ import com.lomolo.copod.compose.screens.FarmViewModel
 import com.lomolo.copod.compose.screens.MachineryViewModel
 import com.lomolo.copod.compose.screens.MarketDetailsViewModel
 import com.lomolo.copod.compose.screens.MarketsViewModel
-import com.lomolo.copod.compose.screens.PaymentViewModel
 import com.lomolo.copod.compose.screens.SeedlingsViewModel
 import com.lomolo.copod.compose.screens.SeedsViewModel
 import com.lomolo.copod.compose.screens.SigninViewModel
@@ -37,7 +36,6 @@ object CopodViewModelProvider {
         lateinit var accountViewModel: AccountViewModel
         lateinit var signinViewModel: SigninViewModel
         lateinit var marketsViewModel: MarketsViewModel
-        lateinit var paymentViewModel: PaymentViewModel
         lateinit var cartViewModel: CartViewModel
         lateinit var userOrdersViewModel: UserOrdersViewModel
         lateinit var farmSettingsViewModel: FarmSettingsViewModel
@@ -121,15 +119,6 @@ object CopodViewModelProvider {
                 mainViewModel,
             )
             marketsViewModel
-        }
-
-        initializer {
-            paymentViewModel = PaymentViewModel(
-                copodApplication().container.paymentRepository,
-                sessionViewModel = sessionViewModel,
-                this.createSavedStateHandle(),
-            )
-            paymentViewModel
         }
 
         initializer {
@@ -226,6 +215,7 @@ object CopodViewModelProvider {
             paystackViewModel = PaystackViewModel(
                 copodApplication().container.paymentRepository,
                 mainViewModel,
+                sessionViewModel,
             )
             paystackViewModel
         }

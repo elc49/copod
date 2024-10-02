@@ -18,6 +18,11 @@
         android:theme="@style/Theme.Copod"
         tools:targetApi="31">
         <activity
+            android:name=".MpesaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_mpesa"
+            android:theme="@style/Theme.Copod" />
+        <activity
             android:name=".PaystackActivity"
             android:exported="false"
             android:label="@string/title_activity_paystack"

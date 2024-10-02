@@ -72,7 +72,7 @@ class PaystackActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BackHandler { }
+            BackHandler {}
             CopodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
                     TopAppBar(title = { Text(stringResource(R.string.card_payment)) },

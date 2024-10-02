@@ -137,4 +137,5 @@
     <string name="card_number">Card number</string>
     <string name="card">Card</string>
     <string name="card_payment">Card payment</string>
+    <string name="title_activity_mpesa">MpesaActivity</string>
 </resources>
