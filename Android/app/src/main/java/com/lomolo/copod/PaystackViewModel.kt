@@ -7,19 +7,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.paystack.android.model.Card
 import com.apollographql.apollo3.exception.ApolloException
+import com.lomolo.copod.common.PhoneNumberUtility
+import com.lomolo.copod.model.DeviceDetails
 import com.lomolo.copod.repository.IPayment
 import com.lomolo.copod.type.FarmSubscriptionInput
+import com.lomolo.copod.type.PayWithMpesaInput
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.IOException
 
 class PaystackViewModel(
     private val paymentRepository: IPayment,
     mainViewModel: MainViewModel,
+    sessionViewModel: SessionViewModel,
 ) : ViewModel() {
+    private val _paymentInput: MutableStateFlow<MpesaPay> = MutableStateFlow(MpesaPay())
+    val paymentUiState: StateFlow<MpesaPay> = _paymentInput.asStateFlow()
     var paystackRequestState: PaystackState by mutableStateOf(PaystackState.Success)
         private set
     val deviceDetails = mainViewModel.deviceDetailsState.value
@@ -43,6 +50,20 @@ class PaystackViewModel(
 
     fun setCardExp(e: String) {
         _card.update { it.copy(expDate = e) }
+    }
+
+    var payingWithMpesaState: PayingWithMpesa by mutableStateOf(PayingWithMpesa.Default)
+        private set
+
+    fun validatePayByMpesa(uiState: MpesaPay, deviceDetails: DeviceDetails): Boolean {
+        with(uiState) {
+            return PhoneNumberUtility.isValid(
+                phone, deviceDetails.countryCode, deviceDetails.callingCode
+            )
+        }
+    }
+    fun setPhone(phone: String) {
+        _paymentInput.update { it.copy(phone = phone) }
     }
 
     fun setCardCvv(v: String) {
@@ -124,6 +145,58 @@ class PaystackViewModel(
             }
         }
     }
+
+    fun payWithMpesa(amount: Int, currency: String, deviceDetails: DeviceDetails, reason: String) {
+        if ((payingWithMpesaState is PayingWithMpesa.Default || payingWithMpesaState is PayingWithMpesa.Failed || payingWithMpesaState is PayingWithMpesa.Success) && validatePayByMpesa(
+                _paymentInput.value, deviceDetails
+            )
+        ) {
+            payingWithMpesaState = PayingWithMpesa.Loading
+            viewModelScope.launch {
+                payingWithMpesaState = try {
+                    val phone = PhoneNumberUtility.parseNumber(
+                        _paymentInput.value.phone, deviceDetails.countryCode
+                    )
+                    paymentRepository.payWithMpesa(
+                        PayWithMpesaInput(
+                            amount = amount,
+                            currency = currency,
+                            phone = PhoneNumberUtility.formatPhone(phone),
+                            reason = reason,
+                        )
+                    ).dataOrThrow()
+                    PayingWithMpesa.PayingOffline
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    PayingWithMpesa.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+    private fun reset() {
+        _paymentInput.value = MpesaPay()
+    }
+
+    init {
+        viewModelScope.launch {
+            try {
+                paymentRepository.paymentUpdate(sessionViewModel.sessionUiState.value.id).collect {
+                    payingWithMpesaState = try {
+                        payingWithMpesaState = PayingWithMpesa.Refreshing
+                        sessionViewModel.refreshSession(it.data?.paymentUpdate?.sessionId.toString())
+                        reset()
+                        PayingWithMpesa.Success
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        PayingWithMpesa.Error(e.localizedMessage)
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
 }
 
 data class CreditCard(
@@ -138,4 +211,18 @@ interface PaystackState {
     data object Success : PaystackState
     data object Loading : PaystackState
     data class Error(val msg: String?): PaystackState
+}
+
+data class MpesaPay(
+    val phone: String = "",
+)
+
+interface PayingWithMpesa {
+    data object Default : PayingWithMpesa
+    data object Loading : PayingWithMpesa
+    data object Failed : PayingWithMpesa
+    data object Refreshing : PayingWithMpesa
+    data object Success : PayingWithMpesa
+    data object PayingOffline : PayingWithMpesa
+    data class Error(val msg: String?) : PayingWithMpesa
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lomolo.copod.MpesaActivity
 import com.lomolo.copod.PaystackActivity
 import com.lomolo.copod.R
 import com.lomolo.copod.model.DeviceDetails
@@ -46,9 +47,14 @@ fun FarmSubscriptionScreen(
 ) {
     val context = LocalContext.current
     val startPaystackActivity = {
-        val intent = Intent(context, PaystackActivity::class.java)
+        val cardActivity = Intent(context, PaystackActivity::class.java)
+        val mpesaActivity = Intent(context, MpesaActivity::class.java)
         try {
-            activityLauncher.launch(intent)
+            if (deviceDetails.currency == "KES") {
+                activityLauncher.launch(mpesaActivity)
+            } else {
+                activityLauncher.launch(cardActivity)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
