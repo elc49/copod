@@ -38,6 +38,8 @@ class MainViewModel(
                             posterRightsFee = res.posterRightsFee,
                             farmingRightsFee = res.farmingRightsFee,
                             languages = res.languages.split(",")[0],
+                            // TODO look into loading this using currency exchange rates
+                            farmingFeesByCurrency = mapOf("KES" to 2000, "USD" to 20),
                         )
                     }
                     settingDeviceDetailsState = SettingDeviceDetails.Success

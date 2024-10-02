@@ -13,4 +13,5 @@ data class DeviceDetails(
     @Json(name = "farming_rights_fee") val farmingRightsFee: Int = 0,
     val deviceGps: LatLng = LatLng(0.0, 0.0),
     val languages: String = "",
+    val farmingFeesByCurrency: Map<String, Int> = mapOf(),
 )
