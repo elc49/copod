@@ -13,7 +13,7 @@ SELECT id, phone, has_farming_rights, has_poster_rights, created_at, updated_at 
 WHERE phone = $1 AND deleted_at IS NULL;
 
 -- name: GetUserByID :one
-SELECT id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
+SELECT id, phone, username, avatar, notification_tracking_id, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: SetUserFarmingRights :one
@@ -23,6 +23,11 @@ RETURNING *;
 
 -- name: SetUserPosterRights :one
 UPDATE users SET has_poster_rights = $1
+WHERE id = $2
+RETURNING *;
+
+-- name: SetUserNotificationTrackingID :one
+UPDATE users SET notification_tracking_id = $1
 WHERE id = $2
 RETURNING *;
 

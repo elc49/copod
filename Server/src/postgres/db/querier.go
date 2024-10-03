@@ -55,6 +55,7 @@ type Querier interface {
 	GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) (int64, error)
 	SetMarketStatus(ctx context.Context, arg SetMarketStatusParams) (Market, error)
 	SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRightsParams) (User, error)
+	SetUserNotificationTrackingID(ctx context.Context, arg SetUserNotificationTrackingIDParams) (User, error)
 	SetUserPosterRights(ctx context.Context, arg SetUserPosterRightsParams) (User, error)
 	UpdateCartVolume(ctx context.Context, arg UpdateCartVolumeParams) (Cart, error)
 	UpdateFarmDetails(ctx context.Context, arg UpdateFarmDetailsParams) (Farm, error)

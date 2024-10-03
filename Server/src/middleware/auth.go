@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/elc49/copod/Server/src/controllers"
 	"github.com/elc49/copod/Server/src/jwt"
+	"github.com/elc49/copod/Server/src/util"
 	jsonwebtoken "github.com/golang-jwt/jwt/v5"
 )
 
@@ -27,8 +29,15 @@ func Auth(next http.Handler) http.Handler {
 			id = claims.ID
 		}
 
+		u, err := controllers.GetSigninController().GetUserByID(r.Context(), util.StringToUUID(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		ctx = context.WithValue(ctx, "userId", id)
 		ctx = context.WithValue(ctx, "ip", r.RemoteAddr)
+		ctx = context.WithValue(ctx, "notification_tracking_id", u.NotificationTrackingID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

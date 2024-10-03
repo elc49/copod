@@ -54,16 +54,17 @@ type Market struct {
 }
 
 type Order struct {
-	ID         uuid.UUID    `json:"id"`
-	Status     string       `json:"status"`
-	ToBePaid   int32        `json:"to_be_paid"`
-	ShortID    string       `json:"short_id"`
-	Currency   string       `json:"currency"`
-	CustomerID uuid.UUID    `json:"customer_id"`
-	FarmID     uuid.UUID    `json:"farm_id"`
-	CreatedAt  time.Time    `json:"created_at"`
-	UpdatedAt  time.Time    `json:"updated_at"`
-	DeletedAt  sql.NullTime `json:"deleted_at"`
+	ID                             uuid.UUID    `json:"id"`
+	Status                         string       `json:"status"`
+	ToBePaid                       int32        `json:"to_be_paid"`
+	ShortID                        string       `json:"short_id"`
+	Currency                       string       `json:"currency"`
+	CustomerNotificationTrackingID string       `json:"customer_notification_tracking_id"`
+	CustomerID                     uuid.UUID    `json:"customer_id"`
+	FarmID                         uuid.UUID    `json:"farm_id"`
+	CreatedAt                      time.Time    `json:"created_at"`
+	UpdatedAt                      time.Time    `json:"updated_at"`
+	DeletedAt                      sql.NullTime `json:"deleted_at"`
 }
 
 type OrderItem struct {
@@ -103,13 +104,14 @@ type Rating struct {
 }
 
 type User struct {
-	ID               uuid.UUID      `json:"id"`
-	Phone            string         `json:"phone"`
-	Username         sql.NullString `json:"username"`
-	Avatar           string         `json:"avatar"`
-	HasFarmingRights bool           `json:"has_farming_rights"`
-	HasPosterRights  bool           `json:"has_poster_rights"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	DeletedAt        sql.NullTime   `json:"deleted_at"`
+	ID                     uuid.UUID      `json:"id"`
+	Phone                  string         `json:"phone"`
+	Username               sql.NullString `json:"username"`
+	Avatar                 string         `json:"avatar"`
+	HasFarmingRights       bool           `json:"has_farming_rights"`
+	HasPosterRights        bool           `json:"has_poster_rights"`
+	NotificationTrackingID sql.NullString `json:"notification_tracking_id"`
+	CreatedAt              time.Time      `json:"created_at"`
+	UpdatedAt              time.Time      `json:"updated_at"`
+	DeletedAt              sql.NullTime   `json:"deleted_at"`
 }

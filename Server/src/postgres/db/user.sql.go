@@ -38,7 +38,7 @@ INSERT INTO users (
   phone, username, avatar
 ) VALUES (
   $1, $2, $3
-) RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
+) RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, notification_tracking_id, created_at, updated_at, deleted_at
 `
 
 type CreateUserByPhoneParams struct {
@@ -57,6 +57,7 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 		&i.Avatar,
 		&i.HasFarmingRights,
 		&i.HasPosterRights,
+		&i.NotificationTrackingID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -65,19 +66,20 @@ func (q *Queries) CreateUserByPhone(ctx context.Context, arg CreateUserByPhonePa
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
+SELECT id, phone, username, avatar, notification_tracking_id, has_farming_rights, has_poster_rights, created_at, updated_at FROM users
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	ID               uuid.UUID      `json:"id"`
-	Phone            string         `json:"phone"`
-	Username         sql.NullString `json:"username"`
-	Avatar           string         `json:"avatar"`
-	HasFarmingRights bool           `json:"has_farming_rights"`
-	HasPosterRights  bool           `json:"has_poster_rights"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
+	ID                     uuid.UUID      `json:"id"`
+	Phone                  string         `json:"phone"`
+	Username               sql.NullString `json:"username"`
+	Avatar                 string         `json:"avatar"`
+	NotificationTrackingID sql.NullString `json:"notification_tracking_id"`
+	HasFarmingRights       bool           `json:"has_farming_rights"`
+	HasPosterRights        bool           `json:"has_poster_rights"`
+	CreatedAt              time.Time      `json:"created_at"`
+	UpdatedAt              time.Time      `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
@@ -88,6 +90,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow
 		&i.Phone,
 		&i.Username,
 		&i.Avatar,
+		&i.NotificationTrackingID,
 		&i.HasFarmingRights,
 		&i.HasPosterRights,
 		&i.CreatedAt,
@@ -127,7 +130,7 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPh
 const setUserFarmingRights = `-- name: SetUserFarmingRights :one
 UPDATE users SET has_farming_rights = $1
 WHERE id = $2
-RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
+RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, notification_tracking_id, created_at, updated_at, deleted_at
 `
 
 type SetUserFarmingRightsParams struct {
@@ -145,6 +148,36 @@ func (q *Queries) SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRi
 		&i.Avatar,
 		&i.HasFarmingRights,
 		&i.HasPosterRights,
+		&i.NotificationTrackingID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const setUserNotificationTrackingID = `-- name: SetUserNotificationTrackingID :one
+UPDATE users SET notification_tracking_id = $1
+WHERE id = $2
+RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, notification_tracking_id, created_at, updated_at, deleted_at
+`
+
+type SetUserNotificationTrackingIDParams struct {
+	NotificationTrackingID sql.NullString `json:"notification_tracking_id"`
+	ID                     uuid.UUID      `json:"id"`
+}
+
+func (q *Queries) SetUserNotificationTrackingID(ctx context.Context, arg SetUserNotificationTrackingIDParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, setUserNotificationTrackingID, arg.NotificationTrackingID, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Username,
+		&i.Avatar,
+		&i.HasFarmingRights,
+		&i.HasPosterRights,
+		&i.NotificationTrackingID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -155,7 +188,7 @@ func (q *Queries) SetUserFarmingRights(ctx context.Context, arg SetUserFarmingRi
 const setUserPosterRights = `-- name: SetUserPosterRights :one
 UPDATE users SET has_poster_rights = $1
 WHERE id = $2
-RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, created_at, updated_at, deleted_at
+RETURNING id, phone, username, avatar, has_farming_rights, has_poster_rights, notification_tracking_id, created_at, updated_at, deleted_at
 `
 
 type SetUserPosterRightsParams struct {
@@ -173,6 +206,7 @@ func (q *Queries) SetUserPosterRights(ctx context.Context, arg SetUserPosterRigh
 		&i.Avatar,
 		&i.HasFarmingRights,
 		&i.HasPosterRights,
+		&i.NotificationTrackingID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
