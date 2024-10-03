@@ -6,6 +6,8 @@ plugins {
 
     id("io.sentry.android.gradle") version "4.10.0"
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    // Add Google service Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -57,6 +59,9 @@ android {
 
 dependencies {
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
     implementation(libs.paystack)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.navigation.compose)

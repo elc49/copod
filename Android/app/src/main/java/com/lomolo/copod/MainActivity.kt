@@ -5,6 +5,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -56,23 +57,32 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.messaging.messaging
 import com.lomolo.copod.permissions.LocationPermission
+import com.lomolo.copod.permissions.Notification
 import com.lomolo.copod.ui.theme.CopodTheme
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationServices: LocationPermission
+    private lateinit var notificationServices: Notification
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var locationPriority: Int = Priority.PRIORITY_HIGH_ACCURACY
     private val mainViewModel: MainViewModel by viewModels { CopodViewModelProvider.Factory }
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Firebase.messaging.isAutoInitEnabled = true
+        Firebase.analytics.setAnalyticsCollectionEnabled(true)
         setContent {
             val navHostController = rememberNavController()
             locationServices = LocationPermission
+            notificationServices = Notification
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             var shouldShowPermissionRationale by remember { mutableStateOf(false) }
             var shouldRedirectToUserLocationSettings by remember { mutableStateOf(false) }
@@ -81,6 +91,11 @@ class MainActivity : ComponentActivity() {
                     locationServices.checkSelfLocationPermission(
                         this
                     )
+                )
+            }
+            val hasNotificationPermission by remember {
+                mutableStateOf(
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && notificationServices.checkSelfNotificationPermission(this)
                 )
             }
             val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -121,6 +136,13 @@ class MainActivity : ComponentActivity() {
                 shouldRedirectToUserLocationSettings =
                     !shouldShowPermissionRationale && !hasLocationPermission
             }
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    Log.d(TAG, "Notifications allowed")
+                }
+            }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(hasLocationPermission, lifecycleOwner) {
@@ -154,6 +176,21 @@ class MainActivity : ComponentActivity() {
                 lifecycleOwner.lifecycle.addObserver(observer)
                 onDispose {
                     lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                DisposableEffect(hasNotificationPermission, lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_START && !hasNotificationPermission) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }
+
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
                 }
             }
 
@@ -269,5 +306,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }
