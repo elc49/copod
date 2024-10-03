@@ -3,6 +3,7 @@ package fcm
 import (
 	"context"
 	"encoding/base64"
+	"sync"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
@@ -21,6 +22,7 @@ type FCMInterface interface {
 type fcmClient struct {
 	client *messaging.Client
 	logger *logrus.Logger
+	mu     sync.Mutex
 }
 
 func NewFcm() {
@@ -41,10 +43,17 @@ func NewFcm() {
 		log.WithError(err).Fatalln("fcm: Messaging()")
 	}
 
-	fcm = &fcmClient{c, log}
+	fcm = &fcmClient{c, log, sync.Mutex{}}
+}
+
+func GetFCMService() FCMInterface {
+	return fcm
 }
 
 func (fcm *fcmClient) Notify(ctx context.Context, msg *messaging.Message) (*string, error) {
+	fcm.mu.Lock()
+	defer fcm.mu.Unlock()
+
 	response, err := fcm.client.Send(ctx, msg)
 	if err != nil {
 		fcm.logger.WithFields(logrus.Fields{"payload": msg}).WithError(err).Errorf("fcm: Notify()")

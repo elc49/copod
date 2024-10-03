@@ -272,3 +272,21 @@ func (r *OrderRepository) GetOrderByID(ctx context.Context, orderID uuid.UUID) (
 		UpdatedAt:  o.UpdatedAt,
 	}, nil
 }
+
+func (r *OrderRepository) GetFarmOwner(ctx context.Context, farmID uuid.UUID) (*uuid.UUID, error) {
+	f, err := r.store.StoreReader.GetFarmOwner(ctx, farmID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &f, nil
+}
+
+func (r *OrderRepository) GetFarmOwnerNotificationTrackingID(ctx context.Context, userID uuid.UUID) (*string, error) {
+	u, err := r.store.StoreReader.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &u.NotificationTrackingID.String, nil
+}

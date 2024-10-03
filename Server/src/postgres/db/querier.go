@@ -36,6 +36,7 @@ type Querier interface {
 	FarmReviewers(ctx context.Context, farmID uuid.NullUUID) (int64, error)
 	GetCartItem(ctx context.Context, arg GetCartItemParams) (Cart, error)
 	GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow, error)
+	GetFarmOwner(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetFarmOwnerID(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetFarmsBelongingToUser(ctx context.Context, userID uuid.UUID) ([]GetFarmsBelongingToUserRow, error)
 	GetLocalizedMachineryMarkets(ctx context.Context, arg GetLocalizedMachineryMarketsParams) ([]Market, error)
