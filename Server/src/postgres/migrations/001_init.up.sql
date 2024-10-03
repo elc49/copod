@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users(
   avatar TEXT NOT NULL,
   has_farming_rights BOOLEAN NOT NULL DEFAULT false,
   has_poster_rights BOOLEAN NOT NULL DEFAULT false,
+  notification_tracking_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMPTZ
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS orders(
   to_be_paid INTEGER NOT NULL,
   short_id VARCHAR(6) UNIQUE NOT NULL DEFAULT SUBSTRING(MD5(uuid_generate_v4()::text) FROM 1 FOR 6),
   currency TEXT NOT NULL,
+  customer_notification_tracking_id TEXT NOT NULL,
   customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   farm_id UUID NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

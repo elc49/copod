@@ -2,8 +2,11 @@ package tests
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
+	"github.com/elc49/copod/Server/src/postgres/db"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,5 +27,14 @@ func TestUserController(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, u)
 		assert.Equal(t, u, 1)
+	})
+
+	t.Run("set_notification_tracking_id", func(t *testing.T) {
+		u, err := userC.SetUserNotificationTrackingID(ctx, db.SetUserNotificationTrackingIDParams{
+			ID:                     user.ID,
+			NotificationTrackingID: sql.NullString{String: uuid.New().String(), Valid: true},
+		})
+		assert.Nil(t, err)
+		assert.NotEmpty(t, u.NotificationTrackingID)
 	})
 }

@@ -63,11 +63,12 @@ func (mbs *SigninRepository) GetUserByID(ctx context.Context, ID uuid.UUID) (*mo
 	}
 
 	return &model.User{
-		ID:               user.ID,
-		Phone:            user.Phone,
-		Avatar:           user.Avatar,
-		HasFarmingRights: user.HasFarmingRights,
-		HasPosterRights:  user.HasPosterRights,
-		Username:         user.Username.String,
+		ID:                     user.ID,
+		Phone:                  user.Phone,
+		Avatar:                 user.Avatar,
+		HasFarmingRights:       user.HasFarmingRights,
+		HasPosterRights:        user.HasPosterRights,
+		Username:               user.Username.String,
+		NotificationTrackingID: &user.NotificationTrackingID.String,
 	}, nil
 }

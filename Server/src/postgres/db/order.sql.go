@@ -39,18 +39,19 @@ func (q *Queries) CompletedFarmOrders(ctx context.Context, arg CompletedFarmOrde
 
 const createOrder = `-- name: CreateOrder :one
 INSERT INTO orders (
-  to_be_paid, currency, customer_id, farm_id
+  to_be_paid, currency, customer_id, farm_id, customer_notification_tracking_id
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 )
-RETURNING id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at
+RETURNING id, status, to_be_paid, short_id, currency, customer_notification_tracking_id, customer_id, farm_id, created_at, updated_at, deleted_at
 `
 
 type CreateOrderParams struct {
-	ToBePaid   int32     `json:"to_be_paid"`
-	Currency   string    `json:"currency"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	FarmID     uuid.UUID `json:"farm_id"`
+	ToBePaid                       int32     `json:"to_be_paid"`
+	Currency                       string    `json:"currency"`
+	CustomerID                     uuid.UUID `json:"customer_id"`
+	FarmID                         uuid.UUID `json:"farm_id"`
+	CustomerNotificationTrackingID string    `json:"customer_notification_tracking_id"`
 }
 
 func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error) {
@@ -59,6 +60,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		arg.Currency,
 		arg.CustomerID,
 		arg.FarmID,
+		arg.CustomerNotificationTrackingID,
 	)
 	var i Order
 	err := row.Scan(
@@ -67,6 +69,7 @@ func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (Order
 		&i.ToBePaid,
 		&i.ShortID,
 		&i.Currency,
+		&i.CustomerNotificationTrackingID,
 		&i.CustomerID,
 		&i.FarmID,
 		&i.CreatedAt,
@@ -86,7 +89,7 @@ func (q *Queries) DeleteOrder(ctx context.Context, id uuid.UUID) error {
 }
 
 const getOrderByID = `-- name: GetOrderByID :one
-SELECT id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
+SELECT id, status, to_be_paid, short_id, currency, customer_notification_tracking_id, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
 WHERE id = $1 AND deleted_at IS NULL
 `
 
@@ -99,6 +102,7 @@ func (q *Queries) GetOrderByID(ctx context.Context, id uuid.UUID) (Order, error)
 		&i.ToBePaid,
 		&i.ShortID,
 		&i.Currency,
+		&i.CustomerNotificationTrackingID,
 		&i.CustomerID,
 		&i.FarmID,
 		&i.CreatedAt,
@@ -109,7 +113,7 @@ func (q *Queries) GetOrderByID(ctx context.Context, id uuid.UUID) (Order, error)
 }
 
 const getOrdersBelongingToFarm = `-- name: GetOrdersBelongingToFarm :many
-SELECT id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
+SELECT id, status, to_be_paid, short_id, currency, customer_notification_tracking_id, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
 WHERE farm_id = $1 AND deleted_at IS NULL
 `
 
@@ -128,6 +132,7 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 			&i.ToBePaid,
 			&i.ShortID,
 			&i.Currency,
+			&i.CustomerNotificationTrackingID,
 			&i.CustomerID,
 			&i.FarmID,
 			&i.CreatedAt,
@@ -148,7 +153,7 @@ func (q *Queries) GetOrdersBelongingToFarm(ctx context.Context, farmID uuid.UUID
 }
 
 const getOrdersBelongingToUser = `-- name: GetOrdersBelongingToUser :many
-SELECT id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
+SELECT id, status, to_be_paid, short_id, currency, customer_notification_tracking_id, customer_id, farm_id, created_at, updated_at, deleted_at FROM orders
 WHERE customer_id = $1 AND deleted_at IS NULL
 `
 
@@ -167,6 +172,7 @@ func (q *Queries) GetOrdersBelongingToUser(ctx context.Context, customerID uuid.
 			&i.ToBePaid,
 			&i.ShortID,
 			&i.Currency,
+			&i.CustomerNotificationTrackingID,
 			&i.CustomerID,
 			&i.FarmID,
 			&i.CreatedAt,
@@ -201,7 +207,7 @@ func (q *Queries) GetUserOrdersCount(ctx context.Context, customerID uuid.UUID) 
 const updateOrderStatus = `-- name: UpdateOrderStatus :one
 UPDATE orders SET status = $1
 WHERE id = $2 AND deleted_at IS NULL
-RETURNING id, status, to_be_paid, short_id, currency, customer_id, farm_id, created_at, updated_at, deleted_at
+RETURNING id, status, to_be_paid, short_id, currency, customer_notification_tracking_id, customer_id, farm_id, created_at, updated_at, deleted_at
 `
 
 type UpdateOrderStatusParams struct {
@@ -218,6 +224,7 @@ func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusPa
 		&i.ToBePaid,
 		&i.ShortID,
 		&i.Currency,
+		&i.CustomerNotificationTrackingID,
 		&i.CustomerID,
 		&i.FarmID,
 		&i.CreatedAt,

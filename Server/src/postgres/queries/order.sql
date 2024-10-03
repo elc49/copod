@@ -8,9 +8,9 @@ WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: CreateOrder :one
 INSERT INTO orders (
-  to_be_paid, currency, customer_id, farm_id
+  to_be_paid, currency, customer_id, farm_id, customer_notification_tracking_id
 ) VALUES (
-  $1, $2, $3, $4
+  $1, $2, $3, $4, $5
 )
 RETURNING *;
 

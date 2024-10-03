@@ -181,6 +181,17 @@ func (r *mutationResolver) InitializeFarmSubscriptionPayment(ctx context.Context
 	return r.paymentController.BuyRights(ctx, args)
 }
 
+// SetUserNotificationTrackingID is the resolver for the setUserNotificationTrackingId field.
+func (r *mutationResolver) SetUserNotificationTrackingID(ctx context.Context, tokenID string) (*model.User, error) {
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	args := db.SetUserNotificationTrackingIDParams{
+		ID:                     userId,
+		NotificationTrackingID: sql.NullString{String: tokenID, Valid: true},
+	}
+
+	return r.userController.SetUserNotificationTrackingID(ctx, args)
+}
+
 // Customer is the resolver for the customer field.
 func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, obj.CustomerID)
