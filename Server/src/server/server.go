@@ -12,6 +12,7 @@ import (
 	"github.com/elc49/copod/Server/src/cache"
 	"github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/controllers"
+	"github.com/elc49/copod/Server/src/fcm"
 	"github.com/elc49/copod/Server/src/gcloud"
 	"github.com/elc49/copod/Server/src/graph"
 	"github.com/elc49/copod/Server/src/handlers"
@@ -67,6 +68,7 @@ func (s *Server) services() {
 	ip.NewIpinfoClient()
 	gcloud.New()
 	paystack.New(s.Store)
+	fcm.NewFcm()
 }
 
 func (s *Server) MountHandlers(static embed.FS) {

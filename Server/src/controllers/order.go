@@ -4,20 +4,27 @@ import (
 	"context"
 	"errors"
 
+	"firebase.google.com/go/messaging"
+	"github.com/elc49/copod/Server/src/config"
+	"github.com/elc49/copod/Server/src/fcm"
 	"github.com/elc49/copod/Server/src/graph/model"
+	"github.com/elc49/copod/Server/src/logger"
 	"github.com/elc49/copod/Server/src/postgres"
 	"github.com/elc49/copod/Server/src/postgres/db"
 	"github.com/elc49/copod/Server/src/repositories"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type OrderController struct {
-	r *repositories.OrderRepository
+	r   *repositories.OrderRepository
+	log *logrus.Logger
 }
 
 func (c *OrderController) Init(store postgres.Store) {
 	c.r = &repositories.OrderRepository{}
 	c.r.Init(store)
+	c.log = logger.GetLogger()
 }
 
 func (c *OrderController) GetOrdersBelongingToFarm(ctx context.Context, id uuid.UUID) ([]*model.Order, error) {
@@ -77,6 +84,33 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 		if b := c.r.DeleteOrderFromCart(ctx, orderItem.MarketID); !b {
 			return nil, errors.New("order: delete cart item from order")
 		}
+		// Notify farm owner
+		if config.Configuration != nil {
+			notifyService := fcm.GetFCMService()
+			go func() {
+				uId, err := c.r.GetFarmOwner(ctx, orderItem.FarmID)
+				if err != nil {
+					c.log.WithFields(logrus.Fields{"farmId": orderItem.FarmID}).WithError(err).Errorf("order controller: GetFarmOwner")
+					return
+				}
+				token, tokenErr := c.r.GetFarmOwnerNotificationTrackingID(context.Background(), *uId)
+				if tokenErr != nil {
+					c.log.WithFields(logrus.Fields{"userId": *uId}).WithError(tokenErr).Errorf("order controller: GetFarmOwnerNotificationTrackingID")
+					return
+				}
+				msg := &messaging.Message{
+					Notification: &messaging.Notification{
+						Title: "New order",
+						Body:  "You have a new order",
+					},
+					Token: *token,
+				}
+				_, err = notifyService.Notify(context.Background(), msg)
+				if err != nil {
+					return
+				}
+			}()
+		}
 	}
 	// Cleanup blank order blocks
 	if !c.r.OrderHasItems(ctx, order.ID) {
@@ -109,4 +143,8 @@ func (c *OrderController) GetOrderItems(ctx context.Context, orderID uuid.UUID) 
 
 func (c *OrderController) GetOrderByID(ctx context.Context, orderID uuid.UUID) (*model.Order, error) {
 	return c.r.GetOrderByID(ctx, orderID)
+}
+
+func (c *OrderController) GetFarmOwner(ctx context.Context, farmID uuid.UUID) (*uuid.UUID, error) {
+	return c.r.GetFarmOwner(ctx, farmID)
 }

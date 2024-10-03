@@ -122,6 +122,18 @@ func (q *Queries) GetFarmByID(ctx context.Context, id uuid.UUID) (GetFarmByIDRow
 	return i, err
 }
 
+const getFarmOwner = `-- name: GetFarmOwner :one
+SELECT user_id FROM farms
+WHERE id = $1
+`
+
+func (q *Queries) GetFarmOwner(ctx context.Context, id uuid.UUID) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, getFarmOwner, id)
+	var user_id uuid.UUID
+	err := row.Scan(&user_id)
+	return user_id, err
+}
+
 const getFarmsBelongingToUser = `-- name: GetFarmsBelongingToUser :many
 SELECT id, name, about, date_started, thumbnail, created_at, updated_at FROM farms
 WHERE user_id = $1 AND deleted_at IS NULL

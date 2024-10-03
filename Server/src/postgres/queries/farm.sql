@@ -26,5 +26,9 @@ WHERE farm_id = $1;
 SELECT COUNT(*) FROM ratings
 WHERE farm_id = $1;
 
+-- name: GetFarmOwner :one
+SELECT user_id FROM farms
+WHERE id = $1;
+
 -- name: ClearTestFarms :exec
 DELETE FROM farms;
