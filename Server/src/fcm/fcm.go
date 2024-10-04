@@ -33,7 +33,7 @@ func NewFcm() {
 	}
 
 	cfg := &firebase.Config{
-		ProjectID: "copod-app-a7e10",
+		ProjectID: config.Configuration.Gcloud.FirebaseProjectID,
 	}
 	app, err := firebase.NewApp(context.Background(), cfg, option.WithCredentialsJSON(credentials))
 	if err != nil {
