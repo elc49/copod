@@ -27,7 +27,7 @@ type fcmClient struct {
 
 func NewFcm() {
 	log := logger.GetLogger()
-	credentials, err := base64.StdEncoding.DecodeString(config.Configuration.Gcloud.Adc)
+	credentials, err := base64.StdEncoding.DecodeString(config.Configuration.Fcm.Adc)
 	if err != nil {
 		log.WithError(err).Fatalln("fcm: New()")
 	}

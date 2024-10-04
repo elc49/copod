@@ -68,7 +68,11 @@ func (s *Server) services() {
 	ip.NewIpinfoClient()
 	gcloud.New()
 	paystack.New(s.Store)
-	fcm.NewFcm()
+
+	// Enable firebase cloud messaging in prod/staging
+	if config.IsProd() {
+		fcm.NewFcm()
+	}
 }
 
 func (s *Server) MountHandlers(static embed.FS) {
@@ -118,17 +122,8 @@ func (s *Server) MountHandlers(static embed.FS) {
 	s.Router.Handle("/static/*", http.FileServer(http.FS(static)))
 }
 
-func (s *Server) isProd() bool {
-	if config.Configuration == nil {
-		return false
-	}
-
-	return config.Configuration.Server.Env == "prod" ||
-		config.Configuration.Server.Env == "staging"
-}
-
 func (s *Server) sentrySetup() {
-	if s.isProd() {
+	if config.IsProd() {
 		err := sentry.Init(sentry.ClientOptions{
 			Dsn:              config.Configuration.Sentry.Dsn,
 			EnableTracing:    true,

@@ -25,6 +25,7 @@ type configs struct {
 	Fees        Fees
 	Redis       Redis
 	Sentry      Sentry
+	Fcm         Fcm
 }
 
 func env() { godotenv.Load() }
@@ -44,6 +45,7 @@ func New() {
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
 	c.Sentry = sentryConfig()
+	c.Fcm = fcmConfig()
 
 	Configuration = &c
 	logrus.Infoln("Configurations...OK")
@@ -174,4 +176,25 @@ func sentryConfig() Sentry {
 	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
 
 	return config
+}
+
+func fcmConfig() Fcm {
+	var config Fcm
+
+	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_FIREBASE_ADC"))
+	config.Activate = getEnv() != "test"
+
+	return config
+}
+
+// Runtime check to server env
+func IsProd() bool {
+	env := getEnv()
+
+	// Haven't figured how to init in test environment
+	if Configuration == nil {
+		return false
+	}
+
+	return env == "prod" || env == "staging"
 }

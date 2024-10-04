@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "260750230529",
-    "project_id": "cl-tech-ade38",
-    "storage_bucket": "cl-tech-ade38.appspot.com"
+    "project_number": "402962817998",
+    "project_id": "copod-app-a7e10",
+    "storage_bucket": "copod-app-a7e10.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:260750230529:android:07b99aa1b7888c2d54ac00",
+        "mobilesdk_app_id": "1:402962817998:android:b354ae66311dd6d7d4019f",
         "android_client_info": {
           "package_name": "com.lomolo.copod"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDl1opeRubRae6q_n9M0aLpab-sloQE3ns"
+          "current_key": "AIzaSyDejTENH4XY1cz02WZ2crwUukwEtLvZwjk"
         }
       ],
       "services": {
