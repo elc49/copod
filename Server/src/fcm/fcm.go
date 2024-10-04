@@ -27,13 +27,15 @@ type fcmClient struct {
 
 func NewFcm() {
 	log := logger.GetLogger()
-	credentials, err := base64.StdEncoding.DecodeString(config.Configuration.Fcm.Adc)
+	credentials, err := base64.StdEncoding.DecodeString(config.Configuration.Gcloud.Adc)
 	if err != nil {
 		log.WithError(err).Fatalln("fcm: New()")
 	}
 
-	opt := []option.ClientOption{option.WithCredentialsJSON(credentials)}
-	app, err := firebase.NewApp(context.Background(), nil, opt...)
+	cfg := &firebase.Config{
+		ProjectID: "copod-app-a7e10",
+	}
+	app, err := firebase.NewApp(context.Background(), cfg, option.WithCredentialsJSON(credentials))
 	if err != nil {
 		log.WithError(err).Fatalln("fcm: NewApp()")
 	}
@@ -44,6 +46,7 @@ func NewFcm() {
 	}
 
 	fcm = &fcmClient{c, log, sync.Mutex{}}
+	log.Infoln("firebase cloud messaging client...OK")
 }
 
 func GetFCMService() FCMInterface {

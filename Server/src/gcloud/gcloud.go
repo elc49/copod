@@ -51,6 +51,7 @@ func New() {
 		config.Configuration.Gcloud.BucketObjectBaseUri,
 		log,
 	}
+	log.Infoln("google cloud services...OK")
 }
 
 func GetGcloudService() Gcloud {

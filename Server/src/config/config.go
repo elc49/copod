@@ -25,7 +25,6 @@ type configs struct {
 	Fees        Fees
 	Redis       Redis
 	Sentry      Sentry
-	Fcm         Fcm
 }
 
 func env() { godotenv.Load() }
@@ -45,7 +44,6 @@ func New() {
 	c.Fees = feesConfig()
 	c.Redis = redisConfig()
 	c.Sentry = sentryConfig()
-	c.Fcm = fcmConfig()
 
 	Configuration = &c
 	logrus.Infoln("Configurations...OK")
@@ -174,15 +172,6 @@ func sentryConfig() Sentry {
 	var config Sentry
 
 	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
-
-	return config
-}
-
-func fcmConfig() Fcm {
-	var config Fcm
-
-	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_FIREBASE_ADC"))
-	config.Activate = getEnv() != "test"
 
 	return config
 }
