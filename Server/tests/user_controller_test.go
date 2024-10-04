@@ -30,11 +30,12 @@ func TestUserController(t *testing.T) {
 	})
 
 	t.Run("set_notification_tracking_id", func(t *testing.T) {
+		notificationTrackingID := uuid.New().String()
 		u, err := userC.SetUserNotificationTrackingID(ctx, db.SetUserNotificationTrackingIDParams{
 			ID:                     user.ID,
-			NotificationTrackingID: sql.NullString{String: uuid.New().String(), Valid: true},
+			NotificationTrackingID: sql.NullString{String: notificationTrackingID, Valid: true},
 		})
 		assert.Nil(t, err)
-		assert.NotEmpty(t, u.NotificationTrackingID)
+		assert.Equal(t, *u.NotificationTrackingID, notificationTrackingID)
 	})
 }
