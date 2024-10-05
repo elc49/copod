@@ -34,6 +34,6 @@ func RecycleUserFCMToken() http.Handler {
 		}
 		usv.SetUserNotificationTrackingID(ctx, args)
 
-		writeJSON(w, nil, http.StatusOK)
+		writeJSON(w, struct{}{}, http.StatusOK)
 	})
 }
