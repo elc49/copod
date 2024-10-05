@@ -114,6 +114,7 @@ func (s *Server) MountHandlers(static embed.FS) {
 			r.Handle("/mobile/signin", handlers.MobileSignin(signinController))
 			r.Handle("/refresh/token", handlers.RefreshToken(signinController))
 			r.With(giggyMiddleware.Paystack).Handle("/webhook/paystack", webhook.Paystack())
+			r.Handle("/refresh/notification_id", handlers.RecycleUserFCMToken())
 		})
 		r.Handle("/img/upload", handlers.ImageUploader())
 	})

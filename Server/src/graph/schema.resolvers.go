@@ -181,17 +181,6 @@ func (r *mutationResolver) InitializeFarmSubscriptionPayment(ctx context.Context
 	return r.paymentController.BuyRights(ctx, args)
 }
 
-// SetUserNotificationTrackingID is the resolver for the setUserNotificationTrackingId field.
-func (r *mutationResolver) SetUserNotificationTrackingID(ctx context.Context, tokenID string) (*model.User, error) {
-	userId := util.StringToUUID(ctx.Value("userId").(string))
-	args := db.SetUserNotificationTrackingIDParams{
-		ID:                     userId,
-		NotificationTrackingID: sql.NullString{String: tokenID, Valid: true},
-	}
-
-	return r.userController.SetUserNotificationTrackingID(ctx, args)
-}
-
 // Customer is the resolver for the customer field.
 func (r *orderResolver) Customer(ctx context.Context, obj *model.Order) (*model.User, error) {
 	return r.signinController.GetUserByID(ctx, obj.CustomerID)
@@ -351,3 +340,19 @@ type orderResolver struct{ *Resolver }
 type orderItemResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) SetUserNotificationTrackingID(ctx context.Context, tokenID string) (*model.User, error) {
+	userId := util.StringToUUID(ctx.Value("userId").(string))
+	args := db.SetUserNotificationTrackingIDParams{
+		ID:                     userId,
+		NotificationTrackingID: sql.NullString{String: tokenID, Valid: true},
+	}
+
+	return r.userController.SetUserNotificationTrackingID(ctx, args)
+}

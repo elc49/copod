@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	cloud.google.com/go/storage v1.42.0
+	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.17.47
 	github.com/getsentry/sentry-go v0.28.1
 	github.com/go-chi/chi/v5 v5.0.12
@@ -29,7 +30,6 @@ require (
 	cloud.google.com/go/firestore v1.15.0 // indirect
 	cloud.google.com/go/iam v1.1.11 // indirect
 	cloud.google.com/go/longrunning v0.5.9 // indirect
-	firebase.google.com/go v3.13.0+incompatible // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect

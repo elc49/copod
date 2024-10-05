@@ -12,8 +12,10 @@ func writeJSON(w http.ResponseWriter, v interface{}, code int) error {
 	if err != nil {
 		return err
 	}
-	if _, err := w.Write(b); err != nil {
-		return err
+	if v != nil {
+		if _, err := w.Write(b); err != nil {
+			return err
+		}
 	}
 	return nil
 }
