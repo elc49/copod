@@ -1,5 +1,8 @@
 package com.lomolo.copod.repository
 
+import android.util.Log
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.lomolo.copod.model.Session
 import com.lomolo.copod.network.ICopodRestApi
 import com.lomolo.copod.sql.dao.SessionDao
@@ -17,6 +20,22 @@ class SessionRepository(
     private val sessionDao: SessionDao,
     private val copodRestApi: ICopodRestApi,
 ): ISession {
+    private suspend fun refreshNotificationTrackingId(userId: String) {
+        var token = ""
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(
+            OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FirebaseMessaging", "Fetching token failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                // New token
+                token = task.result
+            })
+        // Track notification token generation
+        copodRestApi.refreshNotificationId(token, userId)
+    }
+
     override fun get() = sessionDao.get()
     override suspend fun signIn(phone: String) {
         val res = copodRestApi.signIn(phone)
@@ -26,6 +45,7 @@ class SessionRepository(
             hasFarmingRights = res.hasFarmingRights,
             hasPosterRights = res.hasPosterRights,
         )
+       refreshNotificationTrackingId(res.userId)
         sessionDao.create(newS)
     }
 
@@ -41,6 +61,7 @@ class SessionRepository(
             hasFarmingRights = res.hasFarmingRights,
             hasPosterRights = res.hasPosterRights,
         )
+        refreshNotificationTrackingId(res.userId)
         sessionDao.update(newS)
     }
 

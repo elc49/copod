@@ -108,7 +108,7 @@ object CopodViewModelProvider {
 
         initializer {
             signinViewModel = SigninViewModel(
-                copodApplication().container.sessionRepository, mainViewModel
+                copodApplication().container.sessionRepository, mainViewModel,
             )
             signinViewModel
         }

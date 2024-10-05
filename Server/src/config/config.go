@@ -122,6 +122,7 @@ func gcloudConfig() Gcloud {
 	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_ADC"))
 	config.BucketObjectBaseUri = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_BASE_OBJECT_URI"))
 	config.StorageBucketName = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
+	config.FirebaseProjectID = strings.TrimSpace(os.Getenv("GOOGLE_FIREBASE_PROJECT_ID"))
 
 	return config
 }
@@ -174,4 +175,16 @@ func sentryConfig() Sentry {
 	config.Dsn = strings.TrimSpace(os.Getenv("SENTRY_DSN"))
 
 	return config
+}
+
+// Runtime check to server env
+func IsProd() bool {
+	env := getEnv()
+
+	// Haven't figured how to init in test environment
+	if Configuration == nil {
+		return false
+	}
+
+	return env == "prod" || env == "staging"
 }

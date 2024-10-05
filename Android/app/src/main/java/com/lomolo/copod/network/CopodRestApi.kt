@@ -24,4 +24,7 @@ interface ICopodRestApi {
     suspend fun imageUpload(@Part body: MultipartBody.Part): ImgUpload
     @POST("/api/refresh/token")
     suspend fun refreshSession(@HeaderMap headers: Map<String, String>): SigninResponse
+    @Headers("Content-Type: application/json")
+    @POST("/api/refresh/notification_id")
+    suspend fun refreshNotificationId(@Body tokenId: String, userId: String)
 }

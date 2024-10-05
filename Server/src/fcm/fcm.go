@@ -32,8 +32,10 @@ func NewFcm() {
 		log.WithError(err).Fatalln("fcm: New()")
 	}
 
-	opt := []option.ClientOption{option.WithCredentialsJSON(credentials)}
-	app, err := firebase.NewApp(context.Background(), nil, opt...)
+	cfg := &firebase.Config{
+		ProjectID: config.Configuration.Gcloud.FirebaseProjectID,
+	}
+	app, err := firebase.NewApp(context.Background(), cfg, option.WithCredentialsJSON(credentials))
 	if err != nil {
 		log.WithError(err).Fatalln("fcm: NewApp()")
 	}
@@ -44,6 +46,7 @@ func NewFcm() {
 	}
 
 	fcm = &fcmClient{c, log, sync.Mutex{}}
+	log.Infoln("firebase cloud messaging client...OK")
 }
 
 func GetFCMService() FCMInterface {

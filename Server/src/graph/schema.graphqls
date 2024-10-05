@@ -287,7 +287,6 @@ type Mutation {
   setMarketStatus(input: SetMarketStatusInput!): Market!
   updateFarmDetails(input: UpdateFarmDetailsInput!): Farm!
   initializeFarmSubscriptionPayment(input: FarmSubscriptionInput!): Payment!
-  setUserNotificationTrackingId(tokenId: String!): User!
 }
 
 type Subscription {
