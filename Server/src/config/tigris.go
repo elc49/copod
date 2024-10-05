@@ -5,4 +5,5 @@ type Tigris struct {
 	SecretAccessKey string
 	EndpointUrl     string
 	Region          string
+	BucketName      string
 }
