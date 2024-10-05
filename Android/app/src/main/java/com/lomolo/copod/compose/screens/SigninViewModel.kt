@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lomolo.copod.MainViewModel
-import com.lomolo.copod.SessionViewModel
 import com.lomolo.copod.common.PhoneNumberUtility
 import com.lomolo.copod.repository.ISession
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,6 @@ import java.io.IOException
 class SigninViewModel(
     private val sessionRepository: ISession,
     private val mainViewModel: MainViewModel,
-    private val sessionViewModel: SessionViewModel,
 ) : ViewModel() {
     var signInUiState: SigninState by mutableStateOf(SigninState.Success)
         private set
