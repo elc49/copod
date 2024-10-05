@@ -89,6 +89,7 @@ fun CopodNavigationHost(
                 startDestination = if (session.token.isBlank()) HomeDestination.route else FarmDestination.route,
                 route = RootNavigation.route,
             ) {
+
                 addHomeGraph(
                     modifier = modifier,
                     navHostController = navHostController,

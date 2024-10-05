@@ -23,9 +23,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.lomolo.copod" />
-                  <option name="mobileSdkAppId" value="1:260750230529:android:07b99aa1b7888c2d54ac00" />
-                  <option name="projectId" value="cl-tech-ade38" />
-                  <option name="projectNumber" value="260750230529" />
+                  <option name="mobileSdkAppId" value="1:402962817998:android:b354ae66311dd6d7d4019f" />
+                  <option name="projectId" value="copod-app-a7e10" />
+                  <option name="projectNumber" value="402962817998" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

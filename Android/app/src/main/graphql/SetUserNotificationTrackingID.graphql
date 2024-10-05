@@ -1,0 +1,5 @@
+mutation SetUserNotificationTrackingID($tokenId: String!) {
+    setUserNotificationTrackingId(tokenId: $tokenId) {
+        id
+    }
+}

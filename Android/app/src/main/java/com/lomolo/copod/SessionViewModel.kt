@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.cache.normalized.ApolloStore
 import com.apollographql.apollo3.exception.ApolloException
 import com.lomolo.copod.model.Session
+import com.lomolo.copod.network.ICopodGraphqlApi
 import com.lomolo.copod.repository.IPayment
 import com.lomolo.copod.repository.ISession
 import io.sentry.Sentry
@@ -23,6 +24,7 @@ class SessionViewModel(
     private val sessionRepository: ISession,
     private val paymentRepository: IPayment,
     private val apolloStore: ApolloStore,
+    private val copodGraphqlApi: ICopodGraphqlApi,
 ) : ViewModel() {
     val sessionUiState: StateFlow<Session> = sessionRepository.get().filterNotNull().map {
         if (it.isNotEmpty()) {
@@ -82,6 +84,21 @@ class SessionViewModel(
                     Sentry.captureException(e)
                     e.printStackTrace()
                     VerifyPayment.Error(e.localizedMessage)
+                }
+            }
+        }
+    }
+
+
+    fun trackUserNotificationID(tokenId: String) {
+        // Track only in authenticated state
+        if (sessionUiState.value.id.isNotBlank()) {
+            viewModelScope.launch {
+                try {
+                    copodGraphqlApi.setUserNotificationTrackingID(tokenId)
+                } catch (e: ApolloException) {
+                    Sentry.captureException(e)
+                    e.printStackTrace()
                 }
             }
         }

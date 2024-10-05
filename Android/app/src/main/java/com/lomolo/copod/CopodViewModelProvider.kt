@@ -59,6 +59,7 @@ object CopodViewModelProvider {
                 copodApplication().container.sessionRepository,
                 copodApplication().container.paymentRepository,
                 copodApplication().container.apolloClient.apolloStore,
+                copodApplication().container.copodGraphqlApiService,
             )
             sessionViewModel
         }
@@ -108,7 +109,8 @@ object CopodViewModelProvider {
 
         initializer {
             signinViewModel = SigninViewModel(
-                copodApplication().container.sessionRepository, mainViewModel
+                copodApplication().container.sessionRepository, mainViewModel,
+                sessionViewModel,
             )
             signinViewModel
         }

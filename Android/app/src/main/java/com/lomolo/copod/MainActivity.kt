@@ -72,7 +72,6 @@ class MainActivity : ComponentActivity() {
     private var locationPriority: Int = Priority.PRIORITY_HIGH_ACCURACY
     private val mainViewModel: MainViewModel by viewModels { CopodViewModelProvider.Factory }
 
-
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

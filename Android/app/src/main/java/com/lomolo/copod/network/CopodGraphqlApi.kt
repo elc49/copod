@@ -28,6 +28,7 @@ import com.lomolo.copod.PayWithMpesaMutation
 import com.lomolo.copod.PaymentUpdateSubscription
 import com.lomolo.copod.SendOrderToFarmMutation
 import com.lomolo.copod.SetMarketStatusMutation
+import com.lomolo.copod.SetUserNotificationTrackingIDMutation
 import com.lomolo.copod.UpdateFarmDetailsMutation
 import com.lomolo.copod.UpdateOrderStatusMutation
 import com.lomolo.copod.compose.screens.Farm
@@ -75,6 +76,7 @@ interface ICopodGraphqlApi {
     suspend fun getMarketsBelongingToFarm(input: GetFarmMarketsInput): ApolloResponse<GetFarmMarketsQuery.Data>
     suspend fun getOrderDetails(id: String): Flow<ApolloResponse<GetOrderDetailsQuery.Data>>
     suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput): ApolloResponse<InitializeFarmSubscriptionPaymentMutation.Data>
+    suspend fun setUserNotificationTrackingID(tokenId: String): ApolloResponse<SetUserNotificationTrackingIDMutation.Data>
 }
 
 class CopodGraphqlApi(
@@ -199,4 +201,7 @@ class CopodGraphqlApi(
 
     override suspend fun initializeFarmSubscriptionPayment(input: FarmSubscriptionInput) =
         apolloClient.mutation(InitializeFarmSubscriptionPaymentMutation(input)).execute()
+
+    override suspend fun setUserNotificationTrackingID(tokenId: String) =
+        apolloClient.mutation(SetUserNotificationTrackingIDMutation(tokenId)).execute()
 }
