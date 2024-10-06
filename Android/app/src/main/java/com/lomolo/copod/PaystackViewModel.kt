@@ -35,16 +35,18 @@ class PaystackViewModel(
     val cardData: StateFlow<CreditCard> = _card.asStateFlow()
 
     fun setCardNumber(c: String) {
-        _card.update {
-            it.copy(
-                cardNumber = c, cardType = try {
-                    if (c.isNotBlank()) Card(c, 0, 0, "").type else "Unknown"
-                } catch (e: Exception) {
-                    Sentry.captureException(e)
-                    e.printStackTrace()
-                    "Unknown"
-                }
-            )
+        if (c.isNotBlank()) {
+            _card.update {
+                it.copy(
+                    cardNumber = c, cardType = try {
+                        if (c.isNotBlank()) Card(c, 0, 0, "").type else "Unknown"
+                    } catch (e: Exception) {
+                        Sentry.captureException(e)
+                        e.printStackTrace()
+                        "Unknown"
+                    }
+                )
+            }
         }
     }
 
