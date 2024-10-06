@@ -1,8 +1,6 @@
 package config
 
 type Gcloud struct {
-	Adc                 string
-	BucketObjectBaseUri string
-	StorageBucketName   string
-	FirebaseProjectID   string
+	Adc               string
+	FirebaseProjectID string
 }
