@@ -69,9 +69,9 @@ func (s *Server) services() {
 	paystack.New(s.Store)
 	tigris.NewClient()
 	// Enable firebase cloud messaging in prod/staging
-	if config.IsProd() {
-		fcm.NewFcm()
-	}
+
+	fcm.NewFcm()
+
 }
 
 func (s *Server) MountHandlers(static embed.FS) {

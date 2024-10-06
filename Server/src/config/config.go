@@ -124,7 +124,7 @@ func gcloudConfig() Gcloud {
 	config.Adc = strings.TrimSpace(os.Getenv("GOOGLE_ADC"))
 	config.BucketObjectBaseUri = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_BASE_OBJECT_URI"))
 	config.StorageBucketName = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_STORAGE_BUCKET"))
-	config.FirebaseProjectID = strings.TrimSpace(os.Getenv("GOOGLE_FIREBASE_PROJECT_ID"))
+	config.FirebaseProjectID = strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_FIREBASE_PROJECT_ID"))
 
 	return config
 }
