@@ -12,6 +12,11 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 
+data class NotificationRequest(
+    val tokenId: String,
+    val userId: String,
+)
+
 interface ICopodRestApi {
     @Headers("Content-Type: application/json")
     @GET("/api/ip")
@@ -26,5 +31,5 @@ interface ICopodRestApi {
     suspend fun refreshSession(@HeaderMap headers: Map<String, String>): SigninResponse
     @Headers("Content-Type: application/json")
     @POST("/api/refresh/notification_id")
-    suspend fun refreshNotificationId(@Body tokenId: String, userId: String)
+    suspend fun refreshNotificationId(@Body request: NotificationRequest)
 }

@@ -5,8 +5,12 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.lomolo.copod.model.Session
 import com.lomolo.copod.network.ICopodRestApi
+import com.lomolo.copod.network.NotificationRequest
 import com.lomolo.copod.sql.dao.SessionDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 interface ISession {
     fun get(): Flow<List<Session>>
@@ -21,7 +25,6 @@ class SessionRepository(
     private val copodRestApi: ICopodRestApi,
 ): ISession {
     private suspend fun refreshNotificationTrackingId(userId: String) {
-        var token = ""
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
             OnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -30,10 +33,11 @@ class SessionRepository(
                 }
 
                 // New token
-                token = task.result
+                // Track notification token generation
+                CoroutineScope(Dispatchers.IO).launch {
+                    copodRestApi.refreshNotificationId(NotificationRequest(task.result, userId))
+                }
             })
-        // Track notification token generation
-        copodRestApi.refreshNotificationId(token, userId)
     }
 
     override fun get() = sessionDao.get()

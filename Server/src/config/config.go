@@ -195,7 +195,7 @@ func tigrisConfig() Tigris {
 	var config Tigris
 
 	config.AccessKeyId = strings.TrimSpace(os.Getenv("AWS_ACCESS_KEY_ID"))
-	config.SecretAccessKey = strings.TrimSpace(os.Getenv("AWS_SECRET_ACESS_KEY"))
+	config.SecretAccessKey = strings.TrimSpace(os.Getenv("AWS_SECRET_ACCESS_KEY"))
 	config.EndpointUrl = strings.TrimSpace(os.Getenv("AWS_ENDPOINT_URL_S3"))
 	config.Region = strings.TrimSpace(os.Getenv("AWS_REGION"))
 	config.BucketName = strings.TrimSpace(os.Getenv("BUCKET_NAME"))

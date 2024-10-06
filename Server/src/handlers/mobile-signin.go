@@ -6,10 +6,10 @@ import (
 
 	"github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/controllers"
-	"github.com/elc49/copod/Server/src/gcloud"
 	"github.com/elc49/copod/Server/src/graph/model"
 	"github.com/elc49/copod/Server/src/jwt"
 	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/tigris"
 	"github.com/elc49/copod/Server/src/util"
 )
 
@@ -18,7 +18,7 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		var res model.Signin
 		log := logger.GetLogger()
 		jwtService := jwt.GetJwtService()
-		gcs := gcloud.GetGcloudService()
+		uploader := tigris.GetTrigrisService()
 		var phone string
 		var user *model.User
 		var err error
@@ -32,12 +32,13 @@ func MobileSignin(signinController controllers.SigninController) http.Handler {
 		}
 
 		if config.Configuration != nil {
-			avatarUrl, err = gcs.GenerateRandomAvatar(r.Context(), util.RandomStringByLength(5))
-			if err != nil {
-				log.WithError(err).Error("handler: ReadFromRemote()")
-				http.Error(w, err.Error(), http.StatusBadRequest)
+			uri, uErr := uploader.GenerateRandomAvatar(r.Context(), util.RandomStringByLength(5))
+			if uErr != nil {
+				log.WithError(uErr).Error("handler: GenerateRandomAvatar")
+				http.Error(w, uErr.Error(), http.StatusBadRequest)
 				return
 			}
+			avatarUrl = *uri
 		}
 
 		user, err = signinController.GetUserByPhone(ctx, phone)

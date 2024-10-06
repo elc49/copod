@@ -3,6 +3,8 @@ package tigris
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"image/png"
 	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	copodConfig "github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,6 +22,7 @@ var svc Tigris
 
 type Tigris interface {
 	UploadImage(context.Context, multipart.File, *multipart.FileHeader) (*string, error)
+	GenerateRandomAvatar(context.Context, string) (*string, error)
 }
 
 type tigrisClient struct {
@@ -62,6 +66,32 @@ func (tc *tigrisClient) UploadImage(ctx context.Context, file multipart.File, fi
 	res, err := tc.s3Client.Upload(ctx, params)
 	if err != nil {
 		tc.log.WithFields(logrus.Fields{"fileSize": fileHeader.Size}).WithError(err).Errorf("tigris: s3 PutObject")
+		return nil, err
+	}
+
+	return &res.Location, nil
+}
+
+func (tc *tigrisClient) GenerateRandomAvatar(ctx context.Context, randString string) (*string, error) {
+	img := util.RandomAvatar(200, 200)
+	fileName := fmt.Sprintf("avatar_%s.png", randString)
+
+	// Buffer to hold image data
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		tc.log.WithError(err).Errorf("tigris: GenerateAvatar")
+		return nil, err
+	}
+
+	params := &s3.PutObjectInput{
+		Bucket: aws.String(copodConfig.Configuration.Tigris.BucketName),
+		Key:    aws.String(fileName),
+		Body:   &buf,
+	}
+
+	res, err := tc.s3Client.Upload(ctx, params)
+	if err != nil {
+		tc.log.WithFields(logrus.Fields{"filename": fileName}).WithError(err).Errorf("tigris: s3 PutObject")
 		return nil, err
 	}
 
