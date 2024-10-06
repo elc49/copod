@@ -54,9 +54,6 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 		return (cacheValue).(*model.Ipinfo), nil
 	}
 
-	ipinfo.FarmingRightsFee = config.Configuration.Fees.FarmingRights
-	ipinfo.PosterRightsFee = config.Configuration.Fees.PosterRights
-
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://ipapi.co/%s/json/", ip), nil)
 	req.Header.Set("User-Agent", "ipapi.co/#go-v1.5")
 	if err != nil {
@@ -82,6 +79,8 @@ func (ipc ipC) GetIpinfo(ip string) (*model.Ipinfo, error) {
 		ipc.log.WithError(err).Error("ip: json.Unmarshal")
 		return nil, err
 	}
+	ipinfo.FarmingRightsFee = model.ServiceFeesByCountry("farming_rights", ipinfo.CountryCode)
+	ipinfo.PosterRightsFee = model.ServiceFeesByCountry("poster_rights", ipinfo.CountryCode)
 
 	secondaryIpinfo, err := ipc.client.GetIPInfo(net.ParseIP(ip))
 	if err != nil {
