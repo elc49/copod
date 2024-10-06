@@ -18,8 +18,8 @@ android {
         applicationId = "com.lomolo.copod"
         minSdk = 28
         targetSdk = 34
-        versionCode = 13
-        versionName = "1.4.0"
+        versionCode = 14
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
