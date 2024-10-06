@@ -23,7 +23,7 @@ interface ISession {
 class SessionRepository(
     private val sessionDao: SessionDao,
     private val copodRestApi: ICopodRestApi,
-): ISession {
+) : ISession {
     private suspend fun refreshNotificationTrackingId(userId: String) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
             OnCompleteListener { task ->
@@ -49,7 +49,7 @@ class SessionRepository(
             hasFarmingRights = res.hasFarmingRights,
             hasPosterRights = res.hasPosterRights,
         )
-       refreshNotificationTrackingId(res.userId)
+        refreshNotificationTrackingId(res.userId)
         sessionDao.create(newS)
     }
 
