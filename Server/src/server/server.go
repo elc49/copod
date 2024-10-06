@@ -13,7 +13,6 @@ import (
 	"github.com/elc49/copod/Server/src/config"
 	"github.com/elc49/copod/Server/src/controllers"
 	"github.com/elc49/copod/Server/src/fcm"
-	"github.com/elc49/copod/Server/src/gcloud"
 	"github.com/elc49/copod/Server/src/graph"
 	"github.com/elc49/copod/Server/src/handlers"
 	webhook "github.com/elc49/copod/Server/src/handlers/webhook"
@@ -23,6 +22,7 @@ import (
 	giggyMiddleware "github.com/elc49/copod/Server/src/middleware"
 	"github.com/elc49/copod/Server/src/paystack"
 	"github.com/elc49/copod/Server/src/postgres"
+	"github.com/elc49/copod/Server/src/tigris"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -66,9 +66,8 @@ func (s *Server) services() {
 		Expires: config.Configuration.Jwt.Expires,
 	})
 	ip.NewIpinfoClient()
-	gcloud.New()
 	paystack.New(s.Store)
-
+	tigris.NewClient()
 	// Enable firebase cloud messaging in prod/staging
 	if config.IsProd() {
 		fcm.NewFcm()

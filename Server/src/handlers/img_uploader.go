@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/elc49/copod/Server/src/gcloud"
 	"github.com/elc49/copod/Server/src/logger"
+	"github.com/elc49/copod/Server/src/tigris"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 
 func ImageUploader() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		uploader := gcloud.GetGcloudService()
+		uploader := tigris.GetTrigrisService()
 		log := logger.GetLogger()
 
 		err := r.ParseMultipartForm(maxSize)
@@ -32,16 +32,16 @@ func ImageUploader() http.Handler {
 		}
 		defer file.Close()
 
-		url, err := uploader.UploadPostImage(r.Context(), file, fileHeader)
+		url, err := uploader.UploadImage(r.Context(), file, fileHeader)
 		if err != nil {
-			log.WithError(err).Error("handlers: uploader.ImageUploader()")
+			log.WithError(err).Error("handlers: ImageUploader()")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		if err := writeJSON(w, struct {
 			ImageUri string `json:"image_uri"`
-		}{ImageUri: url}, http.StatusCreated); err != nil {
+		}{ImageUri: *url}, http.StatusCreated); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
