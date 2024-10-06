@@ -14,3 +14,12 @@ type Ipinfo struct {
 	CurrencyName       string `json:"currency_name"`
 	Languages          string `json:"languages"`
 }
+
+func ServiceFeesByCountry(category, countryISOCode string) int {
+	countryFees := map[string]map[string]int{
+		"farming_rights": {"US": 25, "KES": 2000},
+		"poster_rights":  {"US": 30, "KES": 2500},
+	}
+
+	return countryFees[category][countryISOCode]
+}
