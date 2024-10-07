@@ -189,7 +189,7 @@ fun CreateFarmScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    stringResource(R.string.farm_headline),
+                    stringResource(R.string.create_farm_headline),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Start,
                 )

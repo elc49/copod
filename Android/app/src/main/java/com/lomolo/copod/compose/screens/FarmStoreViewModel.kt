@@ -96,24 +96,24 @@ class FarmStoreViewModel(
         MutableStateFlow(
             listOf()
         )
-    val farmMarkets: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _farmMarkets.asStateFlow()
-    var gettingFarmMarketsState: GetFarmMarketsState by mutableStateOf(
+    val farmHarvest: StateFlow<List<GetFarmMarketsQuery.GetFarmMarket>> = _farmMarkets.asStateFlow()
+    var gettingFarmHarvestState: GetFarmMarketsState by mutableStateOf(
         GetFarmMarketsState.Success
     )
         private set
 
     private fun getFarmHarvests() {
-        if (gettingFarmMarketsState !is GetFarmMarketsState.Loading) {
-            gettingFarmMarketsState = GetFarmMarketsState.Loading
+        if (gettingFarmHarvestState !is GetFarmMarketsState.Loading) {
+            gettingFarmHarvestState = GetFarmMarketsState.Loading
             viewModelScope.launch {
                 try {
                     copodGraphqlApi.getFarmMarkets(GetFarmMarketsInput(storeId, MarketType.HARVEST)).collect { res ->
                         _farmMarkets.update { res.data?.getFarmMarkets ?: listOf() }
-                        gettingFarmMarketsState = GetFarmMarketsState.Success
+                        gettingFarmHarvestState = GetFarmMarketsState.Success
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    gettingFarmMarketsState = GetFarmMarketsState.Success
+                    gettingFarmHarvestState = GetFarmMarketsState.Success
                 }
             }
         }
