@@ -112,7 +112,6 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 						c.log.WithFields(logrus.Fields{"message": msg}).WithError(err).Error("order: Notify new order")
 						return
 					}
-					c.log.WithFields(logrus.Fields{"message": msg}).Infoln("new order: notify farmer")
 				}()
 			}
 		}
