@@ -338,43 +338,7 @@ fun FarmProfileScreen(
                                     )
                                 }
                             }
-                            LazyHorizontalGrid(
-                                modifier = Modifier.height(180.dp),
-                                rows = GridCells.Fixed(1),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                when (viewModel.gettingSeedsMarket) {
-                                    GettingSeedsMarket.Success -> items(seeds) { seed ->
-                                        Market(
-                                            data = seed,
-                                            currencyLocale = deviceDetails.currency,
-                                            onNavigateToMarketDetails = {
-                                                onNavigateToMarketDetails(
-                                                    seed.id.toString()
-                                                )
-                                            },
-                                        )
-                                    }
 
-                                    GettingSeedsMarket.Loading -> item {
-                                        Row(Modifier.fillMaxWidth()) {
-                                            CircularProgressIndicator(
-                                                Modifier.size(20.dp),
-                                            )
-                                        }
-                                    }
-
-                                    is GettingSeedsMarket.Error -> item {
-                                        Row(Modifier.fillMaxWidth()) {
-                                            Text(
-                                                stringResource(R.string.something_went_wrong),
-                                                color = MaterialTheme.colorScheme.error,
-                                            )
-                                        }
-                                    }
-                                }
-                            }
                         }
                         if (seedlings.isNotEmpty()) {
                             Row(
@@ -573,7 +537,7 @@ private fun Market(
             placeholder = painterResource(id = R.drawable.loading_img),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(100.dp)
+                .height(80.dp)
                 .clip(RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp))
         )
         Row(

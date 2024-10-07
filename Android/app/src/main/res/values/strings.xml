@@ -27,7 +27,7 @@
     <string name="approve">Approve</string>
     <string name="content_info">content info</string>
     <string name="create">Create</string>
-    <string name="farm_headline">First step to start selling harvests, and fulfill orders.</string>
+    <string name="create_farm_headline">First step to start selling, and fulfill orders.</string>
     <string name="add_farm">Add farm</string>
     <string name="farm_name">Farm name</string>
     <string name="your_farms">Your farms</string>

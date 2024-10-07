@@ -86,30 +86,34 @@ func (c *OrderController) SendOrderToFarm(ctx context.Context, userID uuid.UUID,
 		}
 		// Notify farm owner
 		if config.Configuration != nil {
-			notifyService := fcm.GetFCMService()
-			go func() {
-				uId, err := c.r.GetFarmOwner(ctx, orderItem.FarmID)
-				if err != nil {
-					c.log.WithFields(logrus.Fields{"farmId": orderItem.FarmID}).WithError(err).Errorf("order controller: GetFarmOwner")
-					return
-				}
-				token, tokenErr := c.r.GetFarmOwnerNotificationTrackingID(context.Background(), *uId)
-				if tokenErr != nil {
-					c.log.WithFields(logrus.Fields{"userId": *uId}).WithError(tokenErr).Errorf("order controller: GetFarmOwnerNotificationTrackingID")
-					return
-				}
-				msg := &messaging.Message{
-					Notification: &messaging.Notification{
-						Title: "New order",
-						Body:  "You have a new order",
-					},
-					Token: *token,
-				}
-				_, err = notifyService.Notify(context.Background(), msg)
-				if err != nil {
-					return
-				}
-			}()
+			if config.IsProd() {
+				notifyService := fcm.GetFCMService()
+				go func() {
+					ctx := context.Background()
+					uId, err := c.r.GetFarmOwner(ctx, orderItem.FarmID)
+					if err != nil {
+						c.log.WithFields(logrus.Fields{"farmId": orderItem.FarmID}).WithError(err).Errorf("order controller: GetFarmOwner")
+						return
+					}
+					token, tokenErr := c.r.GetFarmOwnerNotificationTrackingID(ctx, *uId)
+					if tokenErr != nil {
+						c.log.WithFields(logrus.Fields{"userId": *uId}).WithError(tokenErr).Errorf("order controller: GetFarmOwnerNotificationTrackingID")
+						return
+					}
+					msg := &messaging.Message{
+						Notification: &messaging.Notification{
+							Title: "New order",
+							Body:  "You have a new order",
+						},
+						Token: *token,
+					}
+					_, err = notifyService.Notify(ctx, msg)
+					if err != nil {
+						c.log.WithFields(logrus.Fields{"message": msg}).WithError(err).Error("order: Notify new order")
+						return
+					}
+				}()
+			}
 		}
 	}
 	// Cleanup blank order blocks
