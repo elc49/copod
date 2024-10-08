@@ -6,10 +6,10 @@ This repo contains
 - [Copod API](https://github.com/elc49/copod/blob/develop/Server/README.md)
 
 ## Techstack
-Server/API - Go
-Payment(CreditCard/M-pesa) - [Paystack](https://paystack.com/)
-Android - Kotlin
-Web - HTML/CSS(tailwindcss)
+Server/API - Go  
+Payment(CreditCard/M-pesa) - [Paystack](https://paystack.com/)  
+Android - Kotlin  
+Web - HTML/CSS(tailwindcss)  
 
 ## Authors
-[@gugachanzu](https://x.com/gugachanzu)
+[@gugachanzu](https://x.com/gugachanzu)  
